@@ -68,7 +68,7 @@ Website pengajuan sidang online untuk memudahkan mahasiswa, dosen pembimbing, da
 
 ```bash
 # Clone repo (pertama kali)
-git clone https://github.com/van123/Pro-PengajuanSidang.git
+git clone https://github.com/Ivann4y/Pro-PengajuanSidang.git
 
 # Masuk ke folder proyek
 cd Pro-PengajuanSidang
