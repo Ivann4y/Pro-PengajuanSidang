@@ -36,7 +36,7 @@ Website pengajuan sidang online untuk memudahkan mahasiswa, dosen pembimbing, da
 
 ## 👥 Tim Pengembang
 
-- Andrew () – Project Leader
+- Andrew () – Tidur
 - Haaris ()
 - Nayaka (Ivann4y)
 - Evan (Evan)
