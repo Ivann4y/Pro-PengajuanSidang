@@ -5,22 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <title>Mahasiswa - Sidang</title>
     <style>
         .sideNav {
             position: fixed;
             top: 0;
             left: 0;
-            width: 10vw;
+            width: 15vw;
             height: 100%;
-            background-color:rgb(16, 1, 230);
+            background-color:rgb(67, 54, 240);
             padding: 20px;
+        }
+        .bodyContainer {
+            margin-left: 15vw;
+            padding: 5vh;
+            width: 80vw;
+        }
+        .bodyHeading {
+            color: rgb(67, 54, 240);
+            font-family: 'Poppins';
+            font-weight: 550;
+        }
+        .isiTabel {
+            
         }
     </style>
 </head>
 <body>
-    <div class="sideN">
-        
-    </div>av
+    <div class="container-fluid">
+        <div class="sideNav"></div>
+        <div class="container-fluid bodyContainer">
+            <div class="row">
+                <h2 class="bodyHeading">
+                    Nayaka Ivana Putra (Mahasiswa)
+                </h2>
+            </div><br><br>
+            <div class="row">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sidang TA
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Sidang Semester</a></li>
+                    </ul>
+                </div>
+            </div><br><br>
+            <div class="row">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Judul</th>
+                            <th scope="col">Mata Kuliah</th>
+                            <th scope="col">Dosen Pembimbing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="isiTabel">
+                            <td>1</td>
+                            <td>Sistem Pengajuan Sidang</td>
+                            <td>Tugas Akhir</td>
+                            <td>Rida Indah Fariani</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
