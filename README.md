@@ -49,7 +49,7 @@ Website pengajuan sidang online untuk memudahkan mahasiswa, dosen pembimbing, da
 - Rakha ()
 - Andien ()
 - Vicky ()
-- Jaisyu ()
+- Jaisyu (IncognicatJess) - member
 - Sheva ()
 - Abram ()
 - Zia ()
