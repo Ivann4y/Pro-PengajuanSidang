@@ -17,7 +17,7 @@
             width: 15vw;
             height: 100%;
             background-color:rgb(67, 54, 240);
-            padding: 20px;
+            padding: 2%;
         }
         .bodyContainer {
             margin-left: 15vw;
@@ -30,7 +30,17 @@
             font-weight: 550;
         }
         .isiTabel {
-            
+        background-color: #f8f9fa; /* abu-abu tipis */
+        color: black;
+        font-family: 'Poppins';
+        font-weight: 500;
+        border-radius: 10px;
+        }
+        .table-row-rounded td {
+            border-radius: 10px;
+        }
+        thead tr {
+            border-bottom: 2px solid #dee2e6;
         }
     </style>
 </head>
@@ -64,11 +74,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="isiTabel">
-                            <td>1</td>
-                            <td>Sistem Pengajuan Sidang</td>
-                            <td>Tugas Akhir</td>
-                            <td>Rida Indah Fariani</td>
+                        <tr class="table-row-rounded">
+                            <td class="isiTabel">1</td>
+                            <td class="isiTabel">Sistem Pengajuan Sidang</td>
+                            <td class="isiTabel">Tugas Akhir</td>
+                            <td class="isiTabel">Rida Indah Fariani</td>
                         </tr>
                     </tbody>
                 </table>
