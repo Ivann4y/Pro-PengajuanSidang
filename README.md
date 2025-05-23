@@ -53,7 +53,7 @@ Website pengajuan sidang online untuk memudahkan mahasiswa, dosen pembimbing, da
 - Sheva ()
 - Abram ()
 - Zia ()
-- Argha ()
+- Argha (Ayashaaa210AP)
 
 ## 🔗 Cara Invite Tim (Sebagai Kolaborator di GitHub)
 
