@@ -29,18 +29,30 @@
             font-family: 'Poppins';
             font-weight: 550;
         }
+        table {
+            border-spacing: 0 10px;
+            border-collapse: separate;
+        }
+        thead {
+            border-bottom: 2px solid rgb(0, 0, 0) !important;
+        }
+        thead th {
+            padding: 0 1% 0 1%;
+        }
         .isiTabel {
-        background-color: #f8f9fa; /* abu-abu tipis */
-        color: black;
-        font-family: 'Poppins';
-        font-weight: 500;
-        border-radius: 10px;
+            background-color: #f5f5f5;
         }
-        .table-row-rounded td {
-            border-radius: 10px;
+        .isiTabel td {
+            margin-top: 1%;
+            padding: 1%;
+            font-family: 'Poppins';
+            font-weight: 400;
         }
-        thead tr {
-            border-bottom: 2px solid #dee2e6;
+        .isiTabel td:nth-child(4) {
+            border-radius: 0 20px 20px 0;
+        }
+        .isiTabel td:nth-child(1) {
+            border-radius: 20px 0 0 20px;
         }
     </style>
 </head>
@@ -64,7 +76,7 @@
                 </div>
             </div><br><br>
             <div class="row">
-                <table class="table table-borderless">
+                <table>
                     <thead>
                         <tr>
                             <th scope="col">No</th>
@@ -74,11 +86,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="table-row-rounded">
-                            <td class="isiTabel">1</td>
-                            <td class="isiTabel">Sistem Pengajuan Sidang</td>
-                            <td class="isiTabel">Tugas Akhir</td>
-                            <td class="isiTabel">Rida Indah Fariani</td>
+                        <tr class="isiTabel">
+                            <td>1</td>
+                            <td>Sistem Pengajuan Sidang</td>
+                            <td>Tugas Akhir</td>
+                            <td>Rida Indah Fariani</td>
+                        </tr>
+                        <tr class="isiTabel">
+                            <td>1</td>
+                            <td>Sistem Pengajuan Sidang</td>
+                            <td>Tugas Akhir</td>
+                            <td>Rida Indah Fariani</td>
                         </tr>
                     </tbody>
                 </table>
