@@ -39,8 +39,8 @@
         thead th {
             padding: 0 1% 0 1%;
         }
-        .isiTabel {
-            background-color: #f5f5f5;
+        thead th:nth-child(1) {
+            text-align: center;
         }
         .isiTabel td {
             margin-top: 1%;
@@ -53,6 +53,16 @@
         }
         .isiTabel td:nth-child(1) {
             border-radius: 20px 0 0 20px;
+            text-align: center;
+        }
+        .jadiBiru {
+            background-color: #f5f5f5;
+            color: black;
+            transition: 300ms;
+        }
+        .jadiBiru:hover {
+            background-color: rgb(67, 54, 240);
+            color: white;
         }
     </style>
 </head>
@@ -86,14 +96,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="isiTabel">
+                        <tr class="isiTabel jadiBiru">
                             <td>1</td>
                             <td>Sistem Pengajuan Sidang</td>
                             <td>Tugas Akhir</td>
                             <td>Rida Indah Fariani</td>
                         </tr>
-                        <tr class="isiTabel">
-                            <td>1</td>
+                        <tr class="isiTabel jadiBiru">
+                            <td>2</td>
                             <td>Sistem Pengajuan Sidang</td>
                             <td>Tugas Akhir</td>
                             <td>Rida Indah Fariani</td>
