@@ -29,6 +29,16 @@ thead th {
 }
 thead th:nth-child(1) {
     text-align: center;
+    width: 5%;
+}
+thead th:nth-child(2) {
+    width: 30%;
+}
+thead th:nth-child(3) {
+    width: 20%;
+}
+thead th:nth-child(4) {
+    width: 20%;
 }
 .isiTabel td {
     margin-top: 1%;

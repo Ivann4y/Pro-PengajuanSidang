@@ -1,3 +1,13 @@
+// FUNGSI UNTUK ADMIN
+// --- Tulis fungsi di sini ---
+
+
+// FUNGSI UNTUK DOSEN
+// --- Tulis fungsi di sini ---
+
+
+// FUNGSI UNTUK MAHASISWA
+
 function switchMSidang() {
     const msidang = document.getElementById("mSidangTA");
     const msidang2 = document.getElementById("mSidangSem");
