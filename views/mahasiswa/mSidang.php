@@ -22,11 +22,11 @@
             </div><br><br>
             <div class="row">
                 <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
                         Sidang TA
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Sidang Semester</a></li>
+                        <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
                     </ul>
                 </div>
             </div><br><br>
@@ -40,23 +40,33 @@
                             <th scope="col">Dosen Pembimbing</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="mSidangTA">
                         <tr class="isiTabel jadiBiru">
                             <td>1</td>
                             <td>Sistem Pengajuan Sidang</td>
                             <td>Tugas Akhir</td>
                             <td>Rida Indah Fariani</td>
                         </tr>
+                    </tbody>
+                    <tbody id="mSidangSem" style="display: none;">
+                        <tr class="isiTabel jadiBiru">
+                            <td>1</td>
+                            <td>Implementasi Sistem Sidang</td>
+                            <td>Pemrograman 2</td>
+                            <td>Timotius Victory</td>
+                        </tr>
                         <tr class="isiTabel jadiBiru">
                             <td>2</td>
-                            <td>Sistem Pengajuan Sidang</td>
-                            <td>Tugas Akhir</td>
-                            <td>Rida Indah Fariani</td>
+                            <td>Deployment Sistem Sidang</td>
+                            <td>Sistem Operasi</td>
+                            <td>Suhendra</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <script src="../../assets/js/main.js"></script>
 </body>
 </html>
