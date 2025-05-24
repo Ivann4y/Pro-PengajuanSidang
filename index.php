@@ -45,9 +45,11 @@
     <!-- Fullscreen -->
     <div style="height: 100vh; position: relative;">
         <!-- Header Section -->
-        <div class="text-white text-center py-5" style="background-color: rgb(67, 54, 240); height: 50%;">
-            <h2><strong>Sistem Pengajuan Sidang</strong></h2>
-            <h2><strong>Politeknik Astra</strong></h2>
+        <div style="background-color: rgb(67, 54, 240); height: 50vh;">
+            <div class="text-white text-center py-5 fixed-top" style="z-index: 999;">
+                <h2><strong>Sistem Pengajuan Sidang</strong></h2>
+                <h2><strong>Politeknik Astra</strong></h2>
+            </div>
         </div>
 
         <!-- Login Box -->
