@@ -61,5 +61,4 @@ thead th:nth-child(4) {
 .jadiBiru:hover {
     background-color: rgb(67, 54, 240);
     color: white;
-    padding: 5px;
 }
