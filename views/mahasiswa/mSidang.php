@@ -8,63 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../..x /assets/css/style.css">
     <title>Mahasiswa - Sidang</title>
-    <style>
-        .sideNav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 15vw;
-            height: 100%;
-            background-color:rgb(67, 54, 240);
-            padding: 2%;
-        }
-        .bodyContainer {
-            margin-left: 15vw;
-            padding: 5vh;
-            width: 80vw;
-        }
-        .bodyHeading {
-            color: rgb(67, 54, 240);
-            font-family: 'Poppins';
-            font-weight: 550;
-        }
-        table {
-            border-spacing: 0 10px;
-            border-collapse: separate;
-        }
-        thead {
-            border-bottom: 2px solid rgb(0, 0, 0) !important;
-        }
-        thead th {
-            padding: 0 1% 0 1%;
-        }
-        thead th:nth-child(1) {
-            text-align: center;
-        }
-        .isiTabel td {
-            margin-top: 1%;
-            padding: 1%;
-            font-family: 'Poppins';
-            font-weight: 400;
-        }
-        .isiTabel td:nth-child(4) {
-            border-radius: 0 20px 20px 0;
-        }
-        .isiTabel td:nth-child(1) {
-            border-radius: 20px 0 0 20px;
-            text-align: center;
-        }
-        .jadiBiru {
-            background-color: #f5f5f5;
-            color: black;
-            transition: 300ms;
-        }
-        .jadiBiru:hover {
-            background-color: rgb(67, 54, 240);
-            color: white;
-        }
-    </style>
 </head>
 <body>
     <div class="container-fluid">
