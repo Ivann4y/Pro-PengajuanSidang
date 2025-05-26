@@ -48,8 +48,8 @@
             height: 100vh;
             position: relative;
         }
-
-        .letak-logBox {
+        
+        .letak-LogBox {
             position: absolute;
             top: 50%;
             left: 50%;
