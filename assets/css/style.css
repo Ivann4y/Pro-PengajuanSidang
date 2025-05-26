@@ -20,43 +20,6 @@
   font-weight: 550;
 }
 
-table {
-  border-spacing: 0 10px;
-  border-collapse: separate;
-  width: 100%;
-}
-
-thead {
-  border-bottom: 2px solid rgb(0, 0, 0) !important;
-}
-
-thead th {
-  padding: 12px 15px;
-  text-align: left;
-}
-
-thead th:nth-child(1) {
-  text-align: center;
-  width: 5%;
-}
-
-thead th:nth-child(2) {
-  width: 30%;
-}
-
-thead th:nth-child(3) {
-  width: 20%;
-}
-
-thead th:nth-child(4) {
-  width: 20%;
-}
-
-thead th:nth-child(5) {
-  width: 10%;
-  text-align: center;
-}
-
 .isiTabel td {
   padding: 12px 15px;
   font-family: "Poppins";
