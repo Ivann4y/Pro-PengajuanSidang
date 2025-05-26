@@ -1,15 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/style.css">
-    <title>Mahasiswa - Sidang</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <title>Mahasiswa - Sidang</title>
+  <style>
+    table {
+        border-spacing: 0 10px;
+        border-collapse: separate;
+        width: 100%;
+        }
+
+        thead {
+        border-bottom: 2px solid rgb(0, 0, 0) !important;
+        }
+
+        thead th {
+        padding: 12px 15px;
+        text-align: left;
+        }
+
+        thead th:nth-child(1) {
+        text-align: center;
+        width: 5%;
+        }
+
+        thead th:nth-child(2) {
+        width: 30%;
+        }
+
+        thead th:nth-child(3) {
+        width: 20%;
+        }
+
+        thead th:nth-child(4) {
+        width: 20%;
+        }
+
+        thead th:nth-child(5) {
+        width: 5%;
+        text-align: center;
+        }
+
+        .isiTabel td {
+        padding: 12px 15px;
+        font-family: "Poppins";
+        font-weight: 400;
+        vertical-align: middle;
+        }
+
+        .isiTabel td:nth-child(1) {
+        border-radius: 20px 0 0 20px;
+        text-align: center;
+        }
+
+        .isiTabel td:nth-child(5) {
+        border-radius: 0 20px 20px 0;
+        text-align: center;
+        }
+  </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -17,7 +71,7 @@
         <div class="container-fluid bodyContainer">
             <div class="row">
                 <h2 class="bodyHeading">
-                    Nayaka Ivana Putra (Mahasiswa ID: 123456789) - Pengajuan Sidang Tugas Akhir
+                    Nayaka Ivana Putra (Mahasiswa)
                 </h2>
             </div><br><br>
             <div class="row">
@@ -67,6 +121,68 @@
         </div>
     </div>
 
-    <script src="../../assets/js/main.js"></script>
+  <script>
+    const dataTA = [
+      {
+        judul: "Sistem Pengajuan Sidang",
+        matkul: "Tugas Akhir",
+        dosen: "Rida Indah Fariani"
+      }
+    ];
+
+    const dataSemester = [
+      {
+        judul: "Implementasi Sistem Sidang",
+        matkul: "Pemrograman 2",
+        dosen: "Timotius Victory"
+      },
+      {
+        judul: "Deployment Sistem Sidang",
+        matkul: "Sistem Operasi",
+        dosen: "Suhendra"
+      }
+    ];
+
+    function renderTabel(id, data) {
+      const tbody = document.getElementById(id);
+      tbody.innerHTML = "";
+      data.forEach((item, index) => {
+        tbody.innerHTML += `
+          <tr class="isiTabel jadiBiru">
+            <td>${index + 1}</td>
+            <td>${item.judul}</td>
+            <td>${item.matkul}</td>
+            <td>${item.dosen}</td>
+            <td class="text-center">
+              <button class="btn btn-link p-0" type="button" title="Edit" disabled>
+                <i class="bi bi-pencil-square"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function switchMSidang() {
+      const ta = document.getElementById("mSidangTA");
+      const sem = document.getElementById("mSidangSem");
+      const btn = document.getElementById("ddMSidang");
+
+      if (ta.style.display !== "none") {
+        ta.style.display = "none";
+        sem.style.display = "";
+        btn.innerText = "Sidang Semester";
+      } else {
+        ta.style.display = "";
+        sem.style.display = "none";
+        btn.innerText = "Sidang TA";
+      }
+    }
+
+    window.onload = () => {
+      renderTabel("mSidangTA", dataTA);
+      renderTabel("mSidangSem", dataSemester);
+    };
+  </script>
 </body>
 </html>
