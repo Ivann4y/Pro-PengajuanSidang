@@ -92,6 +92,7 @@
                             <th scope="col">Judul</th>
                             <th scope="col">Mata Kuliah</th>
                             <th scope="col">Dosen Pembimbing</th>
+                            <th scope="col" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="mSidangTA">
