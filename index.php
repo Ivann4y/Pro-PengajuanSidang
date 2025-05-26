@@ -48,6 +48,14 @@
             height: 100vh;
             position: relative;
         }
+
+        .letak-logBox {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -63,13 +71,7 @@
         </div>
 
         <!-- Login Box -->
-        <div style="
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-        ">
+        <div class="letak-LogBox">
             <div class="container text-dark">
                 <div class="row justify-content-center">
                     <div class="col-md-5 text-center bg-white p-4 rounded rounded-5 shadow">
