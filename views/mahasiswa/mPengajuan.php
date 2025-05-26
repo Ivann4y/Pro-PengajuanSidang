@@ -71,7 +71,7 @@
         <div class="container-fluid bodyContainer">
             <div class="row">
                 <h2 class="bodyHeading">
-                    Nayaka Ivana Putra (Mahasiswa)vvv
+                    Nayaka Ivana Putra (Mahasiswa)
                 </h2>
             </div><br><br>
             <div class="row">
@@ -92,6 +92,7 @@
                             <th scope="col">Judul</th>
                             <th scope="col">Mata Kuliah</th>
                             <th scope="col">Dosen Pembimbing</th>
+                            <th scope="col" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="mSidangTA">
