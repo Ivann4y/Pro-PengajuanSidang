@@ -7,7 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="../../assets/css/style.css">
   <title>Mahasiswa - Pengajuan</title>
   <style>
     table {
@@ -70,9 +70,9 @@
         <div class="sideNav"></div>
         <div class="container-fluid bodyContainer">
             <div class="row">
-                <h2 class="bodyHeading">
-                    <b>Nayaka Ivana Putra (Mahasiswa)</b>
-                </h2>
+              <h2 class="bodyHeading">
+                <b>Nayaka Ivana Putra (Mahasiswa)</b>
+              </h2>
             </div><br><br>
             <div class="row">
                 <div class="dropdown">
@@ -155,7 +155,7 @@
             <td>${item.matkul}</td>
             <td>${item.dosen}</td>
             <td class="text-center">
-              <button class="btn btn-link p-0" type="button" title="Edit" disabled>
+              <button class="btn btn-link p-0" type="button" title="Edit" onclick="editData(${index}, '${id}')">
                 <i class="bi bi-pencil-square"></i>
               </button>
             </td>
@@ -163,6 +163,11 @@
         `;
       });
     }
+
+    function editData(index, jenis) {
+    window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
+    }
+
 
     function switchMSidang() {
       const ta = document.getElementById("mSidangTA");
