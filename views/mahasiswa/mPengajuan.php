@@ -17,7 +17,7 @@
         <div class="container-fluid bodyContainer">
             <div class="row">
                 <h2 class="bodyHeading">
-                    Nayaka Ivana Putra (Mahasiswa)
+                    Nayaka Ivana Putra (Mahasiswa ID: 123456789) - Pengajuan Sidang Tugas Akhir
                 </h2>
             </div><br><br>
             <div class="row">
