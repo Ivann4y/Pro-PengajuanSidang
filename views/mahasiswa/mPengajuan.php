@@ -8,11 +8,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../assets/css/style.css" />
-<<<<<<< HEAD
-  <title>Mahasiswa - Peng</title>
-=======
   <title>Mahasiswa - Pengajuan</title>
->>>>>>> f49503fdb125b7cc0a39ef25db5807b991905603
   <style>
     table {
         border-spacing: 0 10px;
