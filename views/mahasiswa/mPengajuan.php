@@ -71,7 +71,7 @@
         <div class="container-fluid bodyContainer">
             <div class="row">
                 <h2 class="bodyHeading">
-                    Nayaka Ivana Putra (Mahasiswa)
+                    Nayaka Ivana Putra (Mahasiswa)vvv
                 </h2>
             </div><br><br>
             <div class="row">
