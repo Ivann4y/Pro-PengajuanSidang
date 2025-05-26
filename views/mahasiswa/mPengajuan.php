@@ -9,6 +9,61 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../assets/css/style.css" />
   <title>Mahasiswa - Sidang</title>
+  <style>
+    table {
+        border-spacing: 0 10px;
+        border-collapse: separate;
+        width: 100%;
+        }
+
+        thead {
+        border-bottom: 2px solid rgb(0, 0, 0) !important;
+        }
+
+        thead th {
+        padding: 12px 15px;
+        text-align: left;
+        }
+
+        thead th:nth-child(1) {
+        text-align: center;
+        width: 5%;
+        }
+
+        thead th:nth-child(2) {
+        width: 30%;
+        }
+
+        thead th:nth-child(3) {
+        width: 20%;
+        }
+
+        thead th:nth-child(4) {
+        width: 20%;
+        }
+
+        thead th:nth-child(5) {
+        width: 5%;
+        text-align: center;
+        }
+
+        .isiTabel td {
+        padding: 12px 15px;
+        font-family: "Poppins";
+        font-weight: 400;
+        vertical-align: middle;
+        }
+
+        .isiTabel td:nth-child(1) {
+        border-radius: 20px 0 0 20px;
+        text-align: center;
+        }
+
+        .isiTabel td:nth-child(5) {
+        border-radius: 0 20px 20px 0;
+        text-align: center;
+        }
+  </style>
 </head>
 <body>
   <div class="container-fluid">
