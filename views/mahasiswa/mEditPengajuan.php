@@ -28,7 +28,7 @@
     <div class="sideNav"></div>
     <div class="container-fluid bodyContainer">
       <div class="row">
-        <h2 class="bodyHeading"><b>Nayaka Ivanna Putra (Mahasiswa)</b></h2>
+        <h2 class="bodyHeading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
       </div><br>
 
       <div class="row">
@@ -55,14 +55,39 @@
                 <option value="B">RPL 1B</option>
               </select>
             </div>
-            <div class="mb-3">
-              <label for="dokLaporan" class="form-label">Dokumen Laporan Sidang</label>
-              <input class="form-control" type="file" id="dokLaporan" name="dokLaporan" accept=".pdf,.docx,.pptx,.zip" />
-            </div>
-            <div class="mb-3">
-              <label for="dokPendukung" class="form-label">Dokumen Pendukung Sidang</label>
-              <input class="form-control" type="file" id="dokPendukung" name="dokPendukung" accept=".pdf,.docx,.pptx,.zip" />
-            </div>
+            <div class="row">
+  <div class="col-md-6 mb-4">
+    <div class="p-4 bg-light text-center border rounded">
+      <h6><b>Dokumen Laporan Sidang</b></h6>
+      <label for="laporanSidang" class="d-block my-3">
+        <i class="bi bi-upload" style="font-size: 2rem;"></i><br>
+        Unggah berkas revisi dengan format pdf, docx, pptx, dan zip
+      </label>
+      <input type="file" id="laporanSidang" name="laporanSidang" class="form-control" hidden />
+    </div>
+  </div>
+
+  <div class="col-md-6 mb-4">
+    <div class="p-4 bg-light text-center border rounded">
+      <h6><b>Dokumen Pendukung Sidang</b></h6>
+      <label for="dokPendukung" class="d-block my-3">
+        <i class="bi bi-upload" style="font-size: 2rem;"></i><br>
+        Unggah berkas revisi dengan format pdf, docx, pptx, dan zip
+      </label>
+      <input type="file" id="dokPendukung" name="dokPendukung" class="form-control" hidden />
+     </div>
+    </div>
+  </div>
+  <style>
+    label[for] {
+      cursor: pointer;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+
             <a href="javascript:history.back()" class="btn btn-primary ms-2">Kirim</a>
             <button type="submit" class="btn btn-secondary">Simpan</button>
           </form>
