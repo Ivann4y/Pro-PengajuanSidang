@@ -57,7 +57,6 @@
 
         .isiTabel td:nth-child(4) {
         border-radius: 0 20px 20px 0;
-        text-align: center;
         }
     </style>
 </head>
