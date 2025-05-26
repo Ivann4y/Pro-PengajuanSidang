@@ -66,7 +66,6 @@
   </style>
 </head>
 <body>
-<<<<<<< HEAD
     <div class="container-fluid">
         <div class="sideNav"></div>
         <div class="container-fluid bodyContainer">
@@ -121,51 +120,6 @@
                 </table>
             </div>
         </div>
-=======
-  <div class="container-fluid">
-    <div class="sideNav"></div>
-    <div class="container-fluid bodyContainer">
-      <div class="row">
-        <div class="col-12">
-          <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
-        </div>
-      </div><br>
-
-      <div class="row">
-        <div class="col-12 col-md-6">
-          <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-              Sidang TA
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
-            </ul>
-          </div>
-        </div>
-      </div><br>
-
-      <div class="row">
-        <div class="col-12">
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">No</th>
-                  <th scope="col">Judul</th>
-                  <th scope="col">Mata Kuliah</th>
-                  <th scope="col">Dosen Pembimbing</th>
-                  <th scope="col" class="text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="mSidangTA"></tbody>
-              <tbody id="mSidangSem" style="display: none;"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <button class="btn btn-primary tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
->>>>>>> 1d9cc30956814b28750fa349ca1e82b5677c5b4d
     </div>
 
   <script>
