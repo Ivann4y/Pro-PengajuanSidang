@@ -164,7 +164,7 @@
       });
     }
 
-    function goToEditPage(index, jenis) {
+    function editData(index, jenis) {
     window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
     }
 
