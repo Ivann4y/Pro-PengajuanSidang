@@ -155,7 +155,7 @@
             <td>${item.matkul}</td>
             <td>${item.dosen}</td>
             <td class="text-center">
-              <button class="btn btn-link p-0" type="button" title="Edit" disabled>
+              <button class="btn btn-link p-0" type="button" title="Edit" onclick="editData(${index}, '${id}')">
                 <i class="bi bi-pencil-square"></i>
               </button>
             </td>
@@ -163,6 +163,11 @@
         `;
       });
     }
+
+    function goToEditPage(index, jenis) {
+    window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
+    }
+
 
     function switchMSidang() {
       const ta = document.getElementById("mSidangTA");
