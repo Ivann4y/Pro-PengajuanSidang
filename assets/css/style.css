@@ -17,7 +17,7 @@
 .bodyHeading {
   color: rgb(67, 54, 240);
   font-family: "Poppins";
-  font-weight: 550;
+  font-weight: 500;
 }
 
 .jadiBiru {
@@ -46,12 +46,12 @@
     padding: 0;
     display: none;
   }
-  
+
   .bodyContainer {
     margin-left: 0;
     width: 100%;
   }
-  
+
   thead th:nth-child(1),
   thead th:nth-child(5) {
     width: auto;
