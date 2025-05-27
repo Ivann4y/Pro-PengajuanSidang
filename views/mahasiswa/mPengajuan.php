@@ -66,62 +66,6 @@
   </style>
 </head>
 <body>
-<<<<<<< HEAD
-    <div class="container-fluid">
-        <div class="sideNav"></div>
-        <div class="container-fluid bodyContainer">
-            <div class="row">
-              <h2 class="bodyHeading">
-                <b>Nayaka Ivana Putra (Mahasiswa)</b>
-              </h2>
-            </div><br><br>
-            <div class="row">
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                        Sidang TA
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
-                    </ul>
-                </div>
-            </div><br><br>
-            <div class="row">
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col">No</th>
-                            <th scope="col">Judul</th>
-                            <th scope="col">Mata Kuliah</th>
-                            <th scope="col">Dosen Pembimbing</th>
-                            <th scope="col" class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="mSidangTA">
-                        <tr class="isiTabel jadiBiru">
-                            <td>1</td>
-                            <td>Sistem Pengajuan Sidang</td>
-                            <td>Tugas Akhir</td>
-                            <td>Rida Indah Fariani</td>
-                        </tr>
-                    </tbody>
-                    <tbody id="mSidangSem" style="display: none;">
-                        <tr class="isiTabel jadiBiru">
-                            <td>1</td>
-                            <td>Implementasi Sistem Sidang</td>
-                            <td>Pemrograman 2</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                        <tr class="isiTabel jadiBiru">
-                            <td>2</td>
-                            <td>Deployment Sistem Sidang</td>
-                            <td>Sistem Operasi</td>
-                            <td>Suhendra</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-=======
   <div class="container-fluid">
     <div class="sideNav"></div>
     <div class="container-fluid bodyContainer">
@@ -165,7 +109,6 @@
       </div>
 
       <button class="btn btn-primary tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
->>>>>>> 1d9cc30956814b28750fa349ca1e82b5677c5b4d
     </div>
 
   <script>
