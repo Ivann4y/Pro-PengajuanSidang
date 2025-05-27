@@ -66,7 +66,7 @@
                 <h2 class="text-heading">
                     Nayaka Ivana Putra (Mahasiswa)
                 </h2>
-            </div><br><br>
+            </div><br>
             <div class="row">
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
@@ -76,8 +76,8 @@
                         <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
                     </ul>
                 </div>
-            </div><br><br>
-            <div class="row">
+            </div><br>
+            <div class="row table-responsive">
                 <table>
                     <thead>
                         <tr>
