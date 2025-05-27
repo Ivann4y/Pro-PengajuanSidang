@@ -1,3 +1,9 @@
+<?php
+  $judul = $_GET['judul'] ?? '';
+  $matkul = $_GET['matkul'] ?? '';
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,15 +42,26 @@
       <form action="#" method="post">
         <div class="mb-3">
           <label for="judul" class="form-label">Judul Sidang</label>
-          <input type="text" class="form-control" id="judul" name="judul" placeholder="Masukkan Judul Sidang" />
+          <input type="text" class="form-control" id="judul" name="judul" value="<?php echo $judul?>" placeholder="Masukkan Judul Sidang" />
         </div>
         <div class="mb-3">
           <label for="matkul" class="form-label">Mata Kuliah</label>
           <select class="form-select" id="matkul" name="matkul">
             <option selected disabled>Pilih Mata Kuliah</option>
-            <option value="Tugas Akhir">Tugas Akhir</option>
-            <option value="Pemrograman 2">Pemrograman 2</option>
-            <option value="Sistem Operasi">Sistem Operasi</option>
+            <option value="Tugas Akhir"<?php if ($matkul == 'Tugas Akhir') {
+                echo ' selected';
+              }
+              ?> >Tugas Akhir</option>
+            <option value="Pemrograman 2" <?php if ($matkul == 'Pemrograman 2') {
+                echo ' selected';
+              }
+              ?>
+              >Pemrograman 2</option>
+            <option value="Sistem Operasi"<?php if ($matkul == 'Sistem Operasi') {
+                echo ' selected';
+              }
+              ?>
+              >Sistem Operasi</option>
           </select>
         </div>
         <div class="mb-3">
@@ -81,7 +98,7 @@
         </div>
 
         <div class="d-flex justify-content-end gap-2 mt-3">
-          <button type="submit" class="btn btn-secondary">Simpan</button>
+          <button type="button" class="btn btn-secondary" onclick="history.back()">Simpan</button>
           <a href="javascript:history.back()" class="btn btn-primary">Kirim</a>
         </div>
       </form>
