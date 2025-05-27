@@ -47,13 +47,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             <div id="carouselExample" class="carousel slide">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="../../assets/img/contogImg.png" class="d-block w-100" alt="...">
+                        <img src="../../assets/img/img1.png" class="d-block w-100" alt="...">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/foto2.jpg" class="d-block w-100" alt="...">
+                        <img src="../../assets/img/img2.png" class="d-block w-100" alt="...">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/foto3.jpg" class="d-block w-100" alt="...">
+                        <img src="../../assets/img/img3.png" class="d-block w-100" alt="...">
                     </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
