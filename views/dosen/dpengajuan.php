@@ -77,11 +77,11 @@
             </div><br><br>
             <div class="row">
                 <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddDPengajuan">
                         Sidang TA
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
+                        <li><a class="dropdown-item" href="#" id="ddDSidangMenu" onclick="switchDPengajuan();">Sidang Semester</a></li>
                     </ul>
                 </div>
             </div><br><br>
@@ -134,19 +134,43 @@
                             <td>Pemograman 2</td>
                             <td>Timotius Victory</td>
                         </tr>
-                        <tr class="isiTabel jadiBiru">
+                        <!-- <tr class="isiTabel jadiBiru">
                             <td>003</td>
                             <td>0920240055</td>
                             <td>Nur Widya Astuti</td>
                             <td>Pemograman 2</td>
                             <td>Timotius Victory</td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+<script>
+           
+let isTA = true;
 
+function switchDPengajuan() {
+    const taTable = document.getElementById('dPengajuanTA');
+    const semTable = document.getElementById('dPengajuanSem');
+    const dropdownButton = document.getElementById('ddDPengajuan');
+    const dropdownMenuItem = document.getElementById('ddDSidangMenu');
+
+    if (isTA) {
+        taTable.style.display = 'none';
+        semTable.style.display = 'table-row-group';
+        dropdownButton.textContent = 'Sidang Semester';
+        dropdownMenuItem.textContent = 'Sidang TA';
+    } else {
+        taTable.style.display = 'table-row-group';
+        semTable.style.display = 'none';
+        dropdownButton.textContent = 'Sidang TA';
+        dropdownMenuItem.textContent = 'Sidang Semester';
+    }
+
+    isTA = !isTA;
+}
+    </script>
     <script src="../../assets/js/main.js"></script>
 </body>
 </html>

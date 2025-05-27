@@ -1,3 +1,9 @@
+<?php
+  $judul = $_GET['judul'] ?? '';
+  $matkul = $_GET['matkul'] ?? '';
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../assets/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <title>Edit Pengajuan Sidang</title>
   <style>
     body {
@@ -28,7 +35,8 @@
     <div class="sideNav"></div>
     <div class="container-fluid bodyContainer">
       <div class="row">
-        <h2 class="bodyHeading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
+        <div class="col-12">
+        <h2 class="text-heading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
         <h5 class="fw-bold mt-4 mb-3">Tambah Sidang Semester</h5>
         <hr>
       </div>
@@ -36,15 +44,26 @@
       <form action="#" method="post">
         <div class="mb-3">
           <label for="judul" class="form-label">Judul Sidang</label>
-          <input type="text" class="form-control" id="judul" name="judul" placeholder="Masukkan Judul Sidang" />
+          <input type="text" class="form-control" id="judul" name="judul" value="<?php echo $judul?>" placeholder="Masukkan Judul Sidang" />
         </div>
         <div class="mb-3">
           <label for="matkul" class="form-label">Mata Kuliah</label>
           <select class="form-select" id="matkul" name="matkul">
             <option selected disabled>Pilih Mata Kuliah</option>
-            <option value="Tugas Akhir">Tugas Akhir</option>
-            <option value="Pemrograman 2">Pemrograman 2</option>
-            <option value="Sistem Operasi">Sistem Operasi</option>
+            <option value="Tugas Akhir"<?php if ($matkul == 'Tugas Akhir') {
+                echo ' selected';
+              }
+              ?> >Tugas Akhir</option>
+            <option value="Pemrograman 2" <?php if ($matkul == 'Pemrograman 2') {
+                echo ' selected';
+              }
+              ?>
+              >Pemrograman 2</option>
+            <option value="Sistem Operasi"<?php if ($matkul == 'Sistem Operasi') {
+                echo ' selected';
+              }
+              ?>
+              >Sistem Operasi</option>
           </select>
         </div>
         <div class="mb-3">
