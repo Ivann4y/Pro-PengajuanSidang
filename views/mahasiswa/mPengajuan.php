@@ -153,17 +153,12 @@
       });
     }
 
-<<<<<<< HEAD
-    function editData(index, jenis) {
-    window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
-=======
     function editData(index, jenis, judul, matkul) {
       window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}&judul=${judul}&matkul=${matkul}`;
     }
 
     function tambahData() {
       window.location.href = `mEditPengajuan.php`;
->>>>>>> 1d9cc30956814b28750fa349ca1e82b5677c5b4d
     }
 
 
