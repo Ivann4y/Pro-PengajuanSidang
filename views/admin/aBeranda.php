@@ -217,8 +217,8 @@
 <body>
   <div class="sideNav">
     <h4><img src="logo-astratech.png" alt="ASTRAtech Logo"></h4>
-    <div class="nav-item active">Beranda</div>
-    <div class="nav-item" id="penjadwalanNav">Penjadwalan</div>
+    <div href="aBeranda.php" class="nav-item active" id="berandaNav" onclick="location.href='aBeranda.php'">Beranda</div>
+    <div href="aPenjadwalan.php" class="nav-item" id="penjadwalanNav" onclick="location.href='aPenjadwalan.php'">Penjadwalan</div>
     <div class="nav-item">Daftar Sidang</div>
     <div class="nav-item">Keluar</div>
   </div>
@@ -235,7 +235,7 @@
    
     <div class="row my-4">
       <div class="col-md-3 mb-3">
-        <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='#penjadwalanNav'">
+        <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='aPenjadwalan.php'">
           <div class="statusTitle">Penjadwalan</div>
           <div class="d-flex align-items-center">
             <div class="statusNumber me-3">4</div>
@@ -258,18 +258,18 @@
       <div class="col-md-6 mb-3">
         <div class="notifBox">
           <h5>Notifikasi</h5>
-          <div class="notif-all-check" onclick="markAllRead()">✔</div>
+          <div class="notif-all-check" onclick="markAllRead()"><i class="fa-solid fa-check-double"></i></div>
           <div class="notifItem">
             Sidang PRG telah disetujui oleh dosen pembimbing
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
           <div class="notifItem">
             Sidang BasDat telah selesai dinilai
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
           <div class="notifItem">
             Sidang TA Nayaka Ivana Putra telah selesai dinilai
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
         </div>
       </div>
