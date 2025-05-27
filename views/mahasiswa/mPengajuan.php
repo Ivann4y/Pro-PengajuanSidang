@@ -11,58 +11,73 @@
   <title>Mahasiswa - Pengajuan</title>
   <style>
     table {
-        border-spacing: 0 10px;
-        border-collapse: separate;
-        width: 100%;
-        }
+      border-spacing: 0 10px;
+      border-collapse: separate;
+      width: 100%;
+    }
 
-        thead {
-        border-bottom: 2px solid rgb(0, 0, 0) !important;
-        }
+    thead {
+      border-bottom: 2px solid rgb(0, 0, 0) !important;
+    }
 
-        thead th {
-        padding: 12px 15px;
-        text-align: left;
-        }
+    thead th {
+      padding: 12px 15px;
+      text-align: left;
+    }
 
-        thead th:nth-child(1) {
-        text-align: center;
-        width: 5%;
-        }
+    thead th:nth-child(1) {
+      text-align: center;
+      width: 5%;
+    }
 
-        thead th:nth-child(2) {
-        width: 30%;
-        }
+    thead th:nth-child(2) {
+      width: 30%;
+    }
 
-        thead th:nth-child(3) {
-        width: 20%;
-        }
+    thead th:nth-child(3) {
+      width: 20%;
+    }
 
-        thead th:nth-child(4) {
-        width: 20%;
-        }
+    thead th:nth-child(4) {
+      width: 20%;
+    }
 
-        thead th:nth-child(5) {
-        width: 5%;
-        text-align: center;
-        }
+    thead th:nth-child(5) {
+      width: 5%;
+      text-align: center;
+    }
 
-        .isiTabel td {
-        padding: 12px 15px;
-        font-family: "Poppins";
-        font-weight: 400;
-        vertical-align: middle;
-        }
+    .isiTabel td {
+      padding: 12px 15px;
+      font-family: "Poppins", sans-serif;
+      font-weight: 400;
+      vertical-align: middle;
+    }
 
-        .isiTabel td:nth-child(1) {
-        border-radius: 20px 0 0 20px;
-        text-align: center;
-        }
+    .isiTabel td:nth-child(1) {
+      border-radius: 20px 0 0 20px;
+      text-align: center;
+    }
 
-        .isiTabel td:nth-child(5) {
-        border-radius: 0 20px 20px 0;
-        text-align: center;
-        }
+    .isiTabel td:nth-child(5) {
+      border-radius: 0 20px 20px 0;
+      text-align: center;
+    }
+
+    .tambah-sidang-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      transition: all 0.2s ease;
+      padding: 10px 20px;
+      font-family: "Poppins", sans-serif;
+      border-radius: 10px;
+    }
+
+    .tambah-sidang-btn:hover {
+      padding-top: 14px;
+      padding-bottom: 14px;
+    }
   </style>
 </head>
 <body>
@@ -73,7 +88,7 @@
         <div class="col-12">
           <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
         </div>
-      </div><br>
+      </div><br><br>
 
       <div class="row">
         <div class="col-12 col-md-6">
@@ -86,7 +101,7 @@
             </ul>
           </div>
         </div>
-      </div><br>
+      </div><br><br>
 
       <div class="row">
         <div class="col-12">
@@ -110,6 +125,7 @@
 
       <button class="btn btn-primary tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
     </div>
+  </div>
 
   <script>
     const dataTA = [
@@ -153,33 +169,30 @@
       });
     }
 
-<<<<<<< HEAD
-    function editData(index, jenis) {
-    window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
-=======
     function editData(index, jenis, judul, matkul) {
       window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}&judul=${judul}&matkul=${matkul}`;
     }
 
     function tambahData() {
       window.location.href = `mEditPengajuan.php`;
->>>>>>> 1d9cc30956814b28750fa349ca1e82b5677c5b4d
     }
-
 
     function switchMSidang() {
       const ta = document.getElementById("mSidangTA");
       const sem = document.getElementById("mSidangSem");
       const btn = document.getElementById("ddMSidang");
+      const menu = document.getElementById("ddMSidangMenu");
 
       if (ta.style.display !== "none") {
         ta.style.display = "none";
         sem.style.display = "";
         btn.innerText = "Sidang Semester";
+        menu.innerText = "Sidang TA";
       } else {
         ta.style.display = "";
         sem.style.display = "none";
         btn.innerText = "Sidang TA";
+        menu.innerText = "Sidang Semester";
       }
     }
 

@@ -28,6 +28,14 @@
     input[type="file"] {
       display: none;
     }
+
+    .form-control, .form-select {
+      font-family: "Poppins", sans-serif;
+      font-size: 16px;
+      padding: 12px 15px;
+      border-radius: 12px;
+}
+
   </style>
 </head>
 <body>
