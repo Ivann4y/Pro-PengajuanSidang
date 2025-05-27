@@ -203,8 +203,8 @@
 <body>
   <div class="sideNav">
     <h4><img src="logo-astratech.png" alt="ASTRAtech Logo"></h4>
-    <div class="nav-item active">Beranda</div>
-    <div class="nav-item" id="penjadwalanNav">Penjadwalan</div>
+    <div href="aBeranda.php" class="nav-item active" id="berandaNav" onclick="location.href='aBeranda.php'">Beranda</div>
+    <div href="aPenjadwalan.php" class="nav-item" id="penjadwalanNav" onclick="location.href='aPenjadwalan.php'">Penjadwalan</div>
     <div class="nav-item">Daftar Sidang</div>
     <div class="nav-item">Keluar</div>
   </div>
@@ -218,7 +218,7 @@
    
     <div class="row my-4">
       <div class="col-md-3 mb-3">
-        <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='#penjadwalanNav'">
+        <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='aPenjadwalan.php'">
           <div class="statusTitle">Penjadwalan</div>
           <div class="d-flex align-items-center">
             <div class="statusNumber me-3">4</div>
