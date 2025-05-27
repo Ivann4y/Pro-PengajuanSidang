@@ -1,7 +1,13 @@
 <?php
-// Bagian 1: Logika PHP untuk Menangani Upload File
+// Langkah 1: Mulai session di baris paling pertama
+session_start();
 
-$pesan = ''; // Variabel untuk menyimpan pesan feedback (sukses/error)
+// Langkah 3: Cek apakah ada pesan dari proses sebelumnya, lalu hapus.
+$pesan = '';
+if (isset($_SESSION['pesan'])) {
+    $pesan = $_SESSION['pesan'];
+    unset($_SESSION['pesan']); // Hapus pesan dari session agar tidak muncul lagi saat di-refresh
+}
 
 // Cek apakah form telah disubmit menggunakan metode POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -9,55 +15,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Cek apakah ada file yang di-upload melalui input bernama 'fileInput'
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
         
-        $folder_target = "uploads/"; // Nama folder tempat menyimpan file
+        $folder_target = "uploads/";
         if (!file_exists($folder_target)) {
-            mkdir($folder_target, 0777, true); // Buat folder jika belum ada
+            mkdir($folder_target, 0777, true);
         }
 
-        $file_asli = basename($_FILES["fileInput"]["name"]); // Nama file asli dari user
-        
-        // Buat nama file baru yang unik untuk menghindari nama yang sama dan karakter aneh
+        $file_asli = basename($_FILES["fileInput"]["name"]);
         $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
         $file_unik = uniqid('revisi_', true) . '.' . $ekstensi_file;
         $path_target = $folder_target . $file_unik;
         
-        // --- VALIDASI FILE ---
-
-        // 1. Cek ekstensi file yang diizinkan
         $ekstensi_diizinkan = array("pdf", "docx", "pptx", "zip");
         if (!in_array($ekstensi_file, $ekstensi_diizinkan)) {
+            // Untuk pesan error, kita langsung tampilkan saja tanpa redirect
             $pesan = "Error: Format file tidak diizinkan. Hanya .pdf, .docx, .pptx, dan .zip yang boleh diunggah.";
         }
         
-        // 2. Cek ukuran file (misalnya, maks 5MB)
-        // 5 * 1024 * 1024 = 5,242,880 bytes
         elseif ($_FILES["fileInput"]["size"] > 5242880) {
             $pesan = "Error: Ukuran file terlalu besar. Maksimal 5 MB.";
         }
         
-        // Jika semua validasi lolos
         else {
-            // Pindahkan file dari lokasi sementara ke folder 'uploads/'
             if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
-                $pesan = "Sukses: File ". htmlspecialchars($file_asli) . " berhasil diunggah.";
-                // Di dunia nyata, Anda akan menyimpan $path_target ke database di sini
+                
+                // Langkah 2: Jika SUKSES, simpan pesan ke session dan lakukan redirect
+                $_SESSION['pesan'] = "Sukses: File ". htmlspecialchars($file_asli) . " berhasil diunggah.";
+                header("Location: index.php"); // Perintahkan browser untuk redirect
+                exit(); // Hentikan eksekusi script setelah redirect
+
             } else {
                 $pesan = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
             }
         }
 
     } elseif (isset($_FILES["fileInput"])) {
-        // Menangani error upload yang lebih spesifik jika perlu
         switch ($_FILES["fileInput"]["error"]) {
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                $pesan = "Error: Ukuran file melebihi batas yang diizinkan.";
-                break;
             case UPLOAD_ERR_NO_FILE:
                 $pesan = "Error: Tidak ada file yang dipilih.";
                 break;
             default:
-                $pesan = "Error: Terjadi kesalahan yang tidak diketahui saat mengunggah.";
+                $pesan = "Error: Terjadi kesalahan saat mengunggah.";
                 break;
         }
     }
@@ -71,8 +68,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <title>Detail Sidang</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="stylee.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
-    body {
+    /* =================================
+   Struktur Utama & Sidebar
+   ================================= */
+body {
   background-color: #f8f9fa;
   font-family: "Segoe UI", sans-serif;
 }
@@ -154,7 +156,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 #fileNameDisplay {
   margin-top: 1rem;
   margin-bottom: 1rem;
-  min-height: 1.2rem;
+  font-weight: 600; /* Membuat nama file tebal */
+  min-height: 1.5rem; /* Cadangkan ruang agar layout tidak bergeser */
+  color: #495057; /* Warna teks lebih gelap */
 }
 
 /* =================================
@@ -203,6 +207,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   padding: 10px 30px;
   font-weight: bold;
 }
+
+/* =================================
+   STYLE BARU SESUAI DESAIN MODERN
+   ================================= */
+
+/* Card utama untuk bagian revisi */
+.revision-card {
+  background-color: white;
+  border-radius: 1.5rem; /* 24px */
+  padding: 2rem; /* 32px */
+  border: 1px solid #e9ecef;
+}
+
+/* Area upload yang baru */
+.upload-area-v2 {
+  background-color: #f8f9fa;
+  border: 2px dashed #e0e0e0;
+  border-radius: 1rem; /* 16px */
+  padding: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.upload-area-v2:hover {
+  background-color: #f1f3f5;
+}
+
+/* Tombol Kembali yang baru (di luar card) */
+/* Style Tombol Aksi Utama (dipakai untuk Kembali & Kirim) */
+.btn-custom-primary {
+  background-color: #4f46e5;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px; /* Membuatnya berbentuk pil */
+  padding: 0.75rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* Jarak antara ikon dan teks */
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-custom-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+}
+
+/* Style khusus untuk saat tombol dinonaktifkan */
+.btn-custom-primary:disabled {
+  background-color: #e2e8f0;
+  color: #94a3b8;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
 </style>
 </head>
 <body>
@@ -237,43 +300,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </p>
     </div>
 
-    <h5 class="mt-5 mb-3 fw-bold text-primary">Dokumen Revisi</h5>
+    <div class="revision-card shadow-sm">
+        <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
+        <form id="revisionForm" action="index.php" method="POST" enctype="multipart/form-data">
+            <label for="fileInput" class="upload-area-v2" id="uploadArea">
+                <div id="initial-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#ced4da" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16"><path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 1.5v2A1.5 1.5 0 0 0 11 5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v1.5z"/></svg>
+                </div>
+                <div id="selected-state" class="d-none">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.707 0H9.293zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 10.5a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 12a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/></svg>
+                </div>
+            </label>
+            <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
+            <p class="text-center text-muted small mt-2" id="upload-prompt-text">Unggah berkas revisi dengan format pdf, docx, pptx, dan zip</p>
+            <div class="text-center mt-3"><p id="fileNameDisplay" class="fw-bold mb-0"></p></div>
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-custom-primary" id="submitBtn" disabled>Kirim</button>
+            </div>
+        </form>
+    </div>
 
-    <?php
-    if (!empty($pesan)):
-      $alert_type = (strpos(strtolower($pesan), 'sukses') !== false) ? 'alert-success' : 'alert-danger';
-    ?>
-      <div class="alert <?php echo $alert_type; ?>" role="alert">
-        <?php echo $pesan; ?>
-      </div>
-    <?php endif; ?>
-
-    <form id="revisionForm" action="index.php" method="POST" enctype="multipart/form-data">
-      <div class="upload-section mb-3">
-        <label for="fileInput" class="upload-box text-center">
-          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828911.png" width="40" alt="Upload Icon" class="mb-2" />
-          <p class="m-0">Unggah berkas revisi dengan format pdf, docx, pptx, dan zip</p>
-        </label>
-        <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
-      </div>
-
-      <p id="fileNameDisplay" class="text-center text-muted small"></p>
-
-      <div class="d-flex justify-content-between align-items-center mt-4">
-          
-          <button type="button" id="btnKembali" class="btn btn-outline-secondary d-inline-flex align-items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-              </svg>
-              Kembali
-          </button>
-      
-          <button type="submit" class="btn btn-secondary btn-kirim" id="submitBtn" disabled>
-              Kirim
-          </button>
-      
-      </div>
-      </form>
+    <div class="mt-4">
+        <button type="button" id="btnKembali" class="btn btn-custom-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
+            Kembali
+        </button>
+    </div>
 
     <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -292,58 +344,124 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa ilmiah yang baku dan konsisten.
             </p>
           </div>
-          <div class="modal-footer justify-content-end">
-            <button type="button" class="btn btn-dark px-4" data-bs-dismiss="modal">Tutup</button>
+          <div class="modal-footer border-0 justify-content-end">
+            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+     </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js.js"></script>
+
+  <?php
+  if (!empty($pesan) && strpos(strtolower($pesan), 'sukses') !== false):
+  ?>
+  <script>
+      Swal.fire({
+          title: 'Berhasil!',
+          text: 'Dokumen Anda telah berhasil diunggah.',
+          icon: 'success',
+          confirmButtonColor: '#007bff'
+      });
+  </script>
+  <?php endif; ?>
+  
+</body>
+</html>
 
   <script>
   document.addEventListener('DOMContentLoaded', function() {
 
-  const fileInput = document.getElementById('fileInput');
-  const submitBtn = document.getElementById('submitBtn');
-  const uploadBox = document.querySelector('.upload-box');
-  const fileNameDisplay = document.getElementById('fileNameDisplay');
-  const revisionForm = document.getElementById('revisionForm');
-  
-  if (!fileInput || !submitBtn || !uploadBox || !fileNameDisplay || !revisionForm) {
-    console.error("Peringatan: Salah satu elemen HTML yang dibutuhkan (fileInput, submitBtn, uploadBox, fileNameDisplay, atau revisionForm) tidak ditemukan. Pastikan ID dan Class sudah benar di file HTML.");
-    return;
-  }
-  
-  const originalUploadBoxContent = uploadBox.innerHTML;
-  const fileSelectedContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/><path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg>`;
+    // =================================================
+    // BAGIAN 1: PENGAMBILAN ELEMEN DARI HTML
+    // =================================================
+    const fileInput = document.getElementById('fileInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const revisionForm = document.getElementById('revisionForm');
+    const btnKembali = document.getElementById('btnKembali');
+    
+    // Elemen spesifik untuk UI upload
+    const initialState = document.getElementById('initial-state');
+    const selectedState = document.getElementById('selected-state');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    
+    // Cek apakah semua elemen penting ada
+    if (!fileInput || !submitBtn || !revisionForm || !initialState || !selectedState || !fileNameDisplay) {
+        console.error("Peringatan: Salah satu elemen HTML untuk fungsionalitas upload tidak ditemukan. Pastikan semua ID sudah benar.");
+        return; // Hentikan script jika ada yang kurang
+    }
 
-  fileInput.addEventListener('change', function() {
-    if (this.files.length > 0) {
-      const selectedFile = this.files[0];
-      uploadBox.innerHTML = fileSelectedContent;
-      uploadBox.classList.add('file-selected');
-      fileNameDisplay.textContent = selectedFile.name;
-      submitBtn.disabled = false;
-      submitBtn.classList.remove('btn-secondary');
-      submitBtn.classList.add('btn-primary');
-    } else {
-      uploadBox.innerHTML = originalUploadBoxContent;
-      uploadBox.classList.remove('file-selected');
-      fileNameDisplay.textContent = '';
-      submitBtn.disabled = true;
-      submitBtn.classList.remove('btn-primary');
-      submitBtn.classList.add('btn-secondary');
+    // =================================================
+    // BAGIAN 2: LOGIKA SAAT PENGGUNA MEMILIH FILE
+    // =================================================
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            // --- JIKA FILE DIPILIH ---
+            const selectedFile = this.files[0];
+
+            // Ganti ikon
+            initialState.classList.add('d-none');
+            selectedState.classList.remove('d-none');
+
+            // Tampilkan nama file
+            fileNameDisplay.textContent = selectedFile.name;
+
+            // Aktifkan tombol Kirim (CSS akan otomatis mengubah stylenya)
+            submitBtn.disabled = false;
+
+        } else {
+            // --- JIKA PEMILIHAN DIBATALKAN ---
+            
+            // Kembalikan ikon
+            initialState.classList.remove('d-none');
+            selectedState.classList.add('d-none');
+
+            // Kosongkan nama file
+            fileNameDisplay.textContent = '';
+
+            // Non-aktifkan lagi tombol Kirim
+            submitBtn.disabled = true;
+        }
+    });
+
+    // =================================================
+    // BAGIAN 3: LOGIKA SAAT TOMBOL "KIRIM" DITEKAN
+    // =================================================
+    revisionForm.addEventListener('submit', function(event) {
+        // Selalu hentikan pengiriman form secara otomatis untuk menampilkan konfirmasi
+        event.preventDefault(); 
+
+        // Tampilkan modal konfirmasi SweetAlert2
+        Swal.fire({
+            title: 'Perhatian',
+            text: "Apakah anda sudah yakin ingin mengupload dokumen?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#198754', // Warna hijau
+            cancelButtonColor: '#dc3545',  // Warna merah
+            confirmButtonText: 'Lanjutkan',
+            cancelButtonText: 'Batalkan',
+            customClass: {
+                popup: 'rounded-4' // Membuat modal lebih rounded
+            }
+        }).then((result) => {
+            // Cek jika pengguna menekan tombol "Lanjutkan"
+            if (result.isConfirmed) {
+                // Jika dikonfirmasi, baru kita kirim form-nya secara manual ke PHP
+                revisionForm.submit();
+            }
+        });
+    });
+
+    // =================================================
+    // BAGIAN 4: LOGIKA TOMBOL "KEMBALI"
+    // =================================================
+    if (btnKembali) {
+        btnKembali.addEventListener('click', function() {
+            history.back(); // Perintah untuk kembali ke halaman sebelumnya
+        });
     }
-  });
-  
-  revisionForm.addEventListener('submit', function(event) {
-    if (fileInput.files.length === 0) {
-      event.preventDefault(); 
-      alert("Silakan pilih file terlebih dahulu!");
-    }
-  });
+
 });
-</script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
