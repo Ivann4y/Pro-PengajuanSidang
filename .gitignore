@@ -1,8 +1,0 @@
-*.exe
-*.dll
-*.obj
-*.pdb
-
-# Build output directories
-bin/
-obj/
