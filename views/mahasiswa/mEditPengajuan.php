@@ -52,11 +52,11 @@
       <form action="#" method="post">
         <div class="mb-3">
           <label for="judul" class="form-label">Judul Sidang</label>
-          <input type="text" class="form-control" id="judul" name="judul" value="<?php echo $judul?>" placeholder="Masukkan Judul Sidang" />
+          <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo $judul?>" placeholder="Masukkan Judul Sidang" />
         </div>
         <div class="mb-3">
           <label for="matkul" class="form-label">Mata Kuliah</label>
-          <select class="form-select" id="matkul" name="matkul">
+          <select class="forM form-select" id="matkul" name="matkul">
             <option selected disabled>Pilih Mata Kuliah</option>
             <option value="Tugas Akhir"<?php if ($matkul == 'Tugas Akhir') {
                 echo ' selected';
@@ -76,7 +76,7 @@
         </div>
         <div class="mb-3">
           <label for="kelas" class="form-label">Kelas</label>
-          <select class="form-select" id="kelas" name="kelas">
+          <select class="forM form-select" id="kelas" name="kelas">
             <option selected disabled>Pilih Kelas</option>
             <option value="A">RPL 1A</option>
             <option value="B">RPL 1B</option>
