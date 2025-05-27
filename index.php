@@ -1,3 +1,28 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $role = $_POST['role'];
+    $_SESSION['role'] = $role;
+
+    // Redirect to the appropriate dashboard based on the role
+    switch ($role) {
+        case 'dosen':
+            header('Location: views/dosen/dLogin.php');
+            break;
+        case 'admin':
+            header('Location: views/admin/aLogin.php');
+            break;
+        case 'mahasiswa':
+            header('Location: views/mahasiswa/mLogin.php');
+            break;
+        default:
+            header('Location: index.php');
+            break;
+    }
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,13 +44,6 @@
             min-height: 100vh;
         }
 
-        .main-content {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
         button {
             border: none;
             border-radius: 50px;
@@ -39,16 +57,16 @@
             color: white;
         }
 
+        .fullscreen {
+            height: 100vh;
+            position: relative;
+        }
+
         .bgBiru {
             background-color: rgb(67, 54, 240);
             height: 50vh;
         }
 
-        .fullscreen {
-            height: 100vh;
-            position: relative;
-        }
-        
         .letak-LogBox {
             position: absolute;
             top: 50%;
@@ -78,22 +96,25 @@
                         <div class="my-2 p-2" style="color: rgb(67, 54, 240);">
                             <h1>Masuk Sebagai</h1>
                         </div>
-                        <div class="role-button d-grid gap-3 mb-4 p-2">
-                            <div>
-                                <button class="w-75 p-2 fw-bold fs-5">Dosen</button>
+                        <form method="POST">
+                            <div class="role-button d-grid gap-3 mb-4 p-2">
+                                <div>
+                                    <button name="role" value="dosen" class="w-75 p-2 fw-bold fs-5">Dosen</button>
+                                </div>
+                                <div>
+                                    <button name="role" value="admin" class="w-75 p-2 fw-bold fs-5">Admin</button>
+                                </div>
+                                <div>
+                                    <button name="role" value="mahasiswa" class="w-75 p-2 fw-bold fs-5">Mahasiswa</button>
+                                </div>
                             </div>
-                            <div>
-                                <button class="w-75 p-2 fw-bold fs-5">Admin</button>
-                            </div>
-                            <div>
-                                <button class="w-75 p-2 fw-bold fs-5">Mahasiswa</button>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 </body>
 
 
