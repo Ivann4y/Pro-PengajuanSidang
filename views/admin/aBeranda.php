@@ -182,7 +182,21 @@
       transition: color 0.3s;
     }
 
+     .notif-icon {
+      position: absolute;
+      top: 30px;
+      right: 80px;
+      font-size: 1.8rem;
+      color: #444;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
     .profile-icon:hover {
+      color: #007bff;
+    }
+
+    .notif-icon:hover {
       color: #007bff;
     }
 
@@ -212,6 +226,9 @@
   <div class="bodyContainer position-relative">
     <div class="profile-icon">
       <i class="fas fa-user-circle"></i>
+    </div>
+    <div class="notif-icon">
+      <i class="fa-solid fa-bell"></i>
     </div>
      <div class="dashboardTitle">Dashboard Admin</div>
     <h2 class="welcomeText">Selamat Datang, Admin!</h2>
