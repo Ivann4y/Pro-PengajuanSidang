@@ -81,7 +81,7 @@
         </div>
 
         <div class="d-flex justify-content-end gap-2 mt-3">
-          <button type="submit" class="btn btn-secondary">Simpan</button>
+          <button type="button" class="btn btn-secondary" onclick="history.back()">Simpan</button>
           <a href="javascript:history.back()" class="btn btn-primary">Kirim</a>
         </div>
       </form>
