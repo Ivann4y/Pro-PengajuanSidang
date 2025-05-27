@@ -98,49 +98,49 @@
                     </thead>
                     <tbody id="dPengajuanTA">
                         <tr class="isiTabel jadiBiru">
-                            <td>001</td>
+                            <td>1</td>
                             <td>0920240033</td>
                             <td>M. Harris Nur S.</td>
-                            <td>Pemograman 2</td>
+                            <td>Tugas Akhir</td>
                             <td>Timotius Victory</td>
                         </tr>
                         <tr class="isiTabel jadiBiru">
-                            <td>002</td>
+                            <td>2</td>
                             <td>0920240053</td>
                             <td>Nayaka Ivanna</td>
-                            <td>Pemograman 2</td>
+                            <td>Tugas Akhir</td>
                             <td>Timotius Victory</td>
                         </tr>
                         <tr class="isiTabel jadiBiru">
-                            <td>003</td>
+                            <td>3</td>
                             <td>0920240055</td>
                             <td>Nur Widya Astuti</td>
-                            <td>Pemograman 2</td>
+                            <td>Tugas Akhir</td>
                             <td>Timotius Victory</td>
                         </tr>
                     </tbody>
                     <tbody id="dPengajuanSem" style="display: none;">
                        <tr class="isiTabel jadiBiru">
-                            <td>001</td>
+                            <td>1</td>
                             <td>0920240033</td>
                             <td>M. Harris Nur S.</td>
                             <td>Pemograman 2</td>
                             <td>Timotius Victory</td>
                         </tr>
                         <tr class="isiTabel jadiBiru">
-                            <td>002</td>
+                            <td>2</td>
                             <td>0920240053</td>
                             <td>Nayaka Ivanna</td>
                             <td>Pemograman 2</td>
                             <td>Timotius Victory</td>
                         </tr>
-                        <!-- <tr class="isiTabel jadiBiru">
-                            <td>003</td>
+                        <tr class="isiTabel jadiBiru">
+                            <td>3</td>
                             <td>0920240055</td>
                             <td>Nur Widya Astuti</td>
                             <td>Pemograman 2</td>
                             <td>Timotius Victory</td>
-                        </tr> -->
+                        </tr>
                     </tbody>
                 </table>
             </div>
