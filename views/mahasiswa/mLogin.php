@@ -39,25 +39,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             width: 60vw;
         }
 
-        .imgPertama {
-            width: 50%;
-            height: 50%;
+        img {
             object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .imgKedua {
-            width: 5%;
-            height: 5%;
-            object-fit: cover;
-            border-radius: 70%;
-        }
-
-        .imgKetiga {
-            width: 5%;
-            height: 5%;
-            object-fit: cover;
-            border-radius: 100%;
         }
     </style>
 </head>
@@ -71,13 +54,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="../../assets/img/img1.png" class="imgPertama d-block w-100" alt="...">
+                        <img src="../../assets/img/img6.png" class="imgPertama rounded-circle d-block mx-auto" alt="..." width="400" height="400">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/img2.png" class="imgKedua d-block w-100" alt="...">
+                        <img src="../../assets/img/img2.png" class="imgKedua rounded-circle d-block mx-auto" alt="..." width="400" height="400">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/img3.png" class="imgKetiga d-block w-100" alt="...">
+                        <img src="../../assets/img/img5.png" class="imgKetiga rounded-circle d-block mx-auto" alt="..." width="400" height="400">
                     </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
