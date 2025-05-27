@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../../assets/css/style.css">
   <title>Mahasiswa - Pengajuan</title>
   <style>
     table {
@@ -66,6 +66,7 @@
   </style>
 </head>
 <body>
+<<<<<<< HEAD
     <div class="container-fluid">
         <div class="sideNav"></div>
         <div class="container-fluid bodyContainer">
@@ -120,6 +121,51 @@
                 </table>
             </div>
         </div>
+=======
+  <div class="container-fluid">
+    <div class="sideNav"></div>
+    <div class="container-fluid bodyContainer">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+        </div>
+      </div><br>
+
+      <div class="row">
+        <div class="col-12 col-md-6">
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+              Sidang TA
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
+            </ul>
+          </div>
+        </div>
+      </div><br>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Judul</th>
+                  <th scope="col">Mata Kuliah</th>
+                  <th scope="col">Dosen Pembimbing</th>
+                  <th scope="col" class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="mSidangTA"></tbody>
+              <tbody id="mSidangSem" style="display: none;"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
+>>>>>>> 1d9cc30956814b28750fa349ca1e82b5677c5b4d
     </div>
 
   <script>
@@ -155,7 +201,7 @@
             <td>${item.matkul}</td>
             <td>${item.dosen}</td>
             <td class="text-center">
-              <button class="btn btn-link p-0" type="button" title="Edit" onclick="editData(${index}, '${id}')">
+              <button class="btn btn-link p-0" type="button" title="Edit" onclick="editData(${index}, '${id}', '${item.judul}', '${item.matkul}')">
                 <i class="bi bi-pencil-square"></i>
               </button>
             </td>
@@ -164,8 +210,17 @@
       });
     }
 
+<<<<<<< HEAD
     function editData(index, jenis) {
     window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
+=======
+    function editData(index, jenis, judul, matkul) {
+      window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}&judul=${judul}&matkul=${matkul}`;
+    }
+
+    function tambahData() {
+      window.location.href = `mEditPengajuan.php`;
+>>>>>>> 1d9cc30956814b28750fa349ca1e82b5677c5b4d
     }
 
 
