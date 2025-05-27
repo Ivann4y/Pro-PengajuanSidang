@@ -64,5 +64,15 @@
     <h2 class="bodyHeading">
         Detail Sidang - Sistem Pengajuan Sidang
     </h2>
+    <h5>
+        Nilai Anda :
+    </h5>
+    <h5>
+        Detail Penilaian :
+    </h5>
+    <h5>
+        Catatan :
+    </h5>
+
 </body>
 </html>

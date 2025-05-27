@@ -6,43 +6,32 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
   <title>Edit Pengajuan Sidang</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      margin: 0;
-      padding: 0;
     }
-    .sideNav {
-      width: 250px;
-      min-height: 100vh;
-      background-color: #4328ff;
-    }
-    .bodyContainer {
-      padding: 30px;
-      background-color: #f8f9fa;
-      flex-grow: 1;
-    }
+
     label {
       font-weight: 500;
       margin-bottom: 5px;
     }
-    label[for] {
-      cursor: pointer;
-    }
+
     input[type="file"] {
       display: none;
     }
   </style>
 </head>
 <body>
-  <div class="d-flex">
+  <div class="container-fluid">
     <div class="sideNav"></div>
-
-    <div class="bodyContainer">
-      <h2 class="text-primary fw-bold">Nayaka Ivana Putra (Mahasiswa)</h2>
-      <h5 class="fw-bold mt-4 mb-3">Tambah Sidang Semester</h5>
-      <hr>
+    <div class="container-fluid bodyContainer">
+      <div class="row">
+        <h2 class="bodyHeading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
+        <h5 class="fw-bold mt-4 mb-3">Tambah Sidang Semester</h5>
+        <hr>
+      </div>
 
       <form action="#" method="post">
         <div class="mb-3">
