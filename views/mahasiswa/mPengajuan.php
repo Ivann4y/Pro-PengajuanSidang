@@ -11,115 +11,116 @@
   <title>Mahasiswa - Pengajuan</title>
   <style>
     table {
-      border-spacing: 0 10px;
-      border-collapse: separate;
-      width: 100%;
-    }
+        border-spacing: 0 10px;
+        border-collapse: separate;
+        width: 100%;
+        }
 
-    thead {
-      border-bottom: 2px solid rgb(0, 0, 0) !important;
-    }
+        thead {
+        border-bottom: 2px solid rgb(0, 0, 0) !important;
+        }
 
-    thead th {
-      padding: 12px 15px;
-      text-align: left;
-    }
+        thead th {
+        padding: 12px 15px;
+        text-align: left;
+        }
 
-    thead th:nth-child(1) {
-      text-align: center;
-      width: 5%;
-    }
+        thead th:nth-child(1) {
+        text-align: center;
+        width: 5%;
+        }
 
-    thead th:nth-child(2) {
-      width: 30%;
-    }
+        thead th:nth-child(2) {
+        width: 30%;
+        }
 
-    thead th:nth-child(3) {
-      width: 20%;
-    }
+        thead th:nth-child(3) {
+        width: 20%;
+        }
 
-    thead th:nth-child(4) {
-      width: 20%;
-    }
+        thead th:nth-child(4) {
+        width: 20%;
+        }
 
-    thead th:nth-child(5) {
-      width: 5%;
-      text-align: center;
-    }
+        thead th:nth-child(5) {
+        width: 5%;
+        text-align: center;
+        }
 
-    .isiTabel td {
-      padding: 12px 15px;
-      font-family: "Poppins", sans-serif;
-      font-weight: 400;
-      vertical-align: middle;
-    }
+        .isiTabel td {
+        padding: 12px 15px;
+        font-family: "Poppins";
+        font-weight: 400;
+        vertical-align: middle;
+        }
 
-    .isiTabel td:nth-child(1) {
-      border-radius: 20px 0 0 20px;
-      text-align: center;
-    }
+        .isiTabel td:nth-child(1) {
+        border-radius: 20px 0 0 20px;
+        text-align: center;
+        }
 
-    .isiTabel td:nth-child(5) {
-      border-radius: 0 20px 20px 0;
-      text-align: center;
-    }
-
-    .tambah-sidang-btn {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      transition: all 0.2s ease;
-      padding: 10px 20px;
-      font-family: "Poppins", sans-serif;
-      border-radius: 10px;
-    }
-
-    .tambah-sidang-btn:hover {
-      padding-top: 14px;
-      padding-bottom: 14px;
-    }
+        .isiTabel td:nth-child(5) {
+        border-radius: 0 20px 20px 0;
+        text-align: center;
+        }
   </style>
 </head>
 <body>
-  <div class="container-fluid">
-    <div class="sideNav"></div>
-    <div class="container-fluid bodyContainer">
-      <div class="row">
-        <h2 class="bodyHeading">
-          <b>Nayaka Ivana Putra (Mahasiswa)</b>
-        </h2>
-      </div><br><br>
-
-      <div class="row">
-        <div class="dropdown">
-          <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-            Sidang TA
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
-          </ul>
+    <div class="container-fluid">
+        <div class="sideNav"></div>
+        <div class="container-fluid bodyContainer">
+            <div class="row">
+              <h2 class="bodyHeading">
+                <b>Nayaka Ivana Putra (Mahasiswa)</b>
+              </h2>
+            </div><br><br>
+            <div class="row">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                        Sidang TA
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
+                    </ul>
+                </div>
+            </div><br><br>
+            <div class="row">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Judul</th>
+                            <th scope="col">Mata Kuliah</th>
+                            <th scope="col">Dosen Pembimbing</th>
+                            <th scope="col" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mSidangTA">
+                        <tr class="isiTabel jadiBiru">
+                            <td>1</td>
+                            <td>Sistem Pengajuan Sidang</td>
+                            <td>Tugas Akhir</td>
+                            <td>Rida Indah Fariani</td>
+                        </tr>
+                    </tbody>
+                    <tbody id="mSidangSem" style="display: none;">
+                        <tr class="isiTabel jadiBiru">
+                            <td>1</td>
+                            <td>Implementasi Sistem Sidang</td>
+                            <td>Pemrograman 2</td>
+                            <td>Timotius Victory</td>
+                        </tr>
+                        <tr class="isiTabel jadiBiru">
+                            <td>2</td>
+                            <td>Deployment Sistem Sidang</td>
+                            <td>Sistem Operasi</td>
+                            <td>Suhendra</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div><br><br>
-
-      <div class="row">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">No</th>
-              <th scope="col">Judul</th>
-              <th scope="col">Mata Kuliah</th>
-              <th scope="col">Dosen Pembimbing</th>
-              <th scope="col" class="text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="mSidangTA"></tbody>
-          <tbody id="mSidangSem" style="display: none;"></tbody>
-        </table>
-      </div>
-
-      <button class="btn btn-primary tambah-sidang-btn">+ Tambah Sidang</button>
     </div>
-  </div>
 
   <script>
     const dataTA = [
@@ -164,25 +165,23 @@
     }
 
     function editData(index, jenis) {
-      window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
+    window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
     }
+
 
     function switchMSidang() {
       const ta = document.getElementById("mSidangTA");
       const sem = document.getElementById("mSidangSem");
       const btn = document.getElementById("ddMSidang");
-      const menu = document.getElementById("ddMSidangMenu");
 
       if (ta.style.display !== "none") {
         ta.style.display = "none";
         sem.style.display = "";
         btn.innerText = "Sidang Semester";
-        menu.innerText = "Sidang TA";
       } else {
         ta.style.display = "";
         sem.style.display = "none";
         btn.innerText = "Sidang TA";
-        menu.innerText = "Sidang Semester";
       }
     }
 
