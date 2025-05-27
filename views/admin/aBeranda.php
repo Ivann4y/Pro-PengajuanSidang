@@ -7,11 +7,12 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="stylesheet" href="/Pro-PengajuanSidang/assets/css/style.css">
   <style>
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
-      background-color: #f9f9f9;
+      background-color:rgb(255, 255, 255);
     }
 
     .sideNav {
@@ -29,10 +30,16 @@
       z-index: 1000;
     }
 
-    .sideNav h4 img {
+    .sideNav h4 {
       width: 100%;
       max-width: 120px;
       margin-bottom: 30px;
+    }
+
+     .sideNav img {
+      width: 100%;
+      max-width: 150px;
+      margin-bottom: 100px;
     }
 
     .nav-item {
@@ -162,14 +169,16 @@
     .img-slot {
       width: 100%;
       height: 100%;
-      background-color: #e0e0e0;
-      border-radius: 15px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 14px;
-      color: gray;
-      min-height: 250px;
+      min-height: 250px; 
+      position: relative;
+    }
+
+    .img-slot img{
+      width: 100%;
+      height: 100%;
     }
 
     .profile-icon {
@@ -182,7 +191,21 @@
       transition: color 0.3s;
     }
 
+     .notif-icon {
+      position: absolute;
+      top: 30px;
+      right: 80px;
+      font-size: 1.8rem;
+      color: #444;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
     .profile-icon:hover {
+      color: #007bff;
+    }
+
+    .notif-icon:hover {
       color: #007bff;
     }
 
@@ -202,9 +225,9 @@
 </head>
 <body>
   <div class="sideNav">
-    <h4><img src="logo-astratech.png" alt="ASTRAtech Logo"></h4>
-    <div class="nav-item active">Beranda</div>
-    <div class="nav-item" id="penjadwalanNav">Penjadwalan</div>
+    <img src="../../assets/img/Logo_Astratech_White-8.png" >
+    <div href="aBeranda.php" class="nav-item active" id="berandaNav" onclick="location.href='aBeranda.php'">Beranda</div>
+    <div href="aPenjadwalan.php" class="nav-item" id="penjadwalanNav" onclick="location.href='aPenjadwalan.php'">Penjadwalan</div>
     <div class="nav-item">Daftar Sidang</div>
     <div class="nav-item">Keluar</div>
   </div>
@@ -213,12 +236,15 @@
     <div class="profile-icon">
       <i class="fas fa-user-circle"></i>
     </div>
+    <div class="notif-icon">
+      <i class="fa-solid fa-bell"></i>
+    </div>
      <div class="dashboardTitle">Dashboard Admin</div>
     <h2 class="welcomeText">Selamat Datang, Admin!</h2>
    
     <div class="row my-4">
       <div class="col-md-3 mb-3">
-        <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='#penjadwalanNav'">
+        <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='aPenjadwalan.php'">
           <div class="statusTitle">Penjadwalan</div>
           <div class="d-flex align-items-center">
             <div class="statusNumber me-3">4</div>
@@ -227,7 +253,7 @@
         </div>
       </div>
       <div class="col-md-3 mb-3">
-        <div class="statusCard card-pengajuan">
+        <div class="statusCard card-pengajuan" id="cardPengajuan" onclick="location.href='aPenjadwalan.php'">
           <div class="statusTitle">Pengajuan</div>
           <div class="d-flex align-items-center">
             <div class="statusNumber me-3">2</div>
@@ -241,28 +267,30 @@
       <div class="col-md-6 mb-3">
         <div class="notifBox">
           <h5>Notifikasi</h5>
-          <div class="notif-all-check" onclick="markAllRead()">✔</div>
+          <div class="notif-all-check" onclick="markAllRead()"><i class="fa-solid fa-check-double"></i></div>
           <div class="notifItem">
             Sidang PRG telah disetujui oleh dosen pembimbing
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
           <div class="notifItem">
             Sidang BasDat telah selesai dinilai
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
           <div class="notifItem">
             Sidang TA Nayaka Ivana Putra telah selesai dinilai
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
         </div>
       </div>
-      <div class="col-md-6 mb-3">
+      <div class="col-md-6 mb-3" style="top: -50px; z-index: 10;">
         <div class="img-slot">
-          Slot Gambar/Ilustrasi Admin
+          <img src="../../assets/img/img4.png">  
         </div>
       </div>
     </div>
   </div>
+
+  
 
   <script>
     function markAllRead() {

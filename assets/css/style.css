@@ -14,16 +14,19 @@
   width: 80vw;
 }
 
-.bodyHeading {
+.text-heading {
   color: rgb(67, 54, 240);
-  font-family: "Poppins";
-  font-weight: 500;
+  font-weight: 550;
 }
 
 .jadiBiru {
   background-color: #f5f5f5;
   color: black;
   transition: 300ms;
+}
+
+.forM {
+  background-color: #f5f5f5;
 }
 
 .jadiBiru:hover {
@@ -40,7 +43,10 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 700px) {
+  .container-fluid {
+    padding: 3vw;
+  }
   .sideNav {
     width: 0;
     padding: 0;
@@ -50,6 +56,15 @@
   .bodyContainer {
     margin-left: 0;
     width: 100%;
+  }
+  .text-heading {
+    font-size: large;
+  }
+  .dropdown-toggle, .dropdown-menu {
+    font-size: small !important;
+  }
+  table {
+    font-size: small;
   }
 
   thead th:nth-child(1),
