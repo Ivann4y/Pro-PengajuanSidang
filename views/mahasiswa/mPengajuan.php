@@ -117,7 +117,7 @@
         </table>
       </div>
 
-      <button class="btn btn-primary tambah-sidang-btn">+ Tambah Sidang</button>
+      <button class="btn btn-primary tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
     </div>
   </div>
 
@@ -154,7 +154,7 @@
             <td>${item.matkul}</td>
             <td>${item.dosen}</td>
             <td class="text-center">
-              <button class="btn btn-link p-0" type="button" title="Edit" onclick="editData(${index}, '${id}')">
+              <button class="btn btn-link p-0" type="button" title="Edit" onclick="editData(${index}, '${id}', '${item.judul}', '${item.matkul}')">
                 <i class="bi bi-pencil-square"></i>
               </button>
             </td>
@@ -163,8 +163,12 @@
       });
     }
 
-    function editData(index, jenis) {
-      window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}`;
+    function editData(index, jenis, judul, matkul) {
+      window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}&judul=${judul}&matkul=${matkul}`;
+    }
+
+    function tambahData() {
+      window.location.href = `mEditPengajuan.php`;
     }
 
     function switchMSidang() {
