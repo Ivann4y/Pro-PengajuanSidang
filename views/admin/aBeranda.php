@@ -258,18 +258,18 @@
       <div class="col-md-6 mb-3">
         <div class="notifBox">
           <h5>Notifikasi</h5>
-          <div class="notif-all-check" onclick="markAllRead()">✔</div>
+          <div class="notif-all-check" onclick="markAllRead()"><i class="fa-solid fa-check-double"></i></div>
           <div class="notifItem">
             Sidang PRG telah disetujui oleh dosen pembimbing
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
           <div class="notifItem">
             Sidang BasDat telah selesai dinilai
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
           <div class="notifItem">
             Sidang TA Nayaka Ivana Putra telah selesai dinilai
-            <span class="notif-check" onclick="markOneRead(this)">✔</span>
+            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i></span>
           </div>
         </div>
       </div>
