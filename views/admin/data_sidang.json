@@ -1,0 +1,38 @@
+[
+  {
+    "id": "001",
+    "nim": "0920240042",
+    "nama": "Dhonnan",
+    "judulSidang": "S1",
+    "pembimbing": "PB1",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "002",
+    "nim": "0920240032",
+    "nama": "Raissa",
+    "judulSidang": "S2",
+    "pembimbing": "PB2",
+    "tipeSidang": "TA",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "003",
+    "nim": "092024023",
+    "nama": "Rafif",
+    "judulSidang": "S3",
+    "pembimbing": "PB4",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "004",
+    "nim": "0920240025",
+    "nama": "Fadillah",
+    "judulSidang": "S4",
+    "pembimbing": "PB4",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  }
+]
