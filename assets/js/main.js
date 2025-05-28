@@ -2,7 +2,7 @@
 // --- Tulis fungsi di sini ---
 
 // FUNGSI UNTUK DOSEN
-// --- Tulis fungsi di sini ---
+
 
 // FUNGSI UNTUK MAHASISWA
 
