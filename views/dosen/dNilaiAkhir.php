@@ -201,7 +201,7 @@
           </div>
           <div class="col-md-6">
             <img
-              src="img5.png"
+              src="../../assets/img/img5.png"
               alt="Mahasiswa"
               class="img-fluid "
               style="width: 500px; height: 350px; margin-left: 20px; "
