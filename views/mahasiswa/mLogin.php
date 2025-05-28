@@ -113,7 +113,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             </div>
         </div>
 
-        <div class="log d-flex justify-content-center align-items-center">
+        <div class="log d-flex justify-content-center align-items-center pb-5">
             <form action="#" method="POST">
                 <div class="text-center pt-5 mb-4">
                     <h2><strong>Masuk Akun Mahasiswa</strong></h2>
@@ -123,8 +123,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
                 </div>
                 <div class="mb-3">
                     <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Password" required>
+                    <a href="#" class="float-end"> Lupa kata sandi?</a>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
             </form>
         </div>
     </div>
