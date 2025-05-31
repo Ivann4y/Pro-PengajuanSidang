@@ -12,7 +12,8 @@ body {
   background-color: #ffffff;
 }
 
-#NavSide { /* Main wrapper for the entire layout */
+#NavSide {
+  /* Main wrapper for the entire layout */
   display: flex;
   min-height: 100vh;
   position: relative; /* For positioning toggle if needed relative to this */
@@ -102,7 +103,7 @@ body {
   display: none;
 }
 .NavSide__sidebar-item b:nth-child(1)::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -121,7 +122,7 @@ body {
   display: none;
 }
 .NavSide__sidebar-item b:nth-child(2)::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -136,7 +137,6 @@ body {
   display: block;
 }
 
-
 .NavSide__main-content {
   flex-grow: 1;
   padding: 20px;
@@ -150,7 +150,7 @@ body {
   position: fixed;
   top: 15px;
   left: 15px;
-  width: 40px;   /* Give toggle explicit size for better icon centering */
+  width: 40px; /* Give toggle explicit size for better icon centering */
   height: 40px;
   z-index: 1100;
   transition: left 0.5s ease-in-out;
@@ -159,7 +159,7 @@ body {
   display: flex; /* For icon centering */
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .NavSide__toggle i.bi {
@@ -173,7 +173,11 @@ body {
   display: none; /* Open icon visible by default */
 }
 .NavSide__toggle i.bi.close {
-  color: rgb(67, 54, 240); /* Also blue, or white if toggle background changes */
+  color: rgb(
+    67,
+    54,
+    240
+  ); /* Also blue, or white if toggle background changes */
 }
 
 /* Toggle active state controls icon visibility */
@@ -184,11 +188,8 @@ body {
   display: block;
 }
 
-
 /* --- Responsive Design for Small Screens (<= 700px) --- */
 @media (max-width: 700px) {
-
-
   .NavSide__sidebar {
     width: 50%; /* Slightly narrower for mobile */
     transform: translateX(-100%); /* Hidden by default */
@@ -198,7 +199,7 @@ body {
   /* This class is added by JS to show the sidebar on mobile */
   .NavSide__sidebar.NavSide__sidebar--active-mobile {
     transform: translateX(0);
-    box-shadow: 3px 0 15px rgba(0,0,0,0.2); /* Add shadow when overlayed */
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); /* Add shadow when overlayed */
   }
 
   .NavSide__sidebar-brand {
@@ -235,9 +236,9 @@ body {
   }
 
   .NavSide__toggle i.bi.open {
-  color: rgb(67, 54, 240); /* Blue to match sidebar */
-  display: block; /* Open icon visible by default */
-}
+    color: rgb(67, 54, 240); /* Blue to match sidebar */
+    display: block; /* Open icon visible by default */
+  }
 
   .NavSide__toggle.NavSide__toggle--active {
     /* Move toggle button to be near the edge of the opened sidebar */
