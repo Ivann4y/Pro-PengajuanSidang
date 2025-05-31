@@ -1,3 +1,50 @@
+[permintaan]
+Mohon analisis dan perbaiki kode yang akan saya berikan. Bahasa utama kemungkinan adalah Python.
+
+[masalah]
+Add compatibility. Some of my friend that have small screen can't see the "generate prompt/hasilkan prompt" button. Make it so that i can scroll up/down if the gui can't display everything in one window.
+
+[apa yang saya inginkan]
+Ketika Anda memberikan kode yang telah diperbaiki, saya ingin Anda menampilkan **seluruh blok kode yang lengkap dan sepenuhnya diperbaiki**.
+1. Semua baris kode asli yang sudah benar harus dipertahankan.
+2. Semua perbaikan dan modifikasi Anda harus diintegrasikan langsung ke dalam kode.
+3. Keluaran harus berupa satu blok kode tunggal yang berkesinambungan yang mewakili versi lengkap yang telah diperbaiki.
+4. Saya ingin dapat menyalin dan menempel seluruh respons kode Anda secara langsung untuk menggantikan kode lama saya.
+
+[apa yang terjadi]
+Dalam pengalaman sebelumnya (atau dengan respons AI lain), ketika meminta perbaikan kode untuk blok seperti:
+```
+[contoh baris kode asli 1]
+[contoh baris kode asli 2 dengan kesalahan]
+[contoh baris kode asli 3]
+```
+AI terkadang memberikan perbaikan parsial, seperti:
+```
+[pertahankan kode sebelumnya]
+[contoh baris kode 2 yang diperbaiki]
+[pertahankan kode sebelumnya]
+```
+Ini BUKAN keluaran yang diinginkan.
+Sebaliknya, untuk contoh di atas, saya menginginkan:
+```
+[contoh baris kode asli 1]
+[contoh baris kode 2 yang diperbaiki]
+[contoh baris kode asli 3]
+```
+
+**Secara spesifik, JANGAN lakukan hal berikut:**
+*   JANGAN gunakan placeholder seperti `[pertahankan kode sebelumnya]`, `... (sisa kode tidak berubah) ...`, atau sejenisnya.
+*   JANGAN hanya menampilkan baris yang telah Anda ubah atau tambahkan.
+*   JANGAN berikan diff atau daftar perubahan.
+
+Saya membutuhkan *skrip/program/fungsi penuh* dengan semua perbaikan yang telah dimasukkan.
+
+[keluaran kesalahan]
+[Tidak ada keluaran kesalahan spesifik yang diberikan oleh pengguna.]
+
+[kode saat ini]
+[Nama Berkas: FormatPromptOtomatis.py]
+```python
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import os
@@ -11,16 +58,16 @@ NAMA_FOLDER_PROMPT_YANG_DIHASILKAN = "Prompt_Dihasilkan"
 class PromptGeneratorApp:
     # String konstanta untuk teks default dan pilihan, agar konsisten
     STR_PILIH_BAHASA_OPSIONAL = "Pilih Bahasa (Opsional)"
-    STR_MASALAH_DEFAULT = "Jelaskan masalah yang anda hadapi, dan Apa yg anda inginkan/harapkan dari kode yang ada...."
+    STR_MASALAH_DEFAULT = "Kode ini memiliki kesalahan / perlu perbaikan karena..."
     STR_ERROR_OUTPUT_DEFAULT = "[Tempel pesan kesalahan atau keluaran konsol yang relevan di sini]"
     STR_SEBUTKAN_BAHASA = "[Sebutkan Bahasa]"
 
     def __init__(self, root):
         self.root = root
-        self.root.title("Pembuat Prompt Kode AI")
-        self.root.geometry("700x920") # Ukuran awal jendela
+        self.root.title("Pembuat Prompt Kode AI") # Judul aplikasi
+        self.root.geometry("700x920")
 
-        # Daftar bahasa pemrograman
+        # Daftar bahasa pemrograman (nama bahasa umumnya tidak diterjemahkan)
         self.languages = ["Python", "C", "C++", "PHP", "HTML", "CSS", "JavaScript", "Java", "SQL", "Ruby", "Go", "Swift", "Kotlin", "Rust", "TypeScript"]
         self.selected_languages_vars = []
         self.language_dropdowns = []
@@ -30,45 +77,11 @@ class PromptGeneratorApp:
             self.base_path = os.path.dirname(os.path.abspath(__file__))
         except NameError:
             self.base_path = os.getcwd()
+        # Menggunakan nama folder yang sudah diterjemahkan
         self.prompts_dir = os.path.join(self.base_path, NAMA_FOLDER_PROMPT_YANG_DIHASILKAN)
 
-        # --- Implementasi Scrollable Frame ---
-        # 1. Buat Canvas utama
-        self.main_canvas = tk.Canvas(root)
-        # 2. Buat Scrollbar vertikal utama
-        self.main_scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=self.main_canvas.yview)
-        # 3. Konfigurasi Canvas untuk menggunakan Scrollbar
-        self.main_canvas.configure(yscrollcommand=self.main_scrollbar.set)
-
-        # Packing Canvas dan Scrollbar
-        self.main_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.main_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-        # 4. Buat Frame di dalam Canvas (ini akan menjadi frame yang bisa digulir)
-        self.scrollable_frame = ttk.Frame(self.main_canvas)
-
-        # 5. Tambahkan scrollable_frame ke Canvas menggunakan create_window
-        self.canvas_window = self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-
-        # 6. Ikat event Configure untuk update scrollregion dan lebar window
-        self.scrollable_frame.bind("<Configure>", self._on_frame_or_canvas_configure)
-        self.main_canvas.bind("<Configure>", self._on_frame_or_canvas_configure)
-
-        # 7. Ikat mousewheel untuk scrolling ke canvas utama
-        # Event akan "bubble up" dari widget anak ke scrollable_frame
-        # kecuali widget anak (seperti Text) menangani dan menghentikan event tersebut.
-        self.scrollable_frame.bind("<MouseWheel>", self._perform_main_canvas_scroll, add="+")
-        self.scrollable_frame.bind("<Button-4>", self._perform_main_canvas_scroll, add="+") # Linux scroll up
-        self.scrollable_frame.bind("<Button-5>", self._perform_main_canvas_scroll, add="+") # Linux scroll down
-        self.main_canvas.bind("<MouseWheel>", self._perform_main_canvas_scroll, add="+")
-        self.main_canvas.bind("<Button-4>", self._perform_main_canvas_scroll, add="+")
-        self.main_canvas.bind("<Button-5>", self._perform_main_canvas_scroll, add="+")
-        # --- Akhir Implementasi Scrollable Frame ---
-
-        # main_frame sekarang adalah anak dari self.scrollable_frame
-        # pack dengan fill=tk.X dan expand=True agar lebarnya mengikuti scrollable_frame
-        main_frame = ttk.Frame(self.scrollable_frame, padding="10")
-        main_frame.pack(fill=tk.X, expand=True)
+        main_frame = ttk.Frame(root, padding="10")
+        main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Bagian 1: Bahasa Pemrograman
         lang_frame = ttk.LabelFrame(main_frame, text="1. Bahasa Pemrograman", padding="10")
@@ -80,7 +93,7 @@ class PromptGeneratorApp:
         # Bagian 2: Deskripsi Masalah
         problem_frame = ttk.LabelFrame(main_frame, text="2. Deskripsi Masalah", padding="10")
         problem_frame.pack(fill=tk.X, pady=5)
-        self.problem_text = tk.Text(problem_frame, height=4, wrap=tk.WORD)
+        self.problem_text = tk.Text(problem_frame, height=4, width=70, wrap=tk.WORD)
         self.problem_text.pack(fill=tk.X, expand=True)
         self.problem_text.insert(tk.END, self.STR_MASALAH_DEFAULT)
         self._bind_ctrl_backspace(self.problem_text)
@@ -88,7 +101,7 @@ class PromptGeneratorApp:
         # Bagian 3: Apa yang Saya Inginkan (Format Keluaran)
         what_i_want_frame = ttk.LabelFrame(main_frame, text="3. Apa yang Saya Inginkan (Format Keluaran)", padding="10")
         what_i_want_frame.pack(fill=tk.X, pady=5)
-        self.what_i_want_text = tk.Text(what_i_want_frame, height=6, wrap=tk.WORD)
+        self.what_i_want_text = tk.Text(what_i_want_frame, height=6, width=70, wrap=tk.WORD)
         self.what_i_want_text.pack(fill=tk.X, expand=True)
         self.what_i_want_text.insert(tk.END,
             "Ketika Anda memberikan kode yang telah diperbaiki, saya ingin Anda menampilkan **seluruh blok kode yang lengkap dan sepenuhnya diperbaiki**.\n"
@@ -109,14 +122,13 @@ class PromptGeneratorApp:
             "*   JANGAN berikan diff atau daftar perubahan.\n\n"
             "Saya membutuhkan *skrip/program/fungsi penuh* dengan semua perbaikan yang telah dimasukkan."
         )
-        self.fixed_instructions_label = ttk.Label(fixed_instructions_frame, text=self.fixed_instructions_text_content, justify=tk.LEFT)
-        self.fixed_instructions_label.pack(fill=tk.X, expand=True)
-
+        fixed_instructions_label = ttk.Label(fixed_instructions_frame, text=self.fixed_instructions_text_content, wraplength=650, justify=tk.LEFT)
+        fixed_instructions_label.pack(fill=tk.X, expand=True)
 
         # Bagian 5: Keluaran Kesalahan (Opsional)
         error_output_frame = ttk.LabelFrame(main_frame, text="5. Keluaran Kesalahan (Opsional)", padding="10")
         error_output_frame.pack(fill=tk.X, pady=5)
-        self.error_output_text = tk.Text(error_output_frame, height=5, wrap=tk.WORD)
+        self.error_output_text = tk.Text(error_output_frame, height=5, width=70, wrap=tk.WORD)
         self.error_output_text.pack(fill=tk.X, expand=True)
         self.error_output_text.insert(tk.END, self.STR_ERROR_OUTPUT_DEFAULT)
         self._bind_ctrl_backspace(self.error_output_text)
@@ -125,53 +137,19 @@ class PromptGeneratorApp:
         current_code_frame = ttk.LabelFrame(main_frame, text="6. Kode Saat Ini", padding="10")
         current_code_frame.pack(fill=tk.BOTH, expand=True, pady=5)
 
-        self.current_code_text = tk.Text(current_code_frame, height=10, wrap=tk.WORD)
+        self.current_code_text = tk.Text(current_code_frame, height=10, width=70, wrap=tk.WORD)
         self.current_code_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self._bind_ctrl_backspace(self.current_code_text)
 
-        scrollbar_code = ttk.Scrollbar(current_code_frame, command=self.current_code_text.yview)
-        scrollbar_code.pack(side=tk.RIGHT, fill=tk.Y)
-        self.current_code_text.config(yscrollcommand=scrollbar_code.set)
+        scrollbar = ttk.Scrollbar(current_code_frame, command=self.current_code_text.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.current_code_text.config(yscrollcommand=scrollbar.set)
 
         choose_file_button = ttk.Button(current_code_frame, text="Pilih Berkas", command=self.choose_code_file)
         choose_file_button.pack(side=tk.BOTTOM, pady=5, anchor='se')
 
         generate_button = ttk.Button(main_frame, text="Hasilkan Prompt (.txt)", command=self.generate_prompt_file)
-        generate_button.pack(pady=20)
-
-
-    def _on_frame_or_canvas_configure(self, event=None):
-        '''Memperbarui scrollregion canvas dan lebar window di dalamnya.'''
-        self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all"))
-        
-        canvas_width = self.main_canvas.winfo_width()
-        self.main_canvas.itemconfig(self.canvas_window, width=canvas_width)
-
-        if hasattr(self, 'fixed_instructions_label'):
-            # Lebar konten di dalam main_frame = canvas_width - 2*10 (padding main_frame)
-            # Lebar konten di dalam fixed_instructions_frame = (lebar konten main_frame) - 2*10 (padding fixed_instructions_frame)
-            # Jadi, wraplength = canvas_width - 20 - 20 = canvas_width - 40
-            label_wraplength = canvas_width - 40 - 5 # Kurangi sedikit untuk margin
-            if label_wraplength > 0 :
-                 self.fixed_instructions_label.configure(wraplength=label_wraplength)
-
-
-    def _perform_main_canvas_scroll(self, event):
-        """Menangani event mousewheel untuk menggulir main_canvas."""
-        delta = 0
-        if event.num == 4: # Linux scroll up
-            delta = -1
-        elif event.num == 5: # Linux scroll down
-            delta = 1
-        elif hasattr(event, 'delta') and event.delta != 0: # Windows & macOS
-            if platform.system() == "Windows":
-                delta = int(-1 * (event.delta / 120))
-            elif platform.system() == "Darwin": # macOS
-                delta = int(-1 * event.delta)
-        
-        if delta != 0:
-            self.main_canvas.yview_scroll(delta, "units")
-
+        generate_button.pack(pady=10)
 
     def _delete_word_left(self, event):
         try:
@@ -184,71 +162,57 @@ class PromptGeneratorApp:
     def _bind_ctrl_backspace(self, text_widget):
         text_widget.bind("<Control-BackSpace>", self._delete_word_left)
         if platform.system() == "Darwin": # macOS specific bindings
-            # Standard macOS behavior for these is often line-based or different.
-            # User might prefer native OS behavior. For now, mapping to word delete.
-            text_widget.bind("<Option-BackSpace>", self._delete_word_left) # Standard: delete word left
-            # <Option-Delete> is usually delete word right, not implemented here.
-            # <Meta-BackSpace> / <Meta-Delete> are often delete to line start/end.
+            text_widget.bind("<Meta-Delete>", self._delete_word_left)
+            text_widget.bind("<Meta-BackSpace>", self._delete_word_left)
+            text_widget.bind("<Option-Delete>", self._delete_word_left) # Option-Delete (delete word forward)
+            text_widget.bind("<Option-BackSpace>", self._delete_word_left) # Option-Backspace (delete word backward)
 
 
     def _add_language_dropdown(self, event=None):
         if len(self.selected_languages_vars) < self.max_languages:
             var = tk.StringVar(self.root)
-            choices = [self.STR_PILIH_BAHASA_OPSIONAL] + self.languages
-            
             if not self.selected_languages_vars: # First dropdown
-                var.set(self.languages[0]) # Default to first language
+                var.set(self.languages[0]) # Default to first language in the list
             else:
                 var.set(self.STR_PILIH_BAHASA_OPSIONAL)
 
-            dropdown = ttk.OptionMenu(self.lang_dropdown_frame, var, var.get(), *choices, command=self._on_language_select)
-            dropdown.pack(side=tk.LEFT, padx=2, pady=2, fill=tk.X, expand=True)
+            dropdown = ttk.OptionMenu(self.lang_dropdown_frame, var, var.get(), *self.languages, command=self._on_language_select)
+            dropdown.pack(side=tk.LEFT, padx=5, pady=2, fill=tk.X, expand=True)
 
             self.selected_languages_vars.append(var)
             self.language_dropdowns.append(dropdown)
-            
-            self.root.after_idle(self._on_frame_or_canvas_configure)
-
 
     def _on_language_select(self, selected_value):
-        self.root.after_idle(self._on_frame_or_canvas_configure)
-
-        can_add_more = len(self.selected_languages_vars) < self.max_languages
-        
-        # If the selected value is a real language (not placeholder)
-        # AND this selection happened on the last existing dropdown
-        # AND we can add more dropdowns
-        # AND all current dropdowns are accounted for by vars (no pending "empty" dropdown)
+        last_var_index = len(self.selected_languages_vars) - 1
+        # Jika bahasa dipilih (bukan placeholder) DAN itu adalah dropdown terakhir DAN belum mencapai maks bahasa
         if selected_value != self.STR_PILIH_BAHASA_OPSIONAL and \
-           self.selected_languages_vars[-1].get() == selected_value and \
-           can_add_more and \
-           len(self.selected_languages_vars) == len(self.language_dropdowns):
-            self._add_language_dropdown()
+           self.selected_languages_vars[last_var_index].get() == selected_value and \
+           len(self.selected_languages_vars) < self.max_languages:
+            # Pastikan kita hanya menambah dropdown jika yang terakhir sudah diisi dengan bahasa valid
+            if len(self.selected_languages_vars) == len(self.language_dropdowns): # Safety check
+                 self._add_language_dropdown()
 
     def choose_code_file(self):
         filepaths = filedialog.askopenfilenames(
-            title="Pilih Berkas Kode",
-            filetypes=(("Semua berkas", "*.*"),
+            title="Pilih Berkas Kode", # Judul dialog
+            filetypes=(("Semua berkas", "*.*"), # Jenis berkas
                        ("Berkas teks", "*.txt"), ("Berkas Python", "*.py"), ("Berkas JavaScript", "*.js"),
                        ("Berkas HTML", "*.html;*.htm"), ("Berkas CSS", "*.css"), ("Berkas C", "*.c;*.h"),
                        ("Berkas C++", "*.cpp;*.hpp"), ("Berkas PHP", "*.php"), ("Berkas Java", "*.java"))
         )
         if filepaths:
             existing_content = self.current_code_text.get("1.0", tk.END).strip()
-            if existing_content:
-                 self.current_code_text.insert(tk.END, "\n\n") # Add separator if content already exists
-            else: # If text area was empty, ensure no leading newlines from previous operations
-                 self.current_code_text.delete("1.0", tk.END)
-
+            if existing_content and not existing_content.endswith("\n\n"):
+                self.current_code_text.insert(tk.END, "\n\n")
 
             for filepath in filepaths:
                 try:
                     with open(filepath, 'r', encoding='utf-8') as f:
                         content = f.read()
                     filename = os.path.basename(filepath)
-                    self.current_code_text.insert(tk.END, f"[Nama Berkas: {filename}]\n")
+                    self.current_code_text.insert(tk.END, f"[Nama Berkas: {filename}]\n") # Label nama berkas
                     file_ext = os.path.splitext(filename)[1].lower()
-                    lang_hint_map = {
+                    lang_hint_map = { # Language hints for markdown, generally standard
                         ".py": "python", ".js": "javascript", ".html": "html", ".htm": "html",
                         ".css": "css", ".c": "c", ".h": "c", ".cpp": "cpp", ".hpp": "cpp",
                         ".php": "php", ".java": "java", ".sql": "sql", ".rb": "ruby",
@@ -259,13 +223,12 @@ class PromptGeneratorApp:
                 except Exception as e:
                     messagebox.showerror("Kesalahan Membaca Berkas", f"Tidak dapat membaca berkas: {filepath}\n{e}")
 
-            # Clean up trailing newlines: ensure only one if content exists, none if empty.
-            current_text_final = self.current_code_text.get("1.0", tk.END).strip()
+            # Membersihkan spasi ekstra di akhir jika ada
+            current_text = self.current_code_text.get("1.0", tk.END)
+            if current_text.endswith("\n\n\n"): # Mengatasi kemungkinan tiga baris baru
+                 current_text = current_text[:-1] # Hapus satu baris baru
             self.current_code_text.delete("1.0", tk.END)
-            if current_text_final:
-                self.current_code_text.insert("1.0", current_text_final + "\n") # Single newline at the very end
-            
-            self.root.after_idle(self._on_frame_or_canvas_configure)
+            self.current_code_text.insert("1.0", current_text.strip()) # Hapus spasi di awal/akhir dan satu baris baru di akhir
 
 
     def _open_file_externally(self, filepath):
@@ -283,6 +246,7 @@ class PromptGeneratorApp:
 
     def generate_prompt_file(self):
         try:
+            # Menggunakan nama folder yang sudah diterjemahkan
             os.makedirs(self.prompts_dir, exist_ok=True)
         except OSError as e:
             messagebox.showerror("Kesalahan Pembuatan Folder", f"Tidak dapat membuat atau mengakses folder '{NAMA_FOLDER_PROMPT_YANG_DIHASILKAN}':\n{e}")
@@ -295,6 +259,7 @@ class PromptGeneratorApp:
         error_output_content = self.error_output_text.get("1.0", tk.END).strip()
         current_code_content = self.current_code_text.get("1.0", tk.END).strip()
 
+        # Validasi input
         if not problem_desc or problem_desc == self.STR_MASALAH_DEFAULT:
             messagebox.showwarning("Informasi Kurang", "Harap deskripsikan masalahnya.")
             return
@@ -302,18 +267,21 @@ class PromptGeneratorApp:
             messagebox.showwarning("Informasi Kurang", "Harap tambahkan atau muat kode saat ini.")
             return
         if error_output_content == self.STR_ERROR_OUTPUT_DEFAULT:
-            error_output_content = "" 
+            error_output_content = "" # Kosongkan jika masih default
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+        # Nama berkas dasar tetap menggunakan "Prompt" karena ini adalah bagian dari format yang mungkin dikenali
         base_filename = f"Prompt_{timestamp}.txt"
         counter = 1
         filepath = os.path.join(self.prompts_dir, base_filename)
         
+        # Handle jika berkas sudah ada
         while os.path.exists(filepath):
             new_filename = f"Prompt_{timestamp}_{counter}.txt"
             filepath = os.path.join(self.prompts_dir, new_filename)
             counter += 1
 
+        # Konten prompt yang diterjemahkan
         prompt_content = f"[permintaan]\n"
         prompt_content += f"Mohon analisis dan perbaiki kode yang akan saya berikan. Bahasa utama kemungkinan adalah {primary_lang}.\n"
         if len(selected_langs_list) > 1:
@@ -330,15 +298,18 @@ class PromptGeneratorApp:
         prompt_content += "Ini BUKAN keluaran yang diinginkan.\n"
         prompt_content += "Sebaliknya, untuk contoh di atas, saya menginginkan:\n"
         prompt_content += "```\n[contoh baris kode asli 1]\n[contoh baris kode 2 yang diperbaiki]\n[contoh baris kode asli 3]\n```\n\n"
-        prompt_content += self.fixed_instructions_text_content # Menggunakan variabel yang sudah ada
-        prompt_content += "\n\n" # Pastikan ada spasi setelah fixed instructions
+        prompt_content += "**Secara spesifik, JANGAN lakukan hal berikut:**\n"
+        prompt_content += "*   JANGAN gunakan placeholder seperti `[pertahankan kode sebelumnya]`, `... (sisa kode tidak berubah) ...`, atau sejenisnya.\n"
+        prompt_content += "*   JANGAN hanya menampilkan baris yang telah Anda ubah atau tambahkan.\n"
+        prompt_content += "*   JANGAN berikan diff atau daftar perubahan.\n\n"
+        prompt_content += "Saya membutuhkan *skrip/program/fungsi penuh* dengan semua perbaikan yang telah dimasukkan.\n\n"
         prompt_content += "[keluaran kesalahan]\n"
         if error_output_content:
             prompt_content += f"```\n{error_output_content}\n```\n\n"
         else:
             prompt_content += "[Tidak ada keluaran kesalahan spesifik yang diberikan oleh pengguna.]\n\n"
         prompt_content += f"[kode saat ini]\n"
-        prompt_content += f"{current_code_content}\n" # Konten kode sudah di-strip dan memiliki satu newline di akhir jika ada.
+        prompt_content += f"{current_code_content}\n"
 
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
@@ -351,6 +322,5 @@ class PromptGeneratorApp:
 if __name__ == "__main__":
     root = tk.Tk()
     app = PromptGeneratorApp(root)
-    root.update_idletasks() 
-    app._on_frame_or_canvas_configure() # Panggil sekali untuk set layout awal
     root.mainloop()
+```

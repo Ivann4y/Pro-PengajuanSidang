@@ -25,6 +25,10 @@
   transition: 300ms;
 }
 
+.forM {
+  background-color: #f5f5f5;
+}
+
 .jadiBiru:hover {
   background-color: rgb(67, 54, 240);
   color: white;

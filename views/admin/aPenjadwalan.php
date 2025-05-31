@@ -1,3 +1,17 @@
+<?php
+// Read and filter JSON data
+$selectedTipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'TA';
+$selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'belum';
+$statusFilter = ($selectedStatus == 'disetujui') ? true : false;
+
+$jsonData = file_get_contents('data_sidang.json');
+$data = json_decode($jsonData, true);
+
+$filteredData = array_filter($data, function($entry) use ($selectedTipe, $statusFilter) {
+    return $entry['tipeSidang'] == $selectedTipe && 
+           $entry['statusPersetujuan'] === $statusFilter;
+});
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -198,20 +212,23 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
         border: none; /* Remove default Bootstrap border if desired */
         padding: 5px 0; /* Adjust padding inside the menu */
-        background-color: #d9d9d9; 
+        background-color: #4538db; /* Light grey background on hover/focus */
     }
 
     .dropdown-menu:hover{
         background-color: #4538db; /* Light grey background on hover/focus */
         color:rgb(255, 255, 255); /* Your primary blue text color on hover */
+        border-radius: 20px;
     }
 
     /* Styling for individual dropdown items */
     .dropdown-item {
         padding: 10px 20px; /* More padding for better click area */
         font-size: 0.95rem;
-        color: #7b7b7b; /* Darker text color */
+        background-color: #4538db; /* Light grey background on hover/focus */
+        color:rgb(180, 180, 180); /* Darker text color */
         transition: background-color 0.2s, color 0.2s; /* Smooth transition for hover effects */
+        border-radius: 20px;
     }
 
     /* Hover/Focus effect for dropdown items */
@@ -233,59 +250,72 @@
         margin-left: 0.5em; /* Add some space between text and caret */
     }
 
-    .data-table {
+    .table-container {
       margin-top: 30px;
       width: 100%;
     }
 
-    .data-table-header {
+    .data-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 15px;
+      margin-top: 1rem;
+    }
+
+    .data-table thead th {
+      padding: 0 20px 15px 20px;
       border-bottom: 1px solid #ccc;
-      padding-bottom: 10px;
-      margin-bottom: 15px;
-      margin-left: 20px ;
-      display: flex; /* Makes columns align horizontally */
       font-weight: 600;
       color: #555;
-    }
-
-    .data-table-header > div,
-    .data-table-row > div {
-      flex: 1; /* Default flex grow for all columns */
       text-align: left;
-      padding: 5px 0;
     }
 
-    .data-table-row {
-      background-color: #e2e2e2; /* Light grey for rows */
-      border-radius: 15px;
+    .data-table tbody td {
+      background-color: #e2e2e2;
       padding: 15px 20px;
-      margin-bottom: 15px;
-      display: flex; /* Makes columns align horizontally within a row */
-      align-items: center; /* Vertically center content */
-      font-weight: 500;
-      color: #333;
-      transition: background-color 0.2s ease;
-      cursor: pointer; /* To indicate rows are clickable */
+      vertical-align: middle;
+      transition: all 0.3s ease;
     }
 
-    .data-table-row:hover {
-        background-color: #4538db;
-        color: white;
+    .data-table tbody tr:hover td {
+      background-color: #4538db;
+      color: white;
+      cursor: pointer;
     }
 
-    /* Specific flex values to control column widths, matching the image */
-    .data-table-row > div:nth-child(1) { flex: 0.5; } /* ID */
-    .data-table-row > div:nth-child(2) { flex: 1; } /* NIM */
-    .data-table-row > div:nth-child(3) { flex: 1.2; } /* Nama */
-    .data-table-row > div:nth-child(4) { flex: 2; } /* Judul Sidang */
-    .data-table-row > div:nth-child(5) { flex: 1.5; } /* Pembimbing */
+    /* Rounded corners for first and last td */
+    .data-table tbody td:first-child {
+      border-radius: 15px 0 0 15px;
+    }
 
-    /* Apply same flex values to headers to match column alignment */
-    .data-table-header > div:nth-child(1) { flex: 0.7; }
-    .data-table-header > div:nth-child(2) { flex: 1; }
-    .data-table-header > div:nth-child(3) { flex: 1.2; }
-    .data-table-header > div:nth-child(4) { flex: 2; }
-    .data-table-header > div:nth-child(5) { flex: 1.5; }
+    .data-table tbody td:last-child {
+      border-radius: 0 15px 15px 0;
+    }
+
+    /* Column Widths */
+    .data-table th:nth-child(1),
+    .data-table td:nth-child(1) { width: 7%; }
+
+    .data-table th:nth-child(2),
+    .data-table td:nth-child(2) { width: 10%; }
+
+    .data-table th:nth-child(3),
+    .data-table td:nth-child(3) { width: 12%; }
+
+    .data-table th:nth-child(4),
+    .data-table td:nth-child(4) { width: 20%; }
+
+    .data-table th:nth-child(5),
+    .data-table td:nth-child(5) { width: 15%; }
+
+    @media (max-width: 768px) {
+      .table-container {
+        overflow-x: auto;
+      }
+      .data-table {
+        min-width: 600px;
+      }
+    }
 
     /* Media query for responsiveness (adjust column wrapping on small screens) */
     @media (max-width: 768px) {
@@ -301,6 +331,7 @@
   </style>
 </head>
 <body>
+  
   <div class="sideNav">
     <h4><img src="logo-astratech.png" alt="ASTRAtech Logo"></h4>
     <div href="aBeranda.php" class="nav-item " id="berandaNav" onclick="location.href='aBeranda.php'">Beranda</div>
@@ -326,45 +357,49 @@
     <div class="d-flex" id="dropdownAdminPenjadwalan">
         <div class="dropdown me-2">
             <button class="filter-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Sidang TA
+                <?= $selectedTipe == 'TA' ? 'Sidang TA' : 'Sidang Semester' ?>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Sidang Semester</a></li>
+                <li><a class="dropdown-item" href="?tipe=TA&status=<?= $selectedStatus ?>">Sidang TA</a></li>
+                <li><a class="dropdown-item" href="?tipe=Semester&status=<?= $selectedStatus ?>">Sidang Semester</a></li>
             </ul>
         </div>
         <div class="dropdown me-2">
             <button class="filter-btn secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Belum Disetujui
+                <?= $selectedStatus == 'belum' ? 'Belum Disetujui' : 'Disetujui' ?>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Disetujui</a></li>
+                <li><a class="dropdown-item" href="?tipe=<?= $selectedTipe ?>&status=belum">Belum Disetujui</a></li>
+                <li><a class="dropdown-item" href="?tipe=<?= $selectedTipe ?>&status=disetujui">Disetujui</a></li>
             </ul>
         </div>
     </div>
-    <div class="data-table">
-        <div class="data-table-header">
-            <div>ID</div>
-            <div>NIM</div>
-            <div>Nama</div>
-            <div>Judul Sidang</div>
-            <div>Pembimbing</div>
-        </div>
-        <div class="data-table-row">
-            <div>005</div>
-            <div>0920240053</div>
-            <div>M. Haaris Nur S.</div>
-            <div>Sistem Pengajuan Sidang</div>
-            <div>Dr. Rida Indah F.</div>
-        </div>
-        <div class="data-table-row">
-            <div>006</div>
-            <div>0920240053</div>
-            <div>Naufal A F</div>
-            <div>Sistem Pengajuan Sidang</div>
-            <div>Dr. Rida Indah F.</div>
-        </div>
+
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>NIM</th>
+            <th>Nama</th>
+            <th>Judul Sidang</th>
+            <th>Pembimbing</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($filteredData as $entry): ?>
+          <tr>
+            <td><?= $entry['id'] ?></td>
+            <td><?= $entry['nim'] ?></td>
+            <td><?= $entry['nama'] ?></td>
+            <td><?= $entry['judulSidang'] ?></td>
+            <td><?= $entry['pembimbing'] ?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
     </div>
-  
   </div>
 
   <script>
