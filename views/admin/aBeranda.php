@@ -219,11 +219,8 @@
     <div class="profile-icon">
       <i class="fas fa-user-circle"></i>
     </div>
-    <div class="notif-icon">
-      <i class="fa-solid fa-bell"></i>
-    </div>
-     <div class="dashboardTitle">Dashboard Admin</div>
-    <h2 class="welcomeText">Selamat Datang, Admin!</h2>
+     <div class="dashboardTitle">Beranda</div>
+    <h2 class="welcomeText">Selamat Datang, Evan Wahyu</h2>
    
     <div class="row my-4">
       <div class="col-md-3 mb-3">

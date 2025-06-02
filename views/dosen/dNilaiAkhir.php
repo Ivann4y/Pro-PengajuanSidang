@@ -21,7 +21,8 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../extra/style.css" />
     <title>Dosen - Nilai Akhir</title>
     <style>
       body,
