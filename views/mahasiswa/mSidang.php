@@ -6,6 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../extra/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <title>Mahasiswa - Sidang</title>
     <style>
@@ -60,8 +61,50 @@
 </head>
 <body>
     <div class="container-fluid">
-        <div class="sideNav"></div>
-        <div class="container-fluid bodyContainer">
+        <div id="NavSide">
+      <div id="main-sidebar" class="NavSide__sidebar">
+        <div class="NavSide__sidebar-brand">
+          <img src="WhiteAstra.png" alt="Astra Logo" />
+        </div>
+        <ul class="NavSide__sidebar-nav">
+          <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Beranda</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Pengajuan</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="NavSide__toggle">
+        <i class="bi bi-list open"></i>
+        <i class="bi bi-x-lg close"></i>
+      </div>
+
+      <main class="NavSide__main-content">
+        <div class="container-fluid">
             <div class="row">
                 <h2 class="text-heading">
                     Nayaka Ivana Putra (Mahasiswa)
@@ -113,7 +156,33 @@
             </div>
         </div>
     </div>
+      </main>
+    </div>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      let menuToggle = document.querySelector(".NavSide__toggle");
+      let sidebar = document.getElementById("main-sidebar"); // More direct access
 
+      // Toggle sidebar visibility
+      menuToggle.onclick = function () {
+        menuToggle.classList.toggle("NavSide__toggle--active");
+        sidebar.classList.toggle("NavSide__sidebar--active-mobile"); // Specific class for mobile active state
+      };
+
+      // Active menu item highlighting
+      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+      for (let i = 0; i < listItems.length; i++) {
+        listItems[i].onclick = function () {
+          // Remove active class from all items
+          for (let j = 0; j < listItems.length; j++) {
+            listItems[j].classList.remove("NavSide__sidebar-item--active");
+          }
+          // Add active class to the clicked item
+          this.classList.add("NavSide__sidebar-item--active");
+        };
+      }
+    </script>
     <script src="../../assets/js/main.js"></script>
 </body>
 </html>
