@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,7 +72,8 @@
             width: 100%;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
-            margin-bottom: 10px; /* Kept from user's last version */
+            margin-bottom: 10px;
+            /* Kept from user's last version */
         }
 
         .NavSide__sidebar-item a {
@@ -110,6 +112,7 @@
             display: none;
             right: 0;
         }
+
         .NavSide__sidebar-item b:nth-child(1)::before {
             content: "";
             position: absolute;
@@ -121,6 +124,7 @@
             background: rgb(67, 54, 240);
             display: block;
         }
+
         .NavSide__sidebar-item b:nth-child(2) {
             position: absolute;
             bottom: -20px;
@@ -130,6 +134,7 @@
             display: none;
             right: 0;
         }
+
         .NavSide__sidebar-item b:nth-child(2)::before {
             content: "";
             position: absolute;
@@ -141,6 +146,7 @@
             background: rgb(67, 54, 240);
             display: block;
         }
+
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
             display: block;
@@ -153,7 +159,8 @@
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
             background-color: #F9FAFB;
-            padding-top: 3vh; /* Default for larger screens */
+            padding-top: 3vh;
+            /* Default for larger screens */
         }
 
         .NavSide__toggle {
@@ -170,7 +177,8 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: none; /* Hidden by default for larger screens */
+            display: none;
+            /* Hidden by default for larger screens */
         }
 
         .NavSide__toggle i.bi {
@@ -182,54 +190,67 @@
         .NavSide__toggle i.bi.open {
             color: rgb(67, 54, 240);
         }
+
         .NavSide__toggle i.bi.close {
-            color: rgb(67,54,240);
+            color: rgb(67, 54, 240);
         }
-        .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; }
-        .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; }
+
+        .NavSide__toggle.NavSide__toggle--active i.bi.open {
+            display: none;
+        }
+
+        .NavSide__toggle.NavSide__toggle--active i.bi.close {
+            display: block;
+        }
 
         /* NEW: Top Bar for smaller screens */
         .NavSide__topbar {
-            display: none; /* Hidden by default for larger screens */
+            display: none;
+            /* Hidden by default for larger screens */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 60px; /* Adjust height as needed */
+            height: 60px;
+            /* Adjust height as needed */
             background-color: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999; /* Below sidebar, above main content */
-            align-items: center; /* Vertically align items */
-            padding: 0 15px; /* Add horizontal padding */
-            justify-content: space-between; /* Space between toggle and icons */
+            z-index: 999;
+            /* Below sidebar, above main content */
+            align-items: center;
+            /* Vertically align items */
+            padding: 0 15px;
+            /* Add horizontal padding */
+            justify-content: space-between;
+            /* Space between toggle and icons */
         }
 
         .NavSide__topbar .header-icons {
             display: flex;
             align-items: center;
-            /* margin-left: auto; This is handled by justify-content: space-between */
         }
 
         /* --- STYLES FOR ICONS IN TOPBAR TO MATCH DESKTOP --- */
         .NavSide__topbar .header-icons .bi-bell-fill {
-            font-size: 1.5rem; /* Matches desktop size */
-            color: #555; /* Matches desktop color */
-            margin-right: 1.5rem; /* Space between bell and profile */
+            font-size: 1.5rem;
+            color: #555;
+            margin-right: 1.5rem;
             cursor: pointer;
         }
+
         .NavSide__topbar .profile-icon {
-            width: 40px; /* Matches desktop size */
-            height: 40px; /* Matches desktop size */
-            background-color: #333; /* Matches desktop color */
-            border-radius: 50%; /* Matches desktop shape */
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
         }
-        /* --- END ICON STYLES --- */
 
+        /* --- END ICON STYLES --- */
 
         @media (max-width: 700px) {
             .NavSide__sidebar {
@@ -237,88 +258,93 @@
                 transform: translateX(-100%);
                 border-left-width: 0;
             }
+
             .NavSide__sidebar.NavSide__sidebar--active-mobile {
                 transform: translateX(0);
                 box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
             }
+
             .NavSide__sidebar-brand {
                 padding: 20px 10px 30px 10px;
             }
+
             .NavSide__sidebar-brand img {
                 width: 90%;
             }
+
             .NavSide__sidebar-nav {
                 padding-top: 20%;
             }
+
             .NavSide__sidebar-item a {
                 padding: 12% 10%;
                 height: auto;
             }
+
             .NavSide__main-content {
                 margin-left: 0;
                 padding: 15px;
-                padding-top: 75px; /* Adjust this to create space for the fixed top bar */
+                padding-top: 75px;
+                /* Adjust this to create space for the fixed top bar */
             }
+
             .NavSide__toggle {
-                display: flex; /* Show toggle button on small screens */
-                /* When inside NavSide__topbar, remove fixed positioning */
+                display: flex;
                 position: relative;
-                top: auto; /* Reset */
-                background-color: transparent; /* Maintain transparency */
-                box-shadow: none; /* Remove shadow if topbar has one */
-                left: 0; /* Adjusted for better alignment */
+                top: auto;
+                background-color: transparent;
+                box-shadow: none;
+                left: 0;
             }
+
             .NavSide__toggle i.bi.open {
                 display: block;
             }
+
             .NavSide__toggle.NavSide__toggle--active {
-                /* This rule targets the toggle's position when the sidebar is open on mobile */
-                /* We need to re-evaluate if this specific 'left' adjustment is still needed/correct */
-                /* given the toggle is now part of the topbar's flex layout. */
-                /* For now, leaving it as is, but it might not have the intended effect or might conflict */
-                /* if the toggle is a flex item. */
                 left: calc(50% + 10px);
-                background-color: aliceblue; /* This might still be needed if you want a background change when active */
+                background-color: aliceblue;
             }
 
-            /* Show the top bar on small screens */
             .NavSide__topbar {
                 display: flex;
             }
 
-            /* Hide dashboard-header icons on small screens if they are now in the topbar */
             .dashboard-header .header-icons {
                 display: none;
             }
 
-            /* Adjust main content heading on small screens */
             .dashboard-header {
-                margin-top: 0; /* Remove top margin if the welcome text is directly after the top bar */
+                margin-top: 0;
             }
         }
 
-        /* DASHBOARD STYLES (No changes needed for these, just for context) */
+        /* DASHBOARD STYLES */
         .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
+
         .dashboard-header .page-title {
             font-size: 1.75rem;
             font-weight: 600;
             color: #333;
         }
+
         .dashboard-header .header-icons {
             display: flex;
             align-items: center;
         }
+
         .dashboard-header .header-icons .bi-bell-fill {
             font-size: 1.5rem;
             color: #555;
             margin-right: 1.5rem;
             cursor: pointer;
         }
+
         .dashboard-header .profile-icon {
             width: 40px;
             height: 40px;
@@ -342,7 +368,7 @@
             border-radius: 22px;
             padding: 1.5rem;
             margin: 2vh 2vh;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         }
 
         .sidang-status-card {
@@ -352,6 +378,7 @@
             align-items: center;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         }
+
         .sidang-status-card .number {
             font-size: 4.8rem;
             font-weight: 700;
@@ -360,41 +387,47 @@
             min-width: 50px;
             text-align: center;
         }
+
         .sidang-status-card .text {
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
+
         .sidang-status-card .text .title {
             font-size: 0.95rem;
             font-weight: 500;
             display: block;
             margin-bottom: 0.1rem;
         }
+
         .sidang-status-card .text .description {
             font-size: 1.05rem;
             font-weight: 600;
         }
 
         .penilaian-status-card {
-            background-color:rgb(239, 239, 239);
+            background-color: rgb(239, 239, 239);
             display: flex;
             align-items: center;
         }
+
         .penilaian-status-card .number {
             font-size: 4.8rem;
             font-weight: 700;
             line-height: 1;
             margin-right: 1.2rem;
-            color:rgb(37, 44, 54);
+            color: rgb(37, 44, 54);
             min-width: 50px;
             text-align: center;
         }
+
         .penilaian-status-card .text {
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
+
         .penilaian-status-card .text .title {
             font-size: 0.95rem;
             font-weight: 500;
@@ -402,6 +435,7 @@
             display: block;
             margin-bottom: 0.1rem;
         }
+
         .penilaian-status-card .text .description {
             font-size: 1.05rem;
             font-weight: 600;
@@ -411,13 +445,34 @@
         .content-card {
             background-color: #F3F4F6;
         }
-        .content-card .section-title {
+
+        .content-card .section-title { /* Base style for section titles in content cards */
             font-size: 1.1rem;
             font-weight: 600;
             color: #1F2937;
-            margin-bottom: 1rem;
+            margin-bottom: 1rem; /* Default margin, overridden by sticky titles */
         }
 
+        /* --- Notifikasi Card Styles --- */
+        .notifikasi-card {
+            overflow-y: auto;
+            max-height: 35vh; /* Adjust as needed */
+            padding-top: 0rem;
+            padding-bottom: 1rem; 
+        }
+
+        .notifikasi-card .section-title {
+            position: sticky;
+            top: 0;
+            background-color: #F3F4F6;
+            z-index: 10;
+            padding-top: 0.3rem;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+            margin-bottom: 0; 
+            border-bottom: 1px solid #DEE2E6;
+        }
+        
         .notifikasi-card .notifikasi-item {
             background-color: white;
             color: #4B5563;
@@ -427,20 +482,32 @@
             font-size: 0.9rem;
             font-weight: 500;
         }
+
         .notifikasi-card .notifikasi-item:last-child {
             margin-bottom: 0;
         }
 
+        /* --- Tanggungan Card Styles --- */
         .tanggungan-card {
-            height: 92% !important;
+            /* Ensure any previous height: 92% !important; is removed */
+            overflow-y: auto;
+            max-height: 37.5vh; /* Adjust as needed */
+            padding-top: 0rem;
+            padding-bottom: 1rem;
         }
 
         .tanggungan-card .section-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1F2937;
-            margin-bottom: 1rem;
+            position: sticky;
+            top: 0;
+            background-color: #F3F4F6;
+            z-index: 10;
+            padding-top: 0.3rem;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+            margin-bottom: 0; 
+            border-bottom: 1px solid #DEE2E6;
         }
+
         .tanggungan-card .tanggungan-item {
             background-color: white;
             color: #374151;
@@ -450,45 +517,54 @@
             font-size: 0.9rem;
             font-weight: 500;
         }
+
         .tanggungan-card .tanggungan-item:last-child {
             margin-bottom: 0;
         }
 
+        /* --- Calendar Card (no changes to scrolling for this one based on request) --- */
         .calendar-card {
             background-color: #4F46E5;
             color: white;
-            height: 38.5vh;
+            height: 38.5vh; /* Fixed height, not typically a scrollable list of items */
         }
+
         .calendar-card .section-title-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .calendar-card .section-title {
+
+        .calendar-card .section-title { /* This title is different, not sticky in the same way */
             color: white;
-            margin-bottom: 0;
+            margin-bottom: 0; /* Original had this, if it was part of .content-card .section-title, it would be overridden by more specific sticky titles */
         }
+
         .calendar-card .calendar-nav i {
             font-size: 1rem;
             cursor: pointer;
             padding: 0 0.3rem;
         }
+
         .calendar-card .calendar {
             width: 100%;
             border-collapse: collapse;
             margin-top: 0.3rem;
         }
+
         .calendar-card .calendar th {
-            padding: -0.2rem 0.25rem;
+            padding: -0.2rem 0.25rem; /* Note: negative padding is unusual, might be typo or specific intent */
             text-align: center;
             font-weight: 500;
             font-size: 0.85rem;
             color: #C7D2FE;
         }
+
         .calendar-card .calendar td {
             padding: 0.2rem;
             text-align: center;
         }
+
         .calendar-card .calendar-day {
             display: inline-block;
             width: 30px;
@@ -500,29 +576,35 @@
             margin: 0 auto;
             cursor: pointer;
         }
+
         .calendar-card .calendar-day.current-day {
             background-color: white;
             color: #4F46E5;
             font-weight: 700;
         }
+
         .calendar-card .calendar-day:hover:not(.current-day) {
-            background-color: rgba(255,255,255,0.2);
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
+        /* --- Sidang Mendatang Card (User's latest version) --- */
         .sidang-mendatang-card {
-            /* Enable vertical scrolling when content overflows */
             overflow-y: auto;
-            /* Set a maximum height for the card to enable scrolling */
-            max-height: 38.5vh; /* Adjust this value as needed */
-            padding-top: 0.5rem; /* Add some top padding to avoid title touching the top */
+            max-height: 36vh;
+            padding-top: 0rem;
+            padding-bottom: 1rem;
         }
+
         .sidang-mendatang-card .section-title {
-            position: sticky; /* Make the title sticky */
-            top: 0; /* Stick to the top of the card */
-            background-color: #F3F4F6; /* Match card background */
-            z-index: 10; /* Ensure title stays on top of scrolling content */
-            padding-bottom: 0.5rem; /* Add padding below the title */
-            margin-bottom: 0; /* Remove default margin to reduce space */
+            position: sticky;
+            top: 0;
+            background-color: #F3F4F6;
+            z-index: 10;
+            padding-top: 0.3rem;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+            margin-bottom: 0;
+            border-bottom: 1px solid #DEE2E6;
         }
 
         .sidang-mendatang-card .item {
@@ -534,9 +616,11 @@
             border-radius: 12px;
             margin-bottom: 0.75rem;
         }
+
         .sidang-mendatang-card .item:last-child {
             margin-bottom: 0;
         }
+
         .sidang-mendatang-card .date-bubble {
             background-color: white;
             border-radius: 8px;
@@ -550,31 +634,35 @@
             justify-content: center;
             align-items: center;
         }
+
         .sidang-mendatang-card .date-bubble .day {
             font-size: 1.1rem;
             font-weight: 700;
             color: #4F46E5;
             line-height: 1.1;
         }
+
         .sidang-mendatang-card .date-bubble .month {
             font-size: 0.7rem;
             color: #6B7280;
             line-height: 1;
             text-transform: uppercase;
         }
+
         .sidang-mendatang-card .info {
             flex-grow: 1;
             font-size: 0.9rem;
             font-weight: 500;
             color: #374151;
         }
+
         .sidang-mendatang-card .arrow i {
             font-size: 1.2rem;
             color: #4F46E5;
         }
-
     </style>
 </head>
+
 <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -646,11 +734,13 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                               <div class="dashboard-card content-card tanggungan-card h-100">
+                            <div class="dashboard-card content-card tanggungan-card"> 
                                 <h3 class="section-title">Tanggungan</h3>
                                 <div class="tanggungan-item">Revisi Sidang PRG</div>
                                 <div class="tanggungan-item">Revisi Sidang Basdat</div>
                                 <div class="tanggungan-item">Revisi Sidang TA</div>
+                                <div class="tanggungan-item">Tanggungan Item 4</div>
+                                <div class="tanggungan-item">Tanggungan Item 5</div>
                             </div>
                         </div>
                     </div>
@@ -660,6 +750,9 @@
                         <div class="notifikasi-item">Pengajuan Sidang PRG Telah Disetujui</div>
                         <div class="notifikasi-item">Revisi Sidang BasDat Telah Disetujui</div>
                         <div class="notifikasi-item">Pengajuan Sidang SO Telah Ditolak</div>
+                        <div class="notifikasi-item">Notifikasi Item 4</div>
+                        <div class="notifikasi-item">Notifikasi Item 5</div>
+                        <div class="notifikasi-item">Notifikasi Item 6</div>
                     </div>
                 </div>
 
@@ -675,11 +768,17 @@
                         <table class="calendar" id="calendarTable">
                             <thead>
                                 <tr>
-                                    <th>Min</th><th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th><th>Sab</th>
+                                    <th>Min</th>
+                                    <th>Sen</th>
+                                    <th>Sel</th>
+                                    <th>Rab</th>
+                                    <th>Kam</th>
+                                    <th>Jum</th>
+                                    <th>Sab</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
 
@@ -741,7 +840,7 @@
                             <span class="info">Bimbingan Akhir</span>
                             <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
-                         <div class="item">
+                        <div class="item">
                             <div class="date-bubble">
                                 <span class="day">02</span>
                                 <span class="month">Jul</span>
@@ -761,16 +860,16 @@
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
 
-        menuToggle.onclick = function () {
+        menuToggle.onclick = function() {
             menuToggle.classList.toggle("NavSide__toggle--active");
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
 
-        // Sidebar Active Item Logic (no change needed here as it's already functional)
+        // Sidebar Active Item Logic
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
         for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function () {
-                if(!this.classList.contains("NavSide__sidebar-item--active")) {
+            listItems[i].onclick = function() {
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
                     for (let j = 0; j < listItems.length; j++) {
                         listItems[j].classList.remove("NavSide__sidebar-item--active");
                     }
@@ -786,41 +885,37 @@
         const nextMonthBtn = document.getElementById("nextMonth");
 
         let currentDate = new Date();
-        // Set the activeDate to the current date for proper current day highlighting on load
-        let activeDate = new Date(); // Start with current date for rendering the current month
+        let activeDate = new Date(); 
 
         const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         ];
 
         function renderCalendar() {
-            calendarTableBody.innerHTML = ""; // Clear existing calendar days
+            calendarTableBody.innerHTML = ""; 
             currentMonthYearHeader.textContent = `${monthNames[activeDate.getMonth()]} ${activeDate.getFullYear()}`;
 
             const year = activeDate.getFullYear();
             const month = activeDate.getMonth();
 
-            const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 for Sunday, 1 for Monday, etc.
+            const firstDayOfMonth = new Date(year, month, 1).getDay(); 
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             let date = 1;
-            for (let i = 0; i < 6; i++) { // Max 6 rows for a calendar
+            for (let i = 0; i < 6; i++) { 
                 const row = document.createElement("tr");
 
-                for (let j = 0; j < 7; j++) { // 7 days a week
+                for (let j = 0; j < 7; j++) { 
                     const cell = document.createElement("td");
                     if (i === 0 && j < firstDayOfMonth) {
-                        // Empty cells before the first day of the month
                         cell.innerHTML = "";
                     } else if (date > daysInMonth) {
-                        // Empty cells after the last day of the month
                         cell.innerHTML = "";
                     } else {
                         const daySpan = document.createElement("span");
                         daySpan.classList.add("calendar-day");
                         daySpan.textContent = date;
 
-                        // Highlight current day if it matches the current date
                         if (date === currentDate.getDate() && month === currentDate.getMonth() && year === currentDate.getFullYear()) {
                             daySpan.classList.add("current-day");
                         }
@@ -835,20 +930,18 @@
 
         prevMonthBtn.addEventListener("click", () => {
             activeDate.setMonth(activeDate.getMonth() - 1);
-            // After changing month, set day to 1 to ensure it's a valid date for all months.
-            activeDate.setDate(1);
+            activeDate.setDate(1); 
             renderCalendar();
         });
 
         nextMonthBtn.addEventListener("click", () => {
             activeDate.setMonth(activeDate.getMonth() + 1);
-            // Same logic as prevMonthBtn to avoid date rollover issues
             activeDate.setDate(1);
             renderCalendar();
         });
 
-        // Initial render of the calendar
         renderCalendar();
     </script>
 </body>
+
 </html>
