@@ -22,60 +22,20 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <style>
+    <style>
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
       background-color: #f9f9f9;
-    }
-
-    .sideNav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 15vw;
-      height: 100vh;
-      background-color: #4538db;
-      padding: 2% 1%;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .sideNav h4 img {
-      width: 100%;
-      max-width: 120px;
-      margin-bottom: 30px;
-    }
-
-    .nav-item {
-      margin: 15px 0;
-      font-weight: 500;
-      cursor: pointer;
-      width: 100%;
-      padding: 10px 15px;
-      text-align: center;
-      border-radius: 20px;
-      transition: all 0.3s ease;
-    }
-
-    .nav-item.active {
-      background-color: white;
-      color: #4538db;
-      font-weight: 600;
-    }
-
-    .nav-item:hover {
-      background-color: #ffffffcc;
-      color: #4538db;
+      min-height: 100vh;
     }
 
     .bodyContainer {
-      margin-left: 15vw;
+      margin-left: 280px; /* Matches width: 280px of .NavSide__sidebar in style.css */
       padding: 4vh 3vw;
+      position: relative;
     }
 
     .bodyHeading {
@@ -93,21 +53,21 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       font-size: 1.5rem;
       font-weight: 500;
     }
-        /* --- Styles for Search Bar and Filters --- */
+
     .search-input-container {
       position: relative;
-      width: 300px; 
-      height: 45px; 
+      width: 300px;
+      height: 45px;
     }
 
     .search-input {
-      border-radius: 25px; 
-      padding: 8px 15px 8px 45px; 
+      border-radius: 25px;
+      padding: 8px 15px 8px 45px;
       border: 1px solid #ccc;
       width: 100%;
-      background-color: #e9e9e9; 
-      height: 100%; 
-      outline: none; 
+      background-color: #e9e9e9;
+      height: 100%;
+      outline: none;
       font-size: 1rem;
     }
 
@@ -142,7 +102,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       transform: scale(1.05);
     }
 
-
     .img-slot {
       width: 100%;
       height: 100%;
@@ -170,18 +129,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       color: #007bff;
     }
 
-    @media (max-width: 768px) {
-      .sideNav {
-        position: relative;
-        width: 100vw;
-        height: auto;
-        flex-direction: row;
-        justify-content: space-around;
-      }
-      .bodyContainer {
-        margin-left: 0;
-      }
-    }
     .filter-btn {
       background-color: #4538db;
       color: white;
@@ -191,7 +138,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       font-size: 0.95rem;
       border: none;
       cursor: pointer;
-      margin-right: 15px; /* Space between buttons */
+      margin-right: 15px;
       transition: background-color 0.2s ease, color 0.2s;
     }
 
@@ -208,46 +155,42 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     }
 
     .dropdown-menu {
-        border-radius: 20px; /* Slightly rounded corners */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
-        border: none; /* Remove default Bootstrap border if desired */
-        padding: 5px 0; /* Adjust padding inside the menu */
-        background-color: #4538db; /* Light grey background on hover/focus */
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: none;
+        padding: 5px 0;
+        background-color: #4538db;
     }
 
     .dropdown-menu:hover{
-        background-color: #4538db; /* Light grey background on hover/focus */
-        color:rgb(255, 255, 255); /* Your primary blue text color on hover */
+        background-color: #4538db;
+        color:rgb(255, 255, 255);
         border-radius: 20px;
     }
 
-    /* Styling for individual dropdown items */
     .dropdown-item {
-        padding: 10px 20px; /* More padding for better click area */
+        padding: 10px 20px;
         font-size: 0.95rem;
-        background-color: #4538db; /* Light grey background on hover/focus */
-        color:rgb(180, 180, 180); /* Darker text color */
-        transition: background-color 0.2s, color 0.2s; /* Smooth transition for hover effects */
+        background-color: #4538db;
+        color:rgb(180, 180, 180);
+        transition: background-color 0.2s, color 0.2s;
         border-radius: 20px;
     }
 
-    /* Hover/Focus effect for dropdown items */
     .dropdown-item:hover,
     .dropdown-item:focus {
-        background-color: #4538db; /* Light grey background on hover/focus */
-        border-radius: 20px; /* Slightly rounded corners */
-        color:rgb(255, 255, 255); /* Your primary blue text color on hover */
+        background-color: #4538db;
+        border-radius: 20px;
+        color:rgb(255, 255, 255);
     }
 
-    /* Styles for the optional divider */
     .dropdown-divider {
-        border-top: 1px solid #eee; /* Light grey line */
+        border-top: 1px solid #eee;
     }
 
-    /* Adjust the caret position for the dropdown buttons */
     .dropdown-toggle::after {
-        vertical-align: 0.15em; /* Keep your existing adjustment */
-        margin-left: 0.5em; /* Add some space between text and caret */
+        vertical-align: 0.15em;
+        margin-left: 0.5em;
     }
 
     .table-container {
@@ -283,28 +226,21 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       cursor: pointer;
     }
 
-    /* Rounded corners for first and last td */
-    .data-table tbody td:first-child {
+    .data-table tbody tr td:first-child {
       border-radius: 15px 0 0 15px;
     }
-
-    .data-table tbody td:last-child {
+    .data-table tbody tr td:last-child {
       border-radius: 0 15px 15px 0;
     }
 
-    /* Column Widths */
     .data-table th:nth-child(1),
     .data-table td:nth-child(1) { width: 7%; }
-
     .data-table th:nth-child(2),
     .data-table td:nth-child(2) { width: 10%; }
-
     .data-table th:nth-child(3),
     .data-table td:nth-child(3) { width: 12%; }
-
     .data-table th:nth-child(4),
     .data-table td:nth-child(4) { width: 20%; }
-
     .data-table th:nth-child(5),
     .data-table td:nth-child(5) { width: 15%; }
 
@@ -316,29 +252,41 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         min-width: 600px;
       }
     }
-
-    /* Media query for responsiveness (adjust column wrapping on small screens) */
-    @media (max-width: 768px) {
-      .data-table-header, .data-table-row {
-        flex-wrap: wrap; /* Allow wrapping on small screens */
-      }
-      .data-table-header > div,
-      .data-table-row > div {
-        flex: 1 1 50%; /* Adjust column widths on small screens (e.g., 2 columns per row) */
-      }
-    }
-
   </style>
 </head>
 <body>
   
-  <div class="sideNav">
-    <h4><img src="logo-astratech.png" alt="ASTRAtech Logo"></h4>
-    <div href="aBeranda.php" class="nav-item " id="berandaNav" onclick="location.href='aBeranda.php'">Beranda</div>
-    <div href="aPenjadwalan.php" class="nav-item active" id="penjadwalanNav" onclick="location.href='aPenjadwalan.php'">Penjadwalan</div>
-    <div class="nav-item">Daftar Sidang</div>
-    <div class="nav-item">Keluar</div>
-  </div>
+  <div id="main-sidebar" class="NavSide__sidebar">
+    <div class="NavSide__sidebar-brand">
+        <img src="../../assets/img/Logo_Astratech_White-8.png" alt="AstraTech Logo">
+    </div>
+    <ul class="NavSide__sidebar-nav">
+        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aBeranda.php' ? 'NavSide__sidebar-item--active' : ''); ?>" id="berandaNav">
+            <b></b><b></b>
+            <a href="aBeranda.php" onclick="location.href='aBeranda.php'">
+                <span class="NavSide__sidebar-title fw-semibold">Beranda</span>
+            </a>
+        </li>
+        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aPenjadwalan.php' ? 'NavSide__sidebar-item--active' : ''); ?>" id="penjadwalanNav">
+            <b></b><b></b>
+            <a href="aPenjadwalan.php" onclick="location.href='aPenjadwalan.php'">
+                <span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span>
+            </a>
+        </li>
+        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aDaftarSidang.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
+            <b></b><b></b>
+            <a href="aDaftarSidang.php" onclick="location.href='aDaftarSidang.php'">
+                <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
+            </a>
+        </li>
+        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
+            <b></b><b></b>
+            <a href="logout.php" onclick="location.href='logout.php'">
+                <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
+            </a>
+        </li>
+    </ul>
+</div>
 
   <div class="bodyContainer position-relative">
     <div class="profile-icon">
