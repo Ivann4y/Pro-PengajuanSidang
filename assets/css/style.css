@@ -1,17 +1,5 @@
-.sideNav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 15vw;
-  height: 100%;
-  background-color: rgb(67, 54, 240);
-  padding: 2%;
-}
-
-.bodyContainer {
-  margin-left: 15vw;
-  padding: 5vh;
-  width: 80vw;
+button {
+  border-radius: 50px !important;
 }
 
 .text-heading {
@@ -60,7 +48,8 @@
   .text-heading {
     font-size: large;
   }
-  .dropdown-toggle, .dropdown-menu {
+  .dropdown-toggle,
+  .dropdown-menu {
     font-size: small !important;
   }
   table {
@@ -81,12 +70,12 @@
 }
 
 .NavSide__sidebar-brand {
-  padding: 10% 5% 50% 5%; 
-  text-align: center; 
+  padding: 10% 5% 50% 5%;
+  text-align: center;
 }
 
 .NavSide__sidebar-brand img {
-  width: 90%; 
+  width: 90%;
   max-width: 180px;
   height: auto;
   display: inline-block;
