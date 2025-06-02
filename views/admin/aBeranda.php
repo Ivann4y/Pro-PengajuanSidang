@@ -7,61 +7,14 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <link rel="stylesheet" href="/Pro-PengajuanSidang/assets/css/style.css">
+   <link rel="stylesheet" href="../../assets/css/style.css">
+   <link rel="stylesheet" href="../../extra/style.css">
+   
   <style>
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
       background-color:rgb(255, 255, 255);
-    }
-
-    .sideNav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 15vw;
-      height: 100vh;
-      background-color: #4538db;
-      padding: 2% 1%;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .sideNav h4 {
-      width: 100%;
-      max-width: 120px;
-      margin-bottom: 30px;
-    }
-
-     .sideNav img {
-      width: 100%;
-      max-width: 150px;
-      margin-bottom: 100px;
-    }
-
-    .nav-item {
-      margin: 15px 0;
-      font-weight: 500;
-      cursor: pointer;
-      width: 100%;
-      padding: 10px 15px;
-      text-align: center;
-      border-radius: 20px;
-      transition: all 0.3s ease;
-    }
-
-    .nav-item.active {
-      background-color: white;
-      color: #4538db;
-      font-weight: 600;
-    }
-
-    .nav-item:hover {
-      background-color: #ffffffcc;
-      color: #4538db;
     }
 
     .bodyContainer {
@@ -209,28 +162,58 @@
       color: #007bff;
     }
 
-    @media (max-width: 768px) {
-      .sideNav {
-        position: relative;
-        width: 100vw;
-        height: auto;
-        flex-direction: row;
-        justify-content: space-around;
-      }
-      .bodyContainer {
-        margin-left: 0;
-      }
-    }
+    
+
   </style>
 </head>
 <body>
-  <div class="sideNav">
-    <img src="../../assets/img/Logo_Astratech_White-8.png" >
-    <div href="aBeranda.php" class="nav-item active" id="berandaNav" onclick="location.href='aBeranda.php'">Beranda</div>
-    <div href="aPenjadwalan.php" class="nav-item" id="penjadwalanNav" onclick="location.href='aPenjadwalan.php'">Penjadwalan</div>
-    <div class="nav-item">Daftar Sidang</div>
-    <div class="nav-item">Keluar</div>
-  </div>
+ 
+    <div id="NavSide">
+      <div id="main-sidebar" class="NavSide__sidebar">
+        <div class="NavSide__sidebar-brand">
+          <img src="../../assets/img/Logo_Astratech_White-8.png" alt="Astra Logo" />
+        </div>
+        <ul class="NavSide__sidebar-nav">
+          <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+            <b></b>
+            <b></b>
+            <a href="aBeranda.php">
+              <span class="NavSide__sidebar-title fw-semibold">Beranda</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="aPenjadwalan.php">
+              <span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="NavSide__toggle">
+        <i class="bi bi-list open"></i>
+        <i class="bi bi-x-lg close"></i>
+      </div>
+
+      <main class="NavSide__main-content">
+        
+      </main>
+    </div>
 
   <div class="bodyContainer position-relative">
     <div class="profile-icon">
@@ -297,6 +280,28 @@
     function markOneRead(el) {
       el.closest('.notifItem').remove();
     }
+
+      let menuToggle = document.querySelector(".NavSide__toggle");
+      let sidebar = document.getElementById("main-sidebar"); // More direct access
+
+      // Toggle sidebar visibility
+      menuToggle.onclick = function () {
+        menuToggle.classList.toggle("NavSide__toggle--active");
+        sidebar.classList.toggle("NavSide__sidebar--active-mobile"); // Specific class for mobile active state
+      };
+
+      // Active menu item highlighting
+      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+      for (let i = 0; i < listItems.length; i++) {
+        listItems[i].onclick = function () {
+          // Remove active class from all items
+          for (let j = 0; j < listItems.length; j++) {
+            listItems[j].classList.remove("NavSide__sidebar-item--active");
+          }
+          // Add active class to the clicked item
+          this.classList.add("NavSide__sidebar-item--active");
+        };
+      }
   </script>
 </body>
 </html>
