@@ -27,11 +27,17 @@
       z-index: 1000;
     }
 
-      .sideNav h4 img {
+      .sideNav h4 {
       width: 100%;
       max-width: 120px;
       margin-bottom: 30px;
     }
+
+    .sideNav img {
+        width: 100%;
+        max-width: 150px;
+        margin-bottom: 100px;
+        }
 
     .nav-item {
       margin: 15px 0;
@@ -117,12 +123,25 @@
         border-radius: 0 20px 20px 0;
         }
 
+        @media (max-width: 768px) {
+      .sideNav {
+        position: relative;
+        width: 100vw;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+      .bodyContainer {
+        margin-left: 0;
+      }
+    }
+
     </style>
 </head>
 <body>
 
     <div class="sideNav">
-        <h4><img src="../../assets/img/Logo_Astratech_White-8.png" alt="ASTRAtech Logo"></h4>
+        <img src="../../assets/img/Logo_Astratech_White-8.png" alt="ASTRAtech Logo">
         <div href="dBeranda.php" class="nav-item " id="berandaNav" onclick="location.href='dBeranda.php'">Beranda</div>
         <div href="dPengajuan.php" class="nav-item" id="pengajuanNav" onclick="location.href='dPengajuan.php'">Pengajuan</div>
         <div href="dDaftarSidang.php"class="nav-item active" id="DaftarSidangNav" onclick="location.href='dDaftarSidang'">Daftar Sidang</div>
@@ -161,7 +180,7 @@
                         <tr class="isiTabel jadiBiru">
                             <td>1</td>
                             <td>0920240033</td>
-                            <td>M.Harris Nur S.</td>
+                            <td>M. Harris Nur S.</td>
                             <td>Tugas Akhir</td>
                             <td>Timotius Victory</td>
                         </tr>
