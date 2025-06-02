@@ -11,6 +11,64 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
     <title>Dosen - Pengajuan</title>
     <style>
+        .sideNav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 15vw;
+        height: 100vh;
+        background-color: #4538db;
+        padding: 2% 1%;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1000;
+        }
+
+        .sideNav h4 {
+        width: 100%;
+        max-width: 120px;
+        margin-bottom: 30px;
+        }
+
+        .sideNav img {
+        width: 100%;
+        max-width: 150px;
+        margin-bottom: 100px;
+        }
+
+        .nav-item {
+        margin: 15px 0;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        padding: 10px 15px;
+        text-align: center;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+        background-color: white;
+        color: #4538db;
+        font-weight: 600;
+        }
+
+        .nav-item:hover {
+        background-color: #ffffffcc;
+        color: #4538db;
+        }
+        .bodyContainer {
+      margin-left: 15vw;
+      padding: 4vh 3vw;
+    }
+     .bodyHeading {
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+
         table {
         border-spacing: 0 10px;
         border-collapse: separate;
@@ -62,13 +120,32 @@
         .isiTabel td:nth-child(5) {
         border-radius: 0 20px 20px 0;
         }
+    @media (max-width: 768px) {
+      .sideNav {
+        position: relative;
+        width: 100vw;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+      .bodyContainer {
+        margin-left: 0;
+      }
+    }
 
         
     </style>
 </head>
 <body>
+     <div class="sideNav">
+        <img src="../../assets/img/Logo_Astratech_White-8.png" >
+        <div href="dBeranda.php" class="nav-item " id="berandaNav" onclick="location.href='dBeranda.php'">Beranda</div>
+        <div href="dPengajuan.php" class="nav-item active" id="pengajuanNav" onclick="location.href='dPengajuan.php'">Pengajuan</div>
+        <div href="dDaftarSidang.php"class="nav-item" id="DaftarSidangNav" onclick="location.href='dDaftarSidang.php'">Daftar Sidang</div>
+        <div class="nav-item">Keluar</div>
+    </div>
+
     <div class="container-fluid">
-        <div class="sideNav"></div>
         <div class="container-fluid bodyContainer">
             <div class="row">
                 <h2 class="bodyHeading">
