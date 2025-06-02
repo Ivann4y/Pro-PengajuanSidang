@@ -60,13 +60,13 @@
         color: #4538db;
         }
         .bodyContainer {
-      margin-left: 15vw;
-      padding: 4vh 3vw;
-    }
-     .bodyHeading {
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
+        margin-left: 15vw;
+        padding: 4vh 3vw;
+        }
+        .bodyHeading {
+        font-weight: 600;
+        margin-bottom: 20px;
+        }
 
 
         table {

@@ -116,6 +116,7 @@
         .isiTabel td:nth-child(5) {
         border-radius: 0 20px 20px 0;
         }
+    }
 
     </style>
 </head>
