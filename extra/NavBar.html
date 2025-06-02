@@ -17,46 +17,43 @@
 
   <body>
     <div id="NavSide">
-      <div id="main-sidebar" class="NavSide__sidebar">
-        <div class="NavSide__sidebar-brand">
-          <img src="WhiteAstra.png" alt="Astra Logo" />
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
         </div>
-        <ul class="NavSide__sidebar-nav">
-          <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-            <b></b>
-            <b></b>
-            <a href="#">
-              <span class="NavSide__sidebar-title fw-semibold">Beranda</span>
-            </a>
-          </li>
-          <li class="NavSide__sidebar-item">
-            <b></b>
-            <b></b>
-            <a href="#">
-              <span class="NavSide__sidebar-title fw-semibold">Pengajuan</span>
-            </a>
-          </li>
-          <li class="NavSide__sidebar-item">
-            <b></b>
-            <b></b>
-            <a href="#">
-              <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
-            </a>
-          </li>
-          <li class="NavSide__sidebar-item">
-            <b></b>
-            <b></b>
-            <a href="#">
-              <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
-            </a>
-          </li>
-        </ul>
-      </div>
 
-      <div class="NavSide__toggle">
-        <i class="bi bi-list open"></i>
-        <i class="bi bi-x-lg close"></i>
-      </div>
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+        </div>
+        <main class="NavSide__main-content">
 
       <main class="NavSide__main-content">
         
@@ -64,28 +61,28 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="text/javascript">
-      let menuToggle = document.querySelector(".NavSide__toggle");
-      let sidebar = document.getElementById("main-sidebar"); // More direct access
+    <script>
+        // Sidebar Toggle Logic
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
 
-      // Toggle sidebar visibility
-      menuToggle.onclick = function () {
-        menuToggle.classList.toggle("NavSide__toggle--active");
-        sidebar.classList.toggle("NavSide__sidebar--active-mobile"); // Specific class for mobile active state
-      };
-
-      // Active menu item highlighting
-      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-      for (let i = 0; i < listItems.length; i++) {
-        listItems[i].onclick = function () {
-          // Remove active class from all items
-          for (let j = 0; j < listItems.length; j++) {
-            listItems[j].classList.remove("NavSide__sidebar-item--active");
-          }
-          // Add active class to the clicked item
-          this.classList.add("NavSide__sidebar-item--active");
+        menuToggle.onclick = function () {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
-      }
+
+        // Sidebar Active Item Logic (no change needed here as it's already functional)
+        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function () {
+                if(!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                }
+            };
+        }
     </script>
   </body>
 </html>
