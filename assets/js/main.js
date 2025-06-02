@@ -3,6 +3,10 @@
 
 // FUNGSI UNTUK DOSEN
 
+function goToDetail(nim) {
+    window.location.href = `dDetailPengajuan.php?nim=${nim}`;
+}
+
 
 // FUNGSI UNTUK MAHASISWA
 
