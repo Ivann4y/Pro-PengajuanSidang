@@ -241,7 +241,7 @@
    
     <div class="row my-4">
       <div class="col-md-3 mb-3">
-        <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='aPenjadwalan.php'">
+        <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='dPenjadwalan.php'">
           <div class="statusTitle">Pengajuan</div>
           <div class="d-flex align-items-center">
             <div class="statusNumber me-3">3</div>
@@ -250,7 +250,7 @@
         </div>
       </div>
       <div class="col-md-3 mb-3">
-        <div class="statusCard card-pengajuan" id="cardPengajuan" onclick="location.href='aPenjadwalan.php'">
+        <div class="statusCard card-pengajuan" id="cardPengajuan" onclick="location.href='dPenjadwalan.php'">
           <div class="statusTitle">Penilaian</div>
           <div class="d-flex align-items-center">
             <div class="statusNumber me-3">2</div>
