@@ -20,7 +20,8 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css" />
     <title>Dosen - Nilai Akhir</title>
     <style>
       body,
@@ -45,12 +46,13 @@
 
       }
       #nilaiMahasiswa {
-        font-size: 9.5rem;
+        font-size: 9.5rem !important;
         font-weight: bold;
         text-align: center;
         border-radius: 30px;
         width: 90%;
         margin-left: 23px;
+        height: 40px;
       }
       input.form-control:not(:placeholder-shown) {
       background: #f2f2f2 !important;
@@ -138,45 +140,64 @@
   font-size: 16px;
 }
 
-.logo {
-  width: 120px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
-.sidebar-link {
-  color: white;
-  font-weight: 600;
-  padding: 12px 20px;
-  border-radius: 0 0 0 0;
-  transition: all 0.3s ease;
-  position: relative;
-  margin-bottom: 40px;
+    .modal-content {
+  border-radius: 30px !important;
 }
+    .btnKonfirmasi {
+      background-color: #464869;
+      color: white;
+      border-radius: 15px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      height: 40px;
+      width: 100px;
+    }
 
-.sidebar-link.active {
-  background-color: #ffffff;
-  color: #4E6BFF;
-  width: 227px;
-  border-top-left-radius: 100px;
-  border-bottom-left-radius: 100px;
-  margin-left: -10px;
-  padding-left: 28px;
-}
 
     </style>
   </head>
   <body>
 
-      <div class="d-flex flex-column sideNav p-4">
+   <div id="NavSide">
+      <div id="main-sidebar" class="NavSide__sidebar">
+        <div class="NavSide__sidebar-brand">
+          <img src="WhiteAstra.png" alt="Astra Logo" />
+        </div>
+        <ul class="NavSide__sidebar-nav">
+          <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="#">
+              <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+         </ul>
+      </div>
 
+      <div class="NavSide__toggle">
+        <i class="bi bi-list open"></i>
+        <i class="bi bi-x-lg close"></i>
+      </div>
 
-  <nav class="nav flex-column text-center">
-    <a class="nav-link sidebar-link" href="#">Evaluasi</a>
-    <a class="nav-link sidebar-link" href="#">Dokumen</a>
-    <a class="nav-link sidebar-link active" href="#">Nilai Akhir</a>
-  </nav>
-</div>
+      <main class="NavSide__main-content">
+        
+      
 
       <div class="container-fluid bodyContainer">
           <div class="row mb-5">
@@ -189,19 +210,22 @@
             <div class="card" id="cardNilai">
               <div class="card-body">
                 <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
+                <div>
                 <input
+                  onclick="bukaKonfirmasiModal()"
                   type="text"
                   class="form-control form-control-lg text-center text"
                   id="nilaiMahasiswa"
                   placeholder=""
                   maxlength="1"
                 />
+                </div>
               </div>
             </div>
           </div>
           <div class="col-md-6">
             <img
-              src="../../assets/img/img5.png"
+              src="img5.png"
               alt="Mahasiswa"
               class="img-fluid "
               style="width: 500px; height: 350px; margin-left: 20px; "
@@ -217,6 +241,7 @@
                 <input
                   type="number"
                   class="form-control form-control-lg text-center"
+                  name="nilaiLaporan"
                   id="detailpenilaian"
                   placeholder=""
                   maxlength="3">
@@ -224,6 +249,7 @@
                 <input
                   type="number"
                   class="form-control form-control-lg text-center"
+                  name="MateriPresentasi"
                   id="detailpenilaian"
                   placeholder=""
                   maxlength="3">
@@ -231,6 +257,7 @@
                 <input
                   type="number"
                   class="form-control form-control-lg text-center"
+                  name="Penyampaian"
                   id="detailpenilaian"
                   placeholder=""
                   maxlength="3">
@@ -238,6 +265,7 @@
                 <input
                   type="number"
                   class="form-control form-control-lg text-center"
+                  name="NilaiProyek"
                   id="detailpenilaian"
                   placeholder=""
                   maxlength="3">
@@ -271,14 +299,109 @@
   </button>
         </div>
         <div class="col-auto">
-          <button class="btn btn-kirim" style="margin-right: 100px; width: 120px;">
+          <button class="btn btn-kirim" onclick="bukaKonfirmasiModalKirim()" style="margin-right: 100px; width: 120px;">
             Kirim
           </button>
         </div>
         </div>
     </div>
+    </main>
     
   </div>
+  <div class="modal fade" id="konfirmasiModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-3">
+      <div class="modal-body">
+        <p class="fs-5 fw-semibold">Apakah nilai akhir sama dengan nilai sementara?</p>
+        <div class="d-flex justify-content-center row mb5">
+          <div class="col-md-6">
+          <button type="button" class="btnKonfirmasi" onclick="TutupKonfirmasiModal()">Tidak</button>
+          </div>
+          <div class="col-md-6">
+          <button type="button" class="btnKonfirmasi" onclick="isiNilaiAkhir()">Iya</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ <div class="modal fade" id="konfirmasiModalKirim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-3">
+      <div class="modal-body">
+        <p class="fs-5 fw-semibold">Apakah yakin ingin mengirim nilai akhir?</p>
+        <div class="d-flex justify-content-center row mb5">
+          <div class="col-md-6">
+          <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal" onclick="">Tidak</button>
+          </div>
+          <div class="col-md-6">
+          <button type="button" class="btnKonfirmasi" onclick="kirimNilaiAkhir()">Iya</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+
+  function bukaKonfirmasiModalKirim() {
+    const modal = new bootstrap.Modal(document.getElementById('konfirmasiModalKirim'));
+    modal.show();
+  }
+  function kirimNilaiAkhir() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModalKirim'));
+    const nilaiMahasiswa = document.getElementById("nilaiMahasiswa").value;
+    const nilaiLaporan = document.getElementsByName("nilaiLaporan")[0].value;
+    const materiPresentasi = document.getElementsByName("MateriPresentasi")[0].value;
+    const penyampaian = document.getElementsByName("Penyampaian")[0].value;
+    const nilaiProyek = document.getElementsByName("NilaiProyek")[0].value;
+    if (nilaiMahasiswa === "" || nilaiLaporan === "" || materiPresentasi === "" || penyampaian === "" || nilaiProyek === "") {
+      Swal.fire({
+        title: 'Error',
+        text: 'Semua nilai harus diisi sebelum mengirim.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then(() => {
+        modal.hide();
+      });
+    } else{
+    modal.hide();
+    Swal.fire({
+      title: 'Berhasil',
+      text: 'Nilai akhir telah dikirim.',
+      icon: 'success',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    });
+  
+}
+  }
+  
+  function bukaKonfirmasiModal() {
+    const modal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
+    modal.show();
+  }
+  function TutupKonfirmasiModal() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+    modal.hide();
+    setTimeout(() => {
+  const input = document.getElementById("nilaiMahasiswa");
+  input.focus();
+}, 300);
+  }
+  
+  function isiNilaiAkhir() {
+    document.getElementById("nilaiMahasiswa").value = "A";
+    document.getElementsByName("nilaiLaporan")[0].value = "90";
+    document.getElementsByName("MateriPresentasi")[0].value = "85";
+    document.getElementsByName("Penyampaian")[0].value = "88";
+    document.getElementsByName("NilaiProyek")[0].value = "92";
+    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+    modal.hide(); 
+  }
+
+</script>
   </body>
 </html>
-
