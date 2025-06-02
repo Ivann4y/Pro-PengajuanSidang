@@ -51,7 +51,7 @@
         
        .nav-item.active {
             background-color: white;
-            color: #4538db;
+            color: #3970e6;
             font-weight: 600;
         }
         
@@ -75,26 +75,67 @@
         margin-bottom: 20px;
         box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
       }
+
       .info-card {
-        background: #f7f7f7;
+        position: relative;
+        background:rgb(224, 224, 224);
         border-radius: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
         padding: 25px;
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
         margin-bottom: 20px;
+        overflow: hidden;
+        transition: background-color 0.4s ease;
       }
+
+      .info-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 60px;
+        height: 100%;
+        background-color: #3970e6;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        transition: width 0.4s ease;
+        z-index: 0;
+      }
+
+      .info-card:hover::after {
+        width: 100%;
+        border-radius: 20px;
+      }
+
       .info-card .section {
         flex: 0 0 48%;
         margin-bottom: 15px;
+        z-index: 1;
+        color: #333;
+        transition: color 0.4s ease;
       }
+
+      .info-card:hover .section {
+        color: white;
+      }
+
       .info-card .section i {
         margin-right: 8px;
         color: #4538db;
+        transition: color 0.4s ease;
       }
 
+      .info-card:hover .section i {
+        color: white;
+      }
+
+
       .h2 {
+        font-size: 30px;
+        font-weight: 600;
+        
         
       }
 
@@ -108,14 +149,36 @@
         cursor: pointer;
         font-size: 16px;
         box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+        position:;
 
       }
-      
+
+      .btn-ubah:hover {
+        background-color:rgb(255, 255, 255);
+        border: 3px solid #ff5f5f;
+        color : #ff5f5f;
+        transition: background-color 0.4s ease, border 0.4s ease, color 0.4s ease;
+        
+        
+      }
+
+      .btn-kembali {
+        background-color: #3970e6;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 25px;
+        cursor: pointer;
+        font-size: 16px;
+        box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+        
+      }
+
   </style>
 </head>
 <body>
   <div class="sideNav">
-    <h4><img src="logo-astratech.png" alt="ASTRAtech Logo"></h4>
+    <h4><img src="logo-astratech.png" alt="ASTRAtech"></h4>
     <div class="nav-item active">Detail Sidang</div>
     <div class="nav-item">Evaluasi</div>
     <div class="nav-item">Nilai Akhir</div>
@@ -137,8 +200,12 @@
         <p><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>09.00 - 10.00</p>
     </div>
   </div>
-     <h5>Aksi</h5>
-     <button class="btn-ubah">Ubah Jadwal Sidang</button>
-     <button class="btn-kembali">Kembali</button>
+  
+    <h5>Aksi</h5>
+    
+      <button class="btn-ubah">Ubah Jadwal Sidang</button>
+      <br>
+      <button class="btn-kembali"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+    
 </body>
 </html>

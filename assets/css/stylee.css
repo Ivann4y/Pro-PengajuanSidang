@@ -1,0 +1,220 @@
+/* =================================
+   Struktur Utama & Sidebar
+   ================================= */
+body {
+  background-color: #f8f9fa;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.sidebar {
+  height: 100vh;
+  width: 240px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #3b52f9;
+  color: white;
+  padding-top: 2rem;
+}
+
+.sidebar h4 {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.sidebar a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin: 0.5rem 0 0.5rem 1rem;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+  background-color: white;
+  color: #3b52f9;
+  font-weight: 600;
+}
+
+.main {
+  /* INI YANG MEMBUAT KONTEN GESER KE KANAN */
+  margin-left: 240px;
+  padding: 2rem;
+}
+
+/* =================================
+   Bagian Upload Dokumen Revisi
+   ================================= */
+.upload-box {
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  color: #6c757d; /* Warna teks placeholder */
+  display: flex; /* Membuat konten di tengah */
+  flex-direction: column; /* Menata konten ke bawah */
+  justify-content: center; /* Tengah secara vertikal */
+  align-items: center; /* Tengah secara horizontal */
+  min-height: 180px;
+}
+
+.upload-box:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.upload-box.file-selected {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.upload-box.file-selected svg {
+  width: 60px;
+  height: 60px;
+  fill: #6c757d;
+}
+
+#fileNameDisplay {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 600; /* Membuat nama file tebal */
+  min-height: 1.5rem; /* Cadangkan ruang agar layout tidak bergeser */
+  color: #495057; /* Warna teks lebih gelap */
+}
+
+/* =================================
+   STYLING TAMBAHAN YANG HILANG
+   ================================= */
+
+.badge-custom {
+  background-color: #72e967cc;
+  color: white;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 20px;
+}
+
+.card-comment {
+  background-color: #ebebeb !important;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border: none;
+}
+
+.card-comment:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.card-comment:hover strong {
+  color: #fff; /* Pastikan teks strong juga ikut putih saat hover */
+}
+
+
+
+/* =================================
+   Tombol Kirim
+   ================================= */
+.btn-kirim {
+     background-color: #4f46e5;
+     color:white;
+  border-radius: 10px;
+  padding: 10px 30px;
+  font-weight: bold;
+   box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+  
+}
+
+.btn-kirim:hover{
+    background-color: #ffffff;
+    color:black;
+     box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+
+}
+
+/* =================================
+   STYLE BARU SESUAI DESAIN MODERN
+   ================================= */
+
+/* Card utama untuk bagian revisi */
+.revision-card {
+  background-color: #ebebeb;
+  border-radius: 1.5rem; /* 24px */
+  padding: 2rem; /* 32px */
+  border: 1px solid #e9ecef;
+  height:350px;
+}
+
+
+.revision-cardUp{
+  background-color: #E5E5E5;
+  border-radius: 1.5rem; /* 24px */
+  padding: 2rem; /* 32px */
+  margin:15px;
+}
+/* Area upload yang baru */
+.upload-area-v2 {
+  background-color: #f8f9fa;
+  border: 2px dashed #e0e0e0;
+  border-radius: 1rem; /* 16px */
+  padding: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.upload-area-v2:hover {
+  background-color: #f1f3f5;
+}
+
+/* Tombol Kembali yang baru (di luar card) */
+/* Style Tombol Aksi Utama (dipakai untuk Kembali & Kirim) */
+.btn-custom-primary {
+  background-color: #4f46e5;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px; /* Membuatnya berbentuk pil */
+  padding: 0.75rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* Jarak antara ikon dan teks */
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-custom-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+}
+
+/* Style khusus untuk saat tombol dinonaktifkan */
+.btn-custom-primary:disabled {
+  background-color: #e2e8f0;
+  color: #94a3b8;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+    .approved-badge {
+      color: #28a745;
+      background-color: #e6f4ec;
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      font-weight: 500;
+      margin-top: 10px;
+    }
