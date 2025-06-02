@@ -163,7 +163,7 @@
    <div id="NavSide">
       <div id="main-sidebar" class="NavSide__sidebar">
         <div class="NavSide__sidebar-brand">
-          <img src="WhiteAstra.png" alt="Astra Logo" />
+          <img src="../../img/WhiteAstra.png" alt="Astra Logo" />
         </div>
         <ul class="NavSide__sidebar-nav">
           <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
@@ -226,7 +226,7 @@
           </div>
           <div class="col-md-6">
             <img
-              src="img5.png"
+              src="../../img/img5.png"
               alt="Mahasiswa"
               class="img-fluid "
               style="width: 500px; height: 350px; margin-left: 20px; "
