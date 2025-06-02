@@ -94,7 +94,7 @@ td:nth-child(5) { width: 10%; text-align: center; border-radius: 0px 20px 20px 0
         <div id="NavSide">
       <div id="main-sidebar" class="NavSide__sidebar">
         <div class="NavSide__sidebar-brand">
-          <img src="../../img/WhiteAstra.png" alt="Astra Logo" />
+          <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
         </div>
         <ul class="NavSide__sidebar-nav">
           <li class="NavSide__sidebar-item">

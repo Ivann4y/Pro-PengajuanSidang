@@ -163,10 +163,10 @@
    <div id="NavSide">
       <div id="main-sidebar" class="NavSide__sidebar">
         <div class="NavSide__sidebar-brand">
-          <img src="../../img/WhiteAstra.png" alt="Astra Logo" />
+          <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
         </div>
         <ul class="NavSide__sidebar-nav">
-          <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+          <li class="NavSide__sidebar-item ">
             <b></b>
             <b></b>
             <a href="#">
@@ -180,14 +180,13 @@
               <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
             </a>
           </li>
-          <li class="NavSide__sidebar-item">
+          <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
             <b></b>
             <b></b>
             <a href="#">
               <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
             </a>
           </li>
-          <li class="NavSide__sidebar-item">
          </ul>
       </div>
 
@@ -226,7 +225,7 @@
           </div>
           <div class="col-md-6">
             <img
-              src="../../img/img5.png"
+              src="../../assets/img/img5.png"
               alt="Mahasiswa"
               class="img-fluid "
               style="width: 500px; height: 350px; margin-left: 20px; "
