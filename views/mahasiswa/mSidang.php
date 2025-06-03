@@ -489,25 +489,7 @@
                 }
             };
         }
-
-        function switchMSidang() {
-            const ta = document.getElementById("mSidangTA");
-            const sem = document.getElementById("mSidangSem");
-            const btn = document.getElementById("ddMSidang");
-            const menu = document.getElementById("ddMSidangMenu");
-
-            if (ta.style.display !== "none") {
-                ta.style.display = "none";
-                sem.style.display = ""; 
-                btn.innerText = "Sidang Semester";
-                menu.innerText = "Sidang TA";
-            } else {
-                ta.style.display = ""; 
-                sem.style.display = "none";
-                btn.innerText = "Sidang TA";
-                menu.innerText = "Sidang Semester";
-            }
-        }
     </script>
+    <script src="../../assets/js/main.js"></script>
 </body>
 </html>
