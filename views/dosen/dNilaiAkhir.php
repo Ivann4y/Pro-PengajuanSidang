@@ -183,7 +183,7 @@
           <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
             <b></b>
             <b></b>
-            <a href="#">
+            <a href="dNilaiAkhir.php">
               <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
             </a>
           </li>
@@ -239,7 +239,7 @@
             <div class="col-auto d-flex align-items-center ">
                 <label for="nilaiLaporan">Nilai laporan:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="nilaiLaporan"
                   id="detailpenilaian"
@@ -248,7 +248,7 @@
                   >
                   <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="MateriPresentasi"
                   id="detailpenilaian"
@@ -256,7 +256,7 @@
                   maxlength="3">
                   <label for="Penyampaian" id="labelpenilaian">Penyampaian:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="Penyampaian"
                   id="detailpenilaian"
@@ -264,7 +264,7 @@
                   maxlength="3">
                   <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="NilaiProyek"
                   id="detailpenilaian"
@@ -292,7 +292,7 @@
       </div>
        <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
-           <button class="btn btn-kembali" style="margin-left: 50px;">
+           <button class="btn btn-kembali" style="margin-left: 50px;" onclick="pindahKeHalamanDaftarSidang()">
     <span class="icon-circle">
       <i class="bi bi-arrow-left"></i>
     </span>
@@ -333,7 +333,7 @@
         <p class="fs-5 fw-semibold">Apakah yakin ingin mengirim nilai akhir?</p>
         <div class="d-flex justify-content-center row mb5">
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal" onclick="pindahKeHalamanDaftarSidang()">Tidak</button>
+          <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal">Tidak</button>
           </div>
           <div class="col-md-6">
           <button type="button" class="btnKonfirmasi" onclick="kirimNilaiAkhir()">Iya</button>
@@ -344,6 +344,18 @@
   </div>
 </div>
 <script>
+   document.getElementById('detailpenilaian').addEventListener('input', function() {
+  this.value = this.value.replace(/[^0-9]/g, '');
+  if (this.value > 100) {
+    this.value = '';
+  }
+});
+  document.getElementById('nilaiMahasiswa').addEventListener('input', function() {
+  this.value = this.value.replace(/[^A-Ea-e]/g, '').toUpperCase();
+  if (!this.value || this.value.length > 1) {
+    this.value = '';
+  }
+});
   function pindahKeHalamanDaftarSidang() {
     window.location.href = "dDaftarSidang.php";
   }

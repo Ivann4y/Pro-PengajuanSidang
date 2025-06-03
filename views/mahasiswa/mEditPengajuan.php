@@ -80,7 +80,6 @@
 
         <main class="NavSide__main-content" id="mPengajuan">
          <div class="container-fluid">
-    <div class="sideNav"></div>
     <div class="container-fluid bodyContainer">
       <div class="row">
         <div class="col-12">
@@ -181,14 +180,13 @@
   background-color: #d1e7dd; /* Hijau muda */
   border: 2px solid #0f5132;
   color: #0f5132;
-
+}
 .upload-content {
   min-height: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
 }
 
 </style>

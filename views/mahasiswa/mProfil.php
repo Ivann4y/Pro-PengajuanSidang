@@ -319,6 +319,9 @@
             font-weight: 600;
             font-size: larger;
         }
+        img {
+            border-radius: 50px;
+        }
        
     </style>
 </head>
@@ -338,7 +341,7 @@
                     <b></b><b></b>
                     <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
                 </li>

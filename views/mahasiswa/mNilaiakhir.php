@@ -457,7 +457,7 @@
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item ">
                     <b></b><b></b>
-                    <a href="mDetailPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+                    <a href="MdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -498,7 +498,7 @@
               <div class="card-body">
                 <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
                 <div id ="nilaiMahasiswa">
-                    A
+                    --
                 </div>
               </div>
             </div>
@@ -518,10 +518,10 @@
         <div class="card-body">
             <h3 class="card-title">Detail Penilaian :</h3>
         <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-        <span><strong>Nilai Laporan:</strong> 90</span>
-        <span><strong>Materi Presentasi:</strong> 95</span>
-        <span><strong>Penyampaian:</strong> 90</span>
-        <span><strong>Nilai Proyek:</strong> 95</span>
+        <span><strong>Nilai Laporan:</strong> --</span>
+        <span><strong>Materi Presentasi:</strong> --</span>
+        <span><strong>Penyampaian:</strong> --</span>
+        <span><strong>Nilai Proyek:</strong> --</span>
         </div>
         </div>
         </div>
@@ -538,7 +538,7 @@
         
         <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
-           <button class="btn btn-kembali" style="margin-left: 50px;">
+           <button class="btn btn-kembali" style="margin-left: 50px;"  onclick="pindahKeHalamanDaftarSidang()">
     <span class="icon-circle">
       <i class="bi bi-arrow-left"></i>
     </span>
@@ -550,6 +550,10 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+
+    function pindahKeHalamanDaftarSidang() {
+    window.location.href = "mSidang.php";
+    }
         // Sidebar Toggle Logic
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
