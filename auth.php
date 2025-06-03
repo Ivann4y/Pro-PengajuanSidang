@@ -23,8 +23,18 @@ foreach ($users[$role] as $user) {
 
 if ($found) {
     // Redirect ke dashboard sesuai role
-    header("Location: views/$role/beranda_$role.php");
-    exit();
+    if ($role === 'mahasiswa') {
+        header("Location: views/mahasiswa/mBeranda.php");
+        exit();
+    }
+    if ($role === 'admin') {
+        header("Location: views/admin/aBeranda.php");
+        exit();
+    }
+    if ($role === 'dosen') {
+        header("Location: views/dosen/dBeranda.php");
+        exit();
+    }
 } else {
     echo "Login gagal. <a href='index.php'>Kembali</a>";
 }
