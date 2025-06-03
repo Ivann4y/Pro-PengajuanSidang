@@ -114,17 +114,6 @@
       color: #4B68FB;
     }
 
-    .btn-kirim {
-      background-color: #4CD964;
-      color: white;
-      border-radius: 50px;
-    }
-
-    .btn-kirim:hover {
-      border-color: #4CD964;
-      background-color: #ffffff;
-      color: #4CD964;
-    }
     .icon-circle {
   display: inline-flex;
   align-items: center;
@@ -500,7 +489,7 @@
       <div class="container-fluid bodyContainer">
           <div class="row mb-5">
                  <h2 style="margin-left: 50px ;">
-                <b>Detail Evaluasi - Sistem Evaluasi Sidang</b>
+                <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
             </h2>
             </div> 
         <div class="row mt-5 align-items-center justify-content-between">
@@ -546,7 +535,8 @@
             </div>
           </div>
         </div>
-               <div class="row mt-5 align-items-center justify-content-between">
+        
+        <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
            <button class="btn btn-kembali" style="margin-left: 50px;">
     <span class="icon-circle">

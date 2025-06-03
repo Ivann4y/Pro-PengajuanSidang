@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="id"> <!-- Changed lang to id (Indonesian) -->
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Sidang</title> <!-- Simplified title -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Mahasiswa - Sidang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../extra/style.css">
     <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
         * {
             margin: 0;
             padding: 0;
@@ -22,6 +24,7 @@
             background-color: #ffffff;
         }
 
+        /* NavSide styles from mBeranda.php - START */
         #NavSide {
             display: flex;
             min-height: 100vh;
@@ -72,6 +75,7 @@
             width: 100%;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
+            margin-bottom: 10px;
         }
 
         .NavSide__sidebar-item a {
@@ -108,7 +112,9 @@
             width: 100%;
             background: rgb(255, 255, 255);
             display: none;
+            right: 0;
         }
+
         .NavSide__sidebar-item b:nth-child(1)::before {
             content: "";
             position: absolute;
@@ -120,6 +126,7 @@
             background: rgb(67, 54, 240);
             display: block;
         }
+
         .NavSide__sidebar-item b:nth-child(2) {
             position: absolute;
             bottom: -20px;
@@ -127,7 +134,9 @@
             width: 100%;
             background: rgb(255, 255, 255);
             display: none;
+            right: 0;
         }
+
         .NavSide__sidebar-item b:nth-child(2)::before {
             content: "";
             position: absolute;
@@ -139,6 +148,7 @@
             background: rgb(67, 54, 240);
             display: block;
         }
+
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
             display: block;
@@ -146,89 +156,18 @@
 
         .NavSide__main-content {
             flex-grow: 1;
-            padding: 20px 20px 20px calc(20px + 1cm); 
+            padding: 20px;
             margin-left: 280px;
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
+            background-color: #F9FAFB;
+            padding-top: 3vh;
         }
-
-        /* --- Modifikasi Margin Global --- */
-        .NavSide__main-content h2 { 
-            margin-bottom: 1.2cm;
-            font-weight: 700; 
-        }
-
-        .status-badge {
-            margin-bottom: 1.2cm; 
-        }
-
-        .info-card {
-            margin-bottom: 1.2cm; 
-        }
-
-        .NavSide__main-content h5 { 
-            margin-top: 1.2cm;
-            margin-bottom: 1.2cm;
-            font-weight: 700; 
-        }
-
-        .file-buttons-container {
-            margin-bottom: 1.2cm; 
-        }
-
-        .btn-kembali {
-            background-color: rgb(67, 54, 240);
-            color: white; /* Teks default putih */
-            border: none;
-            border-radius: 20px;
-            padding: 10px 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; /* Tambah transisi untuk warna teks */
-            display: inline-flex; 
-            align-items: center; 
-            margin-top: 1.2cm; /* Margin atas 1.2cm untuk tombol kembali */
-        }
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white; /* UBAH: Latar belakang jadi putih saat hover */
-            color: rgb(67, 54, 240); /* UBAH: Teks jadi biru saat hover */
-        }
-        
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px; 
-            height: 30px; 
-            background-color: white; /* Latar belakang lingkaran default putih */
-            border-radius: 50%;
-            margin-right: 10px; 
-            transition: background-color 0.3s ease; /* Transisi untuk warna latar belakang lingkaran */
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: rgb(67, 54, 240); /* UBAH: Latar belakang lingkaran jadi biru saat hover */
-        }
-
-        .btn-kembali .icon-circle i {
-            color: rgb(67, 54, 240); /* Warna ikon default biru */
-            font-size: 1rem; 
-            transition: color 0.3s ease; /* Transisi untuk warna ikon */
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white; /* UBAH: Ikon jadi putih saat hover */
-        }
-        /* --- Akhir Modifikasi Margin Global --- */
 
         .NavSide__toggle {
-            display: none;
             position: fixed;
             top: 15px;
-            left: 15px;
+            left: 15px; 
             width: 40px;
             height: 40px;
             z-index: 1100;
@@ -239,6 +178,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: none; 
         }
 
         .NavSide__toggle i.bi {
@@ -249,8 +189,8 @@
 
         .NavSide__toggle i.bi.open {
             color: rgb(67, 54, 240);
-            display: none;
         }
+
         .NavSide__toggle i.bi.close {
             color: rgb(67, 54, 240);
         }
@@ -258,8 +198,54 @@
         .NavSide__toggle.NavSide__toggle--active i.bi.open {
             display: none;
         }
+
         .NavSide__toggle.NavSide__toggle--active i.bi.close {
             display: block;
+        }
+        
+        .NavSide__topbar {
+            display: none; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px; 
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 999; 
+            align-items: center; 
+            padding: 0 15px; 
+            justify-content: space-between; 
+        }
+
+        .NavSide__topbar .header-icons {
+            display: flex;
+            align-items: center;
+        }
+
+        .NavSide__topbar .header-icons .bi-bell-fill {
+            font-size: 1.5rem;
+            color: #555;
+            margin-right: 1.5rem;
+            cursor: pointer;
+        }
+
+        .NavSide__topbar .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .text-heading { 
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem; 
         }
 
         @media (max-width: 700px) {
@@ -277,6 +263,7 @@
             .NavSide__sidebar-brand {
                 padding: 20px 10px 30px 10px;
             }
+
             .NavSide__sidebar-brand img {
                 width: 90%;
             }
@@ -284,312 +271,214 @@
             .NavSide__sidebar-nav {
                 padding-top: 20%;
             }
+
             .NavSide__sidebar-item a {
                 padding: 12% 10%;
-                height: 2vh;
+                height: auto;
             }
 
             .NavSide__main-content {
-                margin-left: 7vh;
+                margin-left: 0;
+                padding: 15px;
+                padding-top: 75px; 
             }
 
-            .NavSide__toggle {
+            .NavSide__toggle { 
                 display: flex;
+                position: relative; 
+                top: auto;
+                left: auto; 
+                background-color: transparent;
+                box-shadow: none;
             }
-
+            
             .NavSide__toggle i.bi.open {
-                color: rgb(67, 54, 240);
-                display: block;
+                display: block; 
             }
+            
 
-            .NavSide__toggle.NavSide__toggle--active {
-                left: calc(50% + 10px);
-                background-color: aliceblue;
+            .NavSide__topbar {
+                display: flex; 
             }
         }
-       
-        .status-badge {
-            background-color:rgb(253, 68, 59);
-            color: black;
-            border-radius: 20px;
-            padding: 8px 18px; 
-            display: inline-block; 
-            font-size: 0.875rem; 
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
-            font-weight: bold; 
-        }
+        /* NavSide styles from mBeranda.php - END */
 
-        .info-card {
-            position: relative;
-            background: rgb(235, 238, 245); 
-            border-radius: 30px; 
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            overflow: hidden;
-            transition: background-color 0.4s ease;
-        }
-
-        .info-card::after { 
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px; 
-            height: 100%;
-            background-color: rgb(67, 54, 240);
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-            transition: width 0.4s ease;
-            z-index: 0;
-        }
-
-        .info-card:hover::after {
+        /* Original mSidang table structural styles - START */
+        table {
+            border-spacing: 0 10px;
+            border-collapse: separate;
             width: 100%;
-            border-radius: 20px;
         }
 
-        .info-card .section {
-            flex: 0 0 48%; 
-            z-index: 1;
-            color: #333;
-            transition: color 0.4s ease;
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
+        thead {
+            border-bottom: 2px solid rgb(0, 0, 0) !important;
         }
 
-        .info-card:hover .section {
-            color: white;
+        thead th {
+            padding: 12px 15px;
+            text-align: left;
+            /* font-family: "Poppins"; Will be inherited or set by external CSS */
         }
 
-        /* Styling untuk baris label dan nilai */
-        .info-card .section .label-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.25rem; 
-            font-size: 1rem; 
+        thead th:nth-child(1) {
+            text-align: center;
+            width: 5%;
         }
 
-        .info-card .section .label-row i {
-            margin-right: 10px; 
-            color: #495057; 
-            font-weight: 900; 
-            transition: color 0.4s ease;
-            width: 20px; 
+        thead th:nth-child(2) {
+            width: 30%;
+        }
+
+        thead th:nth-child(3) {
+            width: 20%;
+        }
+
+        thead th:nth-child(4) {
+            width: 20%; 
+        }
+
+        .isiTabel td { /* My explicit background-color and border are removed */
+            padding: 12px 15px;
+            font-family: "Poppins"; /* Restored original font-family from mSidang.php */
+            font-weight: 400;
+            vertical-align: middle;
+        }
+
+        .isiTabel td:nth-child(1) {
+            border-radius: 20px 0 0 20px;
             text-align: center;
         }
 
-        .info-card:hover .section .label-row i {
-            color: white;
+        .isiTabel td:nth-child(4) { 
+            border-radius: 0 20px 20px 0;
         }
-
-        .info-card .section .label-row .fw-bold {
-            font-weight: 600; 
-            font-size: 1.05rem; 
+        .btn-primary { 
+            /* font-family: "Poppins", sans-serif; Inherited */
+            background-color: rgb(67, 54, 240);
+            border-color: rgb(67, 54, 240);
         }
-
-        .info-card .section .value-row {
-            margin-left: 30px; 
-            line-height: 1.5;
-            font-size: 0.95rem; 
-            margin-bottom: 0; 
+        .btn-primary:hover {
+            background-color: rgb(57, 44, 210);
+            border-color: rgb(57, 44, 210);
         }
-       
-        /* --- CSS Baru untuk Tombol Berkas --- */
-        .file-button {
-            display: inline-flex; 
-            align-items: center;
-            background-color: rgb(235, 238, 245); 
-            border-radius: 20px; 
-            padding: 12px 20px;
-            margin-right: 15px; 
-            margin-bottom: 15px; 
-            text-decoration: none; 
-            color: rgb(67, 54, 240); 
-            font-weight: 500;
-            font-size: 1rem;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
+        .dropdown-menu .dropdown-item {
+            font-family: "Poppins", sans-serif;
         }
-
-        .file-button:hover {
-            background-color: rgb(67, 54, 240); 
-            color: white; 
-            text-decoration: none; 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
-        }
-
-        .file-button i {
-            font-size: 1.25rem; 
-            margin-right: 10px; 
-            color: rgb(67, 54, 240); 
-            transition: color 0.2s ease; 
-        }
-
-        .file-button:hover i { 
-            color: white;
-        }
-
-        /* Responsive adjustments for file buttons */
-        @media (max-width: 576px) {
-            .file-button {
-                width: 100%; 
-                display: flex; 
-                margin-right: 0; 
-            }
-        }
-        /* --- Akhir CSS Baru --- */
-
-        /* --- CSS untuk info-group dan spacer --- */
-        .info-card .section .info-group {
-            margin-bottom: 1rem; 
-        }
-        .info-card .section .info-group:last-child {
-            margin-bottom: 0; 
-        }
-        .info-card .section .spacer {
-            flex-grow: 1; 
-        }
-        /* --- Akhir CSS info-group dan spacer --- */
+        /* Original mSidang table structural styles - END */
     </style>
 </head>
+
 <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
-                    </a>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
-                    </a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-                    </a>
+                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
-
-        <div class="NavSide__toggle">
-            <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
+        
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
         </div>
 
-        <main class="NavSide__main-content">
-            <h2 >Detail Sidang - Sistem Pengajuan Sidang</h2>
-            <div class="status-badge">Status Pengajuan : Belum Disetujui</div>
-            
-            <div class="info-card">
-                <div class="section">
-                    <!-- Mata Kuliah -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-book"></i>
-                            <span class="fw-bold">Mata Kuliah</span>
-                        </div>
-                        <div class="value-row">Pemrograman 2</div>
-                    </div>
-
-                    <!-- Spacer untuk mendorong Dosen Pengampu ke bawah -->
-                    <div class="spacer"></div>
-
-                    <!-- Dosen Pengampu -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-users"></i>
-                            <span class="fw-bold">Dosen Pengampu</span>
-                        </div>
-                        <div class="value-row">
-                            Timotius Victory, S.Kom, M.Kom<br>
-                            Yosep Setiawan, S.Kom, M.Kom
+        <main class="NavSide__main-content" id="mSidang">
+            <div class="container-fluid"> 
+                <div class="row">
+                    <h2 class="text-heading">
+                        Nayaka Ivana Putra (Mahasiswa)
+                    </h2>
+                </div><br>
+                <div class="row">
+                    <div class="col-12 col-md-6"> 
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                Sidang TA
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
+                            </ul>
                         </div>
                     </div>
-                </div>
-                <div class="section">
-                    <!-- Ruangan -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-door-open"></i>
-                            <span class="fw-bold">Ruangan</span>
-                        </div>
-                        <div class="value-row">CB101 - RPL 1B</div>
-                    </div>
-
-                    <!-- Tanggal -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <span class="fw-bold">Tanggal</span>
-                        </div>
-                        <div class="value-row">Selasa, 22 April 2025</div>
-                    </div>
-
-                    <!-- Jam -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-clock"></i>
-                            <span class="fw-bold">Jam</span>
-                        </div>
-                        <div class="value-row">09.00 - 10.00</div>
-                    </div>
+                </div><br>
+                <div class="row table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Judul</th>
+                                <th scope="col">Mata Kuliah</th>
+                                <th scope="col">Dosen Pembimbing</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mSidangTA">
+                            <tr class="isiTabel jadiBiru">
+                                <td>1</td>
+                                <td>Sistem Pengajuan Sidang</td>
+                                <td>Tugas Akhir</td>
+                                <td>Rida Indah Fariani</td>
+                            </tr>
+                        </tbody>
+                        <tbody id="mSidangSem" style="display: none;">
+                            <tr class="isiTabel jadiBiru">
+                                <td>1</td>
+                                <td>Implementasi Sistem Sidang</td>
+                                <td>Pemrograman 2</td>
+                                <td>Timotius Victory</td>
+                            </tr>
+                            <tr class="isiTabel jadiBiru">
+                                <td>2</td>
+                                <td>Deployment Sistem Sidang</td>
+                                <td>Sistem Operasi</td>
+                                <td>Suhendra</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            
-            <h5 >Dokumen Sidang</h5>
-            <div class="file-buttons-container d-flex flex-wrap"> 
-                <a href="#" class="file-button">
-                    <i class="fa-solid fa-file-pdf"></i>
-                    file_laporan_kel-1.pdf
-                </a>
-                <a href="#" class="file-button">
-                    <i class="fa-solid fa-file-zipper"></i>
-                    dokumen_pendukung_kel-1.zip
-                </a>
-            </div>
-            
-            <button class="btn-kembali">
-                <span class="icon-circle">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </span>
-                Kembali
-            </button>
-            
-            <!-- Modal Penjadwalan Sidang telah dihapus -->
-
         </main>
     </div>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script type="text/javascript">
-      // Skrip untuk toggle sidebar dan active menu item
-      let menuToggle = document.querySelector(".NavSide__toggle");
-      let sidebar = document.getElementById("main-sidebar");
 
-      if (menuToggle && sidebar) {
-        menuToggle.onclick = function () {
-          menuToggle.classList.toggle( "NavSide__toggle--active");
-          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-      }
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar Toggle Logic 
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
 
-      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-      if (listItems.length > 0) {
+        if (menuToggle) {
+            menuToggle.onclick = function() {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
+        }
+
+        // Sidebar Active Item Logic 
+        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
         for (let i = 0; i < listItems.length; i++) {
             listItems[i].onclick = function(event) {
                 if (!this.classList.contains("NavSide__sidebar-item--active")) {
@@ -600,7 +489,25 @@
                 }
             };
         }
+
+        function switchMSidang() {
+            const ta = document.getElementById("mSidangTA");
+            const sem = document.getElementById("mSidangSem");
+            const btn = document.getElementById("ddMSidang");
+            const menu = document.getElementById("ddMSidangMenu");
+
+            if (ta.style.display !== "none") {
+                ta.style.display = "none";
+                sem.style.display = ""; 
+                btn.innerText = "Sidang Semester";
+                menu.innerText = "Sidang TA";
+            } else {
+                ta.style.display = ""; 
+                sem.style.display = "none";
+                btn.innerText = "Sidang TA";
+                menu.innerText = "Sidang Semester";
+            }
+        }
     </script>
-    <script src="../../assets/js/main.js"></script>
 </body>
 </html>
