@@ -465,19 +465,19 @@
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="#">
+                    <a onclick="location.href='mdetailSidang.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPerbaikan.php">
+                   <a onclick="location.href='mPerbaikan.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mNilaiakhir.php">
+                    <a onclick="location.href='mNilaiakhir.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
@@ -499,7 +499,7 @@
                     <div class="info-group">
                         <div class="label-row">
                             <i class="fa-solid fa-book"></i>
-                            <span class="fw-bold">Mata Kuliah</span>
+                            <span class="fw-bold">Judul Sidang</span>
                         </div>
                         <div class="value-row">Pemrograman 2</div>
                     </div>
