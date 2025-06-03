@@ -703,7 +703,9 @@
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
-                <i class="bi bi-bell-fill"></i>
+                <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                    <i class="bi bi-bell-fill"></i>
+                </a>
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i>
                 </div>
@@ -712,7 +714,9 @@
         <main class="NavSide__main-content" id="mBeranda">
             <div class="dashboard-header">
                 <h2 class="page-title">Beranda</h2>
-                <div class="header-icons d-none d-md-flex"> <i class="bi bi-bell-fill"></i>
+                <div class="header-icons d-none d-md-flex"> 
+                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i>
+                    </a>
                     <div class="profile-icon">
                         <i class="bi bi-person-fill fs-5"></i>
                     </div>

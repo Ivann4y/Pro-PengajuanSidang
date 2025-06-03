@@ -2,12 +2,13 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mahasiswa - Pengajuan</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahasiswa - Profil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../../assets/css/style.css"> 
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../extra/style.css">
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
@@ -166,7 +167,7 @@
         .NavSide__toggle {
             position: fixed;
             top: 15px;
-            left: 15px;
+            left: 15px; 
             width: 40px;
             height: 40px;
             z-index: 1100;
@@ -177,7 +178,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: none;
+            display: none; 
         }
 
         .NavSide__toggle i.bi {
@@ -201,20 +202,20 @@
         .NavSide__toggle.NavSide__toggle--active i.bi.close {
             display: block;
         }
-
+        
         .NavSide__topbar {
-            display: none;
+            display: none; 
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 60px;
+            height: 60px; 
             background-color: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-            align-items: center;
-            padding: 0 15px;
-            justify-content: space-between;
+            z-index: 999; 
+            align-items: center; 
+            padding: 0 15px; 
+            justify-content: space-between; 
         }
 
         .NavSide__topbar .header-icons {
@@ -240,7 +241,6 @@
             color: white;
             font-weight: 600;
         }
-        
         .text-heading { 
             font-size: 1.75rem;
             font-weight: 600;
@@ -280,122 +280,46 @@
             .NavSide__main-content {
                 margin-left: 0;
                 padding: 15px;
-                padding-top: 75px;
+                padding-top: 75px; 
             }
 
-            .NavSide__toggle {
+            .NavSide__toggle { 
                 display: flex;
-                position: relative;
+                position: relative; 
                 top: auto;
+                left: auto; 
                 background-color: transparent;
                 box-shadow: none;
-                left: 0;
             }
-
+            
             .NavSide__toggle i.bi.open {
-                display: block;
+                display: block; 
             }
-
-            .NavSide__toggle.NavSide__toggle--active {
-                left: calc(50% + 10px); 
-                background-color: aliceblue;
-            }
+            
 
             .NavSide__topbar {
-                display: flex;
+                display: flex; 
             }
         }
         /* NavSide styles from mBeranda.php - END */
 
-        /* Original mPengajuan table structural styles - START */
-        table {
-            border-spacing: 0 10px;
-            border-collapse: separate;
-            width: 100%;
-        }
-
-        thead {
-            border-bottom: 2px solid rgb(0, 0, 0) !important;
-        }
-
-        thead th {
-            padding: 12px 15px;
-            text-align: left;
-            /* font-family will be inherited from * or body */
-        }
-
-        thead th:nth-child(1) {
-            text-align: center;
-            width: 5%;
-        }
-
-        thead th:nth-child(2) {
-            width: 30%;
-        }
-
-        thead th:nth-child(3) {
-            width: 20%;
-        }
-
-        thead th:nth-child(4) {
-            width: 20%;
-        }
-
-        thead th:nth-child(5) {
-            width: 5%;
-            text-align: center;
-        }
-
-        .isiTabel td { /* My explicit background-color and border are removed */
-            padding: 12px 15px;
-            /* font-family: "Poppins", sans-serif; Inherited */
-            font-weight: 400;
-            vertical-align: middle;
-        }
-
-        .isiTabel td:nth-child(1) {
-            border-radius: 20px 0 0 20px;
-            text-align: center;
-        }
-
-        .isiTabel td:nth-child(5) {
-            border-radius: 0 20px 20px 0;
-            text-align: center;
-        }
-
-        .tambah-sidang-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            transition: all 0.2s ease;
-            padding: 10px 20px;
-            /* font-family: "Poppins", sans-serif; Inherited */
+        .data-mahasiswa {
+            background-color: #ffffff;
+            padding: 3vw;
             border-radius: 10px;
-            background-color: rgb(67, 54, 240); 
-            color: white;
-            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: start;
+            color: #333;
         }
-
-        .tambah-sidang-btn:hover {
-            background-color: rgb(57, 44, 210); 
-            padding-top: 12px; 
-            padding-bottom: 12px;
+        .data-mahasiswa p {
+            font-weight: 600;
+            font-size: larger;
         }
-        .btn-primary { 
-            /* font-family: "Poppins", sans-serif; Inherited */
-            background-color: rgb(67, 54, 240);
-            border-color: rgb(67, 54, 240);
-        }
-        .btn-primary:hover {
-            background-color: rgb(57, 44, 210);
-            border-color: rgb(57, 44, 210);
-        }
-        .dropdown-menu .dropdown-item {
-            font-family: "Poppins", sans-serif; 
-        }
-        /* Original mPengajuan table structural styles - END */
-
-
+       
     </style>
 </head>
 
@@ -410,11 +334,11 @@
                     <b></b><b></b>
                     <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
-                <li class="NavSide__sidebar-item">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
                 </li>
@@ -424,7 +348,7 @@
                 </li>
             </ul>
         </div>
-
+        
         <div class="NavSide__topbar">
             <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
@@ -438,48 +362,24 @@
             </div>
         </div>
 
-        <main class="NavSide__main-content" id="mPengajuan">
-            <div class="container-fluid"> 
+        <main class="NavSide__main-content" id="mSidang">
+            <div class="container">
                 <div class="row">
-                    <div class="col-12">
-                        <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                    <h1>Profile</h1>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="../../assets/img/img3-nobg.png" alt="">
                     </div>
-                </div><br><br>
-
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                Sidang TA
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div><br><br>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">No</th>
-                                        <th scope="col">Judul</th>
-                                        <th scope="col">Mata Kuliah</th>
-                                        <th scope="col">Dosen Pembimbing</th>
-                                        <th scope="col" class="text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="mSidangTA"></tbody>
-                                <tbody id="mSidangSem" style="display: none;"></tbody>
-                            </table>
-                        </div>
+                    <div class="col-md-6 data-mahasiswa">
+                        <h2 class="text-heading">Data Mahasiswa</h2>
+                        <p class="text-muted">NIM: 123456789</p>
+                        <p class="text-muted">Nama: John Doe</p>
+                        <p class="text-muted">Email: 123456789@polytechnic.astra.ac.id</p>
+                        <p class="text-muted">No. Telepon: 08123456789</p>
+                        <p class="text-muted">Jenis Kelamin: Laki-laki</p>
                     </div>
                 </div>
-
-                <button class="btn btn-primary tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
             </div>
         </main>
     </div>
@@ -497,10 +397,10 @@
             };
         }
 
-        // Sidebar Active Item Logic
+        // Sidebar Active Item Logic 
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
         for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function(event) { 
+            listItems[i].onclick = function(event) {
                 if (!this.classList.contains("NavSide__sidebar-item--active")) {
                     for (let j = 0; j < listItems.length; j++) {
                         listItems[j].classList.remove("NavSide__sidebar-item--active");
@@ -510,77 +410,8 @@
             };
         }
 
-        // Original mPengajuan.php script
-        const dataTA = [{
-            judul: "Sistem Pengajuan Sidang",
-            matkul: "Tugas Akhir",
-            dosen: "Rida Indah Fariani"
-        }];
-
-        const dataSemester = [{
-            judul: "Implementasi Sistem Sidang",
-            matkul: "Pemrograman 2",
-            dosen: "Timotius Victory"
-        }, {
-            judul: "Deployment Sistem Sidang",
-            matkul: "Sistem Operasi",
-            dosen: "Suhendra"
-        }];
-
-        function renderTabel(id, data) {
-            const tbody = document.getElementById(id);
-            tbody.innerHTML = "";
-            data.forEach((item, index) => {
-                // Restoring .jadiBiru class to the row
-                tbody.innerHTML += `
-                  <tr class="isiTabel jadiBiru"> 
-                    <td>${index + 1}</td>
-                    <td>${item.judul}</td>
-                    <td>${item.matkul}</td>
-                    <td>${item.dosen}</td>
-                    <td class="text-center">
-                      <button class="btn btn-link p-0" type="button" title="Edit" onclick="editData(${index}, '${id.substring(1)}', '${encodeURIComponent(item.judul)}', '${encodeURIComponent(item.matkul)}')">
-                        <i class="bi bi-pencil-square" style="color: rgb(67, 54, 240);"></i>
-                      </button>
-                    </td>
-                  </tr>
-                `;
-            });
-        }
-
-        function editData(index, jenis, judul, matkul) {
-            let jenisParam = jenis === 'SidangTA' ? 'mSidangTA' : 'mSidangSem';
-            window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenisParam}&judul=${judul}&matkul=${matkul}`;
-        }
-
-        function tambahData() {
-            window.location.href = `mEditPengajuan.php`;
-        }
-
-        function switchMSidang() {
-            const ta = document.getElementById("mSidangTA");
-            const sem = document.getElementById("mSidangSem");
-            const btn = document.getElementById("ddMSidang");
-            const menu = document.getElementById("ddMSidangMenu");
-
-            if (ta.style.display !== "none") {
-                ta.style.display = "none";
-                sem.style.display = "";
-                btn.innerText = "Sidang Semester";
-                menu.innerText = "Sidang TA";
-            } else {
-                ta.style.display = "";
-                sem.style.display = "none";
-                btn.innerText = "Sidang TA";
-                menu.innerText = "Sidang Semester";
-            }
-        }
-
-        window.onload = () => {
-            renderTabel("mSidangTA", dataTA);
-            renderTabel("mSidangSem", dataSemester);
-        };
+        
     </script>
+    <script src="../../assets/js/main.js"></script>
 </body>
-
 </html>

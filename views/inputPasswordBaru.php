@@ -1,11 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
-    header('Location: ../../index.php');
-    exit();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,6 +17,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             flex-direction: column;
             min-height: 100vh;
             min-width: 100vw;
+            overflow: hidden;
         }
 
         .fullscreen {
@@ -39,12 +32,29 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             height: 100vh;
         }
 
-        .log {
+        .right-column-wrapper {
             width: 40%;
             height: 100vh;
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .log {
+            flex-grow: 1;
+            display: flex;
             justify-content: center;
             align-items: center;
+            padding-top: 5vh;
+        }
+
+        .log form {
+            width: 25vw;
+        }
+
+        .button-container {
+            padding-left: 2vw;
+            padding-bottom: 3vh;
         }
 
         img {
@@ -79,8 +89,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             pointer-events: auto;
         }
 
-        form {
-            width: 25vw;
+        .btnKirim:hover {
+            background-color: white;
+            color: green;
+            stroke: green;
         }
     </style>
 </head>
@@ -95,13 +107,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000" style="padding: 5% 10% 5% 10%;">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="../../assets/img/img6.png" class="imgPertama rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../assets/img/img6.png" class="imgPertama rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/img2.png" class="imgKedua rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../assets/img/img2.png" class="imgKedua rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/img5.png" class="imgKetiga rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../assets/img/img5.png" class="imgKetiga rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
                     </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
@@ -115,23 +127,40 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
             </div>
         </div>
 
-        <div class="log d-flex justify-content-center align-items-center pb-5">
-            <form action="#" method="POST">
-                <div class="text-center pt-5 mb-4">
-                    <h2><strong>Masuk Akun Mahasiswa</strong></h2>
-                </div>
-                <div class="mb-3">
-                    <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIM" required>
-                </div>
-                <div class="mb-3">
-                    <input type="password" class="form-control form-control-lg border border-dark" id="password" name="password" placeholder="Password" required>
-                    <a href="../lupaPassword.php" class="float-end"> Lupa kata sandi?</a>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
-            </form>
+        <div class="right-column-wrapper">
+            <div class="log">
+                <form action="#" method="POST">
+                    <div class="text-center pt-5 mb-4">
+                        <h2 class="fs-2 fw-bold">Lupa Kata Sandi?</h2>
+                    </div>
+                    <div class="mb-3">
+                        <label for="">Masukkan Kata Sandi Baru</label>
+                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="">Konfirmasi Kata Sandi baru</label>
+                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
+                    </div>
+                </form>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="btn btn-primary px-3 w-25 rounded rounded-5">
+                    <img src="../assets/img/Kembali.svg" alt="" class="me-1">
+                    <label>Kembali</label>
+                    <button type="submit" class="btn btn-success w-25 px-3 rounded rounded-5 float-end me-3" onclick="toIndex()">
+                        <label>Kirim</label>
+                    </button>
+                </button>
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script>
+        function toIndex() {
+            window.open("../index.php", "_self")
+        }
+    </script>
 </body>
 
 </html>

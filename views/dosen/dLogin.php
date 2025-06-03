@@ -77,6 +77,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
             opacity: 1;
             pointer-events: auto;
         }
+
+        form {
+            width: 25vw;
+        }
     </style>
 </head>
 <body>
@@ -115,11 +119,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
                     <h2><strong>Masuk Akun Dosen</strong></h2>
                 </div>
                 <div class="mb-3">
-                    <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="NIM" required>
+                    <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIM" required>
                 </div>
                 <div class="mb-3">
-                    <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Password" required>
-                    <a href="#" class="float-end"> Lupa kata sandi?</a>
+                    <input type="password" class="form-control form-control-lg border border-dark" id="password" name="password" placeholder="Password" required>
+                    <a href="../lupaPassword.php" class="float-end"> Lupa kata sandi?</a>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
             </form>
