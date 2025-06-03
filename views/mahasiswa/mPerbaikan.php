@@ -51,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($mime_diizinkan[$ekstensi_file] === $tipe_mime_file_asli) {
                         $valid_mime = true;
                     } elseif ($ekstensi_file === "zip" && $tipe_mime_file_asli === $mime_alternatif_zip) {
-                        // Izinkan tipe MIME alternatif untuk ZIP
                         $valid_mime = true;
                     }
                 }
@@ -97,34 +96,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Detail Sidang</title>
+    <title>Detail Sidang & Perbaikan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-    /* Catatan: Idealnya, semua CSS ini ada di file stylee.css */
     body {
         font-family: "Segoe UI", sans-serif; 
-    }
-    .text-heading {
-        color: rgb(67, 54, 240);
-        font-weight: 550;
+        margin: 0;
+        background-color: #F9FAFB; 
     }
 
     #NavSide {
         display: flex;
         min-height: 100vh;
         position: relative;
-        background-color: #f8f9fa; 
     }
     .NavSide__sidebar-brand {
-        padding: 10% 5% 10% 5%;
+        padding: 25px 15px 30px 15px; 
         text-align: center;
     }
     .NavSide__sidebar-brand img {
-        width: 80%;
-        max-width: 150px;
+        width: 90%;
+        max-width: 180px;
         height: auto;
         display: inline-block;
     }
@@ -133,115 +128,142 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         top: 0px;
         left: 0px;
         bottom: 0px;
-        width: 240px;
-        background: #3b52f9;
+        width: 280px; 
+        border-radius: 1px; 
+        box-sizing: border-box;
+        border-left: 5px solid rgb(67, 54, 240); 
+        background: rgb(67, 54, 240); 
         overflow-x: hidden;
         overflow-y: auto;
-        z-index: 1000; /* Default z-index, toggle akan lebih tinggi */
+        z-index: 1000; 
         display: flex;
         flex-direction: column;
-        transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
-        padding-top: 2rem;
+        transition: transform 0.5s ease-in-out, width 0.5s ease-in-out; 
     }
-    .NavSide__sidebar h4 { 
+     .NavSide__sidebar h4 { 
         text-align: center;
         font-weight: bold;
-        margin-bottom: 2rem;
+        margin-bottom: 0; 
         color: white;
+         padding: 25px 15px 30px 15px; 
     }
     .NavSide__sidebar-nav {
         width: 100%;
         padding-left: 0;
-        margin-bottom: 0;
+        padding-top: 0; 
         list-style: none;
         flex-grow: 1;
     }
     .NavSide__sidebar-item {
         position: relative;
         display: block;
-        width: calc(100% - 1rem); 
-        margin-left: 1rem; 
-        margin-right: 0;
-        margin-bottom: 0.5rem;
-        border-top-left-radius: 20px;
-        border-bottom-left-radius: 20px;
+        width: 100%; 
+        border-top-left-radius: 20px; 
+        border-bottom-left-radius: 20px; 
+        margin-bottom: 10px; 
     }
-    .NavSide__sidebar-link {
+    .NavSide__sidebar-item a {
+        position: relative;
         display: flex;
         align-items: center;
+        justify-content: center; 
         width: 100%;
         text-decoration: none;
-        color: white;
-        padding: 12px 24px; 
+        color: rgb(252, 252, 252); 
+        padding: 5% 2%; 
+        height: 60px; 
         box-sizing: border-box;
-        font-weight: normal;
     }
     .NavSide__sidebar-title {
         white-space: normal;
-        text-align: left;
+        text-align: center; 
         line-height: 1.5;
-        flex-grow: 1;
     }
     .NavSide__sidebar-item.NavSide__sidebar-item--active {
         background: #ffffff;
     }
-    .NavSide__sidebar-item.NavSide__sidebar-item--active .NavSide__sidebar-link {
-        color: #3b52f9;
-        font-weight: 600;
+    .NavSide__sidebar-item.NavSide__sidebar-item--active a {
+        color: rgb(67, 54, 240);
     }
-    .NavSide__sidebar-item b:nth-child(1),
+    .NavSide__sidebar-item b:nth-child(1) {
+        position: absolute; top: -20px; height: 20px; width: 100%; background: rgb(255, 255, 255); display: none; right: 0; 
+    }
+    .NavSide__sidebar-item b:nth-child(1)::before {
+        content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-bottom-right-radius: 20px; background: rgb(67, 54, 240); display: block;
+    }
     .NavSide__sidebar-item b:nth-child(2) {
-        display: none;
+        position: absolute; bottom: -20px; height: 20px; width: 100%; background: rgb(255, 255, 255); display: none; right: 0; 
+    }
+    .NavSide__sidebar-item b:nth-child(2)::before {
+        content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-top-right-radius: 20px; background: rgb(67, 54, 240); display: block;
+    }
+    .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+    .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+        display: block;
     }
 
-    .NavSide__main-content {
-        flex-grow: 1;
-        padding: 2rem;
-        margin-left: 240px;
-        overflow-y: auto;
-        transition: margin-left 0.3s ease-in-out;
-    }
-    
-    /* Style untuk Tombol Toggle Desktop (Default Tersembunyi) */
-    .NavSide__toggle {
-        display: none; /* Tersembunyi di desktop */
+    .NavSide__topbar {
+        display: flex; 
+        align-items: center; 
         position: fixed;
-        top: 15px;
-        left: 15px;
-        width: 40px;
-        height: 40px;
-        z-index: 1050; /* Di atas sidebar jika sidebar overlay */
-        cursor: pointer;
-        border-radius: 5px;
-        background-color: white;
-        border: 1px solid #ddd;
+        top: 0;
+        left: 0; 
+        width: 100%; 
+        margin-left: 280px; 
+        height: 60px; 
+        background-color: #ffffff;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        transition: left 0.3s ease-in-out;
+        z-index: 999; 
+        padding: 0 15px; 
+        justify-content: flex-start; 
+        transition: margin-left 0.5s ease-in-out;
     }
-    .NavSide__toggle .open-icon,
-    .NavSide__toggle .close-icon {
-        font-size: 24px; 
-        color: #3b52f9; 
+    .NavSide__topbar .NavSide__toggle {
+        width: 40px; 
+        height: 40px; 
+        cursor: pointer; 
+        border-radius: 5px; 
+        display: none; 
+        align-items: center; 
+        justify-content: center; 
+        padding:0;
+    }
+    .NavSide__topbar .NavSide__toggle i.bi {
         position: absolute; 
+        font-size: 24px; 
+        display: none; 
+        color: rgb(67, 54, 240); 
         transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
     }
-    .NavSide__toggle .close-icon {
-        opacity: 0;
-        transform: rotate(-90deg) scale(0.5);
+    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; } 
+    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; } 
+    
+    .NavSide__main-content {
+        flex-grow: 1;
+        padding: 2rem; 
+        margin-left: 280px; 
+        overflow-y: auto;
+        transition: margin-left 0.5s ease-in-out;
+        background-color: #F9FAFB; 
+        padding-top: calc(60px + 2rem); 
     }
-    .NavSide__toggle.NavSide__toggle--active .open-icon {
-        opacity: 0;
-        transform: rotate(90deg) scale(0.5);
+   
+    .page-content-header-wrapper {
+        margin-bottom: 2.5rem; 
     }
-    .NavSide__toggle.NavSide__toggle--active .close-icon {
-        opacity: 1;
-        transform: rotate(0deg) scale(1);
+    .main-page-title {
+        font-size: 2.25rem; 
+        font-weight: 700;   
+        color: #212529;     
+        margin-bottom: 0.75rem; 
     }
-
-    /* ... (sisa style dari .upload-area-v2, .btn-custom-primary, dll. tetap sama) ... */
+    .page-content-header-wrapper .sub-header-line .section-subtitle {
+        font-weight: 600; 
+        font-size: 1.75rem;  
+        color: #212529;      
+        margin-bottom: 0; 
+    }
+    
     #fileNameDisplay { margin-top: 1rem; margin-bottom: 1rem; font-weight: 600; min-height: 1.5rem; color: #495057; }
     .badge-custom { background-color: #f78d8d; color: white; font-weight: 600; padding: 8px 14px; border-radius: 20px; }
     .card-comment { background-color: #cbcbcb; padding: 20px; border-radius: 15px; margin-bottom: 20px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease; border: none; }
@@ -259,36 +281,245 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .btn-custom-primary:disabled { background-color: #e2e8f0; color: #94a3b8; box-shadow: none; transform: none; cursor: not-allowed; }
     .btn-custom-primary svg { margin-right: 0.5rem; }
 
-    @media (max-width: 700px) {
+    /* === CSS BARU UNTUK SWEETALERT2 KUSTOM === */
+    .custom-swal-popup {
+        background-color: #e9eef2 !important; 
+        border-radius: 16px !important; 
+        padding: 25px 30px !important; 
+        width: auto !important; 
+        max-width: 460px; 
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+    }
+    .custom-swal-html-container {
+        margin: 0 !important; 
+        padding: 0 !important; 
+    }
+    .custom-swal-title { 
+        font-size: 1.6rem !important; 
+        font-weight: 600 !important; 
+        color: #374151 !important; 
+        margin-top: 0 !important; 
+        margin-bottom: 0.65rem !important; 
+        padding: 0 !important; 
+        text-align: center;
+    }
+    .custom-swal-text { 
+        font-size: 1rem !important; 
+        color: #4B5563 !important; 
+        margin-bottom: 1.5rem !important; 
+        padding: 0 !important;
+        line-height: 1.6;
+        text-align: center;
+    }
+    .custom-swal-actions {
+        margin-top: 15px !important; 
+        gap: 10px !important; 
+        display: flex !important;
+        justify-content: center !important; 
+    }
+    .swal2-styled.swal2-confirm,
+    .swal2-styled.swal2-cancel { 
+        box-shadow: none !important;
+        font-size: 0.9rem !important; 
+        padding: 9px 22px !important; 
+        border-radius: 10px !important; /* Lengkungan standar */
+        font-weight: 500 !important; 
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        flex-grow: 0; 
+        min-width: 110px; 
+        border-width: 1.5px !important; 
+    }
+    .custom-swal-confirm-button { 
+        background-color: #28a745 !important; 
+        color: white !important;
+        border-color: #28a745 !important; 
+    }
+    .custom-swal-confirm-button:hover {
+        background-color: #218838 !important; 
+        border-color: #1e7e34 !important;
+    }
+    .custom-swal-cancel-button { 
+        background-color: transparent !important; 
+        color: #dc3545 !important; 
+        border-color: #dc3545 !important; 
+    }
+    .custom-swal-cancel-button:hover {
+        background-color: rgba(220, 53, 69, 0.05) !important; 
+        border-color: #bd2130 !important;
+        color: #bd2130 !important;
+    }
+    .custom-swal-popup .swal2-icon {
+        display: none !important;
+    }
+    .custom-swal-popup > .swal2-title, 
+    .custom-swal-popup > .swal2-content { 
+        display: none !important;
+    }
+
+    /* === CSS BARU UNTUK MODAL DETAIL CATATAN PERBAIKAN === */
+    #modalDetail .modal-content {
+        background-color: #FFFFFF !important; 
+        border-radius: 16px !important; 
+        border: none !important; 
+        box-shadow: 0px 8px 24px rgba(29, 36, 50, 0.15) !important; 
+        padding: 5px; /* Padding lebih kecil karena header/footer akan punya padding sendiri */
+    }
+
+    #modalDetail .modal-header {
+        border-bottom: none !important; 
+        padding: 20px 25px 10px 25px; 
+        position: relative; 
+    }
+
+    #modalDetail #modalDetailLabel { 
+        font-size: 1.6rem; /* Ukuran disesuaikan dengan gambar */
+        font-weight: 600;   
+        color: #3A3A58;     /* Warna biru tua keunguan dari gambar (perkiraan) */
+        width: calc(100% - 40px); /* Beri ruang untuk tombol close */
+        text-align: left; 
+    }
+
+    #modalDetail .modal-header .btn-close {
+        background-color: #e9ecef; 
+        border-radius: 50%; 
+        padding: 0.4em; /* Sedikit lebih kecil agar pas */
+        opacity: 0.7;
+        box-shadow: none !important;
+        font-size: 0.8rem; /* Ukuran ikon X */
+        /* Mengatur posisi absolut jika diperlukan, atau biarkan default Bootstrap */
+        /* position: absolute; top: 22px; right: 22px; */
+    }
+    #modalDetail .modal-header .btn-close:hover {
+        opacity: 1;
+    }
+
+    #modalDetail .modal-body {
+        padding: 5px 25px 20px 25px; 
+        font-size: 0.9rem; 
+        color: #525278;   /* Warna biru keunguan lebih lembut (perkiraan) */
+        line-height: 1.6;
+    }
+
+    #modalDetail .modal-footer {
+        border-top: none !important; 
+        padding: 10px 25px 20px 25px; 
+        justify-content: flex-end !important; 
+    }
+
+    #modalDetail .modal-footer .btn-custom-tutup-modal { /* Kelas baru untuk tombol tutup modal */
+        background-color: #4A4A7D !important; /* Warna biru tua keunguan dari gambar (perkiraan) */
+        color: white !important;
+        border: none !important;
+        border-radius: 50px !important; 
+        padding: 8px 22px !important;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    #modalDetail .modal-footer .btn-custom-tutup-modal:hover {
+        background-color: #3A3A5D !important; 
+    }
+
+
+    /* === RESPONSIVE DESIGN === */
+    @media (max-width: 700px) { 
         .NavSide__sidebar {
-            /* Sidebar disembunyikan ke kiri di mobile */
-            transform: translateX(-100%); 
-            width: 250px; /* Lebar sidebar saat muncul di mobile */
-            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); 
+            width: 250px; 
+            transform: translateX(-100%);
+            border-left-width: 0; 
+            z-index: 1040; 
+            padding-top: 60px; 
         }
-        /* Kelas ini akan ditambahkan oleh JavaScript untuk menampilkan sidebar */
-        .NavSide__sidebar.NavSide__sidebar--active-mobile {
+        .NavSide__sidebar.NavSide__sidebar--active-mobile { 
             transform: translateX(0);
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .NavSide__sidebar-brand { padding: 20px 10px 15px 10px; }
+        .NavSide__sidebar-brand img { width: 90%; }
+        .NavSide__sidebar h4 { margin-bottom: 1rem; }
+        .NavSide__sidebar-nav { padding-top: 10px; }
+        .NavSide__sidebar-item a { padding: 15px 20px; height: auto; }
+
+        .NavSide__topbar { 
+            display: flex; 
+            margin-left: 0; 
+            z-index: 1045; 
+        }
+        .NavSide__topbar .NavSide__toggle { 
+            display: flex; 
+            position: relative; 
+            top: auto; 
+            left: auto;
+            background-color: transparent; 
+            box-shadow: none; 
+        }
+         .NavSide__topbar .NavSide__toggle i.bi.open { 
+            display: block; 
+        }
+
+        .NavSide__main-content {
+            margin-left: 0;
+            padding: 1rem; 
+            padding-top: calc(60px + 1rem); 
+            width: 100%; 
         }
         
-        .NavSide__main-content {
-            margin-left: 0; 
-            width: 100%;
-            padding: 1rem;
+        .main-page-title {
+            font-size: 1.75rem; 
         }
-        .text-heading { font-size: large; }
+        .page-content-header-wrapper .sub-header-line .section-subtitle {
+            font-size: 1.25rem; 
+        }
+        
         .upload-area-v2 { padding: 1.5rem; }
         .upload-area-v2 #initial-state svg, 
         .upload-area-v2 #selected-state svg { width: 60px; height: 60px; }
         .btn-custom-primary { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
 
-        /* Tampilkan tombol toggle di mobile */
-        .NavSide__toggle {
-            display: flex; 
+        .custom-swal-popup {
+            padding: 20px 25px !important;
+            max-width: calc(100% - 30px); 
         }
-        /* Opsional: Geser tombol toggle saat sidebar terbuka */
-        .NavSide__toggle.NavSide__toggle--active {
-            left: calc(250px + 10px); /* 250px = lebar sidebar mobile */
+        .custom-swal-title {
+            font-size: 1.4rem !important;
+        }
+        .custom-swal-text {
+            font-size: 0.9rem !important;
+            margin-bottom: 1.25rem !important;
+        }
+        .custom-swal-actions {
+            gap: 8px !important;
+        }
+        .swal2-styled.swal2-confirm,
+        .swal2-styled.swal2-cancel {
+            padding: 8px 20px !important; 
+            border-radius: 8px !important; 
+        }
+
+        /* Penyesuaian Modal Detail Catatan Perbaikan untuk mobile */
+        #modalDetail .modal-content {
+            padding: 10px;
+        }
+        #modalDetail .modal-header {
+            padding: 15px 20px 5px 20px;
+        }
+        #modalDetail #modalDetailLabel {
+            font-size: 1.3rem;
+        }
+        #modalDetail .modal-header .btn-close {
+            padding: 0.35em;
+            font-size: 0.7rem;
+        }
+        #modalDetail .modal-body {
+            padding: 5px 20px 15px 20px;
+            font-size: 0.85rem;
+        }
+        #modalDetail .modal-footer {
+            padding: 10px 20px 15px 20px;
+        }
+        #modalDetail .modal-footer .btn-custom-tutup-modal {
+            padding: 7px 20px !important;
+            font-size: 0.8rem;
         }
     }
     </style>
@@ -296,103 +527,109 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
 <div id="NavSide">
-    <button class="NavSide__toggle" id="sidebarToggleBtn" aria-label="Toggle sidebar">
-        <i class="bi bi-list open-icon"></i>   <i class="bi bi-x close-icon"></i>  </button>
-    <aside class="NavSide__sidebar" id="mainSidebar"> 
-        <h4>ASTRAtech</h4>
+    <div id="main-sidebar" class="NavSide__sidebar">
+        <div class="NavSide__sidebar-brand">
+             <h4>ASTRAtech</h4>
+        </div>
         <ul class="NavSide__sidebar-nav">
-            <li class="NavSide__sidebar-item">
-                <a href="#" class="NavSide__sidebar-link">
-                    <span class="NavSide__sidebar-title">Detail Pengajuan</span>
-                </a>
+            <li class="NavSide__sidebar-item"> 
+                <b></b><b></b>
+                <a href="detail_sidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
             </li>
             <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                <a href="#" class="NavSide__sidebar-link">
-                    <span class="NavSide__sidebar-title">Perbaikan</span>
-                </a>
+                <b></b><b></b>
+                <a href="#"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
             </li>
             <li class="NavSide__sidebar-item">
-                <a href="#" class="NavSide__sidebar-link">
-                    <span class="NavSide__sidebar-title">Nilai Akhir</span>
-                </a>
+                <b></b><b></b>
+                <a href="nilai_akhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
             </li>
         </ul>
-    </aside>
+    </div>
 
-    <div class="NavSide__main-content">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h2 class="text-heading">Detail Sidang - Sistem Pengajuan Sidang</h2>
-                <h5 class="mt-3">Catatan Perbaikan</h5>
-            </div>
-            <span class="badge-custom">Status Revisi : Belum Disetujui</span>
-        </div>
-
-        <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
-            <strong>Timotius Victory, S.Kom, M.Kom - Penguji</strong>
-            <p class="mt-2 mb-0 text-truncate-2">
-                Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
-            </p>
-        </div>
-
-        <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-            <strong>Yosep Setiawan, S.Kom, M.Kom - Penguji</strong>
-            <p class="mt-2 mb-0 text-truncate-2">
-                Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
-            </p>
-        </div>
-
-        <div class="revision-card">
-            <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
-            <form id="revisionForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data">
-                <label for="fileInput" class="upload-area-v2" id="uploadArea">
-                    <div id="initial-state">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#ced4da" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16"><path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 1.5v2A1.5 1.5 0 0 0 11 5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v1.5z"/></svg>
-                    </div>
-                    <div id="selected-state" class="d-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.707 0H9.293zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 10.5a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 12a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/></svg>
-                    </div>
-                    <p id="upload-prompt-text">Unggah berkas revisi dengan format pdf, docx, pptx, dan zip</p>
-                </label>
-                <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
-                <div class="text-center mt-3"><p id="fileNameDisplay" class="fw-bold mb-0"></p></div>
-                <div class="d-flex justify-content-end mt-4">
-                    <button type="submit" class="btn btn-custom-primary" id="submitBtn" disabled>Kirim</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="mt-4">
-            <button type="button" id="btnKembali" class="btn btn-custom-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
-                Kembali
-            </button>
-        </div>
-
-        <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-4 p-4">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <h4 id="modalDetailLabel" class="fw-bold text-primary">Detail Catatan Perbaikan</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                    </div>
-                    <div class="modal-body pt-3 pb-2">
-                        <p>
-                            Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik,
-                            termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali penggunaan bahasa.
-                            Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa ilmiah yang baku dan konsisten.
-                            Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik,
-                            termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali penggunaan bahasa.
-                            Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa ilmiah yang baku dan konsisten.
-                        </p>
-                    </div>
-                    <div class="modal-footer border-0 justify-content-end">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
+    <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle"> 
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
             </div>
         </div>
-    </div> 
+
+        <main class="NavSide__main-content">
+            <div class="page-content-header-wrapper">
+                <h1 class="main-page-title">Detail Sidang - Sistem Pengajuan Sidang</h1>
+                <div class="d-flex justify-content-between align-items-center sub-header-line mt-3">
+                    <h2 class="section-subtitle mb-0">Catatan Perbaikan</h2>
+                    <span class="badge-custom">Status Revisi : Belum Disetujui</span>
+                </div>
+            </div>
+            
+            <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
+                <strong>Timotius Victory, S.Kom, M.Kom - Penguji</strong>
+                <p class="mt-2 mb-0 text-truncate-2">
+                    Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
+                </p>
+            </div>
+
+            <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
+                <strong>Yosep Setiawan, S.Kom, M.Kom - Penguji</strong>
+                <p class="mt-2 mb-0 text-truncate-2">
+                    Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
+                </p>
+            </div>
+
+            <div class="revision-card">
+                <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
+                <form id="revisionForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" enctype="multipart/form-data">
+                    <label for="fileInput" class="upload-area-v2" id="uploadArea">
+                        <div id="initial-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#ced4da" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16"><path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 1.5v2A1.5 1.5 0 0 0 11 5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v1.5z"/></svg>
+                        </div>
+                        <div id="selected-state" class="d-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.707 0H9.293zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 10.5a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 12a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/></svg>
+                        </div>
+                        <p id="upload-prompt-text">Unggah berkas revisi dengan format pdf, docx, pptx, dan zip</p>
+                    </label>
+                    <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
+                    <div class="text-center mt-3"><p id="fileNameDisplay" class="fw-bold mb-0"></p></div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-custom-primary" id="submitBtn" disabled>Kirim</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-4">
+                <button type="button" id="btnKembali" class="btn btn-custom-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
+                    Kembali
+                </button>
+            </div>
+
+            <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content"> 
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="modalDetailLabel">Detail Catatan Perbaikan</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik,
+                                termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali penggunaan bahasa.
+                                Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa ilmiah yang baku dan konsisten.
+                                Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik,
+                                termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali penggunaan bahasa.
+                                Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa ilmiah yang baku dan konsisten.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-custom-tutup-modal" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </main>
+    </div>
 </div> 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -414,7 +651,6 @@ if (!empty($pesan)):
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Kode JavaScript untuk Upload File (Sudah Ada) ---
     const fileInput = document.getElementById('fileInput');
     const submitBtn = document.getElementById('submitBtn');
     const revisionForm = document.getElementById('revisionForm');
@@ -445,15 +681,24 @@ document.addEventListener('DOMContentLoaded', function() {
         revisionForm.addEventListener('submit', function(event) {
             event.preventDefault(); 
             Swal.fire({
-                title: 'Perhatian',
-                text: "Apakah anda sudah yakin ingin mengupload dokumen?",
-                icon: 'warning',
+                html: `
+                    <div class="custom-swal-title">Perhatian</div>
+                    <div class="custom-swal-text">Apakah anda sudah yakin ingin mengupload dokumen?</div>
+                `,
                 showCancelButton: true,
-                confirmButtonColor: '#198754',
-                cancelButtonColor: '#dc3545',
                 confirmButtonText: 'Lanjutkan',
                 cancelButtonText: 'Batalkan',
-                customClass: { popup: 'rounded-4' }
+                showConfirmButton: true,
+                showCloseButton: false,
+                buttonsStyling: false, 
+                customClass: {
+                    popup: 'custom-swal-popup',
+                    htmlContainer: 'custom-swal-html-container',
+                    actions: 'custom-swal-actions',
+                    confirmButton: 'custom-swal-confirm-button', 
+                    cancelButton: 'custom-swal-cancel-button'   
+                },
+                reverseButtons: true 
             }).then((result) => {
                 if (result.isConfirmed) {
                     revisionForm.submit();
@@ -461,7 +706,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     } else {
-        console.error("Peringatan: Salah satu elemen HTML untuk fungsionalitas upload tidak ditemukan.");
+        console.warn("Peringatan: Salah satu elemen HTML untuk fungsionalitas upload tidak ditemukan.");
     }
 
     if (btnKembali) {
@@ -470,9 +715,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // === JAVASCRIPT BARU UNTUK TOGGLE SIDEBAR ===
-    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
-    const mainSidebar = document.getElementById('mainSidebar');
+    const sidebarToggleBtn = document.querySelector('.NavSide__topbar .NavSide__toggle'); 
+    const mainSidebar = document.getElementById('main-sidebar'); 
 
     if (sidebarToggleBtn && mainSidebar) {
         sidebarToggleBtn.addEventListener('click', function() {
@@ -480,9 +724,19 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.toggle('NavSide__toggle--active'); 
         });
     } else {
-        console.error("Peringatan: Elemen sidebar atau tombol toggle tidak ditemukan untuk fungsionalitas mobile.");
+        console.warn("Peringatan: Elemen sidebar atau tombol toggle tidak ditemukan untuk fungsionalitas mobile.");
     }
-    // === AKHIR JAVASCRIPT BARU UNTUK TOGGLE SIDEBAR ===
+
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 700) { 
+            if (mainSidebar && mainSidebar.classList.contains('NavSide__sidebar--active-mobile')) {
+                mainSidebar.classList.remove('NavSide__sidebar--active-mobile');
+            }
+            if (sidebarToggleBtn && sidebarToggleBtn.classList.contains('NavSide__toggle--active')) {
+                sidebarToggleBtn.classList.remove('NavSide__toggle--active');
+            }
+        }
+    });
 });
 </script>
 </body>
