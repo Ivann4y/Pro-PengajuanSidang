@@ -80,7 +80,6 @@
 
         <main class="NavSide__main-content" id="mPengajuan">
          <div class="container-fluid">
-    <div class="sideNav"></div>
     <div class="container-fluid bodyContainer">
       <div class="row">
         <div class="col-12">
