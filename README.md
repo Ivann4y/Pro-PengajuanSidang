@@ -5,6 +5,7 @@ Website pengajuan sidang online untuk memudahkan mahasiswa, dosen pembimbing, da
 ## 🚀 Fitur Utama
 
 ### 🎓 Mahasiswa
+
 - Login dan ubah kata sandi
 - Mengajukan sidang secara online
 - Mengunggah dokumen pengajuan sidang
@@ -14,11 +15,13 @@ Website pengajuan sidang online untuk memudahkan mahasiswa, dosen pembimbing, da
 - Melihat nilai akhir sidang
 
 ### 🧑‍💼 Admin
+
 - Login dan ubah kata sandi
 - Menentukan jadwal, ruangan, dan dosen penguji sidang
 - Mengelola dan mengubah jadwal sidang
 
 ### 👨‍🏫 Dosen
+
 - Login dan ubah kata sandi
 - Membaca dokumen pengajuan sidang
 - Menyetujui atau menolak pengajuan sidang
@@ -37,7 +40,7 @@ Website pengajuan sidang online untuk memudahkan mahasiswa, dosen pembimbing, da
 ## 👥 Tim Pengembang
 
 - Andrew () – Project Leader
-- Haaris ()
+- Haaris (yapusss)
 - Nayaka (Ivann4y)
 - Evan (Evan)
 - Naufal ()
@@ -84,3 +87,4 @@ git commit -m "Tambah fitur halaman login"
 
 # Kirim ke GitHub
 git push
+```
