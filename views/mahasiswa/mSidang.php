@@ -591,17 +591,16 @@
       let listItems = document.querySelectorAll(".NavSide__sidebar-item");
       if (listItems.length > 0) {
         for (let i = 0; i < listItems.length; i++) {
-          listItems[i].onclick = function (event) {
-            for (let j = 0; j < listItems.length; j++) {
-              listItems[j].classList.remove("NavSide__sidebar-item--active");
-            }
-            this.classList.add("NavSide__sidebar-item--active");
-          };
+            listItems[i].onclick = function(event) {
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                }
+            };
         }
-      }
-
-      // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
-      // telah dihapus karena modalnya sudah tidak digunakan.
     </script>
+    <script src="../../assets/js/main.js"></script>
 </body>
 </html>

@@ -244,7 +244,8 @@
                   name="nilaiLaporan"
                   id="detailpenilaian"
                   placeholder=""
-                  maxlength="3">
+                  maxlength="3"
+                  >
                   <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
                 <input
                   type="number"
