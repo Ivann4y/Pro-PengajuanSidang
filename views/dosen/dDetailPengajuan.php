@@ -558,7 +558,7 @@
     <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center p-4">
-        <img src="http://localhost/WEBSITE PRG/Pro-PengajuanSidang/assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
+        <img src="../../assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
         <h5 class="modal-title fw-bold" id="notifModalLabel"></h5>
         </div>
     </div>
