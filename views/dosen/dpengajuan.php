@@ -458,7 +458,8 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
+    
+    <!-- Modal keluar-->
     <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -470,7 +471,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-            <button type="button" class="btn btn-success">Lanjutkan</button>
+            <button type="button" class="btn btn-success" onclick="window.location.href='../../index.php'">Lanjutkan</button>
         </div>
         </div>
     </div>
