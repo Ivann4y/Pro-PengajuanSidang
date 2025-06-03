@@ -334,21 +334,8 @@ if ($_SESSION['role'] !== 'dosen') {
         }
 
 
-        .img-slot {
-            width: 100%;
-            /* height: 100%; */
-            display: flex;
-            justify-content: center;
-            align-items: flex-end; /* Gambar menempel ke bawah */
-            min-height: 220px;
-            position: relative;
-            background-color: #F9FAFB; /* Background abu-abu sangat muda jika diperlukan */
-            border-radius: 12px;
-            padding-top: 1rem; /* Sedikit padding atas */
-        }
-
         .img-slot img{
-            max-width: 80%; /* Gambar tidak terlalu lebar */
+            max-width: 120%; /* Gambar tidak terlalu lebar */
             max-height: 100%; /* Gambar tidak melebihi kontainer */
             object-fit: contain;
         }
