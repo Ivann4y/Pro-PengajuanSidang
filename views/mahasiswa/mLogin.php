@@ -116,11 +116,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
         </div>
 
         <div class="log d-flex justify-content-center align-items-center pb-5">
-            <form action="#" method="POST">
+            <form action="../../auth.php" method="POST">
                 <div class="text-center pt-5 mb-4">
                     <h2><strong>Masuk Akun Mahasiswa</strong></h2>
                 </div>
                 <div class="mb-3">
+                    <input type="hidden" name="role" value="mahasiswa">
                     <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIM" required>
                 </div>
                 <div class="mb-3">
