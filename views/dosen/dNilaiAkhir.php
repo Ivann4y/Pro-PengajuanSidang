@@ -183,7 +183,7 @@
           <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
             <b></b>
             <b></b>
-            <a href="#">
+            <a href="dNilaiAkhir.php">
               <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
             </a>
           </li>
