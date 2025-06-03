@@ -355,7 +355,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -436,15 +436,15 @@
                         <tr class="isiTabel jadiBiru">
                             <td>1</td>
                             <td>0920240033</td>
-                            <td>M.Harris Nur S.</td>
-                            <td>Pemograman 2</td>
+                            <td>M. Harris Nur S.</td>
+                            <td>Pemrograman 2</td>
                             <td>Timotius Victory</td>
                         </tr>
                         <tr class="isiTabel jadiBiru">
                             <td>2</td>
                             <td>0920240055</td>
                             <td>Nur Widya Astuti</td>
-                            <td>Pemograman 2</td>
+                            <td>Pemrograman 2</td>
                             <td>Timotius Victory</td>
                         </tr>
                 
@@ -452,6 +452,24 @@
                 </table>
             </div>
         </div>
+    </div>
+
+    <!-- modal keluar -->
+    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header mx-auto">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+        </div>
+        <div class="modal-body mx-auto">
+             Apakah anda yakin ingin keluar?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+            <button type="button" class="btn btn-success" onclick="window.location.href='../../index.php'">Lanjutkan</button>
+        </div>
+        </div>
+    </div>
     </div>
 
     <script>

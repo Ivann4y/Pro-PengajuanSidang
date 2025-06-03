@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
-    <title>Document</title>
+    <title>Mahasiswa - Nilai Akhir</title>
     <style>
         table {
         border-spacing: 0 10px;
@@ -61,6 +61,24 @@
     </style>
 </head>
 <body>
+    <div id="main-sidebar" class="NavSide__sidebar">
+        <div class="NavSide__sidebar-brand">
+            <img src="assets/img/WhiteAstra.png" alt="AstraTech Logo"> </div>
+        <ul class="NavSide__sidebar-nav">
+            <li class="NavSide__sidebar-item"> <b></b><b></b>
+                <a href="-.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+            </li>
+            <li class="NavSide__sidebar-item">
+                <b></b><b></b>
+                <a href="#"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
+            </li>
+            <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
+                <b></b><b></b>
+                <a href="-.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+            </li>
+        </ul>
+    </div>
+    
     <h2 class="bodyHeading">
         Detail Sidang - Sistem Pengajuan Sidang
     </h2>
