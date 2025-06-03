@@ -115,12 +115,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         </div>
 
         <div class="log d-flex justify-content-center align-items-center pb-5">
-            <form action="#" method="POST">
+            <form action="../../auth.php" method="POST">
                 <div class="text-center pt-5 mb-4">
                     <h2><strong>Masuk Akun Admin</strong></h2>
                 </div>
                 <div class="mb-3">
-                    <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIM" required>
+                    <input type="hidden" name="role" value="admin">
+                    <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIP" required>
                 </div>
                 <div class="mb-3">
                     <input type="password" class="form-control form-control-lg border border-dark" id="password" name="password" placeholder="Password" required>

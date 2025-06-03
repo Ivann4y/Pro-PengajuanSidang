@@ -1,3 +1,11 @@
+<?php
+session_start();
+if ($_SESSION['role'] !== 'mahasiswa') {
+    header("Location: ../../index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
