@@ -410,7 +410,7 @@
                         </tr>
                     </thead>
                     <tbody id="dPengajuanTA">
-                        <tr class="isiTabel jadiBiru">
+                        <tr class="isiTabel jadiBiru" onclick="window.location.href='dDetailPengajuan.php'">
                             <td>1</td>
                             <td>0920240033</td>
                             <td>M. Harris Nur S.</td>
