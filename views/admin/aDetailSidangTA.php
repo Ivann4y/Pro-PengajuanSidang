@@ -260,13 +260,14 @@
        
         .status-badge {
           background-color: #4cfaab;
-          color: black;
+          color: rgb(48, 48, 110);
           border-radius: 20px;
           padding: 8px 18px; 
           display: inline-block;
-          font-size: 0.875rem; 
+          font-size: 0.95rem; 
           margin-bottom: 20px;
-          box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+          font-weight: 500;
         }
 
         .info-card {
@@ -367,7 +368,7 @@
         }
         .btn-kembali:hover {
            position: relative;
-            background-color: rgb(67, 54, 240);
+            background-color: rgb(59, 54, 136);
         }
         
         .modal-content-custom-form {
@@ -378,11 +379,11 @@
             background-color:rgb(255, 255, 255); 
             border-radius: 20px; 
         }
-        .modal-body .form-container h2 {
+         .modal-body .form-container h2 {
             font-size: 1.25rem; 
             margin-bottom: 20px;
             text-align: center;
-            color: #333;
+            color: rgb(255, 255, 255); 
         }
         .modal-body .form-group {
           display: flex;
@@ -400,35 +401,61 @@
         }
         .modal-body .form-group .input-with-buttons,
         .modal-body .form-group .time-input-range,
-        .modal-body .form-group > input[type="text"], 
-        .modal-body .form-group > input[type="date"] {
+        .modal-body .form-group > input[type="text"] {
           flex-grow: 1; 
-          height: 49px; 
+          height: 35px; 
           display: flex; 
           align-items: center;
+          
         }
         .modal-body .form-group input[type="text"],
-        .modal-body .form-group input[type="date"],
         .modal-body .form-group input[type="time"] {
           width: 100%; 
-          height: 100%; 
+          height: 35px; 
           padding: 0 15px;
           border: 1px solid #D1D5DB;
-          background-color: #FFFFFF;
+          background-color:rgb(255, 255, 255);
           box-sizing: border-box;
           font-size: 14px;
           color: #374151;
           border-radius: 26px; 
+          
         }
+
+        .modal-body .form-group > input[type="date"] {
+           flex-grow: 1; 
+           height: 35px; 
+           display: flex; 
+           
+        }
+
+        .modal-body .form-group input[type="date"] {
+            width: 100%;
+            height: 35px;
+            padding: 0 15px;
+            border: 1px solid #D1D5DB;
+            background-color: rgb(255, 255, 255);
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #374151;
+            border-radius: 26px; 
+        }
+
+         
+
          .modal-body .form-group input[readonly] {
-            background-color: #E5E7EB;
+            background-color:rgb(255, 255, 255);
             cursor: not-allowed;
+            height: 35px;
+            width: 100px;
+
+
         }
         .modal-body .bobot-input-new {
             width: 55px !important; 
             height: 36px !important;
             text-align: center;
-            border: 1px solid #D1D5DB !important;
+            border: 1px solid rgb(216, 222, 231) !important;
             border-radius: 8px !important;
             font-size: 14px !important;
             color: #374151 !important;
@@ -441,7 +468,7 @@
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
         .modal-body .bobot-input-new::-webkit-inner-spin-button {
             -webkit-appearance: none;
-            margin: 0;
+            margin: 0; 
         }
         .modal-body .input-with-buttons {
           gap: 10px; 
@@ -492,33 +519,19 @@
           padding: 5px 10px;
           height: 40px;
           width: 200px;
-          display: fi;
+          
         }
         .modal-body .form-actions .btn-submit:hover { background-color: rgb(106, 95, 255); }
 
-        .modal-footer {
-            background-color: #F9FAFB; border-top: 1px solid #E5E7EB;
-            border-bottom-right-radius: 25px; border-bottom-left-radius: 25px;
+        .modal-body > h2 {
+            font-size: 30px; 
+            color: #374151;
+            font-weight: 580;
         }
-        .modal-header {
-            background-color: #F9FAFB; border-bottom: 1px solid #E5E7EB;
-            border-top-left-radius: 25px; border-top-right-radius: 25px;
-        }
-        .modal-title { font-weight: 600; color: #333; }
 
-        /* CSS untuk invalid-feedback (jika Anda menambahkan validasi) */
-        .modal-body .form-group .invalid-feedback { 
-            display: none; width: 100%; margin-top: .25rem;
-            font-size: .875em; color: #dc3545; 
-            flex-basis: 100%; margin-left: calc(160px + 15px); 
-        }
-        .modal-body .form-group input.is-invalid ~ .invalid-feedback,
-        .modal-body .form-group input.is-invalid + .invalid-feedback { 
-            display: block; 
-        }
-        .modal-body .input-with-buttons .invalid-feedback,
-        .modal-body .time-input-range .invalid-feedback {
-            flex-basis: 100%; order: 10; margin-left: 0; 
+        #penjadwalanSidangModal .modal-dialog {
+          max-width: 600px;
+
         }
 
     </style>
@@ -531,21 +544,21 @@
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <b></b>
                     <b></b>
-                    <a href="#">
+                    <a href="aDetailSidangTA.php">
                         <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b>
                     <b></b>
-                    <a href="#">
+                    <a href="aEvaluasi.php">
                         <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b>
                     <b></b>
-                    <a href="#">
+                    <a href="aNilaiAkhir.php">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
@@ -585,7 +598,8 @@
                   <div class="modal-body">
                     <h2>Penjadwalan Sidang</h2>
                     <div class="form-container"> 
-                      <form id="formDalamModal" novalidate> <div class="form-group">
+                      <form id="formDalamModal" novalidate> 
+                        <div class="form-group">
                           <label for="modal_nim">NIM</label>
                           <input type="text" id="modal_nim" value="0920240033" readonly />
                         </div>
@@ -596,20 +610,14 @@
                 
                         <div class="form-group">
                           <label for="modal_pembimbing">Pembimbing</label>
-                          <div class="input-with-buttons">
-                            <input type="text" id="modal_pembimbing" name="pembimbing_nama" value="Rida Indah Fariani" required />
-                            <div class="bobot-nilai-input-group">
-                              <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_pembimbing')">-</button>
-                              <input type="number" id="modal_qty_pembimbing" name="pembimbing_bobot" class="bobot-input-new" value="0" min="0" aria-label="Bobot Pembimbing" />
-                              <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_pembimbing')">+</button>
-                            </div>
-                          </div>
+                          <input type="text" id="modal_pembimbing" name="pembimbing_nama" value="Rida Indah Fariani" readonly />    
                         </div>
-                
-                        <div class="form-group">
+
+                        
+                          <div class="form-group">
                           <label for="modal_penguji1">Penguji 1</label>
                           <div class="input-with-buttons">
-                            <input type="text" id="modal_penguji1" name="penguji_nama[]" required />
+                            <input type="text" id="modal_penguji1" name="penguji_nama[]"/>
                             <div class="bobot-nilai-input-group">
                               <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji1')">-</button>
                               <input type="number" id="modal_qty_penguji1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 1" />
@@ -618,17 +626,7 @@
                           </div>
                         </div>
                 
-                        <div class="form-group">
-                          <label for="modal_penguji2">Penguji 2</label>
-                          <div class="input-with-buttons">
-                            <input type="text" id="modal_penguji2" name="penguji_nama[]" required />
-                            <div class="bobot-nilai-input-group">
-                              <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji2')">-</button>
-                              <input type="number" id="modal_qty_penguji2" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 2" />
-                              <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji2')">+</button>
-                            </div>
-                          </div>
-                        </div>
+                        
                         
                         <div class="form-group">
                           <label for="modal_prodi">Prodi</label>
@@ -636,20 +634,23 @@
                           </div>
                         <div class="form-group">
                           <label for="modal_ruangan">Ruangan</label>
-                          <input type="text" id="modal_ruangan" name="ruangan" required/>
+                          <input type="text" id="modal_ruangan" name="ruangan"/>
                           </div>
                         <div class="form-group">
                           <label for="modal_tanggal">Tanggal</label>
-                          <input type="date" id="modal_tanggal" name="tanggal" required/>
+                          <input type="date"id="modal_tanggal" name="tanggal" />
                           </div>
                         <div class="form-group">
                           <label for="modal_jam_awal">Jam</label>
                           <div class="time-input-range">
-                            <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal" required />
+                            <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal"/>
                             <span class="time-separator">-</span>
-                            <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir" required />
+                            <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
                             </div>
                         </div>
+                        <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
+                        <form id ="formDalamModal" novalidate>
+
                         <div class="form-actions"> 
                           <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
                           <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
@@ -733,8 +734,40 @@
                       currentValue = 0; 
                   }
               }
+              inputElement.value = currentValue;
           }
       }
+
+      document.getElementById('formDalamModal').addEventListener('submit', function(event) {
+          event.preventDefault(); 
+
+          const errorBox = document.getElementById("form-error");
+          errorBox.textContent = ""; 
+          errorBox.style.color = "red";
+
+          const penguji1 = document.getElementById("modal_penguji1").value;
+          const ruangan = document.getElementById("modal_ruangan").value;
+          const tanggal = document.getElementById("modal_tanggal").value;
+          const jamAwal = document.getElementById("modal_jam_awal").value;
+          const jamAkhir = document.getElementById("modal_jam_akhir").value;
+
+          let errorMessage = "";
+          if (penguji1 === "") {
+            errorMessage = "Nama penguji 1 tidak boleh kosong!!";
+          } else if (ruangan === "") {
+            errorMessage = "Ruangan harus diisi!!";
+          } else if (tanggal === "") {
+            errorMessage = "Tanggal harus dipilih!!";
+          } else if (jamAwal === "" || jamAkhir === "") {
+            errorMessage = "Jam awal dan jam akhir harus diisi!!";
+         }
+
+          if (errorMessage !== "") {
+            errorBox.textContent = errorMessage;
+            return;
+          }
+
+        });
     </script>
 </body>
 </html>
