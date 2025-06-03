@@ -239,7 +239,7 @@
             <div class="col-auto d-flex align-items-center ">
                 <label for="nilaiLaporan">Nilai laporan:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="nilaiLaporan"
                   id="detailpenilaian"
@@ -248,7 +248,7 @@
                   >
                   <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="MateriPresentasi"
                   id="detailpenilaian"
@@ -256,7 +256,7 @@
                   maxlength="3">
                   <label for="Penyampaian" id="labelpenilaian">Penyampaian:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="Penyampaian"
                   id="detailpenilaian"
@@ -264,7 +264,7 @@
                   maxlength="3">
                   <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="NilaiProyek"
                   id="detailpenilaian"
@@ -344,6 +344,18 @@
   </div>
 </div>
 <script>
+   document.getElementById('detailpenilaian').addEventListener('input', function() {
+  this.value = this.value.replace(/[^0-9]/g, '');
+  if (this.value > 100) {
+    this.value = '';
+  }
+});
+  document.getElementById('nilaiMahasiswa').addEventListener('input', function() {
+  this.value = this.value.replace(/[^A-Ea-e]/g, '').toUpperCase();
+  if (!this.value || this.value.length > 1) {
+    this.value = '';
+  }
+});
   function pindahKeHalamanDaftarSidang() {
     window.location.href = "dDaftarSidang.php";
   }
