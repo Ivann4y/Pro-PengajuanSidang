@@ -542,7 +542,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </li>
             <li class="NavSide__sidebar-item">
                 <b></b><b></b>
-                <a href="nilai_akhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
             </li>
         </ul>
     </div>

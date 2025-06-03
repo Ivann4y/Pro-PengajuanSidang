@@ -519,11 +519,13 @@
             padding: 30px 20px; /* More padding inside for spacing */
         }
 
+        /* --- PERUBAHAN UNTUK IKON SUKSES DI SINI --- */
         .success-icon {
-            font-size: 6rem; /* Large icon size */
-            color: #4cfaab; /* Green color from Kirim button */
+            width: 6rem;   /* Mengatur lebar gambar */
+            height: 6rem;  /* Mengatur tinggi gambar */
             margin-bottom: 20px;
         }
+        /* --- AKHIR PERUBAHAN UNTUK IKON SUKSES --- */
 
         .success-message {
             font-size: 1.2rem;
@@ -554,7 +556,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#">
+                    <a onclick="location.href='dNilaiAkhir.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
@@ -684,7 +686,9 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content success-modal-content">
                 <div class="modal-body success-modal-body">
-                    <i class="fa-solid fa-circle-check success-icon"></i>
+                    <!-- --- PERUBAHAN IKON SUKSES DI SINI --- -->
+                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon">
+                    <!-- --- AKHIR PERUBAHAN IKON SUKSES --- -->
                     <p class="success-message">Evaluasi Sidang Berhasil Dikirim!</p>
                 </div>
             </div>
