@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow: hidden;
         }
 
         button {
@@ -59,12 +60,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .fullscreen {
             height: 100vh;
+            width: 100vw;
             position: relative;
         }
 
         .bgBiru {
             background-color: rgb(67, 54, 240);
             height: 50vh;
+        }
+
+        .bgBiru .teks {
+            margin-bottom: 10%;
+        }
+
+        .bgWhite {
+            width: 100vw;
         }
 
         .letak-LogBox {
@@ -81,11 +91,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Fullscreen -->
     <div class="fullscreen">
         <!-- Header Section -->
-        <div class="bgBiru">
-            <div class="text-white text-center py-5 fixed-top" style="z-index: 999;">
+        <div class="bgBiru d-flex justify-content-between align-items-center">
+            <img src="assets/img/img6-noBg.png" alt="" class="ms-5" width="400vh" height="372vh">
+            <div class="teks text-white text-center" style="z-index: 999;">
                 <h2><strong>Sistem Pengajuan Sidang</strong></h2>
                 <h2><strong>Politeknik Astra</strong></h2>
             </div>
+            <img src="assets/img/img4-noBg.png" alt="" class="me-5" width="372vh" height="372vh">
         </div>
 
         <!-- Login Box -->
@@ -112,6 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="bgWhite d-flex justify-content-between align-items-end">
+            <img src="assets/img/img1.png" alt="" class="ms-5" width="480vh" height="372vh">
+            <img src="assets/img/img3-noBg.png" alt="" class="me-5" width="420vh" height="372vh">
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>

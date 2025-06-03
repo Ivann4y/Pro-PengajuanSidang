@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="../../extra/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <title>Edit Pengajuan Sidang</title>
   <style>
@@ -34,14 +35,52 @@
       font-size: 16px;
       padding: 12px 15px;
       border-radius: 12px;
-
-    .  
 }
 
   </style>
 </head>
 <body>
-  <div class="container-fluid">
+
+  <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+        </div>
+        <main class="NavSide__main-content">
+
+         <div class="container-fluid">
     <div class="sideNav"></div>
     <div class="container-fluid bodyContainer">
       <div class="row">
@@ -137,6 +176,13 @@
 .upload-box:hover {
   background-color: #dee2e6;
 }
+
+.upload-box.file-selected {
+  background-color: #d1e7dd; /* Hijau muda */
+  border: 2px solid #0f5132;
+  color: #0f5132;
+}
+
 </style>
 
 
@@ -144,26 +190,94 @@
 
         <div class="d-flex justify-content-end gap-2 mt-3">
           <button type="button" class="btn btn-secondary" onclick="history.back()">Simpan</button>
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Kirim</button>
-       <div class="modal fade" id="staticBackdrop"data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Perhatian</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Trigger -->
+<button type="button" class="btn btn-primary" id="btnOpenModalKonfirmasi">
+  Kirim
+</button>
+
+<!-- Modal Peringatan -->
+<div class="modal fade" id="modalPeringatan" tabindex="-1" aria-labelledby="modalPeringatanLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #fff3cd;">
+      <div class="modal-header border-0 justify-content-center">
+        <h5 class="modal-title fw-bold text-warning" id="modalPeringatanLabel">Peringatan</h5>
       </div>
       <div class="modal-body">
-        Apakah anda sudah yakin ingin mengajukan sidang?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batalkan</button>
-        <button type="button" class="btn btn-primary">Lanjutkan</button>
+        <p class="fw-semibold mb-0">Mohon unggah semua dokumen sebelum mengirim pengajuan sidang.</p>
       </div>
     </div>
   </div>
-</div>              
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+        <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+      </div>
+      <div class="modal-body">
+        <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda sudah yakin ingin mengajukan sidang?</p>
+        <div class="d-flex justify-content-center gap-4">
+          <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+          <button type="submit" class="btn btn-success px-4 py-2 fw-semibold" id="submitBtn">Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
       </form>
     </div>
   </div>
+
+
+          
+      </main>
+    </div>
+
+ 
+<script>
+  const btnOpenModalKonfirmasi = document.getElementById('btnOpenModalKonfirmasi');
+  const modalKonfirmasiEl = document.getElementById('modalKonfirmasi');
+  const modalPeringatanEl = document.getElementById('modalPeringatan');
+
+  const modalKonfirmasi = new bootstrap.Modal(modalKonfirmasiEl);
+  const modalPeringatan = new bootstrap.Modal(modalPeringatanEl);
+
+  btnOpenModalKonfirmasi.addEventListener('click', function() {
+    const laporan = document.getElementById('laporanSidang').files.length;
+    const pendukung = document.getElementById('dokPendukung').files.length;
+
+    if (laporan === 0 || pendukung === 0) {
+      // Jika dokumen belum lengkap, tampilkan modal peringatan
+      modalPeringatan.show();
+    } else {
+      // Jika dokumen lengkap, tampilkan modal konfirmasi
+      modalKonfirmasi.show();
+    }
+  });
+  const laporanInput = document.getElementById('laporanSidang');
+const laporanBox = laporanInput.closest('.upload-box');
+
+const pendukungInput = document.getElementById('dokPendukung');
+const pendukungBox = pendukungInput.closest('.upload-box');
+
+function updateUploadBox(input, box) {
+  if (input.files.length > 0) {
+    const fileName = input.files[0].name;
+    box.classList.add('file-selected');
+    box.querySelector('.upload-content p').textContent = `File terupload: ${fileName}`;
+  } else {
+    box.classList.remove('file-selected');
+    box.querySelector('.upload-content p').textContent = 'Upload file revisi dengan format pdf, docx, pptx, dan zip';
+  }
+}
+
+laporanInput.addEventListener('change', () => updateUploadBox(laporanInput, laporanBox));
+pendukungInput.addEventListener('change', () => updateUploadBox(pendukungInput, pendukungBox));
+
+</script>
 </body>
 </html>
