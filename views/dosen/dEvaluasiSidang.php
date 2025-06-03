@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id"> <!-- Changed lang to id (Indonesian) -->
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Sidang</title> <!-- Simplified title -->
+    <title>Evaluasi Sidang</title> <!-- Judul halaman diubah -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -93,6 +93,7 @@
             line-height: 1.5;
         }
 
+        /* UBAH: Active state di pindah ke Evaluasi */
         .NavSide__sidebar-item.NavSide__sidebar-item--active {
             background: #ffffff;
         }
@@ -158,165 +159,22 @@
             font-weight: 700; 
         }
 
-        .status-badge {
-            margin-bottom: 1.2cm; 
+        .NavSide__main-content h3 { /* Gaya baru untuk sub-judul seperti "Nilai Sidang (Sementara)" */
+            font-weight: 700;
+            font-size: 1.4rem; /* Sedikit lebih kecil dari h2 */
+            margin-bottom: 0.2cm; 
         }
 
-        .info-card {
-            margin-bottom: 1.2cm; 
-        }
-
-        .NavSide__main-content h5 { 
-            margin-top: 1.2cm;
-            margin-bottom: 1.2cm;
-            font-weight: 700; 
-        }
-
-        .file-buttons-container {
-            margin-bottom: 1.2cm; 
-        }
-
-        .btn-kembali {
-            background-color: rgb(67, 54, 240);
-            color: white; /* Teks default putih */
-            border: none;
-            border-radius: 20px;
-            padding: 10px 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; /* Tambah transisi untuk warna teks */
-            display: inline-flex; 
-            align-items: center; 
-            margin-top: 1.2cm; /* Margin atas 1.2cm untuk tombol kembali */
-        }
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white; /* UBAH: Latar belakang jadi putih saat hover */
-            color: rgb(67, 54, 240); /* UBAH: Teks jadi biru saat hover */
-        }
-        
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px; 
-            height: 30px; 
-            background-color: white; /* Latar belakang lingkaran default putih */
-            border-radius: 50%;
-            margin-right: 10px; 
-            transition: background-color 0.3s ease; /* Transisi untuk warna latar belakang lingkaran */
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: rgb(67, 54, 240); /* UBAH: Latar belakang lingkaran jadi biru saat hover */
-        }
-
-        .btn-kembali .icon-circle i {
-            color: rgb(67, 54, 240); /* Warna ikon default biru */
-            font-size: 1rem; 
-            transition: color 0.3s ease; /* Transisi untuk warna ikon */
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white; /* UBAH: Ikon jadi putih saat hover */
-        }
-        /* --- Akhir Modifikasi Margin Global --- */
-
-        .NavSide__toggle {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            width: 40px;
-            height: 40px;
-            z-index: 1100;
-            transition: left 0.5s ease-in-out;
-            cursor: pointer;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .NavSide__toggle i.bi {
-            position: absolute;
-            font-size: 28px;
-            display: none;
-        }
-
-        .NavSide__toggle i.bi.open {
-            color: rgb(67, 54, 240);
-            display: none;
-        }
-        .NavSide__toggle i.bi.close {
-            color: rgb(67, 54, 240);
-        }
-
-        .NavSide__toggle.NavSide__toggle--active i.bi.open {
-            display: none;
-        }
-        .NavSide__toggle.NavSide__toggle--active i.bi.close {
-            display: block;
-        }
-
-        @media (max-width: 700px) {
-            .NavSide__sidebar {
-                width: 50%;
-                transform: translateX(-100%);
-                border-left-width: 0;
-            }
-
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
-            }
-
-            .NavSide__sidebar-brand {
-                padding: 20px 10px 30px 10px;
-            }
-            .NavSide__sidebar-brand img {
-                width: 90%;
-            }
-
-            .NavSide__sidebar-nav {
-                padding-top: 20%;
-            }
-            .NavSide__sidebar-item a {
-                padding: 12% 10%;
-                height: 2vh;
-            }
-
-            .NavSide__main-content {
-                margin-left: 7vh;
-            }
-
-            .NavSide__toggle {
-                display: flex;
-            }
-
-            .NavSide__toggle i.bi.open {
-                color: rgb(67, 54, 240);
-                display: block;
-            }
-
-            .NavSide__toggle.NavSide__toggle--active {
-                left: calc(50% + 10px);
-                background-color: aliceblue;
-            }
-        }
-       
-        .status-badge {
-            background-color:rgb(253, 68, 59);
-            color: black;
+        .status-badge { 
+            background-color:rgb(253, 68, 59); 
+            color: white; 
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block; 
             font-size: 0.875rem; 
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
             font-weight: bold; 
+            margin-bottom: 1.2cm; 
         }
 
         .info-card {
@@ -330,6 +188,7 @@
             flex-wrap: wrap;
             overflow: hidden;
             transition: background-color 0.4s ease;
+            margin-bottom: 1.2cm; 
         }
 
         .info-card::after { 
@@ -398,7 +257,58 @@
             margin-bottom: 0; 
         }
        
-        /* --- CSS Baru untuk Tombol Berkas --- */
+        .btn-kembali {
+            background-color: rgb(67, 54, 240);
+            color: white; 
+            border: none;
+            border-radius: 20px;
+            /* UBAH: Padding vertikal 0, sentralisasi dengan flexbox */
+            padding: 0 25px; 
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; 
+            /* UBAH: Gunakan display: flex untuk konten internal */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; /* Pusat konten horizontal di dalam tombol */
+            margin-top: 1.2cm; 
+            height: 45px; 
+        }
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white; 
+            color: rgb(67, 54, 240); 
+        }
+        
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px; 
+            height: 30px; 
+            background-color: white; 
+            border-radius: 50%;
+            margin-right: 10px; 
+            transition: background-color 0.3s ease; 
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: rgb(67, 54, 240); 
+        }
+
+        .btn-kembali .icon-circle i {
+            color: rgb(67, 54, 240); 
+            font-size: 1rem; 
+            transition: color 0.3s ease; 
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white; 
+        }
+
+        /* --- CSS Baru untuk Tombol Berkas (dipertahankan tapi tidak digunakan di Evaluasi) --- */
         .file-button {
             display: inline-flex; 
             align-items: center;
@@ -454,6 +364,110 @@
             flex-grow: 1; 
         }
         /* --- Akhir CSS info-group dan spacer --- */
+
+        /* --- CSS BARU UNTUK HALAMAN EVALUASI --- */
+        .form-card {
+            background: rgb(235, 238, 245); 
+            border-radius: 30px; 
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px 25px; 
+            margin-bottom: 1.2cm; 
+        }
+
+        .form-card h4 {
+            font-weight: 600; 
+            font-size: 1.05rem; 
+            margin-bottom: 0.8cm; 
+        }
+
+        .form-group-custom { 
+            margin-bottom: 1rem; 
+            display: flex;
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+
+        .form-group-custom label {
+            flex: 0 0 180px; 
+            margin-right: 20px; 
+            font-size: 1rem;
+            font-weight: 500; 
+            color: #333;
+        }
+        
+        .form-group-custom .form-control-custom {
+            flex: 1; 
+            min-width: 200px; 
+            background-color: white;
+            border: 1px solid #ced4da;
+            border-radius: 10px; 
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            height: 45px; 
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-group-custom .form-control-custom:focus {
+            border-color: rgb(67, 54, 240);
+            box-shadow: 0 0 0 0.25rem rgba(67, 54, 240, 0.25);
+            outline: none;
+        }
+
+        .form-group-custom textarea.form-control-custom {
+            min-height: 200px; 
+            resize: vertical; 
+        }
+        
+        /* Tombol Kirim */
+        .button-group-bottom {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center; /* Ini yang membuat mereka sejajar secara vertikal */
+            margin-top: 1.2cm; 
+        }
+
+        .btn-kirim {
+            background-color: #4cfaab; 
+            color: black; 
+            border: none;
+            border-radius: 20px;
+            /* UBAH: Padding vertikal 0, sentralisasi dengan flexbox */
+            padding: 0 25px; 
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            /* UBAH: Gunakan display: flex untuk konten internal */
+            display: flex; 
+            align-items: center;
+            justify-content: center; /* Pusat konten horizontal di dalam tombol */
+            height: 45px; 
+            margin-top: 55px; /* BARU: Ini yang menggeser tombol Kirim sedikit ke bawah */
+        }
+
+        .btn-kirim:hover {
+            background-color: #3cb88a; 
+            color: white; 
+        }
+        /* --- AKHIR CSS BARU --- */
+
+        /* Responsive adjustment for form-group-custom */
+        @media (max-width: 768px) {
+            .form-group-custom {
+                flex-direction: column; 
+                align-items: flex-start; 
+            }
+            .form-group-custom label {
+                flex: none; 
+                width: 100%; 
+                margin-bottom: 0.5rem; 
+                margin-right: 0; 
+            }
+            .form-group-custom .form-control-custom {
+                width: 100%; 
+                min-width: unset; 
+            }
+        }
     </style>
 </head>
 <body>
@@ -463,16 +477,17 @@
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <!-- MENU "Detail Sidang" DIHAPUS DARI SINI -->
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Evaluasi aktif -->
                     <b></b><b></b>
                     <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
+                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+                        <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
@@ -490,32 +505,38 @@
         </div>
 
         <main class="NavSide__main-content">
-            <h2 >Detail Sidang - Sistem Pengajuan Sidang</h2>
-            <div class="status-badge">Status Pengajuan : Belum Disetujui</div>
+            <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
+            <!-- Badge Status Pengajuan Dihapus sesuai gambar -->
             
             <div class="info-card">
                 <div class="section">
-                    <!-- Mata Kuliah -->
+                    <!-- Judul Sidang -->
                     <div class="info-group">
                         <div class="label-row">
-                            <i class="fa-solid fa-book"></i>
-                            <span class="fw-bold">Mata Kuliah</span>
+                            <i class="fa-solid fa-file-invoice"></i> <!-- Icon berubah -->
+                            <span class="fw-bold">Judul Sidang</span>
                         </div>
-                        <div class="value-row">Pemrograman 2</div>
+                        <div class="value-row">Struktur Data</div> <!-- Nilai berubah -->
                     </div>
 
-                    <!-- Spacer untuk mendorong Dosen Pengampu ke bawah -->
-                    <div class="spacer"></div>
-
-                    <!-- Dosen Pengampu -->
+                    <!-- Dosen Pembimbing -->
                     <div class="info-group">
                         <div class="label-row">
-                            <i class="fa-solid fa-users"></i>
-                            <span class="fw-bold">Dosen Pengampu</span>
+                            <i class="fa-solid fa-user-tie"></i> <!-- Icon baru -->
+                            <span class="fw-bold">Dosen Pembimbing</span>
+                        </div>
+                        <div class="value-row">Dr. Rida Indah Fariani, S.Kom, M.Kom</div> <!-- Nilai baru -->
+                    </div>
+                    
+                    <!-- Dosen Penguji -->
+                    <div class="info-group">
+                        <div class="label-row">
+                            <i class="fa-solid fa-users"></i> <!-- Icon baru -->
+                            <span class="fw-bold">Dosen Penguji</span>
                         </div>
                         <div class="value-row">
                             Timotius Victory, S.Kom, M.Kom<br>
-                            Yosep Setiawan, S.Kom, M.Kom
+                            Ning Ratwasturi, S.Kom, M.Kom
                         </div>
                     </div>
                 </div>
@@ -549,24 +570,49 @@
                 </div>
             </div>
             
-            <h5 >Dokumen Sidang</h5>
-            <div class="file-buttons-container d-flex flex-wrap"> 
-                <a href="#" class="file-button">
-                    <i class="fa-solid fa-file-pdf"></i>
-                    file_laporan_kel-1.pdf
-                </a>
-                <a href="#" class="file-button">
-                    <i class="fa-solid fa-file-zipper"></i>
-                    dokumen_pendukung_kel-1.zip
-                </a>
+            <!-- BAGIAN BARU: Nilai Sidang (Sementara) -->
+            <h3>Nilai Sidang (Sementara)</h3>
+            <div class="form-card">
+                <h4>Masukkan Nilai Sidang</h4>
+                <div class="form-group-custom">
+                    <label for="nilaiLaporan">Nilai Laporan</label>
+                    <input type="text" id="nilaiLaporan" class="form-control-custom">
+                </div>
+                <div class="form-group-custom">
+                    <label for="materiPresentasi">Materi Presentasi</label>
+                    <input type="text" id="materiPresentasi" class="form-control-custom">
+                </div>
+                <div class="form-group-custom">
+                    <label for="nilaiPenyampaian">Nilai Penyampaian</label>
+                    <input type="text" id="nilaiPenyampaian" class="form-control-custom">
+                </div>
+                <div class="form-group-custom">
+                    <label for="nilaiProyek">Nilai Proyek</label>
+                    <input type="text" id="nilaiProyek" class="form-control-custom">
+                </div>
+            </div>
+
+            <!-- BAGIAN BARU: Catatan Evaluasi Sidang -->
+            <h3>Catatan Evaluasi Sidang</h3>
+            <div class="form-card">
+                <h4>Masukkan Catatan Evaluasi Sidang</h4>
+                <div class="form-group-custom">
+                    <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label> 
+                    <textarea id="catatanEvaluasi" class="form-control-custom"></textarea>
+                </div>
             </div>
             
-            <button class="btn-kembali">
-                <span class="icon-circle">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </span>
-                Kembali
-            </button>
+            <div class="button-group-bottom">
+                <button class="btn-kembali">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
+                    Kembali
+                </button>
+                <button class="btn-kirim">
+                    Kirim
+                </button>
+            </div>
             
             <!-- Modal Penjadwalan Sidang telah dihapus -->
 
@@ -583,7 +629,7 @@
 
       if (menuToggle && sidebar) {
         menuToggle.onclick = function () {
-          menuToggle.classList.toggle( "NavSide__toggle--active");
+          menuToggle.classList.toggle("NavSide__toggle--active");
           sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
       }
@@ -591,16 +637,17 @@
       let listItems = document.querySelectorAll(".NavSide__sidebar-item");
       if (listItems.length > 0) {
         for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function(event) {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
+          listItems[i].onclick = function (event) {
+            for (let j = 0; j < listItems.length; j++) {
+              listItems[j].classList.remove("NavSide__sidebar-item--active");
+            }
+            this.classList.add("NavSide__sidebar-item--active");
+          };
         }
+      }
+
+      // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
+      // telah dihapus karena modalnya sudah tidak digunakan.
     </script>
-    <script src="../../assets/js/main.js"></script>
 </body>
 </html>

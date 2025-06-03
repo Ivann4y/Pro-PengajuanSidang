@@ -137,150 +137,299 @@
   font-size: 16px;
 }
 
-        @media (max-width: 700px) {
-        .NavSide__sidebar {
-            /* Sidebar disembunyikan ke kiri di mobile */
-            transform: translateX(-100%); 
-            width: 250px; /* Lebar sidebar saat muncul di mobile */
-            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); 
-        }
-        /* Kelas ini akan ditambahkan oleh JavaScript untuk menampilkan sidebar */
-        .NavSide__sidebar.NavSide__sidebar--active-mobile {
-            transform: translateX(0);
-        }
-        
-        .NavSide__main-content {
-            margin-left: 0; 
-            width: 100%;
-            padding: 1rem;
-        }
-        .text-heading { font-size: large; }
-        .upload-area-v2 { padding: 1.5rem; }
-        .upload-area-v2 #initial-state svg, 
-        .upload-area-v2 #selected-state svg { width: 60px; height: 60px; }
-        .btn-custom-primary { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-        /* Tampilkan tombol toggle di mobile */
-        .NavSide__toggle {
-            display: flex; 
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
         }
-        /* Opsional: Geser tombol toggle saat sidebar terbuka */
-        .NavSide__toggle.NavSide__toggle--active {
-            left: calc(250px + 10px); /* 250px = lebar sidebar mobile */
+
+        body {
+            min-height: 100vh;
+            background-color: #ffffff;
         }
-    }
 
         #NavSide {
-        display: flex;
-        min-height: 100vh;
-        position: relative;
-        background-color: #f8f9fa; 
-    }
-    .NavSide__sidebar-brand {
-        padding: 10% 5% 10% 5%;
-        text-align: center;
-    }
-    .NavSide__sidebar-brand img {
-        width: 80%;
-        max-width: 150px;
-        height: auto;
-        display: inline-block;
-    }
-    .NavSide__sidebar {
-        position: fixed;
-        top: 0px;
-        left: 0px;
-        bottom: 0px;
-        width: 240px;
-        background: #3b52f9;
-        overflow-x: hidden;
-        overflow-y: auto;
-        z-index: 1000; /* Default z-index, toggle akan lebih tinggi */
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
-        padding-top: 2rem;
-    }
-    .NavSide__sidebar h4 { 
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 2rem;
-        color: white;
-    }
-    .NavSide__sidebar-nav {
-        width: 100%;
-        padding-left: 0;
-        margin-bottom: 0;
-        list-style: none;
-        flex-grow: 1;
-    }
-    
-    .NavSide__sidebar-item {
-        position: relative;
-        display: block;
-        width: calc(100% - 1rem); 
-        margin-left: 1rem; 
-        margin-right: 0;
-        margin-bottom: 0.5rem;
-        border-top-left-radius: 20px;
-        border-bottom-left-radius: 20px;
-    }
-    .NavSide__sidebar-link {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        text-decoration: none;
-        color: white;
-        padding: 12px 24px; 
-        box-sizing: border-box;
-        font-weight: normal;
-    }
-    .NavSide__sidebar-title {
-        white-space: normal;
-        text-align: left;
-        line-height: 1.5;
-        flex-grow: 1;
-    }
-    .NavSide__sidebar-item.NavSide__sidebar-item--active {
-        background: #ffffff;
-    }
-    .NavSide__sidebar-item.NavSide__sidebar-item--active .NavSide__sidebar-link {
-        color: #3b52f9;
-        font-weight: 600;
-    }
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .NavSide__sidebar-brand {
+            padding: 10% 5% 50% 5%;
+            text-align: center;
+        }
+
+        .NavSide__sidebar-brand img {
+            width: 90%;
+            max-width: 180px;
+            height: auto;
+            display: inline-block;
+        }
+
+        .NavSide__sidebar {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            width: 280px;
+            border-radius: 1px;
+            box-sizing: border-box;
+            border-left: 5px solid rgb(67, 54, 240);
+            background: rgb(67, 54, 240);
+            overflow-x: hidden;
+            overflow-y: auto;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
+        }
+
+        .NavSide__sidebar-nav {
+            width: 100%;
+            padding-left: 0;
+            padding-top: 0;
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .NavSide__sidebar-item {
+            position: relative;
+            display: block;
+            width: 100%;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            margin-bottom: 10px; /* Kept from user's last version */
+        }
+
+        .NavSide__sidebar-item a {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-decoration: none;
+            color: rgb(252, 252, 252);
+            padding: 5% 2%;
+            height: 60px;
+            box-sizing: border-box;
+        }
+
+        .NavSide__sidebar-title {
+            white-space: normal;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .NavSide__sidebar-item.NavSide__sidebar-item--active {
+            background: #ffffff;
+        }
+
+        .NavSide__sidebar-item.NavSide__sidebar-item--active a {
+            color: rgb(67, 54, 240);
+        }
+
+        .NavSide__sidebar-item b:nth-child(1) {
+            position: absolute;
+            top: -20px;
+            height: 20px;
+            width: 100%;
+            background: rgb(255, 255, 255);
+            display: none;
+            right: 0;
+        }
+        .NavSide__sidebar-item b:nth-child(1)::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-bottom-right-radius: 20px;
+            background: rgb(67, 54, 240);
+            display: block;
+        }
+        .NavSide__sidebar-item b:nth-child(2) {
+            position: absolute;
+            bottom: -20px;
+            height: 20px;
+            width: 100%;
+            background: rgb(255, 255, 255);
+            display: none;
+            right: 0;
+        }
+        .NavSide__sidebar-item b:nth-child(2)::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-top-right-radius: 20px;
+            background: rgb(67, 54, 240);
+            display: block;
+        }
+        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+            display: block;
+        }
+
+        .NavSide__main-content {
+            flex-grow: 1;
+            padding: 20px;
+            margin-left: 280px;
+            overflow-y: auto;
+            transition: margin-left 0.5s ease-in-out;
+            background-color: #F9FAFB;
+            padding-top: 3vh; /* Default for larger screens */
+        }
+
+        .NavSide__toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            z-index: 1100;
+            transition: left 0.5s ease-in-out;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: none; /* Hidden by default for larger screens */
+        }
+
+        .NavSide__toggle i.bi {
+            position: absolute;
+            font-size: 28px;
+            display: none;
+        }
+
+        .NavSide__toggle i.bi.open {
+            color: rgb(67, 54, 240);
+        }
+        .NavSide__toggle i.bi.close {
+            color: rgb(67,54,240);
+        }
+        .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; }
+        .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; }
+
+        /* NEW: Top Bar for smaller screens */
+        .NavSide__topbar {
+            display: none; /* Hidden by default for larger screens */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px; /* Adjust height as needed */
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 999; /* Below sidebar, above main content */
+            align-items: center; /* Vertically align items */
+            padding: 0 15px; /* Add horizontal padding */
+            justify-content: space-between; /* Space between toggle and icons */
+        }
+
+        .NavSide__topbar .header-icons {
+            display: flex;
+            align-items: center;
+            /* margin-left: auto; This is handled by justify-content: space-between */
+        }
+
+        /* --- STYLES FOR ICONS IN TOPBAR TO MATCH DESKTOP --- */
+        .NavSide__topbar .header-icons .bi-bell-fill {
+            font-size: 1.5rem; /* Matches desktop size */
+            color: #555; /* Matches desktop color */
+            margin-right: 1.5rem; /* Space between bell and profile */
+            cursor: pointer;
+        }
+        .NavSide__topbar .profile-icon {
+            width: 40px; /* Matches desktop size */
+            height: 40px; /* Matches desktop size */
+            background-color: #333; /* Matches desktop color */
+            border-radius: 50%; /* Matches desktop shape */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        /* --- END ICON STYLES --- */
 
 
+        @media (max-width: 700px) {
+            .NavSide__sidebar {
+                width: 50%;
+                transform: translateX(-100%);
+                border-left-width: 0;
+            }
+            .NavSide__sidebar.NavSide__sidebar--active-mobile {
+                transform: translateX(0);
+                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+            }
+            .NavSide__sidebar-brand {
+                padding: 20px 10px 30px 10px;
+            }
+            .NavSide__sidebar-brand img {
+                width: 90%;
+            }
+            .NavSide__sidebar-nav {
+                padding-top: 20%;
+            }
+            .NavSide__sidebar-item a {
+                padding: 12% 10%;
+                height: auto;
+            }
+            .NavSide__main-content {
+                margin-left: 0;
+                padding: 15px;
+                padding-top: 75px; /* Adjust this to create space for the fixed top bar */
+            }
+            .NavSide__toggle {
+                display: flex; /* Show toggle button on small screens */
+                /* When inside NavSide__topbar, remove fixed positioning */
+                position: relative;
+                top: auto; /* Reset */
+                background-color: transparent; /* Maintain transparency */
+                box-shadow: none; /* Remove shadow if topbar has one */
+                left: 0; /* Adjusted for better alignment */
+            }
+            .NavSide__toggle i.bi.open {
+                display: block;
+            }
+            .NavSide__toggle.NavSide__toggle--active {
+                /* This rule targets the toggle's position when the sidebar is open on mobile */
+                /* We need to re-evaluate if this specific 'left' adjustment is still needed/correct */
+                /* given the toggle is now part of the topbar's flex layout. */
+                /* For now, leaving it as is, but it might not have the intended effect or might conflict */
+                /* if the toggle is a flex item. */
+                left: calc(50% + 10px);
+                background-color: aliceblue; /* This might still be needed if you want a background change when active */
+            }
 
+            /* Show the top bar on small screens */
+            .NavSide__topbar {
+                display: flex;
+            }
 
+            /* Hide dashboard-header icons on small screens if they are now in the topbar */
+            .dashboard-header .header-icons {
+                display: none;
+            }
 
+            /* Adjust main content heading on small screens */
+            .dashboard-header {
+                margin-top: 0; /* Remove top margin if the welcome text is directly after the top bar */
+            }
+        }
     </style>
   </head>
   <body>
     <!-- tanpa toggle fokus desktop -->
-    <aside class="NavSide__sidebar" id="mainSidebar"> 
-        <div class="NavSide__sidebar-brand">
-          <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
-
-        </div>        
-        <ul class="NavSide__sidebar-nav">
-            <li class="NavSide__sidebar-item">
-                <a href="" class="NavSide__sidebar-link">
-                    <span class="NavSide__sidebar-title">Detail Pengajuan</span>
-                </a>
-            </li>
-            <li class="NavSide__sidebar-item ">
-                <a href="mPerbaikan.php" class="NavSide__sidebar-link">
-                    <span class="NavSide__sidebar-title">Perbaikan</span>
-                </a>
-            </li>
-            <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                <a href="mNilaiakhir.php" class="NavSide__sidebar-link">
-                    <span class="NavSide__sidebar-title">Nilai Akhir</span>
-                </a>
-            </li>
-        </ul>
-    </aside>
-
    <!-- <div id="main-sidebar" class="NavSide__sidebar">
   <div class="NavSide__sidebar-brand">
     <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
@@ -306,8 +455,46 @@
     </li>
   </ul>
  </div> -->
- <main class="NavSide__main-content">
-        
+ 
+                <!--apabila terdapat catatan maka akan ada text catatan -->
+                    <!-- <div class="form-control form-control-lg" style="min-height: 100px;">
+            </div> -->
+      <body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item ">
+                    <b></b><b></b>
+                    <a href="mDetailPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+        </div>
+        <main class="NavSide__main-content">
+       
       
 
       <div class="container-fluid bodyContainer">
@@ -322,7 +509,7 @@
               <div class="card-body">
                 <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
                 <div id ="nilaiMahasiswa">
-                    --
+                    A
                 </div>
               </div>
             </div>
@@ -342,10 +529,10 @@
         <div class="card-body">
             <h3 class="card-title">Detail Penilaian :</h3>
         <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-        <span><strong>Nilai Laporan:</strong> --</span>
-        <span><strong>Materi Presentasi:</strong> --</span>
-        <span><strong>Penyampaian:</strong> --</span>
-        <span><strong>Nilai Proyek:</strong> --</span>
+        <span><strong>Nilai Laporan:</strong> 90</span>
+        <span><strong>Materi Presentasi:</strong> 95</span>
+        <span><strong>Penyampaian:</strong> 90</span>
+        <span><strong>Nilai Proyek:</strong> 95</span>
         </div>
         </div>
         </div>
@@ -359,12 +546,7 @@
             </div>
           </div>
         </div>
-                <!--apabila terdapat catatan maka akan ada text catatan -->
-                    <!-- <div class="form-control form-control-lg" style="min-height: 100px;">
-            </div> -->
-
-      </div>
-       <div class="row mt-5 align-items-center justify-content-between">
+               <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
            <button class="btn btn-kembali" style="margin-left: 50px;">
     <span class="icon-circle">
@@ -372,21 +554,33 @@
     </span>
     Kembali
   </button>
+        </div>
+      </main>
+    </div>
 
-    </main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // Sidebar Toggle Logic
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
 
-<script>
-  
-  function isiNilaiAkhir() {
-    document.getElementById("nilaiMahasiswa").value = "A";
-    document.getElementsByName("nilaiLaporan")[0].value = "90";
-    document.getElementsByName("MateriPresentasi")[0].value = "85";
-    document.getElementsByName("Penyampaian")[0].value = "88";
-    document.getElementsByName("NilaiProyek")[0].value = "92";
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide(); 
-  }
+        menuToggle.onclick = function () {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
 
-</script>
+        // Sidebar Active Item Logic (no change needed here as it's already functional)
+        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function () {
+                if(!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                }
+            };
+        }
+    </script>
   </body>
 </html>
