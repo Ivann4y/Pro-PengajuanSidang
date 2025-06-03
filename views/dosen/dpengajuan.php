@@ -381,7 +381,7 @@
             </div>
 
     <div class="container-fluid">
-        <div class="container-fluid bodyContainer">
+        <div class="container-fluid">
             <div class="row">
                 <h2 class="bodyHeading">
                     Pengajuan Sidang
