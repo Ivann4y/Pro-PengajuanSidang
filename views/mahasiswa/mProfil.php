@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahasiswa - Sidang</title>
+    <title>Mahasiswa - Profil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
@@ -303,6 +303,25 @@
         }
         /* NavSide styles from mBeranda.php - END */
 
+        .data-mahasiswa {
+            background-color: #ffffff;
+            padding: 3vw;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: start;
+            color: #333;
+        }
+        .data-mahasiswa p {
+            font-weight: 600;
+            font-size: larger;
+        }
+        img {
+            border-radius: 50px;
+        }
        
     </style>
 </head>
@@ -322,7 +341,7 @@
                     <b></b><b></b>
                     <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
                 </li>
@@ -352,30 +371,17 @@
                     <h1>Profile</h1>
                 </div>
                 <div class="row">
-                    <div class="col-12">
-                        <img src="" alt="">
+                    <div class="col-md-6">
+                        <img src="../../assets/img/img3-nobg.png" alt="">
                     </div>
-                </div>
-                <div class="dataDiri">
-                    <div class="row">
-                        <div class="col-12">
-                            <h2>Data Diri</h2>
-                        </div>
+                    <div class="col-md-6 data-mahasiswa">
+                        <h2 class="text-heading">Data Mahasiswa</h2>
+                        <p class="text-muted">NIM: 123456789</p>
+                        <p class="text-muted">Nama: John Doe</p>
+                        <p class="text-muted">Email: 123456789@polytechnic.astra.ac.id</p>
+                        <p class="text-muted">No. Telepon: 08123456789</p>
+                        <p class="text-muted">Jenis Kelamin: Laki-laki</p>
                     </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <p><strong>Nama:</strong> John Doe</p>
-                        </div>
-                        <div class="col-6">
-                            <p><strong>NIM:</strong> 123456789</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <p><strong>Program Studi:</strong> Teknik Informatika</p>
-                        </div>
-                        <div class="col-6">
-                            <p><strong>Email:</strong>
                 </div>
             </div>
         </main>

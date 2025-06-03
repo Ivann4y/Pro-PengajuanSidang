@@ -65,6 +65,8 @@
       width: 90%;
       margin-left: 23px;
       height: 40px;
+      background-color: #f2f2f2;
+      border-color: #f2f2f2;
     }
     
     input.form-control:not(:placeholder-shown) {
@@ -194,12 +196,14 @@
               <h3 class="card-title" style="padding:10px;">Nilai Mahasiswa:</h3>
               <div>
                 <input
-                  onclick="bukaKonfirmasiModal()"
+                  
                   type="text"
                   class="form-control form-control-lg text-center text"
                   id="nilaiMahasiswa"
-                  placeholder=""
+                  placeholder="A"
                   maxlength="1"
+                  disabled
+                  
                 />
               </div>
             </div>
@@ -228,32 +232,44 @@
                 class="form-control form-control-lg text-center"
                 name="nilaiLaporan"
                 id="detailpenilaian"
-                placeholder=""
-                maxlength="3">
+                placeholder="90"
+                maxlength="3"
+                disabled>
+                
+                
               <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
               <input
                 type="number"
                 class="form-control form-control-lg text-center"
                 name="MateriPresentasi"
                 id="detailpenilaian"
-                placeholder=""
-                maxlength="3">
+                placeholder="85"
+                maxlength="3"
+                disabled>
+                
+
               <label for="Penyampaian" id="labelpenilaian">Penyampaian:</label>
               <input
                 type="number"
                 class="form-control form-control-lg text-center"
                 name="Penyampaian"
                 id="detailpenilaian"
-                placeholder=""
-                maxlength="3">
+                placeholder="95"
+                maxlength="3"
+                disabled>
+                
+
               <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek:</label>
               <input
                 type="number"
                 class="form-control form-control-lg text-center"
                 name="NilaiProyek"
                 id="detailpenilaian"
-                placeholder=""
-                maxlength="3">
+                placeholder="93"
+                maxlength="3"
+                disabled>
+                
+
             </div>
           </div>
         </div>
@@ -268,8 +284,9 @@
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
-                placeholder=""
-              ></textarea>
+                placeholder="Pertahankan terus semangat belajarnya kurangin main banyakin minum air putih derr" 
+                disabled>
+              </textarea>
             </div>
           </div>
         </div>

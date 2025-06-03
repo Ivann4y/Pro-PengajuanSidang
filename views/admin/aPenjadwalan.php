@@ -8,8 +8,7 @@ $jsonData = file_get_contents('data_sidang.json');
 $data = json_decode($jsonData, true);
 
 $filteredData = array_filter($data, function($entry) use ($selectedTipe, $statusFilter) {
-    return $entry['tipeSidang'] == $selectedTipe && 
-           $entry['statusPersetujuan'] === $statusFilter;
+    return $entry['tipeSidang'] == $selectedTipe && $entry['statusPersetujuan'] === $statusFilter;
 });
 ?>
 <!DOCTYPE html>
@@ -308,8 +307,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 <?= $selectedTipe == 'TA' ? 'Sidang TA' : 'Sidang Semester' ?>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?tipe=TA&status=<?= $selectedStatus ?>">Sidang TA</a></li>
-                <li><a class="dropdown-item" href="?tipe=Semester&status=<?= $selectedStatus ?>">Sidang Semester</a></li>
+                <li><a class="dropdown-item" href="?tipe=TA&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
+                <li><a class="dropdown-item" href="?tipe=Semester&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang Semester</a></li>
             </ul>
         </div>
         <div class="dropdown me-2">
@@ -317,8 +316,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 <?= $selectedStatus == 'belum' ? 'Belum Disetujui' : 'Disetujui' ?>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?tipe=<?= $selectedTipe ?>&status=belum">Belum Disetujui</a></li>
-                <li><a class="dropdown-item" href="?tipe=<?= $selectedTipe ?>&status=disetujui">Disetujui</a></li>
+                <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=belum">Belum Disetujui</a></li>
+                <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=disetujui">Disetujui</a></li>
             </ul>
         </div>
     </div>
@@ -337,12 +336,12 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         </thead>
         <tbody>
           <?php foreach ($filteredData as $entry): ?>
-          <tr>
-            <td><?= $entry['id'] ?></td>
-            <td><?= $entry['nim'] ?></td>
-            <td><?= $entry['nama'] ?></td>
-            <td><?= $entry['judulSidang'] ?></td>
-            <td><?= $entry['pembimbing'] ?></td>
+          <tr onclick="window.location.href='DetailSidang.php?id=<?= urlencode($entry['id']) ?>'">
+            <td><?= htmlspecialchars($entry['id']) ?></td>
+            <td><?= htmlspecialchars($entry['nim']) ?></td>
+            <td><?= htmlspecialchars($entry['nama']) ?></td>
+            <td><?= htmlspecialchars($entry['judulSidang']) ?></td>
+            <td><?= htmlspecialchars($entry['pembimbing']) ?></td>
           </tr>
           <?php endforeach; ?>
         </tbody>
