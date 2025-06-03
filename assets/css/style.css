@@ -1,5 +1,17 @@
-button {
-  border-radius: 50px !important;
+.sideNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 15vw;
+  height: 100%;
+  background-color: rgb(67, 54, 240);
+  padding: 2%;
+}
+
+.bodyContainer {
+  margin-left: 15vw;
+  padding: 5vh;
+  width: 80vw;
 }
 
 .text-heading {
@@ -123,7 +135,7 @@ button {
   justify-content: center; /* Center content horizontally */
   width: 100%;
   text-decoration: none;
-  color: rgb(252, 252, 252);
+  color: rgb(255, 255, 255);
   padding: 5% 2%;
   height: 60px;
   box-sizing: border-box;
@@ -268,7 +280,8 @@ button {
   }
 
   .NavSide__main-content {
-    margin-left: 7vh; /* Full width when sidebar is hidden or overlaid */
+    margin-left: 0vh;
+    margin-top: 7vh;
   }
 
   /* When sidebar is open on mobile, push main content or overlay.
@@ -283,6 +296,7 @@ button {
 
   .NavSide__toggle {
     display: flex; /* Show toggle */
+    background-color: #ffffff;
   }
 
   .NavSide__toggle i.bi.open {
