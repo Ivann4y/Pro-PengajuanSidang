@@ -333,7 +333,7 @@
         <p class="fs-5 fw-semibold">Apakah yakin ingin mengirim nilai akhir?</p>
         <div class="d-flex justify-content-center row mb5">
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal" onclick="pindahKeHalamanDaftarSidang()">Tidak</button>
+          <button type="button" class="btnKonfirmasi" onclick="pindahKeHalamanDaftarSidang()">Tidak</button>
           </div>
           <div class="col-md-6">
           <button type="button" class="btnKonfirmasi" onclick="kirimNilaiAkhir()">Iya</button>
