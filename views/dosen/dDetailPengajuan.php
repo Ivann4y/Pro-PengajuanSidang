@@ -1,3 +1,35 @@
+<?php
+    // Ambil parameter dari URL
+    $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
+    $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
+
+    $mahasiswa = [];
+
+    if ($tipe === 'TA') {
+        $mahasiswa = [
+            'nama' => 'M. Haaris Nur S.',
+            'nim' => '0920240033',
+            'mata_kuliah' => 'Tugas Akhir',
+        ];
+    } elseif ($tipe === 'Semester') {
+        $mahasiswa = [
+            'nama' => 'M. Harris Nur S.',
+            'nim' => '0920240033',
+            'mata_kuliah' => 'Pemrograman 2',
+            'judul_sidang' => 'Sistem Pengajuan Sidang'
+        ];
+    } else {
+        // Data default jika tipe tidak dikenali
+        $mahasiswa = [
+            'nama' => 'Data Tidak Ditemukan',
+            'nim' => 'N/A',
+            'mata_kuliah' => 'N/A',
+            'file_laporan' => '#',
+            'file_pendukung' => '#'
+        ];
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -304,7 +336,7 @@
       border: 2px solid #198754;
     }
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Poppins;
       background-color: #f4f4f4;
     }
     .card {
@@ -329,6 +361,54 @@
     .file-pill i {
       margin-right: 6px;
     }
+
+    .info-pengajuan {
+      background-color: #f8f9fa; /* default card bg */
+      color: #212529;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .info-pengajuan:hover {
+      background-color: #0d6efd; /* biru Bootstrap */
+      color: #fff;
+    }
+
+    .info-pengajuan:hover p,
+    .info-pengajuan:hover h5 {
+      color: #fff;
+    }
+
+    .dokumen-sidang {
+      background-color: #f8f9fa; /* default */
+      color: #212529;        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .dokumen-sidang:hover {
+      background-color: #0d6efd; /* biru saat hover */
+      color: #fff;
+    }
+
+    .dokumen-sidang:hover h5,
+    .dokumen-sidang:hover .file-link { 
+      color: #fff;
+    }
+
+    .file-link {
+      display: inline-block;
+      padding: 6px 12px;
+      margin-right: 10px;
+      border-radius: 20px;
+      background-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      color: #212529;
+      border: 1px solid #212529;
+    }
+
+    .dokumen-sidang:hover .file-link:hover {
+      background-color: #fff;
+      color: #0d6efd;
+    }
+
   </style>
 </head>
 <body class="p-4">
@@ -380,29 +460,37 @@
 
   <h3 class="mb-4">Detail Pengajuan</h3>
 
-  <div class="card mb-3">
+<div class="card mb-3 info-pengajuan">
     <h5 class="fw-semibold">Informasi Pengajuan</h5>
     <div class="row mt-2">
-      <div class="col-md-6">
-        <p class="mb-1">Nama Mahasiswa</p>
-        <p class="fw-bold">M. Haaris Nur Salim</p>
-        <p class="mb-1">Nomor Induk Mahasiswa</p>
-        <p class="fw-bold">0920240033</p>
-      </div>
-      <div class="col-md-6">
-        <p class="mb-1">Mata Kuliah</p>
-        <p class="fw-bold">Pemrograman 2</p>
-      </div>
-    </div>
-  </div>
+        <div class="col-md-6">
+            <p class="mb-1">Nama Mahasiswa</p>
+            <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['nama']); ?></p>
 
-  <div class="card mb-3">
+            <p class="mb-1">Nomor Induk Mahasiswa</p>
+            <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['nim']); ?></p>
+        </div>
+        <div class="col-md-6">
+            <p class="mb-1">Mata Kuliah</p>
+            <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['mata_kuliah']); ?></p>
+
+            <?php
+            if (isset($mahasiswa['judul_sidang'])) {
+            ?>
+                <p class="mb-1 mt-3">Judul Sidang</p> <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['judul_sidang']); ?></p>
+            <?php
+            }
+            ?>
+        </div>
+    </div>
+</div>
+  <div class="card mb-3 dokumen-sidang">
     <h5 class="fw-semibold">Dokumen Sidang</h5>
     <div class="mt-2">
-      <a class="file-pill text-decoration-none text-dark" href="#" download>
+      <a class="file-pill text-decoration-none file-link" href="#" download>
         <i class="bi bi-file-earmark-pdf"></i> berkas_laporan_kel-1.pdf
       </a>
-      <a class="file-pill text-decoration-none text-dark" href="#" download>
+      <a class="file-pill text-decoration-none file-link" href="#" download>
         <i class="bi bi-file-earmark-zip"></i> dokumen_pendukung_kel-1.zip
       </a>
     </div>
@@ -416,21 +504,19 @@
     </div>
   </div>
 
-  <!-- Modal Notifikasi -->
-  <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
+    <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center p-4">
-        <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" width="80" class="mx-auto mb-3" alt="Check Icon">
+        <img src="http://localhost/WEBSITE PRG/Pro-PengajuanSidang/assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
         <h5 class="modal-title fw-bold" id="notifModalLabel"></h5>
-        <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal">Tutup</button>
-      </div>
+        </div>
     </div>
   </div>
 
   <script>
     function showModal(status) {
       const modalLabel = document.getElementById('notifModalLabel');
-      modalLabel.innerText = `Sidang berhasil ${status.toLowerCase()}`;
+      modalLabel.innerText = `Sidang telah berhasil ${status.toLowerCase()}`;
       const modal = new bootstrap.Modal(document.getElementById('notifModal'));
       modal.show();
     }
