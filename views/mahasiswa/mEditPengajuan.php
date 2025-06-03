@@ -79,8 +79,14 @@
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
+<<<<<<< HEAD
          <div class="container-fluid">
     <div class="container-fluid bodyContainer">
+=======
+         <div class="container">
+    <div class="sideNav"></div>
+    <div class="container-fluid ">
+>>>>>>> 28ba212f02fe23b9215424ae0a6289dfcafe3db9
       <div class="row">
         <div class="col-12">
         <h2 class="text-heading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
@@ -180,14 +186,13 @@
   background-color: #d1e7dd; /* Hijau muda */
   border: 2px solid #0f5132;
   color: #0f5132;
-
+}
 .upload-content {
   min-height: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
 }
 
 </style>

@@ -183,7 +183,7 @@
           <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
             <b></b>
             <b></b>
-            <a href="#">
+            <a href="dNilaiAkhir.php">
               <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
             </a>
           </li>
@@ -239,7 +239,7 @@
             <div class="col-auto d-flex align-items-center ">
                 <label for="nilaiLaporan">Nilai laporan:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="nilaiLaporan"
                   id="detailpenilaian"
