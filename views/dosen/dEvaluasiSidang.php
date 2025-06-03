@@ -1,3 +1,35 @@
+<?php
+    // Ambil parameter dari URL
+    $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
+    $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
+
+    $mahasiswa = [];
+
+    if ($tipe === 'TA') {
+        $mahasiswa = [
+            'nama' => 'M. Haaris Nur S.',
+            'nim' => '0920240033',
+            'mata_kuliah' => 'Tugas Akhir',
+        ];
+    } elseif ($tipe === 'Semester') {
+        $mahasiswa = [
+            'nama' => 'M. Harris Nur S.',
+            'nim' => '0920240033',
+            'mata_kuliah' => 'Pemrograman 2',
+            'judul_sidang' => 'Sistem Pengajuan Sidang'
+        ];
+    } else {
+        // Data default jika tipe tidak dikenali
+        $mahasiswa = [
+            'nama' => 'Data Tidak Ditemukan',
+            'nim' => 'N/A',
+            'mata_kuliah' => 'N/A',
+            'file_laporan' => '#',
+            'file_pendukung' => '#'
+        ];
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -298,15 +330,15 @@
             background-color: rgb(67, 54, 240); 
         }
 
+        /* --- PERBAIKAN WARNA PANAH DI SINI --- */
         .btn-kembali .icon-circle i {
-            color: rgb(67, 54, 240); 
-            font-size: 1rem; 
-            transition: color 0.3s ease; 
+            color: rgb(67, 54, 240); /* Warna ikon saat default */
         }
 
         .btn-kembali:hover .icon-circle i {
-            color: white; 
+            color: white; /* Warna ikon saat hover */
         }
+        /* --- AKHIR PERBAIKAN WARNA PANAH --- */
 
         /* --- CSS Baru untuk Tombol Berkas (dipertahankan tapi tidak digunakan di Evaluasi) --- */
         .file-button {
@@ -468,6 +500,36 @@
                 min-width: unset; 
             }
         }
+
+        /* --- CSS for Success Modal --- */
+        .success-modal-content {
+            background-color: rgb(235, 238, 245); /* Matching form-card background */
+            border-radius: 30px; /* Same as form-card */
+            border: none;
+            padding: 20px; /* Adjust padding as needed */
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05); /* Similar shadow */
+        }
+
+        .success-modal-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px; /* More padding inside for spacing */
+        }
+
+        .success-icon {
+            font-size: 6rem; /* Large icon size */
+            color: #4cfaab; /* Green color from Kirim button */
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -531,7 +593,7 @@
                     <!-- Dosen Penguji -->
                     <div class="info-group">
                         <div class="label-row">
-                            <i class="fa-solid fa-users"></i> <!-- Icon baru -->
+                            <i class="fa-solid fa-user-group"></i> 
                             <span class="fw-bold">Dosen Penguji</span>
                         </div>
                         <div class="value-row">
@@ -609,16 +671,26 @@
                     </span>
                     Kembali
                 </button>
-                <button class="btn-kirim">
+                <!-- Tombol Kirim yang akan memicu modal -->
+                <button class="btn-kirim" data-bs-toggle="modal" data-bs-target="#successModal">
                     Kirim
                 </button>
             </div>
-            
-            <!-- Modal Penjadwalan Sidang telah dihapus -->
-
         </main>
     </div>
     
+    <!-- Success Modal HTML -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content success-modal-content">
+                <div class="modal-body success-modal-body">
+                    <i class="fa-solid fa-circle-check success-icon"></i>
+                    <p class="success-message">Evaluasi Sidang Berhasil Dikirim!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -646,8 +718,8 @@
         }
       }
 
-      // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
-      // telah dihapus karena modalnya sudah tidak digunakan.
+      // Tidak ada fungsi JS kustom tambahan yang diperlukan untuk modal Bootstrap,
+      // karena pemicunya sudah diatur melalui data-bs-toggle dan data-bs-target.
     </script>
 </body>
 </html>
