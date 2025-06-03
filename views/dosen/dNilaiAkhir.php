@@ -239,7 +239,7 @@
             <div class="col-auto d-flex align-items-center ">
                 <label for="nilaiLaporan">Nilai laporan:</label>
                 <input
-                  type="number"
+                  type="type"
                   class="form-control form-control-lg text-center"
                   name="nilaiLaporan"
                   id="detailpenilaian"
