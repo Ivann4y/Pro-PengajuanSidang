@@ -446,19 +446,22 @@
             background-color: #F3F4F6;
         }
 
-        .content-card .section-title { /* Base style for section titles in content cards */
+        .content-card .section-title {
+            /* Base style for section titles in content cards */
             font-size: 1.1rem;
             font-weight: 600;
             color: #1F2937;
-            margin-bottom: 1rem; /* Default margin, overridden by sticky titles */
+            margin-bottom: 1rem;
+            /* Default margin, overridden by sticky titles */
         }
 
         /* --- Notifikasi Card Styles --- */
         .notifikasi-card {
             overflow-y: auto;
-            max-height: 35vh; /* Adjust as needed */
+            max-height: 35vh;
+            /* Adjust as needed */
             padding-top: 0rem;
-            padding-bottom: 1rem; 
+            padding-bottom: 1rem;
         }
 
         .notifikasi-card .section-title {
@@ -469,10 +472,10 @@
             padding-top: 0.3rem;
             padding-bottom: 0.5rem;
             margin-top: 0;
-            margin-bottom: 0; 
+            margin-bottom: 0;
             border-bottom: 1px solid #DEE2E6;
         }
-        
+
         .notifikasi-card .notifikasi-item {
             background-color: white;
             color: #4B5563;
@@ -491,7 +494,8 @@
         .tanggungan-card {
             /* Ensure any previous height: 92% !important; is removed */
             overflow-y: auto;
-            max-height: 37.5vh; /* Adjust as needed */
+            max-height: 37.5vh;
+            /* Adjust as needed */
             padding-top: 0rem;
             padding-bottom: 1rem;
         }
@@ -504,7 +508,7 @@
             padding-top: 0.3rem;
             padding-bottom: 0.5rem;
             margin-top: 0;
-            margin-bottom: 0; 
+            margin-bottom: 0;
             border-bottom: 1px solid #DEE2E6;
         }
 
@@ -526,7 +530,8 @@
         .calendar-card {
             background-color: #4F46E5;
             color: white;
-            height: 38.5vh; /* Fixed height, not typically a scrollable list of items */
+            height: 38.5vh;
+            /* Fixed height, not typically a scrollable list of items */
         }
 
         .calendar-card .section-title-container {
@@ -535,9 +540,11 @@
             align-items: center;
         }
 
-        .calendar-card .section-title { /* This title is different, not sticky in the same way */
+        .calendar-card .section-title {
+            /* This title is different, not sticky in the same way */
             color: white;
-            margin-bottom: 0; /* Original had this, if it was part of .content-card .section-title, it would be overridden by more specific sticky titles */
+            margin-bottom: 0;
+            /* Original had this, if it was part of .content-card .section-title, it would be overridden by more specific sticky titles */
         }
 
         .calendar-card .calendar-nav i {
@@ -553,7 +560,8 @@
         }
 
         .calendar-card .calendar th {
-            padding: -0.2rem 0.25rem; /* Note: negative padding is unusual, might be typo or specific intent */
+            padding: -0.2rem 0.25rem;
+            /* Note: negative padding is unusual, might be typo or specific intent */
             text-align: center;
             font-weight: 500;
             font-size: 0.85rem;
@@ -734,7 +742,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="dashboard-card content-card tanggungan-card"> 
+                            <div class="dashboard-card content-card tanggungan-card">
                                 <h3 class="section-title">Tanggungan</h3>
                                 <div class="tanggungan-item">Revisi Sidang PRG</div>
                                 <div class="tanggungan-item">Revisi Sidang Basdat</div>
@@ -885,27 +893,27 @@
         const nextMonthBtn = document.getElementById("nextMonth");
 
         let currentDate = new Date();
-        let activeDate = new Date(); 
+        let activeDate = new Date();
 
         const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         ];
 
         function renderCalendar() {
-            calendarTableBody.innerHTML = ""; 
+            calendarTableBody.innerHTML = "";
             currentMonthYearHeader.textContent = `${monthNames[activeDate.getMonth()]} ${activeDate.getFullYear()}`;
 
             const year = activeDate.getFullYear();
             const month = activeDate.getMonth();
 
-            const firstDayOfMonth = new Date(year, month, 1).getDay(); 
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             let date = 1;
-            for (let i = 0; i < 6; i++) { 
+            for (let i = 0; i < 6; i++) {
                 const row = document.createElement("tr");
 
-                for (let j = 0; j < 7; j++) { 
+                for (let j = 0; j < 7; j++) {
                     const cell = document.createElement("td");
                     if (i === 0 && j < firstDayOfMonth) {
                         cell.innerHTML = "";
@@ -930,7 +938,7 @@
 
         prevMonthBtn.addEventListener("click", () => {
             activeDate.setMonth(activeDate.getMonth() - 1);
-            activeDate.setDate(1); 
+            activeDate.setDate(1);
             renderCalendar();
         });
 
