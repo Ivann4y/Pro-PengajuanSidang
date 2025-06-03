@@ -40,18 +40,17 @@
   </style>
 </head>
 <body>
-
   <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide__sidebar-item ">
                     <b></b><b></b>
                     <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
-                <li class="NavSide__sidebar-item">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
@@ -78,15 +77,15 @@
                 </div>
             </div>
         </div>
-        <main class="NavSide__main-content">
 
-         <div class="container-fluid">
+        <main class="NavSide__main-content" id="mPengajuan">
+         <div class="container">
     <div class="sideNav"></div>
-    <div class="container-fluid bodyContainer">
+    <div class="container-fluid ">
       <div class="row">
         <div class="col-12">
         <h2 class="text-heading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
-        <h5 class="fw-bold mt-4 mb-3">Tambah Sidang Semester</h5>
+        <h5 class="fw-bold mt-4 mb-3">Tambah Sidang</h5>
         <hr>
       </div>
 
@@ -127,31 +126,32 @@
  <div class="row">
   <!-- Laporan Sidang -->
   <div class="col-md-6 mb-4">
-    <div class="p-4 rounded bg-light border text-start">
-      <h6 class="fw-bold text-dark">Dokumen Laporan Sidang</h6>
-      <form id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
-        <label for="laporanSidang" class="upload-box w-100 mt-3 text-center">
-          <div class="upload-content">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="bi bi-upload" viewBox="0 0 16 16">
-              <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z"/>
-              <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z"/>
-            </svg>
-            <p class="mt-2 text-muted small">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
-          </div>
-        </label>
+  <div class="p-4 rounded bg-light border text-start">
+    <h6 class="fw-bold text-dark">Dokumen Laporan Sidang</h6>
+    <form id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
+      <label class="upload-box w-100 mt-3 text-center">
         <input type="file" id="laporanSidang" name="laporanSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
-      </form>
-    </div>
+        <div class="upload-content">
+          <svg id="uploadIcon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="bi bi-upload" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+          <p class="mt-2 text-muted small" id="laporanLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
+        </div>
+      </label>
+    </form>
   </div>
+</div>
 
   <!-- Dokumen Pendukung -->
   <div class="col-md-6 mb-4">
     <div class="p-4 rounded bg-light border text-start">
       <h6 class="fw-bold text-dark">Dokumen Pendukung Sidang</h6>
       <form id="dokPendukungForm" action="#" method="POST" enctype="multipart/form-data">
-        <label for="dokPendukung" class="upload-box w-100 mt-3 text-center">
+        <label class="upload-box w-100 mt-3 text-center">
+          <input type="file" id="dokPendukung" name="pendukungSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
           <div class="upload-content">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="bi bi-upload" viewBox="0 0 16 16">
+            <svg id="UploadIcon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="bi bi-upload" viewBox="0 0 16 16">
               <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z"/>
               <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z"/>
             </svg>
@@ -182,6 +182,13 @@
   border: 2px solid #0f5132;
   color: #0f5132;
 }
+.upload-content {
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 </style>
 
@@ -198,16 +205,19 @@
 <!-- Modal Peringatan -->
 <div class="modal fade" id="modalPeringatan" tabindex="-1" aria-labelledby="modalPeringatanLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #fff3cd;">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
       <div class="modal-header border-0 justify-content-center">
-        <h5 class="modal-title fw-bold text-warning" id="modalPeringatanLabel">Peringatan</h5>
       </div>
       <div class="modal-body">
-        <p class="fw-semibold mb-0">Mohon unggah semua dokumen sebelum mengirim pengajuan sidang.</p>
+        <div class="mb-3">
+          <img src="https://cdn-icons-png.flaticon.com/512/463/463612.png" alt="Warning Icon" style="width: 100px;" />
+        </div>
+        <p class="fw-semibold mb-0">Mohon unggah semua dokumen sebelum mengirim pengajuan sidang</p>
       </div>
     </div>
   </div>
 </div>
+
 
 
 
@@ -228,6 +238,24 @@
     </div>
   </div>
 </div> 
+
+<!-- Modal Berhasil -->
+<div class="modal fade" id="modalBerhasil" tabindex="-1" aria-labelledby="modalBerhasilLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+        <h4 class="modal-title fw-bold" id="modalBerhasilLabel" style="font-size: 24px;">Berhasil</h4>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Success Icon" style="width: 100px;" />
+        </div>
+        <p class="fw-semibold mb-0">Dokumen berhasil diunggah!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
       </form>
     </div>
   </div>
@@ -259,10 +287,24 @@
     }
   });
   const laporanInput = document.getElementById('laporanSidang');
+  const uploadIcon = document.getElementById('uploadIcon');
 const laporanBox = laporanInput.closest('.upload-box');
+
+laporanInput.addEventListener('change', function () {
+  if (laporanInput.files.length > 0) {
+    uploadIcon.style.display = 'none';
+  }
+});
 
 const pendukungInput = document.getElementById('dokPendukung');
 const pendukungBox = pendukungInput.closest('.upload-box');
+const UploadIcon = document.getElementById('UploadIcon');
+
+pendukungInput.addEventListener('change', function () {
+  if (pendukungInput.files.length > 0) {
+    UploadIcon.style.display = 'none';
+  }
+});
 
 function updateUploadBox(input, box) {
   if (input.files.length > 0) {
@@ -277,6 +319,21 @@ function updateUploadBox(input, box) {
 
 laporanInput.addEventListener('change', () => updateUploadBox(laporanInput, laporanBox));
 pendukungInput.addEventListener('change', () => updateUploadBox(pendukungInput, pendukungBox));
+
+const submitBtn = document.getElementById('submitBtn');
+const modalBerhasilEl = document.getElementById('modalBerhasil');
+const modalBerhasil = new bootstrap.Modal(modalBerhasilEl);
+
+submitBtn.addEventListener('click', function () {
+  modalKonfirmasi.hide();
+  modalBerhasil.show();
+
+  setTimeout(() => {
+    modalBerhasil.hide();
+    history.back();
+  }, 2000);
+});
+
 
 </script>
 </body>

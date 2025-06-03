@@ -1,17 +1,10 @@
-<?php
-session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
-    header('Location: ../../index.php');
-    exit();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Dosen - Sistem Pengajuan Sidang</title>
+    <title>Login Mahasiswa - Sistem Pengajuan Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <style>
@@ -24,6 +17,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
             flex-direction: column;
             min-height: 100vh;
             min-width: 100vw;
+            overflow: hidden;
         }
 
         .fullscreen {
@@ -38,12 +32,29 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
             height: 100vh;
         }
 
-        .log {
+        .right-column-wrapper {
             width: 40%;
             height: 100vh;
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .log {
+            flex-grow: 1;
+            display: flex;
             justify-content: center;
             align-items: center;
+            padding-top: 5vh;
+        }
+
+        .log form {
+            width: 25vw;
+        }
+
+        .back-button-container {
+            padding-left: 2vw;
+            padding-bottom: 3vh;
         }
 
         img {
@@ -78,11 +89,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
             pointer-events: auto;
         }
 
-        form {
-            width: 25vw;
+        .btnKirim:hover {
+            background-color: white;
+            color: green;
+            stroke: green;
         }
     </style>
 </head>
+
 <body>
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
@@ -93,13 +107,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
             <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000" style="padding: 5% 10% 5% 10%;">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="../../assets/img/img6.png" class="imgPertama rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../assets/img/img6.png" class="imgPertama rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/img2.png" class="imgKedua rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../assets/img/img2.png" class="imgKedua rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/img5.png" class="imgKetiga rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../assets/img/img5.png" class="imgKetiga rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
                     </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
@@ -113,23 +127,34 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
             </div>
         </div>
 
-        <div class="log d-flex justify-content-center align-items-center pb-5">
-            <form action="../../auth.php" method="POST">
-                <div class="text-center pt-5 mb-4">
-                    <h2><strong>Masuk Akun Dosen</strong></h2>
-                </div>
-                <div class="mb-3">
-                    <input type="hidden" name="role" value="dosen">
-                    <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIP" required>
-                </div>
-                <div class="mb-3">
-                    <input type="password" class="form-control form-control-lg border border-dark" id="password" name="password" placeholder="Password" required>
-                    <a href="../lupaPassword.php" class="float-end"> Lupa kata sandi?</a>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
-            </form>
+        <div class="right-column-wrapper">
+            <div class="log">
+                <form action="#" method="POST">
+                    <div class="text-center pt-5 mb-4">
+                        <h2 class="fs-2 fw-bold">Lupa Kata Sandi?</h2>
+                    </div>
+                    <div class="mb-3">
+                        <label for="">Masukkan Email Politeknik Astra</label>
+                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
+                        <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5" onclick="toInputPasswordBaru()">Kirim</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="back-button-container">
+                <button type="submit" class="btn btn-primary px-3 rounded rounded-5">
+                    <img src="../assets/img/Kembali.svg" alt="" class="me-1">
+                    <label>Kembali</label>
+                </button>
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script>
+        function toInputPasswordBaru() {
+            window.open("inputPasswordBaru.php", "_self")
+        }
+    </script>
 </body>
+
 </html>

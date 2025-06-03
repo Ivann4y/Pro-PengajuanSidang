@@ -97,10 +97,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // FUNGSI UNTUK DOSEN
 
-function goToDetail(nim) {
-    window.location.href = `dDetailPengajuan.php?nim=${nim}`;
+function goToDetail(nim, tipe) {
+    // Fungsi ini sekarang mengirimkan nim DAN tipe ke URL
+    window.location.href = `dDetailPengajuan.php?nim=${nim}&tipe=${tipe}`;
 }
 
+const notifModalElement = document.getElementById('notifModal');
+const modal = new bootstrap.Modal(notifModalElement);
+
+function showModal(status) {
+  const modalLabel = document.getElementById('notifModalLabel');
+  modalLabel.innerText = `Sidang berhasil ${status.toLowerCase()}`;
+  modal.show();
+}
+
+notifModalElement.addEventListener('hidden.bs.modal', event => {
+  window.location.href = 'dpengajuan.php';
+});
 
 // FUNGSI UNTUK MAHASISWA
 
