@@ -707,7 +707,9 @@
                     <i class="bi bi-bell-fill"></i>
                 </a>
                 <div class="profile-icon">
+                    <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                     <i class="bi bi-person-fill fs-5"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -718,7 +720,7 @@
                     <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i>
                     </a>
                     <div class="profile-icon">
-                        <i class="bi bi-person-fill fs-5"></i>
+                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
                 </div>
             </div>
@@ -751,8 +753,8 @@
                                 <div class="tanggungan-item">Revisi Sidang PRG</div>
                                 <div class="tanggungan-item">Revisi Sidang Basdat</div>
                                 <div class="tanggungan-item">Revisi Sidang TA</div>
-                                <div class="tanggungan-item">Tanggungan Item 4</div>
-                                <div class="tanggungan-item">Tanggungan Item 5</div>
+                                <div class="tanggungan-item">Revisi Sidang Orkom</div>
+                                <div class="tanggungan-item">Revisi Sidang </div>
                             </div>
                         </div>
                     </div>
