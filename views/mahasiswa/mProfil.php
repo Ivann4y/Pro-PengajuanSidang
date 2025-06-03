@@ -319,6 +319,9 @@
             font-weight: 600;
             font-size: larger;
         }
+        img {
+            border-radius: 50px;
+        }
        
     </style>
 </head>
