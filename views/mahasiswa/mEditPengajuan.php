@@ -80,7 +80,7 @@
 
         <main class="NavSide__main-content" id="mPengajuan">
          <div class="container-fluid">
-    <div class="container-fluid bodyContainer">
+    <div class="container-fluid">
       <div class="row">
         <div class="col-12">
         <h2 class="text-heading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
