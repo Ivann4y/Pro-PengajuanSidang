@@ -280,7 +280,7 @@
         <div class="col-md-12">
           <div class="card" id="cardcatatan">
             <div class="card-body">
-              <h3 class="card-title">Catatan:</h3>
+              <h3 class="card-title">Catatan</h3>
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
