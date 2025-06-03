@@ -218,23 +218,34 @@
                     <b></b>
                     <b></b>
                     <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span
-              >
+                        <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
             </a>
           </li>
           <li class="NavSide__sidebar-item">
             <b></b>
             <b></b>
-            <a href="#">
+            <a href="aLogin.php">
               <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
                     </a>
                 </li>
             </ul>
         </div>
 
-        <div class="NavSide__toggle">
-            <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
+         <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                    <i class="bi bi-bell-fill"></i>
+                </a>
+                <div class="profile-icon">
+                    <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
+                    <i class="bi bi-person-fill fs-5"></i>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <main class="NavSide__main-content">
