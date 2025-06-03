@@ -160,6 +160,14 @@
 
         .status-badge {
             margin-bottom: 1.2cm; 
+            background-color:rgb(226, 42, 42); /* Light green */
+            color: black; /* Black text as in original image */
+            border-radius: 20px;
+            padding: 8px 18px; 
+            display: inline-block; 
+            font-size: 0.875rem; 
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
+            font-weight: bold; 
         }
 
         .info-card {
@@ -249,7 +257,7 @@
 
         .NavSide__toggle i.bi.open {
             color: rgb(67, 54, 240);
-            display: none;
+            display: block;
         }
         .NavSide__toggle i.bi.close {
             color: rgb(67, 54, 240);
@@ -308,17 +316,6 @@
             }
         }
        
-        .status-badge {
-            background-color:rgb(253, 68, 59);
-            color: black;
-            border-radius: 20px;
-            padding: 8px 18px; 
-            display: inline-block; 
-            font-size: 0.875rem; 
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
-            font-weight: bold; 
-        }
-
         .info-card {
             position: relative;
             background: rgb(235, 238, 245); 
@@ -358,7 +355,6 @@
             transition: color 0.4s ease;
             display: flex; 
             flex-direction: column; 
-            justify-content: space-between; 
         }
 
         .info-card:hover .section {
@@ -450,9 +446,7 @@
         .info-card .section .info-group:last-child {
             margin-bottom: 0; 
         }
-        .info-card .section .spacer {
-            flex-grow: 1; 
-        }
+        /* The .spacer div and its CSS are removed as it's no longer needed with the correct grouping of info-groups within sections. */
         /* --- Akhir CSS info-group dan spacer --- */
     </style>
 </head>
@@ -490,35 +484,44 @@
         </div>
 
         <main class="NavSide__main-content">
-            <h2 >Detail Sidang - Sistem Pengajuan Sidang</h2>
+            <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
             <div class="status-badge">Status Pengajuan : Belum Disetujui</div>
             
             <div class="info-card">
                 <div class="section">
-                    <!-- Mata Kuliah -->
+                    <!-- Judul Sidang -->
                     <div class="info-group">
                         <div class="label-row">
-                            <i class="fa-solid fa-book"></i>
-                            <span class="fw-bold">Mata Kuliah</span>
+                            <i class="fa-solid fa-file-lines"></i> <!-- Changed icon to fa-file-lines (document with lines) -->
+                            <span class="fw-bold">Judul Sidang</span> 
                         </div>
-                        <div class="value-row">Pemrograman 2</div>
+                        <div class="value-row">Sistem Pengajuan Sidang</div> 
                     </div>
 
-                    <!-- Spacer untuk mendorong Dosen Pengampu ke bawah -->
-                    <div class="spacer"></div>
+                    <!-- Dosen Pembimbing -->
+                    <div class="info-group">
+                        <div class="label-row">
+                            <i class="fa-solid fa-user"></i> 
+                            <span class="fw-bold">Dosen Pembimbing</span>
+                        </div>
+                        <div class="value-row">
+                            Dr. Rida Indah Fariani, S.Kom, M.Kom 
+                        </div>
+                    </div>
 
-                    <!-- Dosen Pengampu -->
+                    <!-- Dosen Penguji -->
                     <div class="info-group">
                         <div class="label-row">
                             <i class="fa-solid fa-user-group"></i> 
-                            <span class="fw-bold">Dosen Pengampu</span>
+                            <span class="fw-bold">Dosen Penguji</span>
                         </div>
                         <div class="value-row">
                             Timotius Victory, S.Kom, M.Kom<br>
-                            Yosep Setiawan, S.Kom, M.Kom
+                            Ning Ratwasturi, S.Kom, M.Kom 
                         </div>
                     </div>
                 </div>
+
                 <div class="section">
                     <!-- Ruangan -->
                     <div class="info-group">
@@ -549,14 +552,14 @@
                 </div>
             </div>
             
-            <h5 >Dokumen Sidang</h5>
+            <h5>Dokumen Sidang</h5>
             <div class="file-buttons-container d-flex flex-wrap"> 
                 <a href="#" class="file-button">
-                    <i class="fa-solid fa-file-pdf"></i>
+                    <i class="fa-solid fa-file"></i> 
                     file_laporan_kel-1.pdf
                 </a>
                 <a href="#" class="file-button">
-                    <i class="fa-solid fa-file-zipper"></i>
+                    <i class="fa-solid fa-file"></i> 
                     dokumen_pendukung_kel-1.zip
                 </a>
             </div>
@@ -568,7 +571,7 @@
                 Kembali
             </button>
             
-            <!-- Modal Penjadwalan Sidang telah dihapus -->
+            <!-- Modal Penjadwalan Sidang telah dihapus, jadi bagian ini tetap dikosongkan -->
 
         </main>
     </div>

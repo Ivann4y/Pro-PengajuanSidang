@@ -319,7 +319,35 @@
             font-weight: 600;
             font-size: larger;
         }
+
+        .profil-img {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .profil-img img {
+            width: 80%;
+            height: auto;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-mahasiswa .value {
+            background-color:rgb(238, 238, 238);
+            padding: 10px;
+            border-radius: 10px;
+            width: 100%;
+        }
        
+        .mData {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 5px;
+            gap: 20px;
+        }
     </style>
 </head>
 
@@ -368,16 +396,31 @@
                     <h1>Profile</h1>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 profil-img">
                         <img src="../../assets/img/img3-nobg.png" alt="">
                     </div>
                     <div class="col-md-6 data-mahasiswa">
                         <h2 class="text-heading">Data Mahasiswa</h2>
-                        <p class="text-muted">NIM: 123456789</p>
-                        <p class="text-muted">Nama: John Doe</p>
-                        <p class="text-muted">Email: 123456789@polytechnic.astra.ac.id</p>
-                        <p class="text-muted">No. Telepon: 08123456789</p>
-                        <p class="text-muted">Jenis Kelamin: Laki-laki</p>
+                        <div class="mData">
+                            <p class="text-muted">NIM:</p>
+                            <p class="text-muted value">123456789</p>
+                        </div>
+                        <div class="mData">
+                            <p class="text-muted">Nama:</p>
+                            <p class="text-muted value">John Doe</p>
+                        </div>
+                        <div class="mData">
+                            <p class="text-muted">Email:</p>
+                            <p class="text-muted value">123456789@polytechnic.astra.ac.id</p>
+                        </div>
+                        <div class="mData">
+                            <p class="text-muted ">No. Telepon:</p>
+                            <p class="text-muted value">08123456789</p>
+                        </div>
+                        <div class="mData">
+                            <p class="text-muted">Jenis Kelamin:</p>
+                            <p class="text-muted value">Laki-laki</p>
+                        </div>
                     </div>
                 </div>
             </div>
