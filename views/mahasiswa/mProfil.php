@@ -303,68 +303,7 @@
         }
         /* NavSide styles from mBeranda.php - END */
 
-        /* Original mSidang table structural styles - START */
-        table {
-            border-spacing: 0 10px;
-            border-collapse: separate;
-            width: 100%;
-        }
-
-        thead {
-            border-bottom: 2px solid rgb(0, 0, 0) !important;
-        }
-
-        thead th {
-            padding: 12px 15px;
-            text-align: left;
-            /* font-family: "Poppins"; Will be inherited or set by external CSS */
-        }
-
-        thead th:nth-child(1) {
-            text-align: center;
-            width: 5%;
-        }
-
-        thead th:nth-child(2) {
-            width: 30%;
-        }
-
-        thead th:nth-child(3) {
-            width: 20%;
-        }
-
-        thead th:nth-child(4) {
-            width: 20%; 
-        }
-
-        .isiTabel td { /* My explicit background-color and border are removed */
-            padding: 12px 15px;
-            font-family: "Poppins"; /* Restored original font-family from mSidang.php */
-            font-weight: 400;
-            vertical-align: middle;
-        }
-
-        .isiTabel td:nth-child(1) {
-            border-radius: 20px 0 0 20px;
-            text-align: center;
-        }
-
-        .isiTabel td:nth-child(4) { 
-            border-radius: 0 20px 20px 0;
-        }
-        .btn-primary { 
-            /* font-family: "Poppins", sans-serif; Inherited */
-            background-color: rgb(67, 54, 240);
-            border-color: rgb(67, 54, 240);
-        }
-        .btn-primary:hover {
-            background-color: rgb(57, 44, 210);
-            border-color: rgb(57, 44, 210);
-        }
-        .dropdown-menu .dropdown-item {
-            font-family: "Poppins", sans-serif;
-        }
-        /* Original mSidang table structural styles - END */
+       
     </style>
 </head>
 
@@ -408,57 +347,35 @@
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
-            <div class="container-fluid"> 
+            <div class="container">
                 <div class="row">
-                    <h2 class="text-heading">
-                        Nayaka Ivana Putra (Mahasiswa)
-                    </h2>
-                </div><br>
+                    <h1>Profile</h1>
+                </div>
                 <div class="row">
-                    <div class="col-12 col-md-6"> 
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                Sidang TA
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
-                            </ul>
+                    <div class="col-12">
+                        <img src="" alt="">
+                    </div>
+                </div>
+                <div class="dataDiri">
+                    <div class="row">
+                        <div class="col-12">
+                            <h2>Data Diri</h2>
                         </div>
                     </div>
-                </div><br>
-                <div class="row table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Judul</th>
-                                <th scope="col">Mata Kuliah</th>
-                                <th scope="col">Dosen Pembimbing</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mSidangTA">
-                            <tr class="isiTabel jadiBiru">
-                                <td>1</td>
-                                <td>Sistem Pengajuan Sidang</td>
-                                <td>Tugas Akhir</td>
-                                <td>Rida Indah Fariani</td>
-                            </tr>
-                        </tbody>
-                        <tbody id="mSidangSem" style="display: none;">
-                            <tr class="isiTabel jadiBiru">
-                                <td>1</td>
-                                <td>Implementasi Sistem Sidang</td>
-                                <td>Pemrograman 2</td>
-                                <td>Timotius Victory</td>
-                            </tr>
-                            <tr class="isiTabel jadiBiru">
-                                <td>2</td>
-                                <td>Deployment Sistem Sidang</td>
-                                <td>Sistem Operasi</td>
-                                <td>Suhendra</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="row">
+                        <div class="col-6">
+                            <p><strong>Nama:</strong> John Doe</p>
+                        </div>
+                        <div class="col-6">
+                            <p><strong>NIM:</strong> 123456789</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <p><strong>Program Studi:</strong> Teknik Informatika</p>
+                        </div>
+                        <div class="col-6">
+                            <p><strong>Email:</strong>
                 </div>
             </div>
         </main>
@@ -489,6 +406,8 @@
                 }
             };
         }
+
+        
     </script>
     <script src="../../assets/js/main.js"></script>
 </body>
