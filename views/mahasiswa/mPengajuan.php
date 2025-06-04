@@ -393,8 +393,8 @@
         .dropdown-menu .dropdown-item {
             font-family: "Poppins", sans-serif; 
         }
-        /* Add hover effect for edit icon */
-        .btn-link:hover .bi-pencil-square {
+        /* Edit icon hover effect */
+        tr.isiTabel:hover .bi-pencil-square {
             color: white !important;
         }
         /* Original mPengajuan table structural styles - END */
