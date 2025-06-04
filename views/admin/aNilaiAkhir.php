@@ -290,7 +290,7 @@
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
-                placeholder="Pertahankan terus semangat belajarnya kurangin main banyakin minum air putih derr biar ga sariawan " 
+                placeholder="Pertahankan terus semangat belajarnya kurangin main banyakin minum air putih derr biar ga sariawan" 
                 disabled>
               </textarea>
             </div>
