@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id"> <!-- Changed lang to id (Indonesian) -->
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Sidang</title> <!-- Simplified title -->
+    <title>Detail Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -81,11 +81,23 @@
             justify-content: center;
             width: 100%;
             text-decoration: none;
-            color: rgb(252, 252, 252);
+            color: rgb(252, 252, 252); /* Default white for all links in sidebar items */
             padding: 5% 2%;
             height: 60px;
             box-sizing: border-box;
         }
+
+        /* --- PERBAIKAN UNTUK WARNA TEKS "PERBAIKAN" DAN "NILAI AKHIR" --- */
+        /* Memastikan warna teks putih untuk item navigasi yang TIDAK aktif secara normal */
+        .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) .NavSide__sidebar-title {
+            color: rgb(252, 252, 252); /* Memastikan warna teks putih */
+        }
+
+        /* Menjamin warna teks putih saat hover untuk item navigasi yang TIDAK aktif */
+        .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a:hover {
+            color: rgb(252, 252, 252) !important; /* TETAP PUTIH SAAT DI-HOVER */
+        }
+        /* --- AKHIR PERBAIKAN --- */
 
         .NavSide__sidebar-title {
             white-space: normal;
@@ -160,7 +172,7 @@
 
         .status-badge {
             margin-bottom: 1.2cm; 
-            background-color:rgb(226, 42, 42); /* Light green */
+            background-color:rgb(253, 68, 59); /* Initial red (sesuai versi "perfect") */
             color: black; /* Black text as in original image */
             border-radius: 20px;
             padding: 8px 18px; 
@@ -168,6 +180,13 @@
             font-size: 0.875rem; 
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
             font-weight: bold; 
+            cursor: pointer; /* Menambahkan cursor pointer untuk menunjukkan bisa diklik */
+            transition: background-color 0.3s ease; /* Menambahkan transisi untuk perubahan warna */
+        }
+
+        /* Gaya untuk status "Disetujui" */
+        .status-badge.approved {
+            background-color: rgb(108, 222, 137); /* Warna hijau */
         }
 
         .info-card {
@@ -315,7 +334,7 @@
                 background-color: aliceblue;
             }
         }
-       
+    
         .info-card {
             position: relative;
             background: rgb(235, 238, 245); 
@@ -355,6 +374,7 @@
             transition: color 0.4s ease;
             display: flex; 
             flex-direction: column; 
+            justify-content: space-between; /* Dikembalikan sesuai versi "perfect" */
         }
 
         .info-card:hover .section {
@@ -393,7 +413,7 @@
             font-size: 0.95rem; 
             margin-bottom: 0; 
         }
-       
+    
         /* --- CSS Baru untuk Tombol Berkas --- */
         .file-button {
             display: inline-flex; 
@@ -459,19 +479,19 @@
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                                <a onclick="location.href='mdetailSidangTA.php'">
+                    <a onclick="location.href='mdetailSidangTA.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                          <a onclick="location.href='mPerbaikan.php'">
+                    <a onclick="location.href='mPerbaikan.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                         <a onclick="location.href='mNilaiakhir.php'">
+                    <a onclick="location.href='mNilaiakhir.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
@@ -485,14 +505,15 @@
 
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-            <div class="status-badge">Status Pengajuan : Belum Disetujui</div>
+            <!-- Tambahkan ID pada div status-badge -->
+            <div class="status-badge" id="statusBadge">Status Pengajuan : Belum Disetujui</div>
             
             <div class="info-card">
                 <div class="section">
                     <!-- Judul Sidang -->
                     <div class="info-group">
                         <div class="label-row">
-                           <i class="fa-solid fa-book"></i>
+                        <i class="fa-solid fa-book"></i>
                             <span class="fw-bold">Judul Sidang</span> 
                         </div>
                         <div class="value-row">Sistem Pengajuan Sidang</div> 
@@ -555,16 +576,16 @@
             <h5>Dokumen Sidang</h5>
             <div class="file-buttons-container d-flex flex-wrap"> 
                 <a href="#" class="file-button">
-                            <i class="fa-solid fa-file-pdf"></i>
+                    <i class="fa-solid fa-file-pdf"></i>
                     file_laporan_kel-1.pdf
                 </a>
                 <a href="#" class="file-button">
-                 <i class="fa-solid fa-file-zipper"></i>
+                <i class="fa-solid fa-file-zipper"></i>
                     dokumen_pendukung_kel-1.zip
                 </a>
             </div>
             
-            <button class="btn-kembali">
+            <button class="btn-kembali" onclick="location.href='mSidang.php'">
                 <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                 </span>
@@ -580,31 +601,63 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
-      // Skrip untuk toggle sidebar dan active menu item
-      let menuToggle = document.querySelector(".NavSide__toggle");
-      let sidebar = document.getElementById("main-sidebar");
+    // Skrip untuk toggle sidebar dan active menu item
+    let menuToggle = document.querySelector(".NavSide__toggle");
+    let sidebar = document.getElementById("main-sidebar");
 
-      if (menuToggle && sidebar) {
+    if (menuToggle && sidebar) {
         menuToggle.onclick = function () {
-          menuToggle.classList.toggle("NavSide__toggle--active");
-          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        menuToggle.classList.toggle("NavSide__toggle--active");
+        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
-      }
+    }
 
-      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-      if (listItems.length > 0) {
-        for (let i = 0; i < listItems.length; i++) {
-          listItems[i].onclick = function (event) {
-            for (let j = 0; j < listItems.length; j++) {
-              listItems[j].classList.remove("NavSide__sidebar-item--active");
+    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+    if (listItems.length > 0) {
+        // Find the active item based on the current URL
+        const currentPath = window.location.pathname.split('/').pop();
+        listItems.forEach(item => {
+            const link = item.querySelector('a');
+            if (link) {
+                const linkHref = link.getAttribute('onclick');
+                if (linkHref && linkHref.includes(currentPath)) {
+                    item.classList.add("NavSide__sidebar-item--active");
+                }
             }
-            this.classList.add("NavSide__sidebar-item--active");
-          };
-        }
-      }
+        });
 
-      // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
-      // telah dihapus karena modalnya sudah tidak digunakan.
+        // Add click event listener to update active class (optional, if navigation is handled by JS)
+        // For static links, this part might not be strictly necessary if the page reloads.
+        // If the page does not reload and you switch content dynamically, this is important.
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function (event) {
+                for (let j = 0; j < listItems.length; j++) {
+                    listItems[j].classList.remove("NavSide__sidebar-item--active");
+                }
+                this.classList.add("NavSide__sidebar-item--active");
+            };
+        }
+    }
+
+    // Fungsionalitas baru: Mengubah status badge saat diklik
+    const statusBadge = document.getElementById('statusBadge');
+
+    if (statusBadge) {
+        statusBadge.addEventListener('click', function() {
+            // Periksa apakah badge saat ini bertuliskan "Belum Disetujui"
+            if (this.textContent.includes('Belum Disetujui')) {
+                this.textContent = 'Status Pengajuan : Disetujui';
+                this.classList.add('approved'); // Tambahkan kelas 'approved'
+            } else {
+                // Jika bertuliskan "Disetujui", kembalikan ke "Belum Disetujui"
+                this.textContent = 'Status Pengajuan : Belum Disetujui';
+                this.classList.remove('approved'); // Hapus kelas 'approved'
+            }
+        });
+    }
+
+    // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
+    // telah dihapus karena modalnya sudah tidak digunakan.
     </script>
 </body>
 </html>

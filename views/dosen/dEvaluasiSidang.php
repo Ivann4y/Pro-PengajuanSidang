@@ -123,15 +123,16 @@
             white-space: normal;
             text-align: center;
             line-height: 1.5;
+            color:white;
         }
 
         /* UBAH: Active state di pindah ke Evaluasi */
         .NavSide__sidebar-item.NavSide__sidebar-item--active {
             background: #ffffff;
-        }
+=        }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: rgb(67, 54, 240);
+            color: rgb(67, 54, 240) !important;
         }
 
         .NavSide__sidebar-item b:nth-child(1) {
@@ -538,14 +539,14 @@
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
+                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /> <!-- Path diubah -->
             </div>
             <ul class="NavSide__sidebar-nav">
                 <!-- MENU "Detail Sidang" DIHAPUS DARI SINI -->
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Evaluasi aktif -->
                     <b></b><b></b>
-                    <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+                    <a href="dEvaluasiSidang.php">
+                        <span class="fw-semibold">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
@@ -667,7 +668,8 @@
             </div>
             
             <div class="button-group-bottom">
-                <button class="btn-kembali">
+                <!-- Corrected HTML for the "Kembali" button -->
+                <button class="btn-kembali" onclick="location.href='dDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
@@ -687,8 +689,8 @@
             <div class="modal-content success-modal-content">
                 <div class="modal-body success-modal-body">
                     <!-- --- PERUBAHAN IKON SUKSES DI SINI --- -->
-                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon">
-                    <!-- --- AKHIR PERUBAHAN IKON SUKSES --- -->
+                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon"> <!-- Path diubah -->
+                    <!-- --- AKHIR PERUBAHAN UNTUK IKON SUKSES --- -->
                     <p class="success-message">Evaluasi Sidang Berhasil Dikirim!</p>
                 </div>
             </div>

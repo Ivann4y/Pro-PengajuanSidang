@@ -87,6 +87,17 @@
             box-sizing: border-box;
         }
 
+        /* Menjamin warna teks putih untuk item navigasi yang TIDAK aktif */
+        .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a {
+            color: rgb(252, 252, 252); 
+        }
+
+        /* Menjamin warna teks putih saat hover untuk item navigasi yang TIDAK aktif */
+        .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a:hover {
+            color: rgb(252, 252, 252); /* Tetap putih saat di-hover */
+        }
+
+
         .NavSide__sidebar-title {
             white-space: normal;
             text-align: center;
@@ -158,8 +169,25 @@
             font-weight: 700; 
         }
 
+        /* Status badge (Merah default) */
         .status-badge {
             margin-bottom: 1.2cm; 
+            background-color:rgb(253, 68, 59); /* Initial red */
+            color: black;
+            border-radius: 20px;
+            padding: 8px 18px; 
+            display: inline-block; 
+            font-size: 0.875rem; 
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
+            font-weight: bold; 
+            cursor: pointer; /* Menambahkan cursor pointer untuk menunjukkan bisa diklik */
+            transition: background-color 0.3s ease; /* Menambahkan transisi untuk perubahan warna */
+        }
+
+        /* Gaya untuk status "Disetujui" (Hijau) */
+        .status-badge.approved {
+            background-color: rgb(108, 222, 137); /* Warna hijau */
+            color: black; /* Pastikan teks tetap hitam */
         }
 
         .info-card {
@@ -249,7 +277,7 @@
 
         .NavSide__toggle i.bi.open {
             color: rgb(67, 54, 240);
-            display: none;
+            display: block; /* UBAH: Ini harusnya block agar terlihat saat tidak active */
         }
         .NavSide__toggle i.bi.close {
             color: rgb(67, 54, 240);
@@ -308,7 +336,8 @@
             }
         }
        
-        .status-badge {
+        /* Baris CSS status-badge yang sebelumnya ada duplikat, sekarang digabung/dijaga agar tidak ada konflik */
+        /* .status-badge {
             background-color:rgb(253, 68, 59);
             color: black;
             border-radius: 20px;
@@ -317,7 +346,8 @@
             font-size: 0.875rem; 
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
             font-weight: bold; 
-        }
+        } */ /* Bagian ini di-comment karena sudah digabung di atas untuk menghindari duplikasi */
+
 
         .info-card {
             position: relative;
@@ -491,7 +521,8 @@
 
         <main class="NavSide__main-content">
             <h2 >Detail Sidang - Sistem Pengajuan Sidang</h2>
-            <div class="status-badge">Status Pengajuan : Belum Disetujui</div>
+            <!-- Tambahkan ID pada div status-badge -->
+            <div class="status-badge" id="statusBadge">Status Pengajuan : Belum Disetujui</div>
             
             <div class="info-card">
                 <div class="section">
@@ -561,7 +592,7 @@
                 </a>
             </div>
             
-            <button class="btn-kembali">
+           <button class="btn-kembali" onclick="location.href='mSidang.php'">
                 <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                 </span>
@@ -598,6 +629,23 @@
             this.classList.add("NavSide__sidebar-item--active");
           };
         }
+      }
+
+      // Fungsionalitas baru: Mengubah status badge saat diklik
+      const statusBadge = document.getElementById('statusBadge');
+
+      if (statusBadge) {
+          statusBadge.addEventListener('click', function() {
+              // Periksa apakah badge saat ini bertuliskan "Belum Disetujui"
+              if (this.textContent.includes('Belum Disetujui')) {
+                  this.textContent = 'Status Pengajuan : Disetujui';
+                  this.classList.add('approved'); // Tambahkan kelas 'approved'
+              } else {
+                  // Jika bertuliskan "Disetujui", kembalikan ke "Belum Disetujui"
+                  this.textContent = 'Status Pengajuan : Belum Disetujui';
+                  this.classList.remove('approved'); // Hapus kelas 'approved'
+              }
+          });
       }
 
       // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)

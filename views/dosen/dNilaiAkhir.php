@@ -169,7 +169,7 @@
           <li class="NavSide__sidebar-item ">
             <b></b>
             <b></b>
-            <a href="#">
+             <a href="dEvaluasiSidang.php">
               <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
             </a>
           </li>
@@ -228,7 +228,7 @@
               src="../../assets/img/img5.png"
               alt="Mahasiswa"
               class="img-fluid "
-              style="width: 500px; height: 350px; margin-left: 20px; "
+              style="width: 500px; height: 350px; margin-left: 20px; mix-blend-mode: multiply; "
             />
           </div>
         </div>
