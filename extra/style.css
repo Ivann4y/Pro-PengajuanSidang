@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-* {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -62,7 +62,8 @@
             width: 100%;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
-            margin-bottom: 10px; /* Kept from user's last version */
+            margin-bottom: 10px;
+            /* Kept from user's last version */
         }
 
         .NavSide__sidebar-item a {
@@ -101,6 +102,7 @@
             display: none;
             right: 0;
         }
+
         .NavSide__sidebar-item b:nth-child(1)::before {
             content: "";
             position: absolute;
@@ -112,6 +114,7 @@
             background: rgb(67, 54, 240);
             display: block;
         }
+
         .NavSide__sidebar-item b:nth-child(2) {
             position: absolute;
             bottom: -20px;
@@ -121,6 +124,7 @@
             display: none;
             right: 0;
         }
+
         .NavSide__sidebar-item b:nth-child(2)::before {
             content: "";
             position: absolute;
@@ -132,6 +136,7 @@
             background: rgb(67, 54, 240);
             display: block;
         }
+
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
             display: block;
@@ -144,7 +149,8 @@
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
             background-color: #F9FAFB;
-            padding-top: 3vh; /* Default for larger screens */
+            padding-top: 3vh;
+            /* Default for larger screens */
         }
 
         .NavSide__toggle {
@@ -161,7 +167,8 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: none; /* Hidden by default for larger screens */
+            display: none;
+            /* Hidden by default for larger screens */
         }
 
         .NavSide__toggle i.bi {
@@ -173,54 +180,67 @@
         .NavSide__toggle i.bi.open {
             color: rgb(67, 54, 240);
         }
+
         .NavSide__toggle i.bi.close {
-            color: rgb(67,54,240);
+            color: rgb(67, 54, 240);
         }
-        .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; }
-        .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; }
+
+        .NavSide__toggle.NavSide__toggle--active i.bi.open {
+            display: none;
+        }
+
+        .NavSide__toggle.NavSide__toggle--active i.bi.close {
+            display: block;
+        }
 
         /* NEW: Top Bar for smaller screens */
         .NavSide__topbar {
-            display: none; /* Hidden by default for larger screens */
+            display: none;
+            /* Hidden by default for larger screens */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 60px; /* Adjust height as needed */
+            height: 60px;
+            /* Adjust height as needed */
             background-color: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999; /* Below sidebar, above main content */
-            align-items: center; /* Vertically align items */
-            padding: 0 15px; /* Add horizontal padding */
-            justify-content: space-between; /* Space between toggle and icons */
+            z-index: 999;
+            /* Below sidebar, above main content */
+            align-items: center;
+            /* Vertically align items */
+            padding: 0 15px;
+            /* Add horizontal padding */
+            justify-content: space-between;
+            /* Space between toggle and icons */
         }
 
         .NavSide__topbar .header-icons {
             display: flex;
             align-items: center;
-            /* margin-left: auto; This is handled by justify-content: space-between */
         }
 
         /* --- STYLES FOR ICONS IN TOPBAR TO MATCH DESKTOP --- */
         .NavSide__topbar .header-icons .bi-bell-fill {
-            font-size: 1.5rem; /* Matches desktop size */
-            color: #555; /* Matches desktop color */
-            margin-right: 1.5rem; /* Space between bell and profile */
+            font-size: 1.5rem;
+            color: #555;
+            margin-right: 1.5rem;
             cursor: pointer;
         }
+
         .NavSide__topbar .profile-icon {
-            width: 40px; /* Matches desktop size */
-            height: 40px; /* Matches desktop size */
-            background-color: #333; /* Matches desktop color */
-            border-radius: 50%; /* Matches desktop shape */
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
         }
-        /* --- END ICON STYLES --- */
 
+        /* --- END ICON STYLES --- */
 
         @media (max-width: 700px) {
             .NavSide__sidebar {
@@ -228,62 +248,115 @@
                 transform: translateX(-100%);
                 border-left-width: 0;
             }
+
             .NavSide__sidebar.NavSide__sidebar--active-mobile {
                 transform: translateX(0);
                 box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
             }
+
             .NavSide__sidebar-brand {
                 padding: 20px 10px 30px 10px;
             }
+
             .NavSide__sidebar-brand img {
                 width: 90%;
             }
+
             .NavSide__sidebar-nav {
                 padding-top: 20%;
             }
+
             .NavSide__sidebar-item a {
                 padding: 12% 10%;
                 height: auto;
             }
+
             .NavSide__main-content {
                 margin-left: 0;
                 padding: 15px;
-                padding-top: 75px; /* Adjust this to create space for the fixed top bar */
+                padding-top: 75px;
+                /* Adjust this to create space for the fixed top bar */
             }
+
             .NavSide__toggle {
-                display: flex; /* Show toggle button on small screens */
-                /* When inside NavSide__topbar, remove fixed positioning */
+                display: flex;
                 position: relative;
-                top: auto; /* Reset */
-                background-color: transparent; /* Maintain transparency */
-                box-shadow: none; /* Remove shadow if topbar has one */
-                left: 0; /* Adjusted for better alignment */
+                top: auto;
+                background-color: transparent;
+                box-shadow: none;
+                left: 0;
             }
+
             .NavSide__toggle i.bi.open {
                 display: block;
             }
+
             .NavSide__toggle.NavSide__toggle--active {
-                /* This rule targets the toggle's position when the sidebar is open on mobile */
-                /* We need to re-evaluate if this specific 'left' adjustment is still needed/correct */
-                /* given the toggle is now part of the topbar's flex layout. */
-                /* For now, leaving it as is, but it might not have the intended effect or might conflict */
-                /* if the toggle is a flex item. */
                 left: calc(50% + 10px);
-                background-color: aliceblue; /* This might still be needed if you want a background change when active */
+                background-color: aliceblue;
             }
 
-            /* Show the top bar on small screens */
             .NavSide__topbar {
                 display: flex;
             }
 
-            /* Hide dashboard-header icons on small screens if they are now in the topbar */
             .dashboard-header .header-icons {
                 display: none;
             }
 
-            /* Adjust main content heading on small screens */
             .dashboard-header {
-                margin-top: 0; /* Remove top margin if the welcome text is directly after the top bar */
+                margin-top: 0;
             }
+        }
+
+        /* DASHBOARD STYLES */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-header .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .dashboard-header .header-icons {
+            display: flex;
+            align-items: center;
+        }
+
+        .dashboard-header .header-icons .bi-bell-fill {
+            font-size: 1.5rem;
+            color: #555;
+            margin-right: 1.5rem;
+            cursor: pointer;
+        }
+
+        .dashboard-header .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .welcome-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            border-radius: 22px;
+            padding: 1.5rem;
+            margin: 2vh 2vh;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         }
