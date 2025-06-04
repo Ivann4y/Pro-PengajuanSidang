@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <link rel="stylesheet" href="../../assets/css/style.css">
 
     <style>
         * {
@@ -593,37 +594,31 @@
     </style>
 </head>
 <body>
-    <div id="NavSide">
+     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
-            <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /> </div>
-            <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <b></b>
-                    <b></b>
-                    <a href="aDetailSidangTA.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
-                    </a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
-                    <a href="aEvaluasi.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
-                    </a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
-                    <a href="aNilaiAkhir.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+      <div class="NavSide__sidebar-brand">
+        <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+      </div>
+      <ul class="NavSide__sidebar-nav">
+        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+          <b></b><b></b>
+          <a href="aDetailSidangTA.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+        </li>
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+        </li>
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+        </li>
+      </ul>
+    </div>
 
-        <div class="NavSide__toggle"> <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
-        </div>
+          <div class="NavSide__toggle">
+        <i class="bi bi-list open"></i>
+        <i class="bi bi-x-lg close"></i>
+      </div>
 
         <main class="NavSide__main-content">
             <h2 class="mb-3">Detail Sidang - Sistem Pengajuan Sidang</h2>
