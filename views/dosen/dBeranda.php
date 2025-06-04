@@ -234,26 +234,6 @@ if ($_SESSION['role'] !== 'dosen') {
             color: white; font-weight: 600;
         }
 
-        @media (max-width: 991px) { /* Titik breakpoint diperbarui ke lg */
-            .NavSide__sidebar {
-                width: 250px; /* Lebar sidebar lebih kecil di tablet */
-                transform: translateX(-100%);
-            }
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
-            }
-             .NavSide__main-content .header-icons-desktop {
-                display: none; /* Sembunyikan ikon desktop saat mobile/tablet */
-            }
-            .NavSide__main-content {
-                margin-left: 0;
-                padding-top: 75px;
-            }
-            .NavSide__topbar { display: flex; }
-            .NavSide__toggle { display: flex; position: static; box-shadow: none; background-color: transparent; }
-            .NavSide__toggle i.bi.open { display: block; }
-        }
          @media (max-width: 767px) { /* Untuk mobile screen */
              .NavSide__sidebar {
                 width: 70%; /* Sidebar lebih lebar di mobile */
@@ -335,7 +315,7 @@ if ($_SESSION['role'] !== 'dosen') {
 
 
         .img-slot img{
-            max-width: 120%; /* Gambar tidak terlalu lebar */
+            max-width: 110%; /* Gambar tidak terlalu lebar */
             max-height: 100%; /* Gambar tidak melebihi kontainer */
             object-fit: contain;
         }
@@ -521,7 +501,7 @@ if ($_SESSION['role'] !== 'dosen') {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
