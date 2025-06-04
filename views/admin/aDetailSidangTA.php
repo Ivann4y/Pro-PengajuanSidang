@@ -605,7 +605,7 @@
                 </li>
                 <li class="NavSide__sidebar-item ">
                     <b></b><b></b>
-                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
