@@ -244,7 +244,7 @@
         .text-heading { 
             font-size: 1.75rem;
             font-weight: 600;
-            color: #333;
+            color: rgb(67, 54, 240);
             margin-bottom: 1.5rem; 
         }
 
@@ -392,6 +392,10 @@
         }
         .dropdown-menu .dropdown-item {
             font-family: "Poppins", sans-serif; 
+        }
+        /* Edit icon hover effect */
+        tr.isiTabel:hover .bi-pencil-square {
+            color: white !important;
         }
         /* Original mPengajuan table structural styles - END */
 
