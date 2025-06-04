@@ -288,7 +288,7 @@
             font-size: 0.95rem; 
             margin-bottom: 0; 
         }
-    
+       
         .btn-kembali {
             background-color: rgb(67, 54, 240);
             color: white; 
@@ -699,31 +699,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
-    // Skrip untuk toggle sidebar dan active menu item
-    let menuToggle = document.querySelector(".NavSide__toggle");
-    let sidebar = document.getElementById("main-sidebar");
+      // Skrip untuk toggle sidebar dan active menu item
+      let menuToggle = document.querySelector(".NavSide__toggle");
+      let sidebar = document.getElementById("main-sidebar");
 
-    if (menuToggle && sidebar) {
+      if (menuToggle && sidebar) {
         menuToggle.onclick = function () {
-        menuToggle.classList.toggle("NavSide__toggle--active");
-        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+          menuToggle.classList.toggle("NavSide__toggle--active");
+          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
-    }
+      }
 
-    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-    if (listItems.length > 0) {
+      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+      if (listItems.length > 0) {
         for (let i = 0; i < listItems.length; i++) {
-        listItems[i].onclick = function (event) {
+          listItems[i].onclick = function (event) {
             for (let j = 0; j < listItems.length; j++) {
-            listItems[j].classList.remove("NavSide__sidebar-item--active");
+              listItems[j].classList.remove("NavSide__sidebar-item--active");
             }
             this.classList.add("NavSide__sidebar-item--active");
-        };
+          };
         }
-    }
+      }
 
-    // Tidak ada fungsi JS kustom tambahan yang diperlukan untuk modal Bootstrap,
-    // karena pemicunya sudah diatur melalui data-bs-toggle dan data-bs-target.
+      // Tidak ada fungsi JS kustom tambahan yang diperlukan untuk modal Bootstrap,
+      // karena pemicunya sudah diatur melalui data-bs-toggle dan data-bs-target.
     </script>
 </body>
 </html>

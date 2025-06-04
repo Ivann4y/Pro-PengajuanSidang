@@ -437,7 +437,7 @@
                             </tr>
                         </thead>
                         <tbody id="mSidangTA">
-                            <tr class="isiTabel jadiBiru">
+                            <tr class="isiTabel jadiBiru" onclick="location.href='mdetailsidangta.php';">
                                 <td>1</td>
                                 <td>Sistem Pengajuan Sidang</td>
                                 <td>Tugas Akhir</td>
@@ -445,7 +445,7 @@
                             </tr>
                         </tbody>
                         <tbody id="mSidangSem" style="display: none;">
-                            <tr class="isiTabel jadiBiru">
+                            <tr class="isiTabel jadiBiru" onclick="location.href='mdetailsidang.php';">
                                 <td>1</td>
                                 <td>Implementasi Sistem Sidang</td>
                                 <td>Pemrograman 2</td>
@@ -489,25 +489,7 @@
                 }
             };
         }
-
-        function switchMSidang() {
-            const ta = document.getElementById("mSidangTA");
-            const sem = document.getElementById("mSidangSem");
-            const btn = document.getElementById("ddMSidang");
-            const menu = document.getElementById("ddMSidangMenu");
-
-            if (ta.style.display !== "none") {
-                ta.style.display = "none";
-                sem.style.display = ""; 
-                btn.innerText = "Sidang Semester";
-                menu.innerText = "Sidang TA";
-            } else {
-                ta.style.display = ""; 
-                sem.style.display = "none";
-                btn.innerText = "Sidang TA";
-                menu.innerText = "Sidang Semester";
-            }
-        }
     </script>
+    <script src="../../assets/js/main.js"></script>
 </body>
 </html>

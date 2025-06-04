@@ -425,7 +425,7 @@
         .modal-body .form-group > input[type="date"] {
            flex-grow: 1; 
            height: 35px; 
-           display: flex; 
+           
            
         }
 
@@ -439,7 +439,9 @@
             font-size: 14px;
             color: #374151;
             border-radius: 26px; 
-        }
+        } 
+
+
 
          
 
@@ -452,18 +454,18 @@
 
         }
         .modal-body .bobot-input-new {
-            width: 55px !important; 
-            height: 36px !important;
+            width: 30px; 
+            height: auto;
             text-align: center;
-            border: 1px solid rgb(216, 222, 231) !important;
-            border-radius: 8px !important;
-            font-size: 14px !important;
-            color: #374151 !important;
-            background-color: #FFFFFF !important;
-            padding: 0 5px !important; 
+            border: none;
+            border-radius: 0;
+            font-size: 16px;
+            color: #2d2d52;
+            background-color: transparent;
+            padding: 0; 
             margin: 0 5px; 
             -moz-appearance: textfield;
-            box-sizing: border-box;
+            pointer-events: none;
         }
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
         .modal-body .bobot-input-new::-webkit-inner-spin-button {
@@ -478,19 +480,34 @@
             flex-grow: 1; 
         }
         .modal-body .bobot-nilai-input-group {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            flex-shrink: 0;
+            background-color: #F9FAFB;
+            border-radius: 35px;
+            padding: 2px 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
         }
         .modal-body .btn-bobot-new { 
-            width: 36px; height: 36px; background-color: #F9FAFB; 
-            border: 1px solid #D1D5DB; border-radius: 8px; 
-            color: #374151; font-size: 18px; font-weight: bold;
-            cursor: pointer; display: flex; align-items: center;
-            justify-content: center; padding: 0; line-height: 1;
-            box-sizing: border-box; transition: background-color 0.2s ease;
+            width: auto; 
+            height: auto; 
+            background-color: transparent; 
+            border: none;
+            color: #2d2d52;
+            font-size: 16px; 
+            font-weight: bold;
+            cursor: pointer; 
+            display: flex; 
+            align-items: center;
+            justify-content: center; 
+            padding: 0 8px; 
+            line-height: 1;
+            border-radius: 35px;
+            transition: background-color 0.2s ease;
         }
-        .modal-body .btn-bobot-new:hover { background-color: #F3F4F6; }
+        .modal-body .btn-bobot-new:hover {
+           background-color:rgba(0, 0, 0, 0.05); 
+        }
+
         .modal-body .time-input-range { gap: 10px; width: 100%; }
         .modal-body .time-input-range input[type="time"] { flex-grow: 1; }
         .modal-body .time-input-range .time-separator { 
@@ -533,6 +550,8 @@
           max-width: 600px;
 
         }
+
+
 
     </style>
 </head>
@@ -592,14 +611,13 @@
             <button class="btn-kembali"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
             
             <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content modal-content-custom-form">
                   
                   <div class="modal-body">
                     <h2>Penjadwalan Sidang</h2>
                     <div class="form-container"> 
-                      <form id="formDalamModal" novalidate> 
-                        <div class="form-group">
+                     <div class="form-group">
                           <label for="modal_nim">NIM</label>
                           <input type="text" id="modal_nim" value="0920240033" readonly />
                         </div>
@@ -638,7 +656,7 @@
                           </div>
                         <div class="form-group">
                           <label for="modal_tanggal">Tanggal</label>
-                          <input type="date"id="modal_tanggal" name="tanggal" />
+                          <input type="date"id="modal_tanggal" name="tanggal" class=/>
                           </div>
                         <div class="form-group">
                           <label for="modal_jam_awal">Jam</label>

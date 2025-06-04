@@ -119,26 +119,22 @@ body {
   color: #fff; /* Pastikan teks strong juga ikut putih saat hover */
 }
 
-
-
 /* =================================
    Tombol Kirim
    ================================= */
 .btn-kirim {
-     background-color: #4f46e5;
-     color:white;
+  background-color: #4f46e5;
+  color: white;
   border-radius: 10px;
   padding: 10px 30px;
   font-weight: bold;
-   box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
-  
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
 }
 
-.btn-kirim:hover{
-    background-color: #ffffff;
-    color:black;
-     box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
-
+.btn-kirim:hover {
+  background-color: #ffffff;
+  color: black;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
 }
 
 /* =================================
@@ -151,15 +147,14 @@ body {
   border-radius: 1.5rem; /* 24px */
   padding: 2rem; /* 32px */
   border: 1px solid #e9ecef;
-  height:350px;
+  height: 350px;
 }
 
-
-.revision-cardUp{
-  background-color: #E5E5E5;
+.revision-cardUp {
+  background-color: #e5e5e5;
   border-radius: 1.5rem; /* 24px */
   padding: 2rem; /* 32px */
-  margin:15px;
+  margin: 15px;
 }
 /* Area upload yang baru */
 .upload-area-v2 {
@@ -208,13 +203,13 @@ body {
   cursor: not-allowed;
 }
 
-    .approved-badge {
-      color: #28a745;
-      background-color: #e6f4ec;
-      font-size: 0.8rem;
-      padding: 5px 10px;
-      border-radius: 20px;
-      display: inline-block;
-      font-weight: 500;
-      margin-top: 10px;
-    }
+.approved-badge {
+  color: #28a745;
+  background-color: #e6f4ec;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  font-weight: 500;
+  margin-top: 10px;
+}
