@@ -564,7 +564,7 @@
                 </a>
             </div>
             
-            <button class="btn-kembali">
+            <button class="btn-kembali" onclick="location.href='mSidang.php'">
                 <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                 </span>
