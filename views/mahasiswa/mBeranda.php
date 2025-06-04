@@ -18,13 +18,19 @@ if ($_SESSION['role'] !== 'mahasiswa') {
     <link rel="stylesheet" href="../../assets/css/style.css">
     <!-- <link rel="stylesheet" href="../../extra/style.css"> -->
     <style>
-
         .sidang-status-card {
             background-color: #4F46E5;
             color: white;
             display: flex;
             align-items: center;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            /* Added for hover effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sidang-status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
         }
 
         .sidang-status-card .number {
@@ -58,6 +64,15 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             background-color: rgb(239, 239, 239);
             display: flex;
             align-items: center;
+            /* Added for hover effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            /* Base shadow for consistency */
+        }
+
+        .penilaian-status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .penilaian-status-card .number {
@@ -90,24 +105,23 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             color: #1F2937;
         }
 
+        /* ... (your .content-card and .notifikasi-card styles) ... */
+        /* Keep your existing .notifikasi-card and .tanggungan-card styles for scrolling and sticky headers */
         .content-card {
             background-color: #F3F4F6;
         }
 
         .content-card .section-title {
-            /* Base style for section titles in content cards */
             font-size: 1.1rem;
             font-weight: 600;
             color: #1F2937;
             margin-bottom: 1rem;
-            /* Default margin, overridden by sticky titles */
         }
 
         /* --- Notifikasi Card Styles --- */
         .notifikasi-card {
             overflow-y: auto;
             max-height: 35vh;
-            /* Adjust as needed */
             padding-top: 0rem;
             padding-bottom: 1rem;
         }
@@ -116,13 +130,26 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             position: sticky;
             top: 0;
             background-color: #F3F4F6;
+            /* Match card background */
             z-index: 10;
             padding-top: 0.3rem;
+            /* Adjust to match card's padding if link wraps it */
             padding-bottom: 0.5rem;
-            margin-top: 0;
-            margin-bottom: 0;
+            /* If .notifikasi-card has padding, section-title might need negative margins
+           to span full width if it's inside a padded linked container.
+           However, given the link will wrap the dashboard-card which itself has padding,
+           this should be okay. The title's background needs to be the same as the card's.
+        */
             border-bottom: 1px solid #DEE2E6;
+            /* Resetting margins that might be inherited if card padding is on the link */
+            margin-top: 0;
+            /* If the card has padding, and title is inside */
+            margin-bottom: 0;
         }
+
+        /* Make sure padding of notifikasi-card is applied if link wraps it,
+       or adjust title padding/margin if sticky element is inside a padded link */
+
 
         .notifikasi-card .notifikasi-item {
             background-color: white;
@@ -140,10 +167,8 @@ if ($_SESSION['role'] !== 'mahasiswa') {
 
         /* --- Tanggungan Card Styles --- */
         .tanggungan-card {
-            /* Ensure any previous height: 92% !important; is removed */
             overflow-y: auto;
             max-height: 37.5vh;
-            /* Adjust as needed */
             padding-top: 0rem;
             padding-bottom: 1rem;
         }
@@ -174,63 +199,92 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             margin-bottom: 0;
         }
 
-        /* --- Calendar Card (no changes to scrolling for this one based on request) --- */
         .calendar-card {
             background-color: #4F46E5;
             color: white;
-            height: 38.5vh;
-            /* Fixed height, not typically a scrollable list of items */
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            min-height: 300px;
+            /* Ensures the card has a decent minimum height */
         }
 
         .calendar-card .section-title-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-bottom: 0.5rem;
         }
 
         .calendar-card .section-title {
-            /* This title is different, not sticky in the same way */
+            /* This is the month/year text */
             color: white;
             margin-bottom: 0;
-            /* Original had this, if it was part of .content-card .section-title, it would be overridden by more specific sticky titles */
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .calendar-card .calendar-nav i {
-            font-size: 1rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            padding: 0 0.3rem;
-        }
-
-        .calendar-card .calendar {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 0.3rem;
-        }
-
-        .calendar-card .calendar th {
-            padding: -0.2rem 0.25rem;
-            /* Note: negative padding is unusual, might be typo or specific intent */
-            text-align: center;
-            font-weight: 500;
-            font-size: 0.85rem;
+            padding: 0 0.5rem;
             color: #C7D2FE;
         }
 
-        .calendar-card .calendar td {
-            padding: 0.2rem;
-            text-align: center;
+        .calendar-card .calendar-nav i:hover {
+            color: white;
         }
 
+        .calendar-card .calendar {
+            /* The <table> element */
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+            flex-grow: 1;
+            /* Allows table to take available vertical space in the flex card */
+        }
+
+        .calendar-card .calendar th {
+            /* Day headers: Min, Sen, etc. */
+            padding: 0.3rem 0.25rem;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.75rem;
+            color: #C7D2FE;
+            text-transform: uppercase;
+        }
+
+        .calendar-card .calendar td {
+            /* Cells for each day */
+            padding: 0.1rem;
+            /* Small padding around the day bubble */
+            text-align: center;
+            vertical-align: middle;
+            /* Vertically aligns the day bubble in the cell */
+            /* REMOVED explicit height: calc(100% / 6); to let table rows auto-adjust height */
+        }
+
+        /* REMOVED .calendar-card .calendar tbody, .calendar-card .calendar tr { height: 100%; } */
+        /* These rules were causing issues. Table rows will now naturally distribute height. */
+
         .calendar-card .calendar-day {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
+            /* The <span> bubble for each day number */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            /* Should match height for vertical centering of single-line text */
             border-radius: 50%;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 500;
             margin: 0 auto;
+            /* Horizontal centering within the <td> */
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
 
         .calendar-card .calendar-day.current-day {
@@ -243,10 +297,29 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             background-color: rgba(255, 255, 255, 0.2);
         }
 
+        .calendar-card .calendar-day:hover:not(.current-day) {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Ensure calendar table can take up space */
+        .calendar-card .calendar tbody,
+        .calendar-card .calendar tr {
+            height: 100%;
+            /* if needed to help distribute space, test this */
+        }
+
+        .calendar-card .calendar td {
+            height: calc(100% / 6);
+            /* Distribute height among rows, adjust divisor if max rows change */
+        }
+
+
         /* --- Sidang Mendatang Card (User's latest version) --- */
+        /* ... (Your existing .sidang-mendatang-card styles should be fine) ... */
         .sidang-mendatang-card {
             overflow-y: auto;
             max-height: 36vh;
+            /* As per your original style */
             padding-top: 0rem;
             padding-bottom: 1rem;
         }
@@ -255,11 +328,15 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             position: sticky;
             top: 0;
             background-color: #F3F4F6;
+            /* Ensure this matches card background */
             z-index: 10;
             padding-top: 0.3rem;
+            /* Adjust if card has padding */
             padding-bottom: 0.5rem;
             margin-top: 0;
+            /* Reset margin */
             margin-bottom: 0;
+            /* Reset margin */
             border-bottom: 1px solid #DEE2E6;
         }
 
@@ -356,7 +433,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 </a>
                 <div class="profile-icon">
                     <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
-                    <i class="bi bi-person-fill fs-5"></i>
+                        <i class="bi bi-person-fill fs-5"></i>
                     </a>
                 </div>
             </div>
@@ -364,9 +441,8 @@ if ($_SESSION['role'] !== 'mahasiswa') {
         <main class="NavSide__main-content" id="mBeranda">
             <div class="dashboard-header">
                 <h2 class="page-title">Beranda</h2>
-                <div class="header-icons d-none d-md-flex"> 
-                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i>
-                    </a>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
                         <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
@@ -379,21 +455,25 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 <div class="col-lg-7">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="dashboard-card sidang-status-card">
-                                <div class="number">3</div>
-                                <div class="text">
-                                    <span class="title">Sidang</span>
-                                    <span class="description">Sedang Berlangsung</span>
+                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit; display: block;">
+                                <div class="dashboard-card sidang-status-card">
+                                    <div class="number">3</div>
+                                    <div class="text">
+                                        <span class="title">Sidang</span>
+                                        <span class="description">Sedang Berlangsung</span>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
 
-                            <div class="dashboard-card penilaian-status-card">
-                                <div class="number">2</div>
-                                <div class="text">
-                                    <span class="title">Penilaian</span>
-                                    <span class="description">Menunggu untuk Dinilai</span>
+                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit; display: block;">
+                                <div class="dashboard-card penilaian-status-card">
+                                    <div class="number">2</div>
+                                    <div class="text">
+                                        <span class="title">Penilaian</span>
+                                        <span class="description">Menunggu untuk Dinilai</span>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                         <div class="col-md-6">
                             <div class="dashboard-card content-card tanggungan-card">
@@ -407,15 +487,17 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                         </div>
                     </div>
 
-                    <div class="dashboard-card content-card notifikasi-card">
-                        <h3 class="section-title">Notifikasi</h3>
-                        <div class="notifikasi-item">Pengajuan Sidang PRG Telah Disetujui</div>
-                        <div class="notifikasi-item">Revisi Sidang BasDat Telah Disetujui</div>
-                        <div class="notifikasi-item">Pengajuan Sidang SO Telah Ditolak</div>
-                        <div class="notifikasi-item">Notifikasi Item 4</div>
-                        <div class="notifikasi-item">Notifikasi Item 5</div>
-                        <div class="notifikasi-item">Notifikasi Item 6</div>
-                    </div>
+                    <a href="mNotifikasi.php" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="dashboard-card content-card notifikasi-card">
+                            <h3 class="section-title">Notifikasi</h3>
+                            <div class="notifikasi-item">Pengajuan Sidang PRG Telah Disetujui</div>
+                            <div class="notifikasi-item">Revisi Sidang BasDat Telah Disetujui</div>
+                            <div class="notifikasi-item">Pengajuan Sidang SO Telah Ditolak</div>
+                            <div class="notifikasi-item">Notifikasi Item 4</div>
+                            <div class="notifikasi-item">Notifikasi Item 5</div>
+                            <div class="notifikasi-item">Notifikasi Item 6</div>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="col-lg-5">
@@ -446,14 +528,16 @@ if ($_SESSION['role'] !== 'mahasiswa') {
 
                     <div class="dashboard-card content-card sidang-mendatang-card">
                         <h3 class="section-title">Sidang Mendatang</h3>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">02</span>
-                                <span class="month">Jun</span>
+                        <a href="mdetailsidangta.php" style="text-decoration: none; color: inherit;">
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">02</span>
+                                    <span class="month">Jun</span>
+                                </div>
+                                <span class="info">Sistem Pengajuan Skripsi</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
-                            <span class="info">Sistem Pengajuan Skripsi</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
+                        </a>
                         <div class="item">
                             <div class="date-bubble">
                                 <span class="day">05</span>
@@ -516,23 +600,23 @@ if ($_SESSION['role'] !== 'mahasiswa') {
         </main>
     </div>
 
-        <!-- Modal keluar-->
-        <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal keluar-->
+    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-            <div class="modal-header mx-auto">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
-            </div>
-            <div class="modal-body mx-auto">
-                Apakah anda yakin ingin keluar?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-            </div>
+                <div class="modal-header mx-auto">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+                </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
             </div>
         </div>
-        </div>
+    </div>
     <!-- <script> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
