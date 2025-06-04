@@ -80,6 +80,8 @@
       margin-right: auto;
       margin-top: 20px;
       text-size-adjust: 100000px;
+      background-color: #f2f2f2;
+      border-color: #f2f2f2; 
     }
     
     #catatan {
@@ -88,6 +90,8 @@
       border-radius: 30px;
       font-size: 1rem;
       margin-top: 20px;
+      background-color: #f2f2f2;
+      border-color: #f2f2f2;
     }
     
     /* Label Styles */
@@ -216,9 +220,11 @@
             src="../../assets/img/img5.png"
             alt="Mahasiswa"
             class="img-fluid student-image"
+            style="mix-blend-mode: multiply;"
           />
         </div>
       </div>
+
       
       <!-- Detail Penilaian Card -->
       <div class="row mt-5 align-items-center justify-content-between">
@@ -228,7 +234,7 @@
             <div class="col-auto d-flex align-items-center">
               <label for="nilaiLaporan">Nilai laporan:</label>
               <input
-                type="number"
+                type="type"
                 class="form-control form-control-lg text-center"
                 name="nilaiLaporan"
                 id="detailpenilaian"
@@ -239,7 +245,7 @@
                 
               <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
               <input
-                type="number"
+                type="type"
                 class="form-control form-control-lg text-center"
                 name="MateriPresentasi"
                 id="detailpenilaian"
@@ -250,7 +256,7 @@
 
               <label for="Penyampaian" id="labelpenilaian">Penyampaian:</label>
               <input
-                type="number"
+                type="type"
                 class="form-control form-control-lg text-center"
                 name="Penyampaian"
                 id="detailpenilaian"
@@ -261,7 +267,7 @@
 
               <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek:</label>
               <input
-                type="number"
+                type="type"
                 class="form-control form-control-lg text-center"
                 name="NilaiProyek"
                 id="detailpenilaian"
@@ -284,7 +290,7 @@
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
-                placeholder="Pertahankan terus semangat belajarnya kurangin main banyakin minum air putih derr" 
+                placeholder="Pertahankan terus semangat belajarnya kurangin main banyakin minum air putih derr biar ga sariawan " 
                 disabled>
               </textarea>
             </div>
@@ -295,7 +301,7 @@
       <!-- Fungsi Tombol Kembali -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
-          <button class="btn btn-kembali" style="margin-left: 50px;">
+          <button class="btn btn-kembali" style="margin-left: 50px;" onclick="pindahKeHalamanDaftarSidang()" >
             <span class="icon-circle">
               <i class="bi bi-arrow-left"></i>
             </span>
