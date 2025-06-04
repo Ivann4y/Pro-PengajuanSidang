@@ -440,8 +440,15 @@
                                 <td>Pemrograman 2</td>
                                 <td>Timotius Victory</td>
                             </tr>
-                            <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240055', 'Semester')">
+                            <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240053', 'Semester')">
                                 <td>2</td>
+                                <td>0920240053</td>
+                                <td>Nayaka Ivanna</td>
+                                <td>Pemrograman 2</td>
+                                <td>Timotius Victory</td>
+                            </tr>
+                               <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240055', 'Semester')">
+                                <td>3</td>
                                 <td>0920240055</td>
                                 <td>Nur Widya Astuti</td>
                                 <td>Pemrograman 2</td>
