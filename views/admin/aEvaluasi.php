@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+                    <a href="DetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
