@@ -211,7 +211,7 @@
                     <b></b>
                     <b></b>
                     <a href="aPenjadwalan.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Pengajuan</span>
+                        <span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
