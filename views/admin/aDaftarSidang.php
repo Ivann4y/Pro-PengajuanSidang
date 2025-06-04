@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,21 +9,10 @@
     <link rel="stylesheet" href="../../assets/css/style.css"> 
     <link rel="stylesheet" href="../../extra/style.css">
     <style>
+        /* ... (Semua kode CSS SAMA seperti respons sebelumnya) ... */
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            background-color: #F9FAFB; 
-        }
-
-        /* NavSide styles - START */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { min-height: 100vh; background-color: #F9FAFB; }
         #NavSide { display: flex; min-height: 100vh; position: relative; }
         .NavSide__sidebar-brand { padding: 10% 5% 50% 5%; text-align: center; }
         .NavSide__sidebar-brand img { width: 90%; max-width: 180px; height: auto; display: inline-block; }
@@ -52,7 +40,6 @@
         .NavSide__topbar .header-icons { display: flex; align-items: center; }
         .NavSide__topbar .header-icons .bi-bell-fill { font-size: 1.5rem; color: #555; margin-right: 1.5rem; cursor: pointer; }
         .NavSide__topbar .profile-icon { width: 40px; height: 40px; background-color: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
-
         @media (max-width: 700px) {
             .NavSide__sidebar { width: 50%; transform: translateX(-100%); border-left-width: 0; }
             .NavSide__sidebar.NavSide__sidebar--active-mobile { transform: translateX(0); box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); }
@@ -67,12 +54,8 @@
             .main-content-header-title { font-size: 1.8rem; }
             .main-content-profile-icon { font-size: 2rem; width: 40px; height: 40px; }
             .search-bar-admin input { width: 100%; }
-            /* Penyesuaian untuk dropdown di mobile */
             #ddAdminSidangTypeButton { padding: 0.3rem 0.6rem; font-size: 0.8rem; } 
         }
-        /* NavSide styles - END */
-
-        /* Gaya untuk Main Content Baru */
         .main-content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .main-content-header-title { font-size: 2.2rem; font-weight: 700; color: #4336F0; }
         .main-content-profile-icon { font-size: 2.5rem; color: #333; background-color: #E0E0E0; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
@@ -82,37 +65,13 @@
         .search-bar-admin { position: relative; }
         .search-bar-admin input { border-radius: 20px; border: 1px solid #E0E0E0; padding: 8px 15px 8px 35px; font-size: 0.9rem; width: 250px; background-color: #F5F5F5; }
         .search-bar-admin .bi-search { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #757575; }
-        
-        /* === MODIFIKASI CSS UNTUK DROPDOWN === */
-        #filterSidangDropdownContainer { 
-            margin-bottom: 25px; 
-        }
-        #ddAdminSidangTypeButton { 
-            background-color: #4336F0; 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            padding: 0.4rem 1rem; 
-            font-weight: 500; 
-            font-size: 0.9rem; 
-        }
+        #filterSidangDropdownContainer { margin-bottom: 25px; }
+        #ddAdminSidangTypeButton { background-color: #4336F0; color: white; border: none; border-radius: 8px; padding: 0.4rem 1rem; font-weight: 500; font-size: 0.9rem; }
         #ddAdminSidangTypeButton:hover, 
-        #ddAdminSidangTypeButton:focus { 
-            background-color: #3a2eb8; /* Warna lebih gelap saat hover/focus */
-            color: white; 
-        }
+        #ddAdminSidangTypeButton:focus { background-color: #3a2eb8; color: white; }
         .dropdown-menu .dropdown-item.active,
-        .dropdown-menu .dropdown-item:active { 
-            background-color: #4336F0; /* Warna biru untuk item aktif di menu */
-            color: white; 
-        }
-        .dropdown-menu .dropdown-item { 
-            font-size: 0.9rem; 
-            font-weight: 500; 
-        }
-        /* === AKHIR MODIFIKASI CSS DROPDOWN === */
-
-        /* Gaya Tabel Baru */
+        .dropdown-menu .dropdown-item:active { background-color: #4336F0; color: white; }
+        .dropdown-menu .dropdown-item { font-size: 0.9rem; font-weight: 500; }
         .table-admin-custom { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
         .table-admin-custom thead th { padding: 12px 18px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #E0E0E0; font-size: 0.9rem; }
         .table-admin-custom thead th:nth-child(1) { width: 8%; }  
@@ -120,61 +79,25 @@
         .table-admin-custom thead th:nth-child(3) { width: 22%; } 
         .table-admin-custom thead th:nth-child(4) { width: 35%; } 
         .table-admin-custom thead th:nth-child(5) { width: 20%; } 
-
-        .table-admin-custom tbody tr { 
-            background-color: #FFFFFF; 
-            border-radius: 10px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-            /* === MODIFIKASI TRANSISI UNTUK HOVER === */
-            transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; 
-            cursor: pointer; 
-        }
-        /* === CSS BARU UNTUK HOVER === */
-        .table-admin-custom tbody tr:hover { 
-            transform: translateY(-2px); 
-            background-color: #4336F0; /* Warna biru primer */
-        }
-        .table-admin-custom tbody tr:hover td { 
-            color: white; /* Warna teks putih saat hover */
-        }
-        /* === AKHIR CSS BARU HOVER === */
-
-        .table-admin-custom tbody td { 
-            padding: 15px 18px; 
-            font-size: 0.9rem; 
-            color: #555; 
-            vertical-align: middle; 
-            /* === MODIFIKASI TRANSISI UNTUK HOVER === */
-            transition: color 0.3s ease; 
-        }
+        .table-admin-custom tbody tr { background-color: #FFFFFF; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; cursor: pointer; }
+        .table-admin-custom tbody tr:hover { transform: translateY(-2px); background-color: #4336F0; }
+        .table-admin-custom tbody tr:hover td { color: white; }
+        .table-admin-custom tbody td { padding: 15px 18px; font-size: 0.9rem; color: #555; vertical-align: middle; transition: color 0.3s ease; }
         .table-admin-custom tbody td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
         .table-admin-custom tbody td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
-
     </style>
 </head>
-
 <body>
     <div id="NavSide">
-       <div id="main-sidebar" class="NavSide__sidebar">
+        <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo Admin">
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="aPenjadwalan.php"><span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span></a>
-                </li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <b></b><b></b>
-                    <a href="#"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="aLogout.php"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-                </li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aLogout.php"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a></li>
             </ul>
         </div>
         
@@ -206,6 +129,7 @@
                     <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('Semester', this);">Sidang Semester</a></li>
                 </ul>
             </div>
+            
             <div class="table-responsive">
                 <table class="table-admin-custom">
                     <thead>
@@ -214,14 +138,13 @@
                         </tr>
                     </thead>
                     <tbody id="adminSidangTA">
-                        <tr><td>001</td><td>0920240053</td><td>Nayaka Ivanna</td><td>Sistem Pengajuan Sidang</td><td>Dr. Rida Indah F.</td></tr>
-                        <tr><td>002</td><td>0920240054</td><td>Zahrah Imelda</td><td>Pengembangan Aplikasi Mobile Edukasi</td><td>Dr. Rida Indah F.</td></tr>
-                        <tr><td>003</td><td>0920240055</td><td>Nur Widya Astuti</td><td>Analisis Keamanan Jaringan Komputer</td><td>Dr. Rida Indah F.</td></tr>
+                        <tr data-id="TA001" data-type="ta"><td>001</td><td>0920240053</td><td>Nayaka Ivanna</td><td>Sistem Pengajuan Sidang</td><td>Dr. Rida Indah F.</td></tr>
+                        <tr data-id="TA002" data-type="ta"><td>002</td><td>0920240054</td><td>Zahrah Imelda</td><td>Pengembangan Aplikasi Mobile Edukasi</td><td>Dr. Rida Indah F.</td></tr>
+                        <tr data-id="TA003" data-type="ta"><td>003</td><td>0920240055</td><td>Nur Widya Astuti</td><td>Analisis Keamanan Jaringan Komputer</td><td>Dr. Rida Indah F.</td></tr>
                     </tbody>
                     <tbody id="adminSidangSem" style="display: none;">
-                        <tr><td>S01</td><td>0920240053</td><td>Nayaka Ivanna</td><td>Basis Data 1</td><td>Prof. Budi Santoso</td></tr>
-                        <tr><td>S02</td><td>0920240054</td><td>Zahrah Imelda</td><td>Pemrograman 2</td><td>Dr. Indah Kurnia</td></tr>
-                         <tr><td>003</td><td>0920240055</td><td>Nur Widya Astuti</td><td>Sistem Operasi</td><td>Dr. Rida Indah F.</td></tr>
+                        <tr data-id="SEM001" data-type="semester"><td>S01</td><td>0920230011</td><td>Ahmad Subarjo</td><td>Laporan Proyek Sistem Informasi Akademik</td><td>Prof. Budi Santoso</td></tr>
+                        <tr data-id="SEM002" data-type="semester"><td>S02</td><td>0920230025</td><td>Siti Aminah</td><td>Rancang Bangun Website Portfolio Pribadi</td><td>Dr. Indah Kurnia</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -230,7 +153,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sidebar Toggle Logic (Sama seperti sebelumnya)
+        // Sidebar Toggle Logic
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
         if (menuToggle) {
@@ -240,11 +163,11 @@
             };
         }
 
-        // Sidebar Active Item Logic (Sama seperti sebelumnya)
+        // Sidebar Active Item Logic
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
         for (let i = 0; i < listItems.length; i++) {
             listItems[i].onclick = function(event) {
-                if (this.querySelector('a[href="logout.php"]')) { return; } // Jangan ubah active state untuk link logout
+                if (this.querySelector('a[href="logout.php"]')) { return; }
                 if (!this.classList.contains("NavSide__sidebar-item--active")) {
                     for (let j = 0; j < listItems.length; j++) {
                         listItems[j].classList.remove("NavSide__sidebar-item--active");
@@ -254,17 +177,15 @@
             };
         }
 
-        // === MODIFIKASI JAVASCRIPT UNTUK DROPDOWN ===
+        // Fungsi untuk switch view tabel dan gaya dropdown filter
         function switchAdminSidangView(viewType, clickedElement) {
             const taTable = document.getElementById("adminSidangTA");
             const semTable = document.getElementById("adminSidangSem");
             const ddButton = document.getElementById("ddAdminSidangTypeButton");
 
-            // Hapus kelas 'active' dari semua item dropdown
             const dropdownItems = document.querySelectorAll('#filterSidangDropdownContainer .dropdown-item');
             dropdownItems.forEach(item => item.classList.remove('active'));
 
-            // Tambahkan kelas 'active' ke item yang diklik (jika ada)
             if (clickedElement) {
                 clickedElement.classList.add('active');
             }
@@ -273,8 +194,7 @@
                 taTable.style.display = ""; 
                 semTable.style.display = "none"; 
                 ddButton.innerText = "Sidang TA";
-                // Jika dipanggil saat load (tanpa clickedElement), pastikan item menu TA yang benar jadi aktif
-                if (!clickedElement) {
+                if (!clickedElement) { // Handle kasus saat load
                     const taMenuItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'TA\'"]');
                     if (taMenuItem) taMenuItem.classList.add('active');
                 }
@@ -282,20 +202,39 @@
                 taTable.style.display = "none"; 
                 semTable.style.display = ""; 
                 ddButton.innerText = "Sidang Semester";
-                // Jika dipanggil saat load, pastikan item menu Semester yang benar jadi aktif
-                if (!clickedElement) {
+                if (!clickedElement) { // Handle kasus saat load
                     const semesterMenuItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'Semester\'"]');
                     if (semesterMenuItem) semesterMenuItem.classList.add('active');
                 }
             }
         }
-
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // Panggil dengan elemen item menu yang sesuai agar kelas active di-set dengan benar saat load
             const initialActiveItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'TA\'"]');
             switchAdminSidangView('TA', initialActiveItem);
+
+            // JAVASCRIPT BARU UNTUK BARIS TABEL YANG BISA DIKLIK
+            function makeRowsClickable() {
+                const tableRowsTA = document.querySelectorAll('#adminSidangTA tr');
+                const tableRowsSemester = document.querySelectorAll('#adminSidangSem tr');
+                const allTableRows = [...tableRowsTA, ...tableRowsSemester];
+
+                allTableRows.forEach(row => {
+                    row.addEventListener('click', function() {
+                        const sidangId = this.dataset.id; 
+                        const sidangType = this.dataset.type; 
+                        
+                        if (sidangId && sidangType) {
+                            // Ganti 'dDetailSidang.php' dengan nama file halaman detail Anda
+                            window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
+                        } else {
+                            console.error('Data ID atau Tipe Sidang tidak ditemukan pada baris:', this);
+                        }
+                    });
+                });
+            }
+            makeRowsClickable(); 
         });
-        // === AKHIR MODIFIKASI JAVASCRIPT ===
     </script>
 </body>
 </html>
