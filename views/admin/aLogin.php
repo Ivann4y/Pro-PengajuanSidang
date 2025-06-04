@@ -127,6 +127,17 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     <h2><strong>Masuk Akun Admin</strong></h2>
                 </div>
                 <div class="mb-3">
+                    <?php if (isset($_GET['error'])): ?>
+                        <div class="alert alert-danger text-center">
+                            <?php
+                            if ($_GET['error'] === '1') {
+                                echo "NIP atau Password salah!";
+                            } elseif ($_GET['error'] === 'role') {
+                                echo "Role tidak ditemukan!";
+                            }
+                            ?>
+                        </div>
+                    <?php endif; ?>
                     <input type="hidden" name="role" value="admin">
                     <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIP" required>
                 </div>

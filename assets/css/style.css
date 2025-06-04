@@ -1,11 +1,15 @@
-.sideNav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 15vw;
-  height: 100%;
-  background-color: rgb(67, 54, 240);
-  padding: 2%;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
 }
 
 .bodyContainer {
@@ -47,11 +51,6 @@
   .container-fluid {
     padding: 3vw;
   }
-  .sideNav {
-    width: 0;
-    padding: 0;
-    display: none;
-  }
 
   .bodyContainer {
     margin-left: 0;
@@ -78,7 +77,7 @@
 #NavSide {
   display: flex;
   min-height: 100vh;
-  position: relative; /* For positioning toggle if needed relative to this */
+  position: relative;
 }
 
 .NavSide__sidebar-brand {
@@ -93,31 +92,30 @@
   display: inline-block;
 }
 
-/* --- DEFAULT STYLES FOR SIDEBAR ON LARGER SCREENS (>= 701px) --- */
 .NavSide__sidebar {
   position: fixed;
   top: 0px;
   left: 0px;
   bottom: 0px;
-  width: 280px; /* Fixed width for desktop */
+  width: 280px;
   border-radius: 1px;
-  box-sizing: border-box; /* border-box is usually more intuitive */
+  box-sizing: border-box;
   border-left: 5px solid rgb(67, 54, 240);
   background: rgb(67, 54, 240);
   overflow-x: hidden;
   overflow-y: auto;
-  z-index: 1000; /* Higher z-index */
+  z-index: 1000;
   display: flex;
   flex-direction: column;
-  transition: transform 0.5s ease-in-out, width 0.5s ease-in-out; /* Added width transition */
+  transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
 }
 
 .NavSide__sidebar-nav {
   width: 100%;
   padding-left: 0;
-  padding-top: 0; /* Adjusted, space controlled by brand padding */
+  padding-top: 0;
   list-style: none;
-  flex-grow: 1; /* Allow nav to take remaining space */
+  flex-grow: 1;
 }
 
 .NavSide__sidebar-item {
@@ -126,23 +124,24 @@
   width: 100%;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
+  margin-bottom: 10px;
 }
 
 .NavSide__sidebar-item a {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center; /* Center content horizontally */
+  justify-content: center;
   width: 100%;
   text-decoration: none;
-  color: rgb(255, 255, 255);
+  color: rgb(252, 252, 252);
   padding: 5% 2%;
   height: 60px;
   box-sizing: border-box;
 }
 
 .NavSide__sidebar-title {
-  white-space: normal; /* Allow text to wrap if needed, though centered might look odd */
+  white-space: normal;
   text-align: center;
   line-height: 1.5;
 }
@@ -155,7 +154,6 @@
   color: rgb(67, 54, 240);
 }
 
-/* Rounded corner effects for active item */
 .NavSide__sidebar-item b:nth-child(1) {
   position: absolute;
   top: -20px;
@@ -163,7 +161,9 @@
   width: 100%;
   background: rgb(255, 255, 255);
   display: none;
+  right: 0;
 }
+
 .NavSide__sidebar-item b:nth-child(1)::before {
   content: "";
   position: absolute;
@@ -175,6 +175,7 @@
   background: rgb(67, 54, 240);
   display: block;
 }
+
 .NavSide__sidebar-item b:nth-child(2) {
   position: absolute;
   bottom: -20px;
@@ -182,7 +183,9 @@
   width: 100%;
   background: rgb(255, 255, 255);
   display: none;
+  right: 0;
 }
+
 .NavSide__sidebar-item b:nth-child(2)::before {
   content: "";
   position: absolute;
@@ -194,6 +197,7 @@
   background: rgb(67, 54, 240);
   display: block;
 }
+
 .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
 .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
   display: block;
@@ -202,71 +206,118 @@
 .NavSide__main-content {
   flex-grow: 1;
   padding: 20px;
-  margin-left: 280px; /* Matches sidebar width */
+  margin-left: 280px;
   overflow-y: auto;
   transition: margin-left 0.5s ease-in-out;
+  background-color: #f9fafb;
+  padding-top: 3vh;
 }
 
 .NavSide__toggle {
-  display: none; /* Hidden by default on large screens */
   position: fixed;
   top: 15px;
   left: 15px;
-  width: 40px; /* Give toggle explicit size for better icon centering */
+  width: 40px;
   height: 40px;
   z-index: 1100;
   transition: left 0.5s ease-in-out;
   cursor: pointer;
   border-radius: 5px;
-  display: flex; /* For icon centering */
+  display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: none;
+  /* Hidden by default for larger screens */
 }
 
 .NavSide__toggle i.bi {
-  position: absolute; /* Icons sit on top of each other */
+  position: absolute;
   font-size: 28px;
   display: none;
 }
 
 .NavSide__toggle i.bi.open {
-  color: rgb(67, 54, 240); /* Blue to match sidebar */
-  display: none; /* Open icon visible by default */
-}
-.NavSide__toggle i.bi.close {
-  color: rgb(
-    67,
-    54,
-    240
-  ); /* Also blue, or white if toggle background changes */
+  color: rgb(67, 54, 240);
 }
 
-/* Toggle active state controls icon visibility */
+.NavSide__toggle i.bi.close {
+  color: rgb(67, 54, 240);
+}
+
 .NavSide__toggle.NavSide__toggle--active i.bi.open {
   display: none;
 }
+
 .NavSide__toggle.NavSide__toggle--active i.bi.close {
   display: block;
 }
 
-/* --- Responsive Design for Small Screens (<= 700px) --- */
+/* NEW: Top Bar for smaller screens */
+.NavSide__topbar {
+  display: none;
+  /* Hidden by default for larger screens */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  /* Adjust height as needed */
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  /* Below sidebar, above main content */
+  align-items: center;
+  /* Vertically align items */
+  padding: 0 15px;
+  /* Add horizontal padding */
+  justify-content: space-between;
+  /* Space between toggle and icons */
+}
+
+.NavSide__topbar .header-icons {
+  display: flex;
+  align-items: center;
+}
+
+/* --- STYLES FOR ICONS IN TOPBAR TO MATCH DESKTOP --- */
+.NavSide__topbar .header-icons .bi-bell-fill {
+  font-size: 1.5rem;
+  color: #555;
+  margin-right: 1.5rem;
+  cursor: pointer;
+}
+
+.NavSide__topbar .profile-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+/* --- END ICON STYLES --- */
+
 @media (max-width: 700px) {
   .NavSide__sidebar {
-    width: 50%; /* Slightly narrower for mobile */
-    transform: translateX(-100%); /* Hidden by default */
-    border-left-width: 0; /* Remove border when overlay */
+    width: 50%;
+    transform: translateX(-100%);
+    border-left-width: 0;
   }
 
-  /* This class is added by JS to show the sidebar on mobile */
   .NavSide__sidebar.NavSide__sidebar--active-mobile {
     transform: translateX(0);
-    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); /* Add shadow when overlayed */
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
   }
 
   .NavSide__sidebar-brand {
-    padding: 20px 10px 30px 10px; /* Adjust padding for mobile */
+    padding: 20px 10px 30px 10px;
   }
+
   .NavSide__sidebar-brand img {
     width: 90%;
   }
@@ -274,39 +325,99 @@
   .NavSide__sidebar-nav {
     padding-top: 20%;
   }
+
   .NavSide__sidebar-item a {
-    padding: 12% 10%; /* Slightly smaller padding */
-    height: 2vh;
+    padding: 12% 10%;
+    height: auto;
   }
 
   .NavSide__main-content {
-    margin-left: 0vh;
-    margin-top: 7vh;
+    margin-left: 0;
+    padding: 15px;
+    padding-top: 75px;
+    /* Adjust this to create space for the fixed top bar */
   }
 
-  /* When sidebar is open on mobile, push main content or overlay.
-     Current setup is overlay, so main-content margin doesn't change.
-     If you wanted main-content to shift:
-     #NavSide.NavSide--sidebar-open-mobile .NavSide__main-content {
-       margin-left: 250px;
-     }
-     But this would require adding 'NavSide--sidebar-open-mobile' to #NavSide via JS.
-     For simplicity, overlay is maintained.
-  */
-
   .NavSide__toggle {
-    display: flex; /* Show toggle */
-    background-color: #ffffff;
+    display: flex;
+    position: relative;
+    top: auto;
+    background-color: transparent;
+    box-shadow: none;
+    left: 0;
   }
 
   .NavSide__toggle i.bi.open {
-    color: rgb(67, 54, 240); /* Blue to match sidebar */
-    display: block; /* Open icon visible by default */
+    display: block;
   }
 
   .NavSide__toggle.NavSide__toggle--active {
-    /* Move toggle button to be near the edge of the opened sidebar */
-    left: calc(50% + 10px); /* sidebar width + some space */
+    left: calc(50% + 10px);
+    color: rgb(67, 54, 240);
     background-color: aliceblue;
   }
+
+  .NavSide__topbar {
+    display: flex;
+  }
+
+  .dashboard-header .header-icons {
+    display: none;
+  }
+
+  .dashboard-header {
+    margin-top: 0;
+  }
+}
+
+/* DASHBOARD STYLES */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-header .page-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.dashboard-header .header-icons {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-header .header-icons .bi-bell-fill {
+  font-size: 1.5rem;
+  color: #555;
+  margin-right: 1.5rem;
+  cursor: pointer;
+}
+
+.dashboard-header .profile-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.welcome-text {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2rem;
+}
+
+.dashboard-card {
+  border-radius: 22px;
+  padding: 1.5rem;
+  margin: 2vh 2vh;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
