@@ -129,14 +129,19 @@
 
         <div class="right-column-wrapper">
             <div class="log">
-                <form action="#" method="POST">
+                <form action="authEmail.php" method="POST">
                     <div class="text-center pt-5 mb-4">
                         <h2 class="fs-2 fw-bold">Lupa Kata Sandi?</h2>
                     </div>
                     <div class="mb-3">
                         <label for="">Masukkan Email Politeknik Astra</label>
-                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
-                        <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5" onclick="toInputPasswordBaru()">Kirim</button>
+                        <?php if (isset($_GET['error']) && $_GET['error'] === 'email'): ?>
+                            <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra" required>
+                            <div class="text-danger">Email tidak ditemukan!</div>
+                        <?php else: ?>
+                            <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
+                        <?php endif; ?>
+                        <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5">Kirim</button>
                     </div>
                 </form>
             </div>
@@ -150,11 +155,6 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-    <script>
-        function toInputPasswordBaru() {
-            window.open("inputPasswordBaru.php", "_self")
-        }
-    </script>
 </body>
 
 </html>
