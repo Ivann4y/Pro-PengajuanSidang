@@ -444,7 +444,7 @@
                     <div class="col-12">
                         <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
                     </div>
-                </div><br><br>
+                </div><br>
 
                 <div class="row">
                     <div class="col-12 col-md-6">
@@ -457,7 +457,7 @@
                             </ul>
                         </div>
                     </div>
-                </div><br><br>
+                </div><br>
 
                 <div class="row">
                     <div class="col-12">

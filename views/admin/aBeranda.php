@@ -1,3 +1,10 @@
+<?php   
+session_start();
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: ../../index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -165,7 +172,7 @@
         
         .profile-icon {
             position: absolute;
-            top: 1vh;
+            top: 30px;
             right: 30px;
             font-size: 1.8rem;
             color: #444;
