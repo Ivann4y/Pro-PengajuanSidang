@@ -700,7 +700,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="../../logout.php"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
