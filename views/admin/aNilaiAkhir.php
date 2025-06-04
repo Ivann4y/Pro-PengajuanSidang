@@ -164,15 +164,15 @@
       <ul class="NavSide__sidebar-nav">
         <li class="NavSide__sidebar-item">
           <b></b><b></b>
-          <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+          <a href="aDetailSidangTA.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
         </li>
         <li class="NavSide__sidebar-item">
           <b></b><b></b>
-          <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+          <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
         </li>
         <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
           <b></b><b></b>
-          <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+          <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
         </li>
       </ul>
     </div>

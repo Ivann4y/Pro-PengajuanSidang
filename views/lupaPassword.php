@@ -100,7 +100,14 @@
 <body>
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
-            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5">
+            <img src="../assets/img/awan.png"
+                class="position-absolute"
+                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
+                alt="Background">
+            <div class="position-absolute"
+                style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
+            </div>
+            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
                 <label for="">Sistem Pengajuan Sidang</label>
                 <label for="">Politeknik Astra</label>
             </div>
@@ -129,14 +136,19 @@
 
         <div class="right-column-wrapper">
             <div class="log">
-                <form action="#" method="POST">
+                <form action="authEmail.php" method="POST">
                     <div class="text-center pt-5 mb-4">
                         <h2 class="fs-2 fw-bold">Lupa Kata Sandi?</h2>
                     </div>
                     <div class="mb-3">
                         <label for="">Masukkan Email Politeknik Astra</label>
-                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
-                        <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5" onclick="toInputPasswordBaru()">Kirim</button>
+                        <?php if (isset($_GET['error']) && $_GET['error'] === 'email'): ?>
+                            <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra" required>
+                            <div class="text-danger">Email tidak ditemukan!</div>
+                        <?php else: ?>
+                            <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
+                        <?php endif; ?>
+                        <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5">Kirim</button>
                     </div>
                 </form>
             </div>
@@ -150,11 +162,6 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-    <script>
-        function toInputPasswordBaru() {
-            window.open("inputPasswordBaru.php", "_self")
-        }
-    </script>
 </body>
 
 </html>

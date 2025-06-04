@@ -545,7 +545,7 @@
                 <!-- MENU "Detail Sidang" DIHAPUS DARI SINI -->
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Evaluasi aktif -->
                     <b></b><b></b>
-                    <a href="#">
+                    <a href="dEvaluasiSidang.php">
                         <span class="fw-semibold">Evaluasi</span>
                     </a>
                 </li>

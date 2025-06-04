@@ -293,6 +293,7 @@
 
             .NavSide__toggle.NavSide__toggle--active {
                 left: calc(50% + 10px);
+                color: rgb(67, 54, 240);
                 background-color: aliceblue;
             }
 

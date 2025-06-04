@@ -128,6 +128,17 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
                     <h2><strong>Masuk Akun Mahasiswa</strong></h2>
                 </div>
                 <div class="mb-3">
+                    <?php if (isset($_GET['error'])): ?>
+                        <div class="alert alert-danger text-center">
+                            <?php
+                            if ($_GET['error'] === '1') {
+                                echo "NIM atau Password salah!";
+                            } elseif ($_GET['error'] === 'role') {
+                                echo "Role tidak ditemukan!";
+                            }
+                            ?>
+                        </div>
+                    <?php endif; ?>
                     <input type="hidden" name="role" value="mahasiswa">
                     <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIM" required>
                 </div>

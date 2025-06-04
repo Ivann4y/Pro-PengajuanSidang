@@ -42,7 +42,6 @@
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f4f4f4;
     }
 
     #NavSide {
