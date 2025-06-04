@@ -926,7 +926,6 @@
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
         });
-
            
           
             
