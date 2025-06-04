@@ -172,7 +172,7 @@
         </li>
         <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
           <b></b><b></b>
-          <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+          <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
         </li>
       </ul>
     </div>

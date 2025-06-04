@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <title>Detail Sidang</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/stylee.css?v=<?= time() ?>">
-  <link rel="stylesheet" href="../../extra/style.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
 <script src="main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <a href="aEvaluasi"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
