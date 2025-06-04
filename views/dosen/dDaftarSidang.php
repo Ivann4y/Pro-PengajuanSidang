@@ -1,5 +1,14 @@
+<?php
+session_start();
+if ($_SESSION['role'] !== 'dosen') {
+    header("Location: ../../index.php");
+    exit();
+}
+?>  
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +20,7 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
     <title>Dosen - Daftar Sidang</title>
     <style>
-        
-      #NavSide {
+        #NavSide {
             display: flex;
             min-height: 100vh;
             position: relative;
@@ -62,7 +70,8 @@
             width: 100%;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
-            margin-bottom: 10px; /* Kept from user's last version */
+            margin-bottom: 10px;
+            /* Kept from user's last version */
         }
 
         .NavSide__sidebar-item a {
@@ -101,6 +110,7 @@
             display: none;
             right: 0;
         }
+
         .NavSide__sidebar-item b:nth-child(1)::before {
             content: "";
             position: absolute;
@@ -112,6 +122,7 @@
             background: rgb(67, 54, 240);
             display: block;
         }
+
         .NavSide__sidebar-item b:nth-child(2) {
             position: absolute;
             bottom: -20px;
@@ -121,6 +132,7 @@
             display: none;
             right: 0;
         }
+
         .NavSide__sidebar-item b:nth-child(2)::before {
             content: "";
             position: absolute;
@@ -132,6 +144,7 @@
             background: rgb(67, 54, 240);
             display: block;
         }
+
         .NavSide_sidebar-item.NavSide_sidebar-item--active b:nth-child(1),
         .NavSide_sidebar-item.NavSide_sidebar-item--active b:nth-child(2) {
             display: block;
@@ -144,7 +157,8 @@
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
             background-color: #F9FAFB;
-            padding-top: 3vh; /* Default for larger screens */
+            padding-top: 3vh;
+            /* Default for larger screens */
         }
 
         .NavSide__toggle {
@@ -161,7 +175,8 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: none; /* Hidden by default for larger screens */
+            display: none;
+            /* Hidden by default for larger screens */
         }
 
         .NavSide__toggle i.bi {
@@ -173,26 +188,39 @@
         .NavSide__toggle i.bi.open {
             color: rgb(67, 54, 240);
         }
+
         .NavSide__toggle i.bi.close {
-            color: rgb(67,54,240);
+            color: rgb(67, 54, 240);
         }
-        .NavSide_toggle.NavSide_toggle--active i.bi.open { display: none; }
-        .NavSide_toggle.NavSide_toggle--active i.bi.close { display: block; }
+
+        .NavSide_toggle.NavSide_toggle--active i.bi.open {
+            display: none;
+        }
+
+        .NavSide_toggle.NavSide_toggle--active i.bi.close {
+            display: block;
+        }
 
         /* NEW: Top Bar for smaller screens */
         .NavSide__topbar {
-            display: none; /* Hidden by default for larger screens */
+            display: none;
+            /* Hidden by default for larger screens */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 60px; /* Adjust height as needed */
+            height: 60px;
+            /* Adjust height as needed */
             background-color: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999; /* Below sidebar, above main content */
-            align-items: center; /* Vertically align items */
-            padding: 0 15px; /* Add horizontal padding */
-            justify-content: space-between; /* Space between toggle and icons */
+            z-index: 999;
+            /* Below sidebar, above main content */
+            align-items: center;
+            /* Vertically align items */
+            padding: 0 15px;
+            /* Add horizontal padding */
+            justify-content: space-between;
+            /* Space between toggle and icons */
         }
 
         .NavSide__topbar .header-icons {
@@ -203,22 +231,31 @@
 
         /* --- STYLES FOR ICONS IN TOPBAR TO MATCH DESKTOP --- */
         .NavSide__topbar .header-icons .bi-bell-fill {
-            font-size: 1.5rem; /* Matches desktop size */
-            color: #555; /* Matches desktop color */
-            margin-right: 1.5rem; /* Space between bell and profile */
+            font-size: 1.5rem;
+            /* Matches desktop size */
+            color: #555;
+            /* Matches desktop color */
+            margin-right: 1.5rem;
+            /* Space between bell and profile */
             cursor: pointer;
         }
+
         .NavSide__topbar .profile-icon {
-            width: 40px; /* Matches desktop size */
-            height: 40px; /* Matches desktop size */
-            background-color: #333; /* Matches desktop color */
-            border-radius: 50%; /* Matches desktop shape */
+            width: 40px;
+            /* Matches desktop size */
+            height: 40px;
+            /* Matches desktop size */
+            background-color: #333;
+            /* Matches desktop color */
+            border-radius: 50%;
+            /* Matches desktop shape */
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
         }
+
         /* --- END ICON STYLES --- */
 
 
@@ -228,40 +265,55 @@
                 transform: translateX(-100%);
                 border-left-width: 0;
             }
+
             .NavSide_sidebar.NavSide_sidebar--active-mobile {
                 transform: translateX(0);
                 box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
             }
+
             .NavSide__sidebar-brand {
                 padding: 20px 10px 30px 10px;
             }
+
             .NavSide__sidebar-brand img {
                 width: 90%;
             }
+
             .NavSide__sidebar-nav {
                 padding-top: 20%;
             }
+
             .NavSide__sidebar-item a {
                 padding: 12% 10%;
                 height: auto;
             }
+
             .NavSide__main-content {
                 margin-left: 0;
                 padding: 15px;
-                padding-top: 75px; /* Adjust this to create space for the fixed top bar */
+                padding-top: 75px;
+                /* Adjust this to create space for the fixed top bar */
             }
+
             .NavSide__toggle {
-                display: flex; /* Show toggle button on small screens */
+                display: flex;
+                /* Show toggle button on small screens */
                 /* When inside NavSide__topbar, remove fixed positioning */
                 position: relative;
-                top: auto; /* Reset */
-                background-color: transparent; /* Maintain transparency */
-                box-shadow: none; /* Remove shadow if topbar has one */
-                left: 0; /* Adjusted for better alignment */
+                top: auto;
+                /* Reset */
+                background-color: transparent;
+                /* Maintain transparency */
+                box-shadow: none;
+                /* Remove shadow if topbar has one */
+                left: 0;
+                /* Adjusted for better alignment */
             }
+
             .NavSide__toggle i.bi.open {
                 display: block;
             }
+
             .NavSide_toggle.NavSide_toggle--active {
                 /* This rule targets the toggle's position when the sidebar is open on mobile */
                 /* We need to re-evaluate if this specific 'left' adjustment is still needed/correct */
@@ -269,7 +321,8 @@
                 /* For now, leaving it as is, but it might not have the intended effect or might conflict */
                 /* if the toggle is a flex item. */
                 left: calc(50% + 10px);
-                background-color: aliceblue; /* This might still be needed if you want a background change when active */
+                background-color: aliceblue;
+                /* This might still be needed if you want a background change when active */
             }
 
             /* Show the top bar on small screens */
@@ -279,63 +332,62 @@
         }
 
         table {
-        border-spacing: 0 10px;
-        border-collapse: separate;
-        width: 100%;
+            border-spacing: 0 10px;
+            border-collapse: separate;
+            width: 100%;
         }
 
         thead {
-        border-bottom: 2px solid rgb(0, 0, 0) !important;
+            border-bottom: 2px solid rgb(0, 0, 0) !important;
         }
 
         thead th {
-        padding: 12px 15px;
-        text-align: left;
+            padding: 12px 15px;
+            text-align: left;
         }
 
         thead th:nth-child(1) {
-        text-align: center;
-        width: 5%;
+            text-align: center;
+            width: 5%;
         }
 
         thead th:nth-child(2) {
-        width: 20%;
+            width: 20%;
         }
 
         thead th:nth-child(3) {
-        width: 20%;
+            width: 20%;
         }
 
         thead th:nth-child(4) {
-        width: 20%;
+            width: 20%;
         }
 
         thead th:nth-child(5) {
-        width: 20%;
+            width: 20%;
         }
 
         .isiTabel td {
-        padding: 12px 15px;
-        font-family: "Poppins";
-        font-weight: 400;
-        vertical-align: middle;
+            padding: 12px 15px;
+            font-family: "Poppins";
+            font-weight: 400;
+            vertical-align: middle;
         }
 
         .isiTabel td:nth-child(1) {
-        border-radius: 20px 0 0 20px;
-        text-align: center;
+            border-radius: 20px 0 0 20px;
+            text-align: center;
         }
 
         .isiTabel td:nth-child(5) {
-        border-radius: 0 20px 20px 0;
+            border-radius: 0 20px 20px 0;
         }
-    
-
     </style>
 </head>
+
 <body>
-        
-        <div id="NavSide">
+
+    <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
@@ -381,121 +433,134 @@
                 </div>
             </div>
 
-    <div class="container-fluid">
-        <div class="container-fluid">
-            <div class="row">
-                <h2 class="bodyHeading">
-                    Daftar Sidang
-                </h2>
-            </div><br><br>
-            <div class="row">
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                        Sidang TA
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">Sidang Semester</a></li>
-                    </ul>
+            <div class="container-fluid">
+                <div class="container-fluid">
+                    <div class="row">
+                        <h2 class="bodyHeading">
+                            Daftar Sidang
+                        </h2>
+                    </div><br><br>
+                    <div class="row">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                Sidang TA
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">Sidang Semester</a></li>
+                            </ul>
+                        </div>
+                    </div><br><br>
+                    <div class="row">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">NIM</th>
+                                    <th scope="col">Nama</th>
+                                    <th scope="col">Mata Kuliah</th>
+                                    <th scope="col">Dosen Pembimbing</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dPengajuanTA">
+                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'TA')">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240053', 'TA')">
+                                    <td>2</td>
+                                    <td>0920240053</td>
+                                    <td>Nayaka Ivanna</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'TA')">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                            </tbody>
+                            <tbody id="dPengajuanSem" style="display: none;">
+                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'Semester')">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240053', 'Semester')">
+                                    <td>2</td>
+                                    <td>0920240053</td>
+                                    <td>Nayaka Ivanna</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240055', 'Semester')">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div><br><br>
-            <div class="row">
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col">No</th>
-                            <th scope="col">NIM</th>
-                            <th scope="col">Nama</th>
-                            <th scope="col">Mata Kuliah</th>
-                            <th scope="col">Dosen Pembimbing</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dPengajuanTA">
-                        <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'TA')">
-                            <td>1</td>
-                            <td>0920240033</td>
-                            <td>M. Harris Nur S.</td>
-                            <td>Tugas Akhir</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                        <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240053', 'TA')">
-                            <td>2</td>
-                            <td>0920240053</td>
-                            <td>Nayaka Ivanna</td>
-                            <td>Tugas Akhir</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                        <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'TA')">
-                            <td>3</td>
-                            <td>0920240055</td>
-                            <td>Nur Widya Astuti</td>
-                            <td>Tugas Akhir</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                    </tbody>
-                    <tbody id="dPengajuanSem" style="display: none;">
-                        <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'Semester')">
-                            <td>1</td>
-                            <td>0920240033</td>
-                            <td>M. Harris Nur S.</td>
-                            <td>Pemrograman 2</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                        <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240055', 'Semester')">
-                            <td>2</td>
-                            <td>0920240055</td>
-                            <td>Nur Widya Astuti</td>
-                            <td>Pemrograman 2</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                
-                    </tbody>
-                </table>
             </div>
-        </div>
-    </div>
 
-    <!-- modal keluar -->
-    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        <div class="modal-header mx-auto">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
-        </div>
-        <div class="modal-body mx-auto">
-             Apakah anda yakin ingin keluar?
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-            <button type="button" class="btn btn-success" onclick="window.location.href='../../index.php'">Lanjutkan</button>
-        </div>
-        </div>
-    </div>
-    </div>
+            <!-- modal keluar -->
+            <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header mx-auto">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+                        </div>
+                        <div class="modal-body mx-auto">
+                            Apakah anda yakin ingin keluar?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <script>
-        let isTA = true;
+            <script>
+                let isTA = true;
 
-        function switchDdaftarSidang() {
-            const taTable = document.getElementById('dPengajuanTA');
-            const semTable = document.getElementById('dPengajuanSem');
-            const dropdownButton = document.getElementById('ddMSidang');
-            const dropdownMenuItem = document.getElementById('ddMSidangMenu');
+                function goToEvaluasi(nim, tipe) {
+                    // Fungsi ini sekarang mengirimkan nim DAN tipe ke URL
+                    window.location.href = `dEvaluasiSidang.php?nim=${nim}&tipe=${tipe}`;
+                }
 
-            if (isTA) {
-                taTable.style.display = 'none';
-                semTable.style.display = 'table-row-group';
-                dropdownButton.textContent = 'Sidang Semester';
-                dropdownMenuItem.textContent = 'Sidang TA';
-            } else {
-                taTable.style.display = 'table-row-group';
-                semTable.style.display = 'none';
-                dropdownButton.textContent = 'Sidang TA';
-                dropdownMenuItem.textContent = 'Sidang Semester';
-            }
+                function switchDdaftarSidang() {
+                    const taTable = document.getElementById('dPengajuanTA');
+                    const semTable = document.getElementById('dPengajuanSem');
+                    const dropdownButton = document.getElementById('ddMSidang');
+                    const dropdownMenuItem = document.getElementById('ddMSidangMenu');
 
-            isTA = !isTA;
-        }
-    </script>
-    <script src="../../assets/js/main.js"></script>
+                    if (isTA) {
+                        taTable.style.display = 'none';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Sidang Semester';
+                        dropdownMenuItem.textContent = 'Sidang TA';
+                    } else {
+                        taTable.style.display = 'table-row-group';
+                        semTable.style.display = 'none';
+                        dropdownButton.textContent = 'Sidang TA';
+                        dropdownMenuItem.textContent = 'Sidang Semester';
+                    }
+
+                    isTA = !isTA;
+                }
+            </script>
+            <script src="../../assets/js/main.js"></script>
 </body>
+
 </html>

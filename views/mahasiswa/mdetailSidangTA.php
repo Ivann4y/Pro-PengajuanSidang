@@ -315,7 +315,7 @@
                 background-color: aliceblue;
             }
         }
-       
+    
         .info-card {
             position: relative;
             background: rgb(235, 238, 245); 
@@ -393,7 +393,7 @@
             font-size: 0.95rem; 
             margin-bottom: 0; 
         }
-       
+    
         /* --- CSS Baru untuk Tombol Berkas --- */
         .file-button {
             display: inline-flex; 
@@ -459,19 +459,19 @@
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="#">
+                                <a onclick="location.href='mdetailSidangTA.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPerbaikan.php">
+                        <a onclick="location.href='mPerbaikan.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mNilaiakhir.php">
+                        <a onclick="location.href='mNilaiakhir.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
@@ -492,7 +492,7 @@
                     <!-- Judul Sidang -->
                     <div class="info-group">
                         <div class="label-row">
-                            <i class="fa-solid fa-file-lines"></i> <!-- Changed icon to fa-file-lines (document with lines) -->
+                        <i class="fa-solid fa-book"></i>
                             <span class="fw-bold">Judul Sidang</span> 
                         </div>
                         <div class="value-row">Sistem Pengajuan Sidang</div> 
@@ -555,16 +555,16 @@
             <h5>Dokumen Sidang</h5>
             <div class="file-buttons-container d-flex flex-wrap"> 
                 <a href="#" class="file-button">
-                    <i class="fa-solid fa-file"></i> 
+                            <i class="fa-solid fa-file-pdf"></i>
                     file_laporan_kel-1.pdf
                 </a>
                 <a href="#" class="file-button">
-                    <i class="fa-solid fa-file"></i> 
+                <i class="fa-solid fa-file-zipper"></i>
                     dokumen_pendukung_kel-1.zip
                 </a>
             </div>
             
-            <button class="btn-kembali">
+            <button class="btn-kembali" onclick="location.href='mSidang.php'">
                 <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                 </span>
@@ -580,31 +580,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
-      // Skrip untuk toggle sidebar dan active menu item
-      let menuToggle = document.querySelector(".NavSide__toggle");
-      let sidebar = document.getElementById("main-sidebar");
+    // Skrip untuk toggle sidebar dan active menu item
+    let menuToggle = document.querySelector(".NavSide__toggle");
+    let sidebar = document.getElementById("main-sidebar");
 
-      if (menuToggle && sidebar) {
+    if (menuToggle && sidebar) {
         menuToggle.onclick = function () {
-          menuToggle.classList.toggle("NavSide__toggle--active");
-          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        menuToggle.classList.toggle("NavSide__toggle--active");
+        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
-      }
+    }
 
-      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-      if (listItems.length > 0) {
+    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+    if (listItems.length > 0) {
         for (let i = 0; i < listItems.length; i++) {
-          listItems[i].onclick = function (event) {
+        listItems[i].onclick = function (event) {
             for (let j = 0; j < listItems.length; j++) {
-              listItems[j].classList.remove("NavSide__sidebar-item--active");
+            listItems[j].classList.remove("NavSide__sidebar-item--active");
             }
             this.classList.add("NavSide__sidebar-item--active");
-          };
+        };
         }
-      }
+    }
 
-      // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
-      // telah dihapus karena modalnya sudah tidak digunakan.
+    // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
+    // telah dihapus karena modalnya sudah tidak digunakan.
     </script>
 </body>
 </html>

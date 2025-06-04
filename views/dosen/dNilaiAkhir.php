@@ -169,7 +169,7 @@
           <li class="NavSide__sidebar-item ">
             <b></b>
             <b></b>
-            <a href="#">
+             <a onclick="location.href='dEvaluasiSidang.php'">
               <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
             </a>
           </li>
