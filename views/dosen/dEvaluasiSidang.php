@@ -119,7 +119,10 @@
             box-sizing: border-box;
         }
 
-        .NavSide__sidebar-title {
+        .NavSide__sidebar-
+        
+        
+        {
             white-space: normal;
             text-align: center;
             line-height: 1.5;
