@@ -1,466 +1,301 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Sidang - ASTRATech</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-    body {
-        /* Global Resets and Font - (Sama seperti sebelumnya) */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    <title>Admin - Daftar Sidang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css"> 
+    <link rel="stylesheet" href="../../extra/style.css">
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-body {
-    font-family: "Segoe UI", sans-serif;
-    background-color: #F8F9FA;
-    color: #333333;
-    display: flex;
-    min-height: 100vh;
-    font-size: 14px;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
 
-.container {
-    display: flex;
-    width: 100%;
-}
+        body {
+            min-height: 100vh;
+            background-color: #F9FAFB; 
+        }
 
-/* Sidebar - (Sama seperti sebelumnya) */
-.sidebar {
-    width: 250px;
-    background-color: #3A57D0;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
+        /* NavSide styles - START */
+        #NavSide { display: flex; min-height: 100vh; position: relative; }
+        .NavSide__sidebar-brand { padding: 10% 5% 50% 5%; text-align: center; }
+        .NavSide__sidebar-brand img { width: 90%; max-width: 180px; height: auto; display: inline-block; }
+        .NavSide__sidebar { position: fixed; top: 0px; left: 0px; bottom: 0px; width: 280px; border-radius: 1px; box-sizing: border-box; border-left: 5px solid rgb(67, 54, 240); background: rgb(67, 54, 240); overflow-x: hidden; overflow-y: auto; z-index: 1000; display: flex; flex-direction: column; transition: transform 0.5s ease-in-out, width 0.5s ease-in-out; }
+        .NavSide__sidebar-nav { width: 100%; padding-left: 0; padding-top: 0; list-style: none; flex-grow: 1; }
+        .NavSide__sidebar-item { position: relative; display: block; width: 100%; border-top-left-radius: 20px; border-bottom-left-radius: 20px; margin-bottom: 10px; }
+        .NavSide__sidebar-item a { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; text-decoration: none; color: rgb(252, 252, 252); padding: 5% 2%; height: 60px; box-sizing: border-box; }
+        .NavSide__sidebar-title { white-space: normal; text-align: center; line-height: 1.5; }
+        .NavSide__sidebar-item.NavSide__sidebar-item--active { background: #ffffff; }
+        .NavSide__sidebar-item.NavSide__sidebar-item--active a { color: rgb(67, 54, 240); }
+        .NavSide__sidebar-item b:nth-child(1) { position: absolute; top: -20px; height: 20px; width: 100%; background: rgb(255, 255, 255); display: none; right: 0; }
+        .NavSide__sidebar-item b:nth-child(1)::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-bottom-right-radius: 20px; background: rgb(67, 54, 240); display: block; }
+        .NavSide__sidebar-item b:nth-child(2) { position: absolute; bottom: -20px; height: 20px; width: 100%; background: rgb(255, 255, 255); display: none; right: 0; }
+        .NavSide__sidebar-item b:nth-child(2)::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-top-right-radius: 20px; background: rgb(67, 54, 240); display: block; }
+        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) { display: block; }
+        .NavSide__main-content { flex-grow: 1; padding: 25px 30px; margin-left: 280px; overflow-y: auto; transition: margin-left 0.5s ease-in-out; background-color: #F9FAFB; }
+        .NavSide__toggle { position: fixed; top: 15px; left: 15px; width: 40px; height: 40px; z-index: 1100; transition: left 0.5s ease-in-out; cursor: pointer; border-radius: 5px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); display: none; }
+        .NavSide__toggle i.bi { position: absolute; font-size: 28px; display: none; }
+        .NavSide__toggle i.bi.open { color: rgb(67, 54, 240); }
+        .NavSide__toggle i.bi.close { color: rgb(67, 54, 240); }
+        .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; }
+        .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; }
+        .NavSide__topbar { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 60px; background-color: #ffffff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); z-index: 999; align-items: center; padding: 0 15px; justify-content: space-between; }
+        .NavSide__topbar .header-icons { display: flex; align-items: center; }
+        .NavSide__topbar .header-icons .bi-bell-fill { font-size: 1.5rem; color: #555; margin-right: 1.5rem; cursor: pointer; }
+        .NavSide__topbar .profile-icon { width: 40px; height: 40px; background-color: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
 
-.sidebar-header {
-    padding: 28px 25px;
-    text-align: left;
-}
+        @media (max-width: 700px) {
+            .NavSide__sidebar { width: 50%; transform: translateX(-100%); border-left-width: 0; }
+            .NavSide__sidebar.NavSide__sidebar--active-mobile { transform: translateX(0); box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); }
+            .NavSide__sidebar-brand { padding: 20px 10px 30px 10px; }
+            .NavSide__sidebar-brand img { width: 90%; }
+            .NavSide__sidebar-nav { padding-top: 20%; }
+            .NavSide__sidebar-item a { padding: 12% 10%; height: auto; }
+            .NavSide__main-content { margin-left: 0; padding: 15px; padding-top: 75px; }
+            .NavSide__toggle { display: flex; position: relative; top: auto; left: auto; background-color: transparent; box-shadow: none; }
+            .NavSide__toggle i.bi.open { display: block; }
+            .NavSide__topbar { display: flex; }
+            .main-content-header-title { font-size: 1.8rem; }
+            .main-content-profile-icon { font-size: 2rem; width: 40px; height: 40px; }
+            .search-bar-admin input { width: 100%; }
+            /* Penyesuaian untuk dropdown di mobile */
+            #ddAdminSidangTypeButton { padding: 0.3rem 0.6rem; font-size: 0.8rem; } 
+        }
+        /* NavSide styles - END */
 
-.logo .logo-main {
-    font-size: 24px;
-    font-weight: 700;
-    color: #FFFFFF;
-    letter-spacing: 0.5px;
-}
+        /* Gaya untuk Main Content Baru */
+        .main-content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .main-content-header-title { font-size: 2.2rem; font-weight: 700; color: #4336F0; }
+        .main-content-profile-icon { font-size: 2.5rem; color: #333; background-color: #E0E0E0; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+        .main-content-profile-icon i { color: #555; }
+        .main-content-subheader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .subheader-title { font-size: 1.5rem; font-weight: 600; color: #333; }
+        .search-bar-admin { position: relative; }
+        .search-bar-admin input { border-radius: 20px; border: 1px solid #E0E0E0; padding: 8px 15px 8px 35px; font-size: 0.9rem; width: 250px; background-color: #F5F5F5; }
+        .search-bar-admin .bi-search { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #757575; }
+        
+        /* === MODIFIKASI CSS UNTUK DROPDOWN === */
+        #filterSidangDropdownContainer { 
+            margin-bottom: 25px; 
+        }
+        #ddAdminSidangTypeButton { 
+            background-color: #4336F0; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            padding: 0.4rem 1rem; 
+            font-weight: 500; 
+            font-size: 0.9rem; 
+        }
+        #ddAdminSidangTypeButton:hover, 
+        #ddAdminSidangTypeButton:focus { 
+            background-color: #3a2eb8; /* Warna lebih gelap saat hover/focus */
+            color: white; 
+        }
+        .dropdown-menu .dropdown-item.active,
+        .dropdown-menu .dropdown-item:active { 
+            background-color: #4336F0; /* Warna biru untuk item aktif di menu */
+            color: white; 
+        }
+        .dropdown-menu .dropdown-item { 
+            font-size: 0.9rem; 
+            font-weight: 500; 
+        }
+        /* === AKHIR MODIFIKASI CSS DROPDOWN === */
 
-.logo .logo-sub {
-    font-size: 10px;
-    font-weight: 500;
-    color: #E0E0E0;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-}
+        /* Gaya Tabel Baru */
+        .table-admin-custom { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+        .table-admin-custom thead th { padding: 12px 18px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #E0E0E0; font-size: 0.9rem; }
+        .table-admin-custom thead th:nth-child(1) { width: 8%; }  
+        .table-admin-custom thead th:nth-child(2) { width: 15%; } 
+        .table-admin-custom thead th:nth-child(3) { width: 22%; } 
+        .table-admin-custom thead th:nth-child(4) { width: 35%; } 
+        .table-admin-custom thead th:nth-child(5) { width: 20%; } 
 
-.sidebar-nav {
-    margin-top: 30px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
+        .table-admin-custom tbody tr { 
+            background-color: #FFFFFF; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            /* === MODIFIKASI TRANSISI UNTUK HOVER === */
+            transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; 
+            cursor: pointer; 
+        }
+        /* === CSS BARU UNTUK HOVER === */
+        .table-admin-custom tbody tr:hover { 
+            transform: translateY(-2px); 
+            background-color: #4336F0; /* Warna biru primer */
+        }
+        .table-admin-custom tbody tr:hover td { 
+            color: white; /* Warna teks putih saat hover */
+        }
+        /* === AKHIR CSS BARU HOVER === */
 
-.sidebar-nav ul {
-    list-style: none;
-    padding-bottom: 20px;
-}
+        .table-admin-custom tbody td { 
+            padding: 15px 18px; 
+            font-size: 0.9rem; 
+            color: #555; 
+            vertical-align: middle; 
+            /* === MODIFIKASI TRANSISI UNTUK HOVER === */
+            transition: color 0.3s ease; 
+        }
+        .table-admin-custom tbody td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        .table-admin-custom tbody td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
 
-.sidebar-nav li a {
-    display: block;
-    color: #E0E0E0;
-    text-decoration: none;
-    padding: 16px 25px;
-    font-size: 16px;
-    font-weight: 500;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    border-top-left-radius: 20px;
-    border-bottom-left-radius: 20px;
-}
-
-.sidebar-nav li a.logout-link-nav {
-    color: #E0E0E0;
-}
-
-.sidebar-nav li:not(.active) a:hover,
-.sidebar-nav li a.logout-link-nav:hover {
-    background-color: #3A57D0;
-    color: #FFFFFF;
-}
-
-.sidebar-nav li.active a {
-    background-color: #FFFFFF;
-    color: #3A57D0;
-    font-weight: 600;
-}
-
-/* Main Content Area - (Sama seperti sebelumnya) */
-.main-content {
-    flex-grow: 1;
-    margin-left: 250px;
-    background-color: #FFFFFF;
-    padding: 0 35px;
-}
-
-.main-header.new-layout {
-    height: 80px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #EAEEF2;
-    padding-bottom: 20px;
-    margin-bottom: 0;
-}
-
-.profile-icon-wrapper svg {
-    cursor: pointer;
-}
-
-.content-area {
-    padding-top: 30px;
-    padding-bottom: 30px;
-}
-
-.page-main-title {
-    font-size: 28px; /* Ukuran Disesuaikan dengan gambar terakhir */
-    font-weight: 700;
-    color: #3A57D0;
-}
-
-.section-controls-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 30px;
-    margin-bottom: 20px;
-}
-
-.section-title {
-    font-size: 26px;
-    font-weight: 700;
-    color: #111827;
-}
-
-.search-bar-wrapper input[type="text"] {
-    width: 280px;
-    padding: 10px 15px 10px 40px;
-    border: 1px solid #D1D5DB;
-    border-radius: 8px;
-    font-size: 14px;
-    background-color: #F3F4F6;
-    color: #374151;
-}
-.search-bar-wrapper input[type="text"]::placeholder {
-    color: #9CA3AF;
-    font-weight: 400;
-}
-.search-icon-input {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6B7280;
-}
-
-.filter-bar {
-    margin-bottom: 25px;
-    display: flex;
-    justify-content: flex-start;
-}
-
-.custom-dropdown {
-    position: relative;
-    width: auto;
-}
-
-.custom-dropdown.blue-dropdown .dropdown-selected {
-    background-color: #3A57D0;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    min-width: 130px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.custom-dropdown.blue-dropdown .dropdown-selected:hover {
-    background-color: #2F4AB2;
-}
-
-.custom-dropdown.blue-dropdown .dropdown-selected span {
-    margin-right: 8px;
-}
-
-.custom-dropdown.blue-dropdown .chevron-down path {
-    stroke: #FFFFFF;
-}
-.custom-dropdown.open .chevron-down {
-    transform: rotate(180deg);
-}
-
-.dropdown-options {
-    list-style: none;
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    min-width: 100%;
-    background-color: #FFFFFF;
-    border: 1px solid #D1D5DB;
-    border-radius: 6px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out, opacity 0.2s ease-out, visibility 0.2s ease-out;
-    z-index: 100;
-    opacity: 0;
-    visibility: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-}
-.custom-dropdown.open .dropdown-options {
-    max-height: 150px;
-    opacity: 1;
-    visibility: visible;
-}
-
-.dropdown-options li {
-    padding: 10px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #374151;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.dropdown-options li:hover {
-    background-color: #3A57D0;
-    color: #FFFFFF;
-}
-
-/* Table Styling - Penyesuaian untuk Baris Lebih Bundar */
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px; /* Jarak vertikal antar baris "pill", bisa disesuaikan */
-}
-
-thead th {
-    background-color: #FFFFFF;
-    color: #4B5563;
-    font-weight: 600;
-    font-size: 13px;
-    text-align: left;
-    padding: 12px 16px;
-    border-bottom: 2px solid #D1D5DB;
-}
-
-tbody td {
-    background-color: #F3F4F6; /* Warna latar untuk sel */
-    color: #374151;
-    font-weight: 500;
-    padding: 18px 16px; /* Padding vertikal bisa sedikit ditambah agar lebih tinggi */
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-/* Styling untuk membuat bentuk pill pada baris LEBIH BUNDAR */
-tbody td:first-child {
-    border-top-left-radius: 50px;  /* Nilai besar untuk efek bundar penuh */
-    border-bottom-left-radius: 50px;
-}
-
-tbody td:last-child {
-    border-top-right-radius: 50px; /* Nilai besar untuk efek bundar penuh */
-    border-bottom-right-radius: 50px;
-}
-
-tbody tr:hover td {
-    background-color: #3A57D0;
-    color: #FFFFFF;
-    cursor: pointer;
-}
-</style>
+    </style>
 </head>
+
 <body>
-    <div class="container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <div class="logo-main">ASTRAtech</div>
-                    <div class="logo-sub">POLITEKNIK MANUFAKTUR</div>
+    <div id="NavSide">
+       <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo Admin">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="aPenjadwalan.php"><span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <b></b><b></b>
+                    <a href="#"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="aLogout.php"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+            <div class="header-icons"><i class="bi bi-bell-fill"></i><div class="profile-icon"><i class="bi bi-person-gear fs-5"></i></div></div>
+        </div>
+
+        <main class="NavSide__main-content" id="adminDaftarSidangContent">
+            <div class="main-content-header">
+                <h1 class="main-content-header-title">Daftar Sidang</h1>
+                <div class="main-content-profile-icon"><i class="bi bi-person-fill"></i></div>
+            </div>
+
+            <div class="main-content-subheader">
+                <h2 class="subheader-title">Pengajuan Sidang</h2>
+                <div class="search-bar-admin">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="form-control" placeholder="Cari mahasiswa...">
                 </div>
             </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="beranda_admin.php">Beranda</a></li>
-                    <li><a href="aPenjadwalan">Penjadwalan</a></li>
-                    <li class="active"><a href="#">Daftar Sidang</a></li>
-                    <li><a href="aLogin.php" class="logout-link-nav">Keluar</a></li>
+            
+            <div class="dropdown" id="filterSidangDropdownContainer">
+                <button class="btn dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    {Teks Akan Diisi JS} 
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="ddAdminSidangTypeButton">
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('TA', this);">Sidang TA</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('Semester', this);">Sidang Semester</a></li>
                 </ul>
-            </nav>
-        </aside>
-
-        <main class="main-content">
-            <header class="main-header new-layout">
-                <h1 class="page-main-title">Daftar Sidang</h1>
-                <div class="profile-icon-wrapper">
-                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="18" cy="18" r="18" fill="black"/>
-                        <path d="M26 27.5V25.5C26 23.2909 24.2091 21.5 22 21.5H14C11.7909 21.5 10 23.2909 10 25.5V27.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M18 17.5C20.2091 17.5 22 15.7091 22 13.5C22 11.2909 20.2091 9.5 18 9.5C15.7909 9.5 14 11.2909 14 13.5C14 15.7091 15.7909 17.5 18 17.5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-            </header>
-
-            <section class="content-area">
-                <div class="section-controls-header">
-                    <h2 class="section-title">Pengajuan Sidang</h2>
-                    <div class="search-bar-wrapper">
-                        <svg class="search-icon-input" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7.33333 12.6667C10.2789 12.6667 12.6667 10.2789 12.6667 7.33333C12.6667 4.38781 10.2789 2 7.33333 2C4.38781 2 2 4.38781 2 7.33333C2 10.2789 4.38781 12.6667 7.33333 12.6667Z" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M14.0006 14L11.1006 11.1" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <input type="text" placeholder="Nayaka Ivanna">
-                    </div>
-                </div>
-
-                <div class="filter-bar">
-                    <div class="custom-dropdown blue-dropdown" id="customDropdown">
-                        <div class="dropdown-selected" id="dropdownSelected">
-                            <span>Sidang TA</span> <svg class="chevron-down white-chevron" width="12" height="12" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1 1L5 5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                        <ul class="dropdown-options" id="dropdownOptions">
-                            <li data-value="sidang_ta">Sidang TA</li>
-                            <li data-value="sidang_semester">Sidang Semester</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>NIM</th>
-                                <th>Nama</th>
-                                <th id="dynamicColumnHeader">Judul Sidang</th> <th>Pembimbing</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dataTableBody"> </tbody>
-                    </table>
-                </div>
-            </section>
+            </div>
+            <div class="table-responsive">
+                <table class="table-admin-custom">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th><th scope="col">NIM</th><th scope="col">Nama</th><th scope="col">Judul Sidang</th><th scope="col">Pembimbing</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminSidangTA">
+                        <tr><td>001</td><td>0920240053</td><td>Nayaka Ivanna</td><td>Sistem Pengajuan Sidang</td><td>Dr. Rida Indah F.</td></tr>
+                        <tr><td>002</td><td>0920240054</td><td>Zahrah Imelda</td><td>Pengembangan Aplikasi Mobile Edukasi</td><td>Dr. Rida Indah F.</td></tr>
+                        <tr><td>003</td><td>0920240055</td><td>Nur Widya Astuti</td><td>Analisis Keamanan Jaringan Komputer</td><td>Dr. Rida Indah F.</td></tr>
+                    </tbody>
+                    <tbody id="adminSidangSem" style="display: none;">
+                        <tr><td>S01</td><td>0920240053</td><td>Nayaka Ivanna</td><td>Basis Data 1</td><td>Prof. Budi Santoso</td></tr>
+                        <tr><td>S02</td><td>0920240054</td><td>Zahrah Imelda</td><td>Pemrograman 2</td><td>Dr. Indah Kurnia</td></tr>
+                         <tr><td>003</td><td>0920240055</td><td>Nur Widya Astuti</td><td>Sistem Operasi</td><td>Dr. Rida Indah F.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </main>
     </div>
-    <script src="script.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    const dropdown = document.getElementById('customDropdown');
-    const selectedDisplay = document.getElementById('dropdownSelected');
-    const selectedDisplayText = selectedDisplay ? selectedDisplay.querySelector('span') : null;
-    const optionsList = document.getElementById('dropdownOptions');
-
-    // Data untuk tabel
-    const dataSidang = {
-        sidang_ta: {
-            header: "Judul Sidang",
-            rows: [
-                { id: "001", nim: "0920240053", nama: "Nayaka Ivanna", kolom4: "Sistem Pengajuan Sidang", pembimbing: "Dr. Rida Indah F." },
-                { id: "002", nim: "0920240053", nama: "Zahrah Imelda", kolom4: "Sistem Pengajuan Sidang", pembimbing: "Dr. Rida Indah F." },
-                { id: "003", nim: "0920240053", nama: "Nur Widya Astuti", kolom4: "Sistem Pengajuan Sidang", pembimbing: "Dr. Rida Indah F." }
-            ]
-        },
-        sidang_semester: {
-            header: "Mata Kuliah",
-            rows: [
-                { id: "001", nim: "0920240053", nama: "Nayaka Ivanna", kolom4: "Basis Data 1", pembimbing: "Dr. Rida Indah F." },
-                { id: "002", nim: "0920240053", nama: "Zahrah Imelda", kolom4: "Pemrograman 2", pembimbing: "Timotius Victory" },
-                { id: "003", nim: "0920240053", nama: "Nur Widya Astuti", kolom4: "Sistem Operasi", pembimbing: "Suhendra" }
-            ]
-        }
-    };
-
-    const dynamicColumnHeader = document.getElementById('dynamicColumnHeader');
-    const dataTableBody = document.getElementById('dataTableBody');
-
-    function updateTableContent(dataType) {
-        const tableConfig = dataSidang[dataType];
-        if (!tableConfig || !dynamicColumnHeader || !dataTableBody) {
-            console.error("Error: Elemen tabel atau konfigurasi data tidak ditemukan.");
-            return;
+        // Sidebar Toggle Logic (Sama seperti sebelumnya)
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+        if (menuToggle) {
+            menuToggle.onclick = function() {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
         }
 
-        // Update table header
-        dynamicColumnHeader.textContent = tableConfig.header;
-
-        // Clear existing table body content
-        dataTableBody.innerHTML = '';
-
-        // Populate table with new rows
-        tableConfig.rows.forEach(rowData => {
-            const row = dataTableBody.insertRow();
-            row.insertCell().textContent = rowData.id;
-            row.insertCell().textContent = rowData.nim;
-            row.insertCell().textContent = rowData.nama;
-            row.insertCell().textContent = rowData.kolom4; // Ini akan menjadi Judul Sidang atau Mata Kuliah
-            row.insertCell().textContent = rowData.pembimbing;
-        });
-    }
-
-    if (dropdown && selectedDisplay && optionsList && selectedDisplayText && dynamicColumnHeader && dataTableBody) {
-        const options = optionsList.getElementsByTagName('li');
-
-        // Toggle dropdown
-        selectedDisplay.addEventListener('click', function(event) {
-            event.stopPropagation();
-            dropdown.classList.toggle('open');
-        });
-
-        // Handle option selection
-        for (let option of options) {
-            option.addEventListener('click', function() {
-                const selectedValue = this.getAttribute('data-value');
-                selectedDisplayText.textContent = this.textContent; // Update teks di span
-                
-                updateTableContent(selectedValue); // Panggil fungsi untuk update tabel
-
-                dropdown.classList.remove('open');
-            });
+        // Sidebar Active Item Logic (Sama seperti sebelumnya)
+        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function(event) {
+                if (this.querySelector('a[href="logout.php"]')) { return; } // Jangan ubah active state untuk link logout
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                }
+            };
         }
 
-        // Klik di luar dropdown untuk menutup
-        document.addEventListener('click', function(event) {
-            if (dropdown.classList.contains('open')) {
-                dropdown.classList.remove('open');
+        // === MODIFIKASI JAVASCRIPT UNTUK DROPDOWN ===
+        function switchAdminSidangView(viewType, clickedElement) {
+            const taTable = document.getElementById("adminSidangTA");
+            const semTable = document.getElementById("adminSidangSem");
+            const ddButton = document.getElementById("ddAdminSidangTypeButton");
+
+            // Hapus kelas 'active' dari semua item dropdown
+            const dropdownItems = document.querySelectorAll('#filterSidangDropdownContainer .dropdown-item');
+            dropdownItems.forEach(item => item.classList.remove('active'));
+
+            // Tambahkan kelas 'active' ke item yang diklik (jika ada)
+            if (clickedElement) {
+                clickedElement.classList.add('active');
             }
+
+            if (viewType === 'TA') {
+                taTable.style.display = ""; 
+                semTable.style.display = "none"; 
+                ddButton.innerText = "Sidang TA";
+                // Jika dipanggil saat load (tanpa clickedElement), pastikan item menu TA yang benar jadi aktif
+                if (!clickedElement) {
+                    const taMenuItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'TA\'"]');
+                    if (taMenuItem) taMenuItem.classList.add('active');
+                }
+            } else if (viewType === 'Semester') {
+                taTable.style.display = "none"; 
+                semTable.style.display = ""; 
+                ddButton.innerText = "Sidang Semester";
+                // Jika dipanggil saat load, pastikan item menu Semester yang benar jadi aktif
+                if (!clickedElement) {
+                    const semesterMenuItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'Semester\'"]');
+                    if (semesterMenuItem) semesterMenuItem.classList.add('active');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Panggil dengan elemen item menu yang sesuai agar kelas active di-set dengan benar saat load
+            const initialActiveItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'TA\'"]');
+            switchAdminSidangView('TA', initialActiveItem);
         });
-
-        optionsList.addEventListener('click', function(event){
-            event.stopPropagation();
-        });
-
-        // Muat data default saat halaman pertama kali dibuka (misalnya Sidang TA)
-        updateTableContent('sidang_ta');
-        selectedDisplayText.textContent = "Sidang TA"; // Pastikan teks dropdown juga sesuai
-
-    } else {
-        console.error("Error: Salah satu elemen dropdown atau tabel tidak ditemukan.");
-    }
-});
+        // === AKHIR MODIFIKASI JAVASCRIPT ===
     </script>
 </body>
 </html>
