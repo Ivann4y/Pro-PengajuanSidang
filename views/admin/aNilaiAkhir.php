@@ -301,7 +301,7 @@
       <!-- Fungsi Tombol Kembali -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
-          <button class="btn btn-kembali" style="margin-left: 50px;" onclick="pindahKeHalamanDaftarSidang()">
+          <button class="btn btn-kembali" style="margin-left: 50px;" onclick="pindahKeHalamanDaftarSidang()" >
             <span class="icon-circle">
               <i class="bi bi-arrow-left"></i>
             </span>
