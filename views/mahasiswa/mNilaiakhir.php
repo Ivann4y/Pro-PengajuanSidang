@@ -418,36 +418,7 @@
     </style>
   </head>
   <body>
-    <!-- tanpa toggle fokus desktop -->
-   <!-- <div id="main-sidebar" class="NavSide__sidebar">
-  <div class="NavSide__sidebar-brand">
-    <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
-  </div>
-  <ul class="NavSide__sidebar-nav">
-    <li class="NavSide__sidebar-item">
-      <b></b><b></b>
-      <a href="detail-pengajuan.php">
-        <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
-      </a>
-    </li>
-    <li class="NavSide__sidebar-item">
-      <b></b><b></b>
-      <a href="mPerbaikan.php">
-        <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
-      </a>
-    </li>
-    <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-      <b></b><b></b>
-      <a href="nilai-akhir.php">
-        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-      </a>
-    </li>
-  </ul>
- </div> -->
- 
-                <!--apabila terdapat catatan maka akan ada text catatan -->
-                    <!-- <div class="form-control form-control-lg" style="min-height: 100px;">
-            </div> -->
+
       <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -548,6 +519,39 @@
       </main>
     </div>
 
+     
+                <!--apabila terdapat catatan maka akan ada text catatan -->
+                    <!-- <div class="form-control form-control-lg" style="min-height: 100px;">
+            </div> -->
+
+        <!-- tanpa toggle fokus desktop -->
+   <!-- <div id="main-sidebar" class="NavSide__sidebar">
+  <div class="NavSide__sidebar-brand">
+    <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+  </div>
+  <ul class="NavSide__sidebar-nav">
+    <li class="NavSide__sidebar-item">
+      <b></b><b></b>
+      <a href="detail-pengajuan.php">
+        <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
+      </a>
+    </li>
+    <li class="NavSide__sidebar-item">
+      <b></b><b></b>
+      <a href="mPerbaikan.php">
+        <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
+      </a>
+    </li>
+    <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+      <b></b><b></b>
+      <a href="nilai-akhir.php">
+        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+      </a>
+    </li>
+  </ul>
+ </div> -->
+ 
+    <!-- Bagian Script atau menjalankan fungsi -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
 
