@@ -1,12 +1,12 @@
 <?php
 $users = [
     'admin' => [
-        ['username' => 'admin1', 'password' => 'adminpass']
+        ['username' => 'a1', 'password' => 'ap']
     ],
     'dosen' => [
-        ['username' => 'dosen1', 'password' => 'dosenpass']
+        ['username' => 'd1', 'password' => 'dp']
     ],
     'mahasiswa' => [
-        ['username' => 'mahasiswa1', 'password' => 'mahasiswapass']
+        ['username' => 'm1', 'password' => 'mp']
     ]
 ];

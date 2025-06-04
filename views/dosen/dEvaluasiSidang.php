@@ -123,15 +123,16 @@
             white-space: normal;
             text-align: center;
             line-height: 1.5;
+            color:white;
         }
 
         /* UBAH: Active state di pindah ke Evaluasi */
         .NavSide__sidebar-item.NavSide__sidebar-item--active {
             background: #ffffff;
-        }
+=        }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: rgb(67, 54, 240);
+            color: rgb(67, 54, 240) !important;
         }
 
         .NavSide__sidebar-item b:nth-child(1) {
@@ -545,7 +546,7 @@
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Evaluasi aktif -->
                     <b></b><b></b>
                     <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+                        <span class="fw-semibold">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
