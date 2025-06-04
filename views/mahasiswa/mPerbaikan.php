@@ -140,12 +140,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         flex-direction: column;
         transition: transform 0.5s ease-in-out, width 0.5s ease-in-out; 
     }
-     .NavSide__sidebar h4 { 
+    .NavSide__sidebar h4 { 
         text-align: center;
         font-weight: bold;
         margin-bottom: 0; 
         color: white;
-         padding: 25px 15px 30px 15px; 
+        padding: 25px 15px 30px 15px; 
     }
     .NavSide__sidebar-nav {
         width: 100%;
@@ -247,7 +247,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         background-color: #F9FAFB; 
         padding-top: calc(60px + 2rem); 
     }
-   
+
     .page-content-header-wrapper {
         margin-bottom: 2.5rem; 
     }
@@ -453,7 +453,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: transparent; 
             box-shadow: none; 
         }
-         .NavSide__topbar .NavSide__toggle i.bi.open { 
+        .NavSide__topbar .NavSide__toggle i.bi.open { 
             display: block; 
         }
 
@@ -529,7 +529,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
         <div class="NavSide__sidebar-brand">
-             <h4>ASTRAtech</h4>
+            <h4>ASTRAtech</h4>
         </div>
         <ul class="NavSide__sidebar-nav">
             <li class="NavSide__sidebar-item"> 

@@ -307,7 +307,7 @@
                 background-color: aliceblue;
             }
         }
-       
+    
         .status-badge {
             background-color:rgb(253, 68, 59);
             color: black;
@@ -397,7 +397,7 @@
             font-size: 0.95rem; 
             margin-bottom: 0; 
         }
-       
+    
         /* --- CSS Baru untuk Tombol Berkas --- */
         .file-button {
             display: inline-flex; 
@@ -471,7 +471,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                   <a onclick="location.href='mPerbaikan.php'">
+                <a onclick="location.href='mPerbaikan.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
@@ -577,31 +577,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
-      // Skrip untuk toggle sidebar dan active menu item
-      let menuToggle = document.querySelector(".NavSide__toggle");
-      let sidebar = document.getElementById("main-sidebar");
+    // Skrip untuk toggle sidebar dan active menu item
+    let menuToggle = document.querySelector(".NavSide__toggle");
+    let sidebar = document.getElementById("main-sidebar");
 
-      if (menuToggle && sidebar) {
+    if (menuToggle && sidebar) {
         menuToggle.onclick = function () {
-          menuToggle.classList.toggle("NavSide__toggle--active");
-          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        menuToggle.classList.toggle("NavSide__toggle--active");
+        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
-      }
+    }
 
-      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-      if (listItems.length > 0) {
+    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+    if (listItems.length > 0) {
         for (let i = 0; i < listItems.length; i++) {
-          listItems[i].onclick = function (event) {
+        listItems[i].onclick = function (event) {
             for (let j = 0; j < listItems.length; j++) {
-              listItems[j].classList.remove("NavSide__sidebar-item--active");
+            listItems[j].classList.remove("NavSide__sidebar-item--active");
             }
             this.classList.add("NavSide__sidebar-item--active");
-          };
+        };
         }
-      }
+    }
 
-      // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
-      // telah dihapus karena modalnya sudah tidak digunakan.
+    // Fungsi-fungsi JS terkait modal penjadwalan sidang (openModal, incrementValue, decrementValue)
+    // telah dihapus karena modalnya sudah tidak digunakan.
     </script>
 </body>
 </html>
