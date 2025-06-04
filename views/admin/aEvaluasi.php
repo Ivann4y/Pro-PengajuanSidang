@@ -90,12 +90,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai akhir</span></a>
+                    <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
                 </li>
-                <!-- <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-                </li> -->
+  
             </ul>
         </div>
 

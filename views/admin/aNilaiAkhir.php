@@ -164,7 +164,7 @@
       <ul class="NavSide__sidebar-nav">
         <li class="NavSide__sidebar-item">
           <b></b><b></b>
-          <a href="DetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+          <a href="aDetailSidangTA.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
         </li>
         <li class="NavSide__sidebar-item">
           <b></b><b></b>

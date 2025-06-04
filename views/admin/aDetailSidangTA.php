@@ -593,31 +593,25 @@
     </style>
 </head>
 <body>
-    <div id="NavSide">
+     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /> </div>
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <b></b>
-                    <b></b>
-                    <a href="aDetailSidangTA.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
-                    </a>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="aDetailSidangTA.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item ">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
-                    <a href="aEvaluasi.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
-                    </a>
+                    <b></b><b></b>
+                    <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
                 </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
-                    <a href="aNilaiAkhir.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-                    </a>
-                </li>
+  
             </ul>
         </div>
 
