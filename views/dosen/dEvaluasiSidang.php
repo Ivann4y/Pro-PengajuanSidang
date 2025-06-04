@@ -671,6 +671,7 @@
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
+                     <a onclick="location.href='dDaftarSidang.php'">
                     Kembali
                 </button>
                 <!-- Tombol Kirim yang akan memicu modal -->
