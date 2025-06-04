@@ -33,7 +33,7 @@ if ($found) {
     }
     if ($role === 'dosen') {
         header("Location: views/dosen/dBeranda.php");
-        exit();
+        exit(); 
     }
 } else {
     echo "Login gagal. <a href='index.php'>Kembali</a>";
