@@ -80,17 +80,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="DetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
                 </li>
-                <li class="NavSide__sidebar-item">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Nilai akhir</span></a>
+                    <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai akhir</span></a>
                 </li>
                 <!-- <li class="NavSide__sidebar-item">
                     <b></b><b></b>
