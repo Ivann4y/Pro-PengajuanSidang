@@ -102,6 +102,11 @@ function goToDetail(nim, tipe) {
     window.location.href = `dDetailPengajuan.php?nim=${nim}&tipe=${tipe}`;
 }
 
+function goToEvaluasi(nim, tipe) {
+    // Fungsi ini sekarang mengirimkan nim DAN tipe ke URL
+    window.location.href = `dEvaluasiSidang.php?nim=${nim}&tipe=${tipe}`;
+}
+
 const notifModalElement = document.getElementById('notifModal');
 const modal = new bootstrap.Modal(notifModalElement);
 
