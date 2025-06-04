@@ -437,7 +437,7 @@
                             </tr>
                         </thead>
                         <tbody id="mSidangTA">
-                            <tr class="isiTabel jadiBiru">
+                            <tr class="isiTabel jadiBiru" onclick="location.href='mdetailsidangta.php';">
                                 <td>1</td>
                                 <td>Sistem Pengajuan Sidang</td>
                                 <td>Tugas Akhir</td>
@@ -445,7 +445,7 @@
                             </tr>
                         </tbody>
                         <tbody id="mSidangSem" style="display: none;">
-                            <tr class="isiTabel jadiBiru">
+                            <tr class="isiTabel jadiBiru" onclick="location.href='mdetailsidang.php';">
                                 <td>1</td>
                                 <td>Implementasi Sistem Sidang</td>
                                 <td>Pemrograman 2</td>
