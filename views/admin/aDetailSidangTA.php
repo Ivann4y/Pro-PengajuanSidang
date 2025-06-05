@@ -645,8 +645,8 @@
             <h5 class="mt-4">Aksi</h5>
             <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
             <br><br>
-            <button class="btn-kembali"><i class="fa-solid fa-circle-arrow-left"></i> Kembali</button>
-            
+            <a href="aDaftarSidang.php"><button class="btn-kembali"><i class="fa-solid fa-circle-arrow-left"></i>Kembali</button></a>
+
             <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content modal-content-custom-form">
