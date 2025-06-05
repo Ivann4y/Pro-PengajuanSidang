@@ -274,6 +274,8 @@
             background-color: #F9FAFB;
             padding-top: 3vh; /* Default for larger screens */
             overflow-x: hidden;
+            max-width: 100%;
+              box-sizing: border-box;
         }
 
         .NavSide__toggle {
@@ -456,7 +458,7 @@
         </div>
         <main class="NavSide__main-content">
        
-      <div class="container-fluid bodyContainer">
+      <div class="container-fluid ">
           <div class="row mb-5">
                  <h2 style="margin-left: 50px ;">
                 <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
