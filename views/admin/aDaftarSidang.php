@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../../assets/css/style.css"> 
     <link rel="stylesheet" href="../../extra/style.css">
     <style>
-        /* ... (Semua kode CSS SAMA seperti respons sebelumnya) ... */
+        /* ... (Semua kode CSS SAMA seperti yang Anda berikan sebelumnya) ... */
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
         body { min-height: 100vh; background-color: #F9FAFB; }
@@ -77,7 +77,8 @@
         .table-admin-custom thead th:nth-child(1) { width: 8%; }  
         .table-admin-custom thead th:nth-child(2) { width: 15%; } 
         .table-admin-custom thead th:nth-child(3) { width: 22%; } 
-        .table-admin-custom thead th:nth-child(4) { width: 35%; } 
+        /* Kolom ke-4 adalah yang akan kita ubah */
+        .table-admin-custom thead th#thDynamicHeader { width: 35%; } 
         .table-admin-custom thead th:nth-child(5) { width: 20%; } 
         .table-admin-custom tbody tr { background-color: #FFFFFF; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; cursor: pointer; }
         .table-admin-custom tbody tr:hover { transform: translateY(-2px); background-color: #4336F0; }
@@ -134,7 +135,11 @@
                 <table class="table-admin-custom">
                     <thead>
                         <tr>
-                            <th scope="col">ID</th><th scope="col">NIM</th><th scope="col">Nama</th><th scope="col">Judul Sidang</th><th scope="col">Pembimbing</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">NIM</th>
+                            <th scope="col">Nama</th>
+                            <th scope="col" id="thDynamicHeader">Judul Sidang</th> 
+                            <th scope="col">Pembimbing</th>
                         </tr>
                     </thead>
                     <tbody id="adminSidangTA">
@@ -143,8 +148,9 @@
                         <tr data-id="TA003" data-type="ta"><td>003</td><td>0920240055</td><td>Nur Widya Astuti</td><td>Analisis Keamanan Jaringan Komputer</td><td>Dr. Rida Indah F.</td></tr>
                     </tbody>
                     <tbody id="adminSidangSem" style="display: none;">
-                        <tr data-id="SEM001" data-type="semester"><td>S01</td><td>0920230011</td><td>Ahmad Subarjo</td><td>Laporan Proyek Sistem Informasi Akademik</td><td>Prof. Budi Santoso</td></tr>
-                        <tr data-id="SEM002" data-type="semester"><td>S02</td><td>0920230025</td><td>Siti Aminah</td><td>Rancang Bangun Website Portfolio Pribadi</td><td>Dr. Indah Kurnia</td></tr>
+                        <tr data-id="SEM001" data-type="semester"><td>S01</td><td>0920230053</td><td>Nayaka Ivanna</td><td>Basis Data 1</td><td>Dr. Rida Indah F</td></tr>
+                        <tr data-id="SEM002" data-type="semester"><td>S02</td><td>0920230054</td><td>Zahrah Imelda</td><td>Pemrograman 2</td><td>Dr. Rida Indah F</td></tr>
+                        <tr data-id="SEM003" data-type="semester"><td>S03</td><td>0920240055</td><td>Nur Widya Astuti</td><td>Sistem Operasi</td><td>Dr. Rida Indah F.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -167,7 +173,17 @@
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
         for (let i = 0; i < listItems.length; i++) {
             listItems[i].onclick = function(event) {
-                if (this.querySelector('a[href="logout.php"]')) { return; }
+                // Cek apakah item yang diklik adalah link logout
+                // Jika ya, jangan lakukan apa-apa agar link logout tetap berfungsi
+                if (this.querySelector('a[href="aLogout.php"]')) { 
+                    return; 
+                }
+                // Cek apakah item yang diklik adalah link untuk halaman yang sama (Daftar Sidang)
+                // Jika ya, dan item tersebut sudah aktif, jangan lakukan apa-apa
+                if (this.classList.contains("NavSide__sidebar-item--active") && this.querySelector('a[href="#.php"]')) {
+                    return;
+                }
+
                 if (!this.classList.contains("NavSide__sidebar-item--active")) {
                     for (let j = 0; j < listItems.length; j++) {
                         listItems[j].classList.remove("NavSide__sidebar-item--active");
@@ -182,6 +198,7 @@
             const taTable = document.getElementById("adminSidangTA");
             const semTable = document.getElementById("adminSidangSem");
             const ddButton = document.getElementById("ddAdminSidangTypeButton");
+            const dynamicHeader = document.getElementById("thDynamicHeader"); // <-- BARU: Ambil elemen header
 
             const dropdownItems = document.querySelectorAll('#filterSidangDropdownContainer .dropdown-item');
             dropdownItems.forEach(item => item.classList.remove('active'));
@@ -194,6 +211,7 @@
                 taTable.style.display = ""; 
                 semTable.style.display = "none"; 
                 ddButton.innerText = "Sidang TA";
+                dynamicHeader.textContent = "Judul Sidang"; // <-- BARU: Ubah teks header
                 if (!clickedElement) { // Handle kasus saat load
                     const taMenuItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'TA\'"]');
                     if (taMenuItem) taMenuItem.classList.add('active');
@@ -202,6 +220,7 @@
                 taTable.style.display = "none"; 
                 semTable.style.display = ""; 
                 ddButton.innerText = "Sidang Semester";
+                dynamicHeader.textContent = "Prodi"; // <-- BARU: Ubah teks header
                 if (!clickedElement) { // Handle kasus saat load
                     const semesterMenuItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'Semester\'"]');
                     if (semesterMenuItem) semesterMenuItem.classList.add('active');
@@ -211,9 +230,10 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             const initialActiveItem = document.querySelector('#filterSidangDropdownContainer .dropdown-item[onclick*="\'TA\'"]');
-            switchAdminSidangView('TA', initialActiveItem);
+            // Panggil switchAdminSidangView saat halaman pertama kali dimuat untuk mengatur tampilan awal
+            switchAdminSidangView('TA', initialActiveItem); 
 
-            // JAVASCRIPT BARU UNTUK BARIS TABEL YANG BISA DIKLIK
+            // JAVASCRIPT UNTUK BARIS TABEL YANG BISA DIKLIK
             function makeRowsClickable() {
                 const tableRowsTA = document.querySelectorAll('#adminSidangTA tr');
                 const tableRowsSemester = document.querySelectorAll('#adminSidangSem tr');
@@ -225,8 +245,16 @@
                         const sidangType = this.dataset.type; 
                         
                         if (sidangId && sidangType) {
-                            // Ganti 'dDetailSidang.php' dengan nama file halaman detail Anda
-                            window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
+                            // Ganti 'aDetailSidangTA.php' dengan nama file halaman detail Anda yang sesuai
+                            // Anda mungkin ingin halaman detail yang berbeda untuk TA dan Semester, atau menghandle nya di satu halaman
+                            if (sidangType === 'ta') {
+                                window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
+                            } else if (sidangType === 'semester') {
+                                // Jika Anda punya halaman detail yang berbeda untuk sidang semester, ganti di sini
+                                window.location.href = `aDetailSidangSemester.php?type=${sidangType}&id=${sidangId}`; 
+                                // Atau jika sama:
+                                // window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
+                            }
                         } else {
                             console.error('Data ID atau Tipe Sidang tidak ditemukan pada baris:', this);
                         }

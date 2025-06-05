@@ -674,7 +674,7 @@
                     <input type="text" id="nilaiProyek" class="form-control-custom">
                 </div>
                 <!-- Elemen untuk pesan error Nilai Sidang -->
-                <p class="error-message" id="nilaiSidangErrorMessage"> * harus diisi</p>
+                <p class="error-message" id="nilaiSidangErrorMessage"> *Harus diisi!</p>
             </div>
 
             <!-- BAGIAN BARU: Catatan Evaluasi Sidang -->
@@ -686,7 +686,7 @@
                     <textarea id="catatanEvaluasi" class="form-control-custom"></textarea>
                 </div>
                 <!-- Elemen untuk pesan error Catatan Evaluasi -->
-                <p class="error-message" id="catatanEvaluasiErrorMessage"> * harus diisi</p>
+                <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
             </div>
             
             <div class="button-group-bottom">
