@@ -1,9 +1,41 @@
+<?php
+    // Ambil parameter dari URL
+    $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
+    $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
+
+    $mahasiswa = [];
+
+    if ($tipe === 'TA') {
+        $mahasiswa = [
+            'nama'        => 'M. Haaris Nur S.',
+            'nim'         => '0920240033',
+            'mata_kuliah' => 'Tugas Akhir',
+        ];
+    } elseif ($tipe === 'Semester') {
+        $mahasiswa = [
+            'nama'         => 'M. Harris Nur S.',
+            'nim'          => '0920240033',
+            'mata_kuliah'  => 'Pemrograman 2',
+            'judul_sidang' => 'Sistem Pengajuan Sidang'
+        ];
+    } else {
+        // Data default jika tipe tidak dikenali
+        $mahasiswa = [
+            'nama'          => 'Data Tidak Ditemukan',
+            'nim'           => 'N/A',
+            'mata_kuliah'   => 'N/A',
+            'file_laporan'  => '#',
+            'file_pendukung' => '#'
+        ];
+    }
+?>
+
 <!DOCTYPE html>
-<html lang="id"> <!-- Changed lang to id (Indonesian) -->
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Sidang</title> <!-- Simplified title -->
+    <title>Detail Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -48,8 +80,8 @@
             width: 280px;
             border-radius: 1px;
             box-sizing: border-box;
-            border-left: 5px solid rgb(67, 54, 240);
-            background: rgb(67, 54, 240);
+            border-left: 5px solid #4B68FB; /* Changed from rgb(67, 54, 240) */
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             overflow-x: hidden;
             overflow-y: auto;
             z-index: 1000;
@@ -72,6 +104,7 @@
             width: 100%;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
+            margin-bottom: 10px; /* Jarak antar menu disesuaikan */
         }
 
         .NavSide__sidebar-item a {
@@ -109,7 +142,7 @@
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: rgb(67, 54, 240);
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
 
         .NavSide__sidebar-item b:nth-child(1) {
@@ -128,7 +161,7 @@
             width: 100%;
             height: 100%;
             border-bottom-right-radius: 20px;
-            background: rgb(67, 54, 240);
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             display: block;
         }
         .NavSide__sidebar-item b:nth-child(2) {
@@ -147,7 +180,7 @@
             width: 100%;
             height: 100%;
             border-top-right-radius: 20px;
-            background: rgb(67, 54, 240);
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             display: block;
         }
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
@@ -172,7 +205,7 @@
         /* Status badge (Merah default) */
         .status-badge {
             margin-bottom: 1.2cm; 
-            background-color:rgb(253, 68, 59); /* Initial red */
+            background-color: #FFA3A3; /* Changed from rgb(253, 68, 59) */
             color: black;
             border-radius: 20px;
             padding: 8px 18px; 
@@ -186,7 +219,7 @@
 
         /* Gaya untuk status "Disetujui" (Hijau) */
         .status-badge.approved {
-            background-color: rgb(108, 222, 137); /* Warna hijau */
+            background-color: #4BFBAF; /* Changed from rgb(108, 222, 137) */
             color: black; /* Pastikan teks tetap hitam */
         }
 
@@ -205,7 +238,7 @@
         }
 
         .btn-kembali {
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             color: white; /* Teks default putih */
             border: none;
             border-radius: 20px;
@@ -222,7 +255,7 @@
         .btn-kembali:hover {
             position: relative;
             background-color: white; /* UBAH: Latar belakang jadi putih saat hover */
-            color: rgb(67, 54, 240); /* UBAH: Teks jadi biru saat hover */
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
         
         .btn-kembali .icon-circle {
@@ -238,11 +271,11 @@
         }
 
         .btn-kembali:hover .icon-circle {
-            background-color: rgb(67, 54, 240); /* UBAH: Latar belakang lingkaran jadi biru saat hover */
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
 
         .btn-kembali .icon-circle i {
-            color: rgb(67, 54, 240); /* Warna ikon default biru */
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             font-size: 1rem; 
             transition: color 0.3s ease; /* Transisi untuk warna ikon */
         }
@@ -267,6 +300,9 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            /* UBAH: Display block agar terlihat di desktop juga, tapi hanya untuk penyesuaian CSS ini.
+                     Aslinya di mobile baru display:flex. Di sini mempertahankan style asli. */
         }
 
         .NavSide__toggle i.bi {
@@ -276,11 +312,11 @@
         }
 
         .NavSide__toggle i.bi.open {
-            color: rgb(67, 54, 240);
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             display: block; /* UBAH: Ini harusnya block agar terlihat saat tidak active */
         }
         .NavSide__toggle i.bi.close {
-            color: rgb(67, 54, 240);
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
 
         .NavSide__toggle.NavSide__toggle--active i.bi.open {
@@ -326,7 +362,7 @@
             }
 
             .NavSide__toggle i.bi.open {
-                color: rgb(67, 54, 240);
+                color: #4B68FB; /* Changed from rgb(67, 54, 240) */
                 display: block;
             }
 
@@ -369,7 +405,7 @@
             right: 0;
             width: 60px; 
             height: 100%;
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             border-top-right-radius: 20px;
             border-bottom-right-radius: 20px;
             transition: width 0.4s ease;
@@ -438,7 +474,7 @@
             margin-right: 15px; 
             margin-bottom: 15px; 
             text-decoration: none; 
-            color: rgb(67, 54, 240); 
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             font-weight: 500;
             font-size: 1rem;
             transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; 
@@ -446,7 +482,7 @@
         }
 
         .file-button:hover {
-            background-color: rgb(67, 54, 240); 
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             color: white; 
             text-decoration: none; 
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
@@ -455,7 +491,7 @@
         .file-button i {
             font-size: 1.25rem; 
             margin-right: 10px; 
-            color: rgb(67, 54, 240); 
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             transition: color 0.2s ease; 
         }
 
