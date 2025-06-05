@@ -380,8 +380,8 @@ if ($_SESSION['role'] !== 'dosen') {
             </div>
         </div>
         <main class="NavSide__main-content" id="dPengajuan">
-            <div class="dashboard-header">
-                <div class="header-icons d-none d-md-flex"> <i class="bi bi-bell-fill"></i>
+            <div class="dashboard-header float-end">
+                <div class="header-icons d-none d-md-flex flex-column"> <i class="bi bi-bell-fill"></i>
                     <div class="profile-icon">
                         <i class="bi bi-person-fill fs-5"></i>
                     </div>
