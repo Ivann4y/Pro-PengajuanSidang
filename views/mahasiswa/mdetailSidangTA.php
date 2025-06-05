@@ -19,7 +19,7 @@
 
         body {
             min-height: 100vh;
-            background-color: #ffffff;
+            background-color: #ffffff; /* Already FFFFFF, no change */
         }
 
         #NavSide {
@@ -48,8 +48,8 @@
             width: 280px;
             border-radius: 1px;
             box-sizing: border-box;
-            border-left: 5px solid rgb(67, 54, 240);
-            background: rgb(67, 54, 240);
+            border-left: 5px solid #4B68FB; /* Changed from rgb(67, 54, 240) */
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             overflow-x: hidden;
             overflow-y: auto;
             z-index: 1000;
@@ -72,6 +72,8 @@
             width: 100%;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
+            /* Tambahan sesuai permintaan: menyesuaikan jarak dengan kode teman */
+            margin-bottom: 10px;
         }
 
         .NavSide__sidebar-item a {
@@ -110,7 +112,7 @@
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: rgb(67, 54, 240);
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
 
         .NavSide__sidebar-item b:nth-child(1) {
@@ -129,7 +131,7 @@
             width: 100%;
             height: 100%;
             border-bottom-right-radius: 20px;
-            background: rgb(67, 54, 240);
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             display: block;
         }
         .NavSide__sidebar-item b:nth-child(2) {
@@ -148,7 +150,7 @@
             width: 100%;
             height: 100%;
             border-top-right-radius: 20px;
-            background: rgb(67, 54, 240);
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             display: block;
         }
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
@@ -172,7 +174,7 @@
 
         .status-badge {
             margin-bottom: 1.2cm; 
-            background-color:rgb(253, 68, 59); /* Initial red (sesuai versi "perfect") */
+            background-color: #FFA3A3; /* Changed from rgb(253, 68, 59) to FFA3A3 */
             color: black; /* Black text as in original image */
             border-radius: 20px;
             padding: 8px 18px; 
@@ -186,7 +188,7 @@
 
         /* Gaya untuk status "Disetujui" */
         .status-badge.approved {
-            background-color: rgb(108, 222, 137); /* Warna hijau */
+            background-color: #4BFBAF; /* Changed from rgb(108, 222, 137) to 4BFBAF */
         }
 
         .info-card {
@@ -204,7 +206,7 @@
         }
 
         .btn-kembali {
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) to 4B68FB */
             color: white; /* Teks default putih */
             border: none;
             border-radius: 20px;
@@ -213,7 +215,7 @@
             font-size: 0.95rem;
             font-weight: 500;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; /* Tambah transisi untuk warna teks */
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.2s ease; /* Tambah transisi untuk warna teks */
             display: inline-flex; 
             align-items: center; 
             margin-top: 1.2cm; /* Margin atas 1.2cm untuk tombol kembali */
@@ -221,7 +223,7 @@
         .btn-kembali:hover {
             position: relative;
             background-color: white; /* UBAH: Latar belakang jadi putih saat hover */
-            color: rgb(67, 54, 240); /* UBAH: Teks jadi biru saat hover */
+            color: #4B68FB; /* UBAH: Teks jadi biru saat hover (changed from rgb(67, 54, 240)) */
         }
         
         .btn-kembali .icon-circle {
@@ -233,17 +235,17 @@
             background-color: white; /* Latar belakang lingkaran default putih */
             border-radius: 50%;
             margin-right: 10px; 
-            transition: background-color 0.3s ease; /* Transisi untuk warna latar belakang lingkaran */
+            transition: background-color 0.2s ease; /* Transisi untuk warna latar belakang lingkaran */
         }
 
         .btn-kembali:hover .icon-circle {
-            background-color: rgb(67, 54, 240); /* UBAH: Latar belakang lingkaran jadi biru saat hover */
+            background-color: #4B68FB; /* UBAH: Latar belakang lingkaran jadi biru saat hover (changed from rgb(67, 54, 240)) */
         }
 
         .btn-kembali .icon-circle i {
-            color: rgb(67, 54, 240); /* Warna ikon default biru */
+            color: #4B68FB; /* Warna ikon default biru (changed from rgb(67, 54, 240)) */
             font-size: 1rem; 
-            transition: color 0.3s ease; /* Transisi untuk warna ikon */
+            transition: color 0.2s ease; /* Transisi untuk warna ikon */
         }
 
         .btn-kembali:hover .icon-circle i {
@@ -275,11 +277,11 @@
         }
 
         .NavSide__toggle i.bi.open {
-            color: rgb(67, 54, 240);
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             display: block;
         }
         .NavSide__toggle i.bi.close {
-            color: rgb(67, 54, 240);
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
 
         .NavSide__toggle.NavSide__toggle--active i.bi.open {
@@ -325,7 +327,7 @@
             }
 
             .NavSide__toggle i.bi.open {
-                color: rgb(67, 54, 240);
+                color: #4B68FB; /* Changed from rgb(67, 54, 240) */
                 display: block;
             }
 
@@ -355,7 +357,7 @@
             right: 0;
             width: 60px; 
             height: 100%;
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             border-top-right-radius: 20px;
             border-bottom-right-radius: 20px;
             transition: width 0.4s ease;
@@ -424,7 +426,7 @@
             margin-right: 15px; 
             margin-bottom: 15px; 
             text-decoration: none; 
-            color: rgb(67, 54, 240); 
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             font-weight: 500;
             font-size: 1rem;
             transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; 
@@ -432,7 +434,7 @@
         }
 
         .file-button:hover {
-            background-color: rgb(67, 54, 240); 
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             color: white; 
             text-decoration: none; 
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
@@ -441,7 +443,7 @@
         .file-button i {
             font-size: 1.25rem; 
             margin-right: 10px; 
-            color: rgb(67, 54, 240); 
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             transition: color 0.2s ease; 
         }
 
