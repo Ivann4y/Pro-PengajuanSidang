@@ -599,41 +599,47 @@
     </style>
 </head>
 <body>
-     <div id="NavSide">
+    <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
-      <div class="NavSide__sidebar-brand">
-        <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
-      </div>
-      <ul class="NavSide__sidebar-nav">
-        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-          <b></b><b></b>
-          <a href="aDetailSidangTA.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
-        </li>
-        <li class="NavSide__sidebar-item">
-          <b></b><b></b>
-          <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
-        </li>
-        <li class="NavSide__sidebar-item">
-          <b></b><b></b>
-          <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
-        </li>
-      </ul>
-    </div>
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /> </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <b></b>
+                    <b></b>
+                    <a href="aDetailSidangSem.php">
+                        <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b>
+                    <b></b>
+                    <a href="aEvaluasi.">
+                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b>
+                    <b></b>
+                    <a href="aNilaiAkhir.">
+                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-          <div class="NavSide__toggle">
-        <i class="bi bi-list open"></i>
-        <i class="bi bi-x-lg close"></i>
-      </div>
+        <div class="NavSide__toggle"> <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
+        </div>
 
         <main class="NavSide__main-content">
-            <h2 class="mb-3">Detail Sidang - Sistem Pengajuan Sidang</h2>
+            <h2 class="mb-3">Detail Sidang - Pemrograman 2</h2>
             <div class="status-badge">Status Pengajuan : Disetujui</div>
 
             <div class="info-card">
                 <div class="section">
-                    <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br>Basis Data 1</p>
-                    <p><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br>Dr. Rida Indah Fariani, S.Kom, M.Kom</p>
-                    <p><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>Timotius Victory, S.Kom, M.Kom<br>Ning Ratwasturi, S.Kom, M.Kom</p>
+                    <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br>Basis Data 1</p>
+                    <br>
+                    <p><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>Timotius Victory, S.Kom, M.Kom<br>Yosep Setiawan, S.Kom, M.Kom</p>
                 </div>
                 <div class="section">
                     <p><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br>CB101 - RPL 1B</p>
@@ -659,31 +665,33 @@
                           <input type="text" id="modal_nim" value="0920240033" readonly />
                         </div>
                         <div class="form-group">
-                          <label for="modal_judul_sidang">Judul Sidang</label>
-                          <input type="text" id="modal_judul_sidang" name="judul_sidang" value="Sistem Pengajuan Sidang" readonly />
+                          <label for="modal_judul_sidang">Mata Kuliah</label>
+                          <input type="text" id="modal_judul_sidang" name="judul_sidang" value="Pemrograman 2" readonly />
                            </div>
                 
-                        <div class="form-group">
-                          <label for="modal_pembimbing">Pembimbing</label>
-                          <input type="text" id="modal_pembimbing" name="pembimbing_nama" value="Rida Indah Fariani" readonly />    
-                        </div>
-
-                         <div id="penguji-wrapper">
-                          <div class="form-group" id="penguji-form-1">
-                            <label for="modal_penguji1">Penguji 1</label>
-
+                        
+                         <div id="pengampu-wrapper">
+                          <div class="form-group" id="pengampu-form-1">
+                            <label for="modal_pengampu1">Pengampu 1</label>
                             <div class="input-with-buttons">
-                              <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+                              <input type="text" id="modal_pengampu1" name="pengampu_nama[]" placeholder="Nama Pengampu 1" />
 
                               <div class="bobot-nilai-input-group">
-                                <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji1')">-</button>
-                                <input type="number" id="modal_qty_penguji1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 1" />
-                                <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji1')">+</button>
+                                <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_pengampu1')">-</button>
+                                <input type="number" id="modal_qty_pengampu1" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Pengampu 1" />
+                                <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_pengampu1')">+</button>
                               </div>
-
-                              <div class="form-toggle-buttons">
-                                <button type="button" onclick="addPenguji()">+</button>
-                                <button type="button" onclick="removePenguji()">-</button>
+                            </div>
+                          </div>
+                          <!-- Pengampu 2 -->
+                          <div class="form-group" id="pengampu-form-2">
+                            <label for="modal_pengampu2">Pengampu 2</label>
+                            <div class="input-with-buttons">
+                              <input type="text" id="modal_pengampu2" name="pengampu_nama[]" placeholder="Nama Pengampu 2" />
+                              <div class="bobot-nilai-input-group">
+                                <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_pengampu2')">-</button>
+                                <input type="number" id="modal_qty_pengampu2" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Pengampu 2" />
+                                <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_pengampu2')">+</button>
                               </div>
                             </div>
                           </div>
