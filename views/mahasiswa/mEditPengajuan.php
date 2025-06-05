@@ -49,9 +49,13 @@
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
+              <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                 <i class="bi bi-bell-fill"></i>
+              </a>
                 <div class="profile-icon">
+                  <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                     <i class="bi bi-person-fill fs-5"></i>
+                  </a>
                 </div>
             </div>
         </div>
@@ -269,8 +273,32 @@
 
 </style>
 
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+        // Sidebar Toggle Logic 
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+
+        if (menuToggle) {
+            menuToggle.onclick = function() {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
+        }
+
+        // Sidebar Active Item Logic
+        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function(event) { 
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                }
+            };
+        }
+
   const btnOpenModalKonfirmasi = document.getElementById('btnOpenModalKonfirmasi');
   const modalKonfirmasiEl = document.getElementById('modalKonfirmasi');
   const modalPeringatanEl = document.getElementById('modalPeringatan');
