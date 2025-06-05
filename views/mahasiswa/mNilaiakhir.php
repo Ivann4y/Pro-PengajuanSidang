@@ -273,6 +273,7 @@
             transition: margin-left 0.5s ease-in-out;
             background-color: #F9FAFB;
             padding-top: 3vh; /* Default for larger screens */
+            overflow-x: hidden;
         }
 
         .NavSide__toggle {
@@ -455,8 +456,6 @@
         </div>
         <main class="NavSide__main-content">
        
-      
-
       <div class="container-fluid bodyContainer">
           <div class="row mb-5">
                  <h2 style="margin-left: 50px ;">
