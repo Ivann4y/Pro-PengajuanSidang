@@ -64,7 +64,7 @@ body {
     margin-left: 0;
     width: 100%;
   }
-  .text-heading {
+  /* .text-heading {
     font-size: large;
   }
   .dropdown-toggle,
@@ -73,7 +73,7 @@ body {
   }
   table {
     font-size: small;
-  }
+  } */
 
   thead th:nth-child(1),
   thead th:nth-child(5) {
