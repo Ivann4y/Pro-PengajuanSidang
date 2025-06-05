@@ -166,8 +166,8 @@
             width: 280px;
             border-radius: 1px;
             box-sizing: border-box;
-            border-left: 5px solid rgb(67, 54, 240);
-            background: rgb(67, 54, 240);
+            border-left: 5px solid #4B68FB;
+            background: #4B68FB;
             overflow-x: hidden;
             overflow-y: auto;
             z-index: 1000;
@@ -217,7 +217,7 @@
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: rgb(67, 54, 240);
+            color: #4B68FB;
         }
 
         .NavSide__sidebar-item b:nth-child(1) {
@@ -237,7 +237,7 @@
             width: 100%;
             height: 100%;
             border-bottom-right-radius: 20px;
-            background: rgb(67, 54, 240);
+            background: #4B68FB;
             display: block;
         }
         .NavSide__sidebar-item b:nth-child(2) {
@@ -257,7 +257,7 @@
             width: 100%;
             height: 100%;
             border-top-right-radius: 20px;
-            background: rgb(67, 54, 240);
+            background: #4B68FB;
             display: block;
         }
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
@@ -273,6 +273,9 @@
             transition: margin-left 0.5s ease-in-out;
             background-color: #F9FAFB;
             padding-top: 3vh; /* Default for larger screens */
+            overflow-x: hidden;
+            max-width: 100%;
+              box-sizing: border-box;
         }
 
         .NavSide__toggle {
@@ -299,10 +302,10 @@
         }
 
         .NavSide__toggle i.bi.open {
-            color: rgb(67, 54, 240);
+            color: #4B68FB;
         }
         .NavSide__toggle i.bi.close {
-            color: rgb(67,54,240);
+            color: #4B68FB;
         }
         .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; }
         .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; }
@@ -455,9 +458,7 @@
         </div>
         <main class="NavSide__main-content">
        
-      
-
-      <div class="container-fluid bodyContainer">
+      <div class="container-fluid ">
           <div class="row mb-5">
                  <h2 style="margin-left: 50px ;">
                 <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
