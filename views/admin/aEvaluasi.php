@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <title>Detail Sidang</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/stylee.css?v=<?= time() ?>">
-  <link rel="stylesheet" href="../../extra/style.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
 <script src="main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -80,22 +80,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="aDetailSidangTA.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+                </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+                    <a href="aEvaluasi"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
                 </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Nilai akhir</span></a>
-                </li>
-                <!-- <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-                </li> -->
+  
             </ul>
         </div>
 
