@@ -455,7 +455,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 <div class="col-lg-7">
                     <div class="row">
                         <div class="col-md-6">
-                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit; display: block;">
+                            <a href="mSidang.php" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="dashboard-card sidang-status-card">
                                     <div class="number">3</div>
                                     <div class="text">
