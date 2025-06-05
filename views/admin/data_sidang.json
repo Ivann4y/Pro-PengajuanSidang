@@ -1,37 +1,316 @@
 [
   {
     "id": "001",
-    "nim": "0920240042",
-    "nama": "Dhonnan",
-    "judulSidang": "S1",
-    "pembimbing": "PB1",
+    "nim": "0478073075",
+    "nama": "Hadi Kusuma",
+    "judulSidang": "Sistem Implementasi Kuliah",
+    "pembimbing": "Rida Indah Fariani",
     "tipeSidang": "TA",
     "statusPersetujuan": false
   },
   {
     "id": "002",
-    "nim": "0920240032",
-    "nama": "Raissa",
-    "judulSidang": "S2",
-    "pembimbing": "PB2",
+    "nim": "0729861471",
+    "nama": "Indra Kusuma",
+    "judulSidang": "Sistem Analisis Kuliah",
+    "pembimbing": "Citra Dewi",
     "tipeSidang": "TA",
     "statusPersetujuan": true
   },
   {
     "id": "003",
-    "nim": "092024023",
-    "nama": "Rafif",
-    "judulSidang": "S3",
-    "pembimbing": "PB4",
-    "tipeSidang": "Semester",
+    "nim": "0883461525",
+    "nama": "Eka Sari",
+    "judulSidang": "Sistem Evaluasi TA",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "TA",
     "statusPersetujuan": false
   },
   {
     "id": "004",
-    "nim": "0920240025",
-    "nama": "Fadillah",
-    "judulSidang": "S4",
-    "pembimbing": "PB4",
+    "nim": "0386638881",
+    "nama": "Joko Wijaya",
+    "judulSidang": "Sistem Aplikasi Kuliah",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "005",
+    "nim": "0867071261",
+    "nama": "Eka Kusuma",
+    "judulSidang": "Sistem Monitoring Website",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "006",
+    "nim": "0496765705",
+    "nama": "Citra Kusuma",
+    "judulSidang": "Proyek Implementasi Proyek",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "007",
+    "nim": "0233462348",
+    "nama": "Putri Sari",
+    "judulSidang": "Proyek Manajemen Database",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "008",
+    "nim": "0389838994",
+    "nama": "Putri Wijaya",
+    "judulSidang": "Proyek Sistem Sidang",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "009",
+    "nim": "0874952385",
+    "nama": "Kartika Pratama",
+    "judulSidang": "Proyek Sistem Sidang",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "010",
+    "nim": "0732634951",
+    "nama": "Kartika Wijaya",
+    "judulSidang": "Proyek Monitoring Kuliah",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "011",
+    "nim": "0350588028",
+    "nama": "Fajar Kusuma",
+    "judulSidang": "Sistem Perancangan Proyek",
+    "pembimbing": "Citra Dewi",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "012",
+    "nim": "0647223164",
+    "nama": "Nina Pratama",
+    "judulSidang": "Sistem Optimasi Proyek",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "013",
+    "nim": "0871928336",
+    "nama": "Wati Santoso",
+    "judulSidang": "Sistem Pengembangan Database",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "014",
+    "nim": "0579016823",
+    "nama": "Gita Pratama",
+    "judulSidang": "Sistem Monitoring Tugas Akhir",
+    "pembimbing": "Citra Dewi",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "015",
+    "nim": "0666937092",
+    "nama": "Joko Sari",
+    "judulSidang": "Sistem Evaluasi TA",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "TA",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "016",
+    "nim": "0645484259",
+    "nama": "Rudi Putra",
+    "judulSidang": "Sistem Monitoring Kuliah",
+    "pembimbing": "Dian Prasetyo",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "017",
+    "nim": "0859251551",
+    "nama": "Maya Wijaya",
+    "judulSidang": "Sistem Evaluasi Skripsi",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "TA",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "018",
+    "nim": "0734012467",
+    "nama": "Sari Sari",
+    "judulSidang": "Sistem Aplikasi Perangkat Lunak",
+    "pembimbing": "Rida Indah Fariani",
+    "tipeSidang": "TA",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "019",
+    "nim": "0767371158",
+    "nama": "Eka Wijaya",
+    "judulSidang": "Sistem Perancangan Tugas Akhir",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "020",
+    "nim": "0839335768",
+    "nama": "Hadi Putra",
+    "judulSidang": "Sistem Analisis Proyek",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "021",
+    "nim": "0349399290",
+    "nama": "Eka Nugroho",
+    "judulSidang": "Proyek Implementasi Tugas Akhir",
+    "pembimbing": "Citra Dewi",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "022",
+    "nim": "0258929657",
+    "nama": "Eka Pratama",
+    "judulSidang": "Proyek Evaluasi Tugas Akhir",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "023",
+    "nim": "0485978373",
+    "nama": "Oki Pratama",
+    "judulSidang": "Proyek Sistem Skripsi",
+    "pembimbing": "Citra Dewi",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "024",
+    "nim": "0375083703",
+    "nama": "Indra Saputra",
+    "judulSidang": "Proyek Pengembangan Website",
+    "pembimbing": "Citra Dewi",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "025",
+    "nim": "0836885275",
+    "nama": "Eka Kusuma",
+    "judulSidang": "Proyek Manajemen Tugas Akhir",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "026",
+    "nim": "0642216887",
+    "nama": "Citra Pratama",
+    "judulSidang": "Proyek Pengembangan Kuliah",
+    "pembimbing": "Timotius Victory",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "027",
+    "nim": "0567221949",
+    "nama": "Sari Kusuma",
+    "judulSidang": "Proyek Optimasi Tugas Akhir",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "028",
+    "nim": "0792102704",
+    "nama": "Rudi Wijaya",
+    "judulSidang": "Proyek Pengembangan Proyek",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "029",
+    "nim": "0317666202",
+    "nama": "Wati Sari",
+    "judulSidang": "Proyek Manajemen Skripsi",
+    "pembimbing": "Dian Prasetyo",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "030",
+    "nim": "0899357371",
+    "nama": "Kartika Setiawan",
+    "judulSidang": "Proyek Monitoring Tugas Akhir",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "031",
+    "nim": "0264302123",
+    "nama": "Wati Setiawan",
+    "judulSidang": "Proyek Pengembangan Skripsi",
+    "pembimbing": "Rida Indah Fariani",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "032",
+    "nim": "0867961920",
+    "nama": "Sari Putra",
+    "judulSidang": "Proyek Sistem Database",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "033",
+    "nim": "0673764287",
+    "nama": "Kartika Hadi",
+    "judulSidang": "Proyek Sistem Website",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "034",
+    "nim": "0291742032",
+    "nama": "Citra Sari",
+    "judulSidang": "Proyek Perancangan Kuliah",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "035",
+    "nim": "0533647400",
+    "nama": "Putri Hadi",
+    "judulSidang": "Proyek Manajemen Mobile",
+    "pembimbing": "Citra Dewi",
     "tipeSidang": "Semester",
     "statusPersetujuan": true
   }

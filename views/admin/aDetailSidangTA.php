@@ -367,6 +367,11 @@
           font-weight: 500;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
           transition: background-color 0.3s ease, transform 0.2s ease;
+          display: inline-flex;
+          align-items: center;
+          margin-top: 4cm;
+          width: auto;
+          gap: 10px;
         }
         .btn-kembali:hover {
            position: relative;
@@ -640,7 +645,7 @@
             <h5 class="mt-4">Aksi</h5>
             <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
             <br><br>
-            <button class="btn-kembali"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+            <button class="btn-kembali"><i class="fa-solid fa-circle-arrow-left"></i> Kembali</button>
             
             <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -916,7 +921,7 @@
           console.log("Form valid, data siap dikirim.");
           Swal.fire({
           title: 'Berhasil',
-          text: 'Nilai akhir telah dikirim.',
+          text: 'Jadwal Berhasil Dibuat.',
           icon: 'success',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
