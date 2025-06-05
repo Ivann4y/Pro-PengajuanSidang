@@ -16,28 +16,6 @@
   <link rel="stylesheet" href="../../extra/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <title>Edit Pengajuan Sidang</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-    }
-
-    label {
-      font-weight: 500;
-      margin-bottom: 5px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .form-control, .form-select {
-      font-family: "Poppins", sans-serif;
-      font-size: 16px;
-      padding: 12px 15px;
-      border-radius: 12px;
-}
-
-  </style>
 </head>
 <body>
   <div id="NavSide">
@@ -79,14 +57,22 @@
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-         <div class="container-fluid">
     <div class="container-fluid">
+       <div class="dashboard-header">
+        <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon">
+                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                    </div>
+                </div>
+            </div>
       <div class="row">
         <div class="col-12">
-        <h2 class="text-heading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
+
         <h5 class="fw-bold mt-4 mb-3">Tambah Sidang</h5>
         <hr>
-      </div>
+    </div>
 
       <form action="#" method="post">
         <div class="mb-3">
@@ -163,44 +149,6 @@
   </div>
 </div>
 
-<style>
-.upload-box {
-  background-color: #e9ecef;
-  border-radius: 16px;
-  padding: 40px 20px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.upload-box:hover {
-  background-color: #dee2e6;
-}
-
-.upload-box.file-selected {
-  background-color: #d1e7dd; /* Hijau muda */
-  border: 2px solid #0f5132;
-  color: #0f5132;
-}
-.upload-content {
-  min-height: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-</style>
-
-
-
-
-        <div class="d-flex justify-content-end gap-2 mt-3">
-          <button type="button" class="btn btn-secondary" onclick="history.back()">Simpan</button>
-<!-- Trigger -->
-<button type="button" class="btn btn-primary" id="btnOpenModalKonfirmasi">
-  Kirim
-</button>
-
 <!-- Modal Peringatan -->
 <div class="modal fade" id="modalPeringatan" tabindex="-1" aria-labelledby="modalPeringatanLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -216,8 +164,6 @@
     </div>
   </div>
 </div>
-
-
 
 
 <!-- Modal -->
@@ -236,7 +182,16 @@
       </div>
     </div>
   </div>
-</div> 
+</div>
+
+<!-- Verifikasi Modal -->
+<div class="d-flex justify-content-end gap-2 mt-3">
+<button type="button" class="btn btn-secondary" onclick="history.back()">Simpan</button>
+<!-- Trigger -->
+<button type="button" class="btn btn-primary" id="btnOpenModalKonfirmasi">
+  Kirim
+</button>
+
 
 <!-- Modal Berhasil -->
 <div class="modal fade" id="modalBerhasil" tabindex="-1" aria-labelledby="modalBerhasilLabel" aria-hidden="true">
@@ -254,17 +209,67 @@
     </div>
   </div>
 </div>
-
-      </form>
-    </div>
+    </form>
   </div>
+</div>
 
 
           
       </main>
     </div>
 
- 
+<style>
+
+      body {
+      font-family: "Poppins", sans-serif;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .form-control, .form-select {
+      font-family: "Poppins", sans-serif;
+      font-size: 16px;
+      padding: 12px 15px;
+      border-radius: 12px;
+
+}
+.upload-box {
+  background-color: #e9ecef;
+  border-radius: 16px;
+  padding: 40px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-box:hover {
+  background-color: #dee2e6;
+}
+
+.upload-box.file-selected {
+  background-color: #d1e7dd; /* Hijau muda */
+  border: 2px solid #0f5132;
+  color: #0f5132;
+}
+
+.upload-content {
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+</style>
+
+
 <script>
   const btnOpenModalKonfirmasi = document.getElementById('btnOpenModalKonfirmasi');
   const modalKonfirmasiEl = document.getElementById('modalKonfirmasi');
