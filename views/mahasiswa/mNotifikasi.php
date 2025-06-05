@@ -178,13 +178,13 @@
             </h2>
           </div><br>
           <div class="row align-items-center mb-3">
-            <div class="col-12 col-md-1">
+            <div class="col">
               <b>Notifikasi</b>
             </div>
-            <div class="col-12 col-md-9"></div>
-            <div class="col-12 col-md-2">
+            
+            <div class="col-auto ms-auto">
               <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMBelumDibaca">
+                <button class="btn btn-primary dropdown-toggle " type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMBelumDibaca">
                   Belum Dibaca
                 </button>
                 <ul class="dropdown-menu">
