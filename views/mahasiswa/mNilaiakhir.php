@@ -273,9 +273,8 @@
             transition: margin-left 0.5s ease-in-out;
             background-color: #F9FAFB;
             padding-top: 3vh; /* Default for larger screens */
-            overflow-x: hidden;
-            max-width: 100%;
-              box-sizing: border-box;
+              overflow-x: hidden;
+  max-width: 100%;
         }
 
         .NavSide__toggle {
@@ -458,6 +457,8 @@
         </div>
         <main class="NavSide__main-content">
        
+      
+
       <div class="container-fluid ">
           <div class="row mb-5">
                  <h2 style="margin-left: 50px ;">
@@ -480,8 +481,7 @@
               src="../../assets/img/img5.png"
               alt="Mahasiswa"
               class="img-fluid "
-              style="width: 500px; height: 350px; margin-left: 20px; "
-    
+              style="max-width: 100%; height: auto;"
             />
           </div>
         </div>
