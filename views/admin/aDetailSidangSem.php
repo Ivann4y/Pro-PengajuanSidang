@@ -261,7 +261,7 @@
 
        
         .status-badge {
-          background-color: #4cfaab;
+          background-color: #4BFBAF;
           color: rgb(48, 48, 110);
           border-radius: 20px;
           padding: 8px 18px; 
@@ -357,7 +357,7 @@
         }
 
         .btn-kembali {
-          background-color: rgb(67, 54, 240);
+          background-color: #4B68FB;
           color: white;
           border: none;
           border-radius: 20px;
@@ -590,6 +590,21 @@
           background-color: #ddd;
         }
 
+        .modal-body .form-group select {
+          width: 100%;
+          height: 35px;
+          padding: 0 15px;
+          border: 1px solid #D1D5DB;
+          background-color: rgb(255, 255, 255);
+          box-sizing: border-box;
+          font-size: 14px;
+          color: #374151;
+          border-radius: 26px;
+          appearance: none; /* hilangkan style default browser */
+          -webkit-appearance: none;
+          -moz-appearance: none;
+       }
+
         
 
 
@@ -683,7 +698,7 @@
                               </div>
                             </div>
                           </div>
-                          <!-- Pengampu 2 -->
+                     
                           <div class="form-group" id="pengampu-form-2">
                             <label for="modal_pengampu2">Pengampu 2</label>
                             <div class="input-with-buttons">
@@ -702,8 +717,20 @@
                         
                         <div class="form-group">
                           <label for="modal_prodi">Prodi</label>
-                          <input type="text" id="modal_prodi" name="prodi" value="Teknologi Rekayasa Perangkat Lunak" readonly/>
-                          </div>
+                          <select id="modal_prodi" name="prodi" class="form-control">
+                            <option value="">-- Pilih Prodi --</option>
+                            <option value="TRPL">TRPL</option>
+                            <option value="MI">MI</option>
+                            <option value="MK">MK</option>
+                            <option value="MO">MO</option>
+                            <option value="TRL">TRL</option>
+                            <option value="TAB">TAB</option>
+                            <option value="P4">P4</option>
+                            <option value="TKBG">TKBG</option>
+                            <option value="TPM">TPM</option>
+                          </select>
+                        </div>
+
                         <div class="form-group">
                           <label for="modal_ruangan">Ruangan</label>
                           <input type="text" id="modal_ruangan" name="ruangan"/>

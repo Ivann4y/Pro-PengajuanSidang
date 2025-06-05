@@ -261,7 +261,7 @@
 
        
         .status-badge {
-          background-color: #4cfaab;
+          background-color: #4BFBAF;
           color: rgb(48, 48, 110);
           border-radius: 20px;
           padding: 8px 18px; 
@@ -357,7 +357,7 @@
         }
 
         .btn-kembali {
-          background-color: rgb(67, 54, 240);
+          background-color: #4B68FB;
           color: white;
           border: none;
           border-radius: 20px;
