@@ -72,9 +72,6 @@
   }
 
   img.img-fluid {
-    width: 100% !important;
-    height: auto !important;
-    margin-left: 0 !important;
     display: none !important;
   }
 
@@ -162,9 +159,142 @@
       flex: 3;
     }
 }
+@media (max-width: 1000px) {
+    .NavSide__main-content .row.mt-5.justify-content-between {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .NavSide__main-content .row.mt-5.justify-content-between .col-auto {
+    flex: auto;
+    text-align: center;
+    margin-bottom: 0 !important;
+    padding: 10px;
+  }
+
+  .NavSide__main-content .btn-kirim {
+    width: 100% !important;
+    max-width: 150px;
+    margin: auto;
+  }
+
+  .NavSide__main-content .btn-kembali {
+    width: 100% !important;
+    max-width: 150px;
+    margin: auto;
+  }
+ .NavSide__main-content  #carddetailPenilaian,
+  .NavSide__main-content #cardcatatan {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .NavSide__main-content #cardNilai {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .NavSide__main-content #nilaiMahasiswa {
+    font-size: 5rem !important;
+
+    
+  }
+
+  .NavSide__main-content #detailpenilaian {
+    width: 15% !important;
+  }
+
+  .NavSide__main-content img.img-fluid {
+    display: none !important;
+  }
+
+  .NavSide__main-content .row.mt-5 .col-auto {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .NavSide__main-content .btn-kirim {
+    margin-right: 0 !important;
+  }
+  .modal-dialog {
+    margin: 1rem auto;
+    max-width: 95% !important;
+  }
+
+  .modal-content {
+    border-radius: 20px !important;
+    padding: 15px;
+  }
+
+  .modal-body {
+    text-align: center;
+    padding: 20px;
+  }
+  .kakimodal {
+    
+     flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 150px !important;
+  }
+  
 
 
+  .kakimodal .col-md-6,
+  .mb5 .col-md-6 {
+    margin-left: 0 !important;
+    width: auto !important;
+    padding: 0 !important;
+  }
+
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    flex:1 1 auto;
+  }
+  .NavSide__main-content .penilaian-row {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .NavSide__main-content .label-penilaian {
+      display: flex;
+      text-align: center;
+    }
+
+    .NavSide__main-content .colon1 {
+
+      flex: 1;
+      display: flex;
+      margin-left: 81px;
+    }
+    .NavSide__main-content .colon2{
+      flex: 1;
+      display: flex;
+      margin-left: 42px;
+    }
+    .NavSide__main-content .colon3{
+      flex: 1;
+      display: flex;
+      margin-left: 69px;
+    }
+    .NavSide__main-content .colon4{
+      flex: 1;
+      display: flex;
+      margin-left: 88px;
+    }
+
+    .NavSide__main-content .input-penilaian {
+      width: 100%;
+      flex: 3;
+    }
 }
+
+
 
 
 
@@ -328,9 +458,11 @@
          </ul>
       </div>
 
-      <div class="NavSide__toggle">
-        <i class="bi bi-list open"></i>
-        <i class="bi bi-x-lg close"></i>
+      <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
       </div>
 
       <main class="NavSide__main-content">
@@ -361,7 +493,7 @@
           </div>
           <div class="col-lg-6 col-md-12 mb-3">
             <img
-              src="img5.png"
+              src="../../assets/img/img5.png"
               alt="Mahasiswa"
               class="img-fluid rounded"
               
@@ -493,6 +625,28 @@
   </div>
 </div>
 <script>
+
+    let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+
+        // Sidebar Active Item Logic
+        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function() {
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                }
+            };
+        }
+
    document.getElementById('detailpenilaian').addEventListener('input', function() {
   this.value = this.value.replace(/[^0-9]/g, '');
   if (this.value > 100) {
