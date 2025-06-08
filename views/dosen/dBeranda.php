@@ -75,7 +75,7 @@ if ($_SESSION['role'] !== 'dosen') {
         }
 
         .card-pengajuan { /* Kartu "Pengajuan" */
-            background-color: #4F46E5; /* Warna ungu sesuai gambar */
+            background-color: #4B68FB; /* Warna ungu sesuai gambar */
             color: white;
         }
 
@@ -85,7 +85,7 @@ if ($_SESSION['role'] !== 'dosen') {
             border: 1px solid #E5E7EB; /* Border tipis */
         }
         .card-penilaian .statusNumber, .card-perbaikan .statusNumber {
-             color: #4F46E5; /* Angka berwarna ungu */
+             color: #4B68FB; /* Angka berwarna ungu */
         }
 
         .statusTitle {

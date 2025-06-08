@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         button:hover {
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB;
             color: white;
         }
 
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .bgBiru {
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB;
             height: 50vh;
         }
 
