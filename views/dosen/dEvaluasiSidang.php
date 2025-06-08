@@ -268,6 +268,14 @@
             color: white;
         }
 
+        .info-card .section .info-group {
+            margin-bottom: 1rem;
+        }
+
+        .info-card .section .info-group:last-child {
+            margin-bottom: 0;
+        }
+
         .info-card .section .label-row {
             display: flex;
             align-items: center;
