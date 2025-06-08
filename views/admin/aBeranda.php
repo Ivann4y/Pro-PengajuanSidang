@@ -224,6 +224,7 @@ if ($_SESSION['role'] !== 'admin') {
                 <li class="NavSide__sidebar-item">
                     <b></b>
                     <b></b>
+<<<<<<< HEAD
                     <a href="aDaftarSidang.php">
                         <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
             </a>
@@ -233,7 +234,15 @@ if ($_SESSION['role'] !== 'admin') {
             <b></b>
             <a href="../../index.php">
               <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
+=======
+                    <a href="#">
+                        <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
                     </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -286,6 +295,24 @@ if ($_SESSION['role'] !== 'admin') {
                 </div>
             </div>
 
+            <!-- modal keluar -->
+            <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header mx-auto">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+                </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <div class="notifBox">
@@ -319,6 +346,7 @@ if ($_SESSION['role'] !== 'admin') {
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function markAllRead() {
             document

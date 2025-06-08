@@ -1,3 +1,4 @@
+<<<<<<< HEAD
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -279,6 +280,34 @@
             }
 
             table {
+=======
+<?php
+session_start();
+if ($_SESSION['role'] !== 'dosen') {
+    header("Location: ../../index.php");
+    exit();
+}
+?>  
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../extra/style.css">
+    <title>Dosen - Daftar Sidang</title>
+    <style>
+        table {
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
             border-spacing: 0 10px;
             border-collapse: separate;
             width: 100%;
@@ -331,6 +360,7 @@
             }
         
 
+<<<<<<< HEAD
         </style>
     </head>
     <body>
@@ -339,6 +369,48 @@
             <div id="main-sidebar" class="NavSide__sidebar">
                 <div class="NavSide__sidebar-brand">
                     <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+=======
+<body>
+
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item ">
+                    <b></b><b></b>
+                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons d-flex d-md-none">
+                <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                    <i class="bi bi-bell-fill"></i>
+                </a>
+                <div class="profile-icon">
+                    <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
+                        <i class="bi bi-person-fill fs-5"></i>
+                    </a>
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
                 </div>
                 <ul class="NavSide__sidebar-nav">
                     <li class="NavSide__sidebar-item">
@@ -359,6 +431,7 @@
                     </li>
                 </ul>
             </div>
+<<<<<<< HEAD
 
             <div class="NavSide__topbar">
                 <div class="NavSide__toggle">
@@ -367,8 +440,16 @@
                 </div>
                 <div class="header-icons">
                     <i class="bi bi-bell-fill"></i>
+=======
+        </div>
+        <main class="NavSide__main-content" id="mBeranda">
+            <div class="dashboard-header">
+                <h2 class="page-title"> </h2>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
                     <div class="profile-icon">
-                        <i class="bi bi-person-fill fs-5"></i>
+                         <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
                 </div>
             </div>
@@ -472,8 +553,33 @@
         </div>
         </div>
 
+<<<<<<< HEAD
         <script>
             let isTA = true;
+=======
+            <script>
+                let menuToggle = document.querySelector(".NavSide__toggle");
+                let sidebar = document.getElementById("main-sidebar");
+
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+
+                // Sidebar Active Item Logic
+                let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+                for (let i = 0; i < listItems.length; i++) {
+                    listItems[i].onclick = function() {
+                        if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                            for (let j = 0; j < listItems.length; j++) {
+                                listItems[j].classList.remove("NavSide__sidebar-item--active");
+                            }
+                            this.classList.add("NavSide__sidebar-item--active");
+                        }
+                    };
+                }
+                let isTA = true;
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
 
             function switchDdaftarSidang() {
                 const taTable = document.getElementById('dPengajuanTA');

@@ -16,152 +16,9 @@ if ($_SESSION['role'] !== 'dosen') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../../extra/style.css">
     <style>
-        body {
-            margin: 0;
-            font-family: "Poppins", sans-serif;
-            background-color: rgb(255, 255, 255); /* Sesuai gambar, background utama putih */
-        }
-
-        #NavSide {
-            display: flex;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        .NavSide__sidebar-brand {
-            padding: 10% 5% 50% 5%; /* Disesuaikan agar logo tidak terlalu jauh dari menu */
-            text-align: center;
-        }
-
-        .NavSide__sidebar-brand img {
-            width: 90%;
-            max-width: 180px; /* Bisa disesuaikan */
-            height: auto;
-            display: inline-block;
-        }
-
-        .NavSide__sidebar {
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            bottom: 0px;
-            width: 280px;
-            border-radius: 1px;
-            box-sizing: border-box;
-            /* border-left: 5px solid rgb(67, 54, 240); */ /* Dihapus agar tidak ada garis biru tambahan di kiri */
-            background: rgb(67, 54, 240); /* Warna sidebar biru/ungu */
-            overflow-x: hidden;
-            overflow-y: auto;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
-        }
-
-        .NavSide__sidebar-nav {
-            width: 100%;
-            padding-left: 0;
-            padding-top: 0; /* Mengurangi padding atas jika brand sudah memberi jarak */
-            list-style: none;
-            flex-grow: 1;
-        }
-
-        .NavSide__sidebar-item {
-            position: relative;
-            display: block;
-            width: 100%;
-            border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
-            margin-bottom: 10px;
-            padding-right: 10px; /* Memberi sedikit ruang di kanan agar tidak terlalu mepet */
-        }
-
-        .NavSide__sidebar-item a {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center; /* Text ke tengah */
-            width: 100%;
-            text-decoration: none;
-            color: rgb(252, 252, 252);
-            padding: 12px 15px; /* Disesuaikan paddingnya */
-            height: 60px;
-            box-sizing: border-box;
-            border-radius: 20px 0 0 20px; /* Radius hanya di kiri */
-        }
-
-        .NavSide__sidebar-title {
-            white-space: normal;
-            text-align: center;
-            line-height: 1.5;
-            font-weight: 500; /* Font weight untuk menu item */
-        }
-
-        .NavSide__sidebar-item.NavSide__sidebar-item--active {
-            background: #ffffff; /* Warna background item aktif */
-             margin-right: 0; /* Hilangkan margin kanan pada item aktif agar b menempel */
-        }
-
-        .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: rgb(67, 54, 240); /* Warna teks item aktif */
-        }
-
-        /* Kurva pada item aktif */
-        .NavSide__sidebar-item b:nth-child(1) {
-            position: absolute;
-            top: -20px;
-            height: 20px;
-            width: 100%;
-            background: rgb(255, 255, 255);
-            display: none;
-            right: 0;
-        }
-        .NavSide__sidebar-item b:nth-child(1)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-bottom-right-radius: 20px;
-            background: rgb(67, 54, 240);
-            display: block;
-        }
-        .NavSide__sidebar-item b:nth-child(2) {
-            position: absolute;
-            bottom: -20px;
-            height: 20px;
-            width: 100%;
-            background: rgb(255, 255, 255);
-            display: none;
-            right: 0;
-        }
-        .NavSide__sidebar-item b:nth-child(2)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-top-right-radius: 20px;
-            background: rgb(67, 54, 240);
-            display: block;
-        }
-        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
-        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
-            display: block;
-        }
-
-        .NavSide__main-content {
-            flex-grow: 1;
-            padding: 30px; /* Padding konten utama */
-            margin-left: 280px;
-            overflow-y: auto;
-            transition: margin-left 0.5s ease-in-out;
-            background-color: #FFFFFF; /* Background putih untuk konten utama */
-            position: relative;
-        }
+        
 
         /* Ikon Header untuk Desktop (Profil) */
         .NavSide__main-content .header-icons-desktop {
@@ -184,88 +41,6 @@ if ($_SESSION['role'] !== 'dosen') {
             color: white;
             font-size: 1.5rem; /* Ukuran ikon di dalam bubble */
         }
-
-
-        /* Top Bar for smaller screens (Mobile) */
-        .NavSide__toggle {
-            width: 40px;
-            height: 40px;
-            z-index: 1100;
-            transition: left 0.5s ease-in-out;
-            cursor: pointer;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
-        }
-        .NavSide__toggle i.bi {
-            position: absolute;
-            font-size: 28px;
-            display: none;
-        }
-        .NavSide__toggle i.bi.open { color: rgb(67, 54, 240); }
-        .NavSide__toggle i.bi.close { color: rgb(67, 54, 240); }
-        .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; }
-        .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; }
-
-        .NavSide__topbar {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-            align-items: center;
-            padding: 0 15px;
-            justify-content: space-between;
-        }
-        .NavSide__topbar .header-icons { display: flex; align-items: center; }
-        .NavSide__topbar .header-icons .bi-bell-fill {
-            font-size: 1.5rem; color: #555; margin-right: 1.5rem; cursor: pointer;
-        }
-        .NavSide__topbar .profile-icon {
-            width: 40px; height: 40px; background-color: #333; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 600;
-        }
-
-        @media (max-width: 991px) { /* Titik breakpoint diperbarui ke lg */
-            .NavSide__sidebar {
-                width: 250px; /* Lebar sidebar lebih kecil di tablet */
-                transform: translateX(-100%);
-            }
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
-            }
-             .NavSide__main-content .header-icons-desktop {
-                display: none; /* Sembunyikan ikon desktop saat mobile/tablet */
-            }
-            .NavSide__main-content {
-                margin-left: 0;
-                padding-top: 75px;
-            }
-            .NavSide__topbar { display: flex; }
-            .NavSide__toggle { display: flex; position: static; box-shadow: none; background-color: transparent; }
-            .NavSide__toggle i.bi.open { display: block; }
-        }
-         @media (max-width: 767px) { /* Untuk mobile screen */
-             .NavSide__sidebar {
-                width: 70%; /* Sidebar lebih lebar di mobile */
-             }
-             .statusCard {
-                 margin-bottom: 1rem !important; /* Pastikan margin card tetap ada di mobile */
-             }
-             .img-slot {
-                 min-height: 200px; /* Kurangi tinggi gambar di mobile */
-             }
-         }
-
 
         /* Styling dari Gambar */
         .dashboardTitle { /* "Beranda" */
@@ -335,7 +110,7 @@ if ($_SESSION['role'] !== 'dosen') {
 
 
         .img-slot img{
-            max-width: 120%; /* Gambar tidak terlalu lebar */
+            max-width: 110%; /* Gambar tidak terlalu lebar */
             max-height: 100%; /* Gambar tidak melebihi kontainer */
             object-fit: contain;
         }
@@ -521,7 +296,11 @@ if ($_SESSION['role'] !== 'dosen') {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
+<<<<<<< HEAD
                     <a href="logout.html"><span class="NavSide__sidebar-title">Keluar</span></a>
+=======
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
                 </li>
             </ul>
         </div>

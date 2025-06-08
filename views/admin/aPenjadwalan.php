@@ -280,8 +280,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         </li>
         <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
             <b></b><b></b>
-            <a href="logout.php" onclick="location.href='logout.php'">
-                <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
+                <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
             </a>
         </li>
     </ul>
@@ -348,6 +348,23 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       </table>
     </div>
   </div>
+
+  <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header mx-auto">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+        </div>
+        <div class="modal-body mx-auto">
+             Apakah anda yakin ingin keluar?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+        </div>
+        </div>
+    </div>
+    </div>
 
   <script>
     function markAllRead() {

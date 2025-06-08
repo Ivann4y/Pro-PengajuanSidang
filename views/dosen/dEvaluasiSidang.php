@@ -7,24 +7,24 @@
 
     if ($tipe === 'TA') {
         $mahasiswa = [
-            'nama' => 'M. Haaris Nur S.',
-            'nim' => '0920240033',
+            'nama'        => 'M. Haaris Nur S.',
+            'nim'         => '0920240033',
             'mata_kuliah' => 'Tugas Akhir',
         ];
     } elseif ($tipe === 'Semester') {
         $mahasiswa = [
-            'nama' => 'M. Harris Nur S.',
-            'nim' => '0920240033',
-            'mata_kuliah' => 'Pemrograman 2',
+            'nama'         => 'M. Harris Nur S.',
+            'nim'          => '0920240033',
+            'mata_kuliah'  => 'Pemrograman 2',
             'judul_sidang' => 'Sistem Pengajuan Sidang'
         ];
     } else {
         // Data default jika tipe tidak dikenali
         $mahasiswa = [
-            'nama' => 'Data Tidak Ditemukan',
-            'nim' => 'N/A',
-            'mata_kuliah' => 'N/A',
-            'file_laporan' => '#',
+            'nama'          => 'Data Tidak Ditemukan',
+            'nim'           => 'N/A',
+            'mata_kuliah'   => 'N/A',
+            'file_laporan'  => '#',
             'file_pendukung' => '#'
         ];
     }
@@ -51,7 +51,7 @@
 
         body {
             min-height: 100vh;
-            background-color: #ffffff;
+            background-color: #ffffff; /* FFFFFF */
         }
 
         #NavSide {
@@ -74,14 +74,14 @@
 
         .NavSide__sidebar {
             position: fixed;
-            top: 0px;
-            left: 0px;
-            bottom: 0px;
+            top: 0;
+            left: 0;
+            bottom: 0;
             width: 280px;
             border-radius: 1px;
             box-sizing: border-box;
-            border-left: 5px solid rgb(67, 54, 240);
-            background: rgb(67, 54, 240);
+            border-left: 5px solid #4B68FB; /* Changed from rgb(67, 54, 240) */
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             overflow-x: hidden;
             overflow-y: auto;
             z-index: 1000;
@@ -104,6 +104,8 @@
             width: 100%;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
+            /* BARU: Menyesuaikan jarak antar item menu */
+            margin-bottom: 15px; /* Sesuaikan nilai ini sesuai keinginan Anda */
         }
 
         .NavSide__sidebar-item a {
@@ -131,7 +133,11 @@
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
+<<<<<<< HEAD
             color: rgb(67, 54, 240);
+=======
+            color: #4B68FB !important; /* Changed from rgb(67, 54, 240) */
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
         }
 
         .NavSide__sidebar-item b:nth-child(1) {
@@ -150,7 +156,7 @@
             width: 100%;
             height: 100%;
             border-bottom-right-radius: 20px;
-            background: rgb(67, 54, 240);
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             display: block;
         }
         .NavSide__sidebar-item b:nth-child(2) {
@@ -169,7 +175,7 @@
             width: 100%;
             height: 100%;
             border-top-right-radius: 20px;
-            background: rgb(67, 54, 240);
+            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
             display: block;
         }
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
@@ -198,8 +204,8 @@
         }
 
         .status-badge { 
-            background-color:rgb(253, 68, 59); 
-            color: white; 
+            background-color: #FFA3A3; /* Changed from rgb(253, 68, 59) to FFA3A3 */
+            color: black; /* Changed to black for consistency with previous request */
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block; 
@@ -207,6 +213,11 @@
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
             font-weight: bold; 
             margin-bottom: 1.2cm; 
+        }
+
+        /* Gaya untuk status "Disetujui" */
+        .status-badge.approved {
+            background-color: #4BFBAF; /* Changed from rgb(108, 222, 137) to 4BFBAF */
         }
 
         .info-card {
@@ -230,7 +241,7 @@
             right: 0;
             width: 60px; 
             height: 100%;
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             border-top-right-radius: 20px;
             border-bottom-right-radius: 20px;
             transition: width 0.4s ease;
@@ -290,7 +301,7 @@
         }
        
         .btn-kembali {
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             color: white; 
             border: none;
             border-radius: 20px;
@@ -311,7 +322,7 @@
         .btn-kembali:hover {
             position: relative;
             background-color: white; 
-            color: rgb(67, 54, 240); 
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
         
         .btn-kembali .icon-circle {
@@ -327,16 +338,16 @@
         }
 
         .btn-kembali:hover .icon-circle {
-            background-color: rgb(67, 54, 240); 
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
 
         /* --- PERBAIKAN WARNA PANAH DI SINI --- */
         .btn-kembali .icon-circle i {
-            color: rgb(67, 54, 240); /* Warna ikon saat default */
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
         }
 
         .btn-kembali:hover .icon-circle i {
-            color: white; /* Warna ikon saat hover */
+            color: white; 
         }
         /* --- AKHIR PERBAIKAN WARNA PANAH --- */
 
@@ -350,7 +361,7 @@
             margin-right: 15px; 
             margin-bottom: 15px; 
             text-decoration: none; 
-            color: rgb(67, 54, 240); 
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             font-weight: 500;
             font-size: 1rem;
             transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; 
@@ -358,7 +369,7 @@
         }
 
         .file-button:hover {
-            background-color: rgb(67, 54, 240); 
+            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             color: white; 
             text-decoration: none; 
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
@@ -367,7 +378,7 @@
         .file-button i {
             font-size: 1.25rem; 
             margin-right: 10px; 
-            color: rgb(67, 54, 240); 
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             transition: color 0.2s ease; 
         }
 
@@ -399,7 +410,7 @@
 
         /* --- CSS BARU UNTUK HALAMAN EVALUASI --- */
         .form-card {
-            background: rgb(235, 238, 245); 
+            background: #E6E6E6; 
             border-radius: 30px; 
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 25px; 
@@ -431,7 +442,7 @@
             flex: 1; 
             min-width: 200px; 
             background-color: white;
-            border: 1px solid #ced4da;
+            border: 1px solid #F2F2F2; /* Added solid */
             border-radius: 10px; 
             padding: 10px 15px;
             font-size: 0.95rem;
@@ -439,8 +450,8 @@
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .form-group-custom .form-control-custom:focus {
-            border-color: rgb(67, 54, 240);
-            box-shadow: 0 0 0 0.25rem rgba(67, 54, 240, 0.25);
+            border-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
+            box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25); /* Adjusted RGBA for new blue */
             outline: none;
         }
 
@@ -458,8 +469,8 @@
         }
 
         .btn-kirim {
-            background-color: #4cfaab; 
-            color: black; 
+            background-color: #4FD382; /* Changed from #4cfaab to button setuju color */
+            color: black; /* Text color remains black */
             border: none;
             border-radius: 20px;
             /* UBAH: Padding vertikal 0, sentralisasi dengan flexbox */
@@ -478,7 +489,7 @@
         }
 
         .btn-kirim:hover {
-            background-color: #3cb88a; 
+            background-color: #3AB070; /* Adjusted for consistency with new button setuju color */
             color: white; 
         }
         /* --- AKHIR CSS BARU --- */
@@ -532,20 +543,36 @@
             font-weight: 600;
             color: #333;
         }
+
+        /* BARU: CSS untuk pesan error */
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none; /* Sembunyikan secara default */
+            margin-top: 10px; /* Space from the last form-group-custom */
+            margin-left: 0; /* Ubah ini untuk rata kiri */
+            text-align: left; /* Ensure it's left-aligned */
+        }
     </style>
 </head>
 <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
+                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /> <!-- Path diubah -->
             </div>
             <ul class="NavSide__sidebar-nav">
-                <!-- MENU "Detail Sidang" DIHAPUS DARI SINI -->
+                <!-- MENU "Detail Sidang" DIHAPPU S DARI SINI -->
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Evaluasi aktif -->
                     <b></b><b></b>
+<<<<<<< HEAD
                     <a href="#">
                         <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+=======
+                    <a href="dEvaluasiSidang.php">
+                        <span class="fw-semibold">Evaluasi</span>
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
@@ -589,7 +616,7 @@
                             <i class="fa-solid fa-user-tie"></i> <!-- Icon baru -->
                             <span class="fw-bold">Dosen Pembimbing</span>
                         </div>
-                        <div class="value-row">Dr. Rida Indah Fariani, S.Kom, M.Kom</div> <!-- Nilai baru -->
+                        <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div> <!-- Nilai baru -->
                     </div>
                     
                     <!-- Dosen Penguji -->
@@ -600,7 +627,7 @@
                         </div>
                         <div class="value-row">
                             Timotius Victory, S.Kom, M.Kom<br>
-                            Ning Ratwasturi, S.Kom, M.Kom
+                            Ning Ratwasturi, S.T, M.Eng
                         </div>
                     </div>
                 </div>
@@ -654,6 +681,8 @@
                     <label for="nilaiProyek">Nilai Proyek</label>
                     <input type="text" id="nilaiProyek" class="form-control-custom">
                 </div>
+                <!-- Elemen untuk pesan error Nilai Sidang -->
+                <p class="error-message" id="nilaiSidangErrorMessage"> *Harus diisi!</p>
             </div>
 
             <!-- BAGIAN BARU: Catatan Evaluasi Sidang -->
@@ -664,18 +693,20 @@
                     <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label> 
                     <textarea id="catatanEvaluasi" class="form-control-custom"></textarea>
                 </div>
+                <!-- Elemen untuk pesan error Catatan Evaluasi -->
+                <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
             </div>
             
             <div class="button-group-bottom">
-                <button class="btn-kembali">
+                <!-- Corrected HTML for the "Kembali" button -->
+                <button class="btn-kembali" onclick="location.href='dDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
-                     <a onclick="location.href='dDaftarSidang.php'">
                     Kembali
                 </button>
-                <!-- Tombol Kirim yang akan memicu modal -->
-                <button class="btn-kirim" data-bs-toggle="modal" data-bs-target="#successModal">
+                <!-- Tombol Kirim: data-bs-toggle dan data-bs-target dihapus -->
+                <button class="btn-kirim" id="btnKirim">
                     Kirim
                 </button>
             </div>
@@ -688,8 +719,8 @@
             <div class="modal-content success-modal-content">
                 <div class="modal-body success-modal-body">
                     <!-- --- PERUBAHAN IKON SUKSES DI SINI --- -->
-                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon">
-                    <!-- --- AKHIR PERUBAHAN IKON SUKSES --- -->
+                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon"> <!-- Path diubah -->
+                    <!-- --- AKHIR PERUBAHAN UNTUK IKON SUKSES --- -->
                     <p class="success-message">Evaluasi Sidang Berhasil Dikirim!</p>
                 </div>
             </div>
@@ -700,31 +731,85 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
-      // Skrip untuk toggle sidebar dan active menu item
-      let menuToggle = document.querySelector(".NavSide__toggle");
-      let sidebar = document.getElementById("main-sidebar");
+        // Skrip untuk toggle sidebar dan active menu item
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
 
-      if (menuToggle && sidebar) {
-        menuToggle.onclick = function () {
-          menuToggle.classList.toggle("NavSide__toggle--active");
-          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-      }
-
-      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-      if (listItems.length > 0) {
-        for (let i = 0; i < listItems.length; i++) {
-          listItems[i].onclick = function (event) {
-            for (let j = 0; j < listItems.length; j++) {
-              listItems[j].classList.remove("NavSide__sidebar-item--active");
-            }
-            this.classList.add("NavSide__sidebar-item--active");
-          };
+        if (menuToggle && sidebar) {
+            menuToggle.onclick = function () {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
         }
-      }
 
-      // Tidak ada fungsi JS kustom tambahan yang diperlukan untuk modal Bootstrap,
-      // karena pemicunya sudah diatur melalui data-bs-toggle dan data-bs-target.
+        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        if (listItems.length > 0) {
+            for (let i = 0; i < listItems.length; i++) {
+                listItems[i].onclick = function (event) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                };
+            }
+        }
+
+        // BARU: Logika validasi form
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnKirim = document.getElementById('btnKirim');
+            const nilaiLaporan = document.getElementById('nilaiLaporan');
+            const materiPresentasi = document.getElementById('materiPresentasi');
+            const nilaiPenyampaian = document.getElementById('nilaiPenyampaian');
+            const nilaiProyek = document.getElementById('nilaiProyek');
+            const catatanEvaluasi = document.getElementById('catatanEvaluasi');
+
+            const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage');
+            const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage');
+
+            // Dapatkan elemen modal sukses
+            const successModalElement = document.getElementById('successModal');
+
+            // Tambahkan event listener untuk saat modal sukses disembunyikan
+            if (successModalElement) {
+                successModalElement.addEventListener('hidden.bs.modal', function () {
+                    // Arahkan kembali ke halaman dDaftarSidang.php
+                    window.location.href = 'dDaftarSidang.php';
+                });
+            }
+
+            btnKirim.addEventListener('click', function(event) {
+                let isValid = true;
+
+                // Sembunyikan pesan error sebelumnya
+                nilaiSidangError.style.display = 'none';
+                catatanEvaluasiError.style.display = 'none';
+
+                // Validasi kolom "Nilai Sidang (Sementara)"
+                if (nilaiLaporan.value.trim() === '' ||
+                    materiPresentasi.value.trim() === '' ||
+                    nilaiPenyampaian.value.trim() === '' ||
+                    nilaiProyek.value.trim() === '') {
+                    
+                    nilaiSidangError.style.display = 'block';
+                    isValid = false;
+                }
+
+                // Validasi kolom "Catatan Evaluasi Sidang"
+                if (catatanEvaluasi.value.trim() === '') {
+                    catatanEvaluasiError.style.display = 'block';
+                    isValid = false;
+                }
+
+                // Jika validasi gagal
+                if (!isValid) {
+                    event.preventDefault(); // Hentikan tindakan default
+                } else {
+                    // Jika validasi sukses, tampilkan modal secara manual
+                    const successModal = new bootstrap.Modal(successModalElement); // Gunakan referensi elemen yang sudah diambil
+                    successModal.show();
+                }
+            });
+        });
     </script>
 </body>
 </html>

@@ -1,15 +1,12 @@
 <?php
-// Langkah 1: Mulai session di baris paling pertama
 session_start();
 
-// Langkah 3: Cek apakah ada pesan dari proses sebelumnya, lalu hapus.
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
     $pesan = $_SESSION['pesan'];
-    unset($_SESSION['pesan']); // Hapus pesan dari session agar tidak muncul lagi saat di-refresh
+    unset($_SESSION['pesan']); 
 }
 
-// Cek apakah form telah disubmit menggunakan metode POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
@@ -32,9 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "pdf" => "application/pdf",
                 "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                "zip" => "application/zip" // Tipe MIME utama
+                "zip" => "application/zip" 
             );
-            $mime_alternatif_zip = "application/x-zip-compressed"; // Tipe MIME alternatif untuk ZIP
+            $mime_alternatif_zip = "application/x-zip-compressed"; 
 
             if (!in_array($ekstensi_file, $ekstensi_diizinkan)) {
                 $pesan = "Error: Format file tidak diizinkan (berdasarkan ekstensi). Hanya .pdf, .docx, .pptx, dan .zip yang boleh diunggah.";
@@ -60,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
             
-            if (empty($pesan) && $_FILES["fileInput"]["size"] > 5242880) { // Maksimal 5 MB
+            if (empty($pesan) && $_FILES["fileInput"]["size"] > 5242880) { 
                 $pesan = "Error: Ukuran file terlalu besar. Maksimal 5 MB.";
             }
             
@@ -102,28 +99,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-    body {
-        font-family: "Segoe UI", sans-serif;
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+    * {
         margin: 0;
-        background-color: #F9FAFB;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
     }
 
-    /* === CSS LAYOUT NAVIGASI === */
+    body {
+        margin: 0;
+        background-color: #FFFFFF;
+    }
+
     #NavSide {
         display: flex;
         min-height: 100vh;
         position: relative;
     }
+
     .NavSide__sidebar-brand {
-        padding: 25px 15px 30px 15px;
+        padding: 10% 5% 50% 5%;
         text-align: center;
     }
+
     .NavSide__sidebar-brand img {
         width: 90%;
         max-width: 180px;
         height: auto;
         display: inline-block;
     }
+
     .NavSide__sidebar {
         position: fixed;
         top: 0px;
@@ -132,8 +139,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 280px;
         border-radius: 1px;
         box-sizing: border-box;
-        border-left: 5px solid rgb(67, 54, 240);
-        background: rgb(67, 54, 240);
+        border-left: 5px solid #4B68FB;
+        background: #4B68FB;
         overflow-x: hidden;
         overflow-y: auto;
         z-index: 1000;
@@ -141,21 +148,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         flex-direction: column;
         transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
     }
-<<<<<<< HEAD
-    .NavSide__sidebar h4 { 
-=======
-    .NavSide__sidebar h4 {
->>>>>>> 0f5c28876a1270d09fca079fe951d48fc45ec7ab
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 0;
-        color: white;
-<<<<<<< HEAD
-        padding: 25px 15px 30px 15px; 
-=======
-        padding: 25px 15px 30px 15px;
->>>>>>> 0f5c28876a1270d09fca079fe951d48fc45ec7ab
-    }
+
     .NavSide__sidebar-nav {
         width: 100%;
         padding-left: 0;
@@ -163,6 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         list-style: none;
         flex-grow: 1;
     }
+
     .NavSide__sidebar-item {
         position: relative;
         display: block;
@@ -171,6 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border-bottom-left-radius: 20px;
         margin-bottom: 10px;
     }
+
     .NavSide__sidebar-item a {
         position: relative;
         display: flex;
@@ -183,26 +178,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         height: 60px;
         box-sizing: border-box;
     }
+
     .NavSide__sidebar-title {
         white-space: normal;
         text-align: center;
         line-height: 1.5;
     }
+
     .NavSide__sidebar-item.NavSide__sidebar-item--active {
-        background: #ffffff;
+        background: #FFFFFF;
     }
+
     .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-        color: rgb(67, 54, 240);
+        color: #4B68FB;
     }
+
     .NavSide__sidebar-item b:nth-child(1) {
         position: absolute;
         top: -20px;
         height: 20px;
         width: 100%;
-        background: rgb(255, 255, 255);
+        background: #FFFFFF;
         display: none;
         right: 0;
     }
+
     .NavSide__sidebar-item b:nth-child(1)::before {
         content: "";
         position: absolute;
@@ -211,18 +211,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         height: 100%;
         border-bottom-right-radius: 20px;
-        background: rgb(67, 54, 240);
+        background: #4B68FB;
         display: block;
     }
+
     .NavSide__sidebar-item b:nth-child(2) {
         position: absolute;
         bottom: -20px;
         height: 20px;
         width: 100%;
-        background: rgb(255, 255, 255);
+        background: #FFFFFF;
         display: none;
         right: 0;
     }
+
     .NavSide__sidebar-item b:nth-child(2)::before {
         content: "";
         position: absolute;
@@ -231,9 +233,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         height: 100%;
         border-top-right-radius: 20px;
-        background: rgb(67, 54, 240);
+        background: #4B68FB;
         display: block;
     }
+
     .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
     .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
         display: block;
@@ -248,13 +251,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         margin-left: 280px;
         height: 60px;
-        background-color: #ffffff;
+        background-color: #FFFFFF;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         z-index: 999;
         padding: 0 15px;
         justify-content: flex-start;
         transition: margin-left 0.5s ease-in-out;
     }
+
     .NavSide__topbar .NavSide__toggle {
         width: 40px;
         height: 40px;
@@ -263,45 +267,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         display: none;
         align-items: center;
         justify-content: center;
-        padding:0;
+        padding: 0;
     }
+
     .NavSide__topbar .NavSide__toggle i.bi {
         position: absolute;
         font-size: 24px;
         display: none;
-        color: rgb(67, 54, 240);
+        color: #4B68FB;
         transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
     }
-    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; }
-    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; }
-    
+
+    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open {
+        display: none;
+    }
+
+    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close {
+        display: block;
+    }
+
+    .NavSide__topbar .NavSide__toggle i.bi.open {
+        display: block;
+    }
+
     .NavSide__main-content {
         flex-grow: 1;
         padding: 2rem;
         margin-left: 280px;
         overflow-y: auto;
         transition: margin-left 0.5s ease-in-out;
-        background-color: #F9FAFB;
+        background-color: #FFFFFF;
         padding-top: calc(60px + 2rem);
     }
 
     .page-content-header-wrapper {
         margin-bottom: 2.5rem;
     }
+
     .main-page-title {
         font-size: 2.25rem;
-        font-weight: 700;  
-        color: #212529;    
+        font-weight: 700;
+        color: #212529;
         margin-bottom: 0.75rem;
     }
+
     .page-content-header-wrapper .sub-header-line .section-subtitle {
         font-weight: 600;
-        font-size: 1.75rem; 
-        color: #212529;      
+        font-size: 1.75rem;
+        color: #212529;
         margin-bottom: 0;
     }
-    
-    /* === STYLE KONTEN UNIK ANDA === */
+
+    .text-primary {
+        color: #4B68FB !important;
+    }
+
     #fileNameDisplay {
         margin-top: 1rem;
         margin-bottom: 1rem;
@@ -309,13 +329,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         min-height: 1.5rem;
         color: #495057;
     }
-    .badge-custom {
-        background-color: #f78d8d;
+
+    .badge-custom.status-belum-disetujui {
+        background-color: #FFA3A3;
         color: white;
         font-weight: 600;
         padding: 8px 14px;
         border-radius: 20px;
     }
+
+    .badge-custom.status-setuju {
+        background-color: #4BFBAF;
+        color: #1E4620;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 20px;
+    }
+
     .card-comment {
         background-color: #cbcbcb;
         padding: 20px;
@@ -325,19 +355,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         transition: background-color 0.3s ease, color 0.3s ease;
         border: none;
     }
+
     .card-comment:hover {
-        background-color: #007bff;
+        background-color: #4B68FB;
         color: #fff;
     }
+
     .card-comment:hover strong {
         color: #fff;
     }
+
     .text-truncate-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+
     .revision-card {
         background-color: white;
         border-radius: 1.5rem;
@@ -345,6 +379,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border: 1px solid #e9ecef;
         box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
     }
+
     .upload-area-v2 {
         background-color: #f8f9fa;
         border: 2px dashed #e0e0e0;
@@ -358,27 +393,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         transition: background-color 0.2s;
         min-height: 180px;
     }
+
     .upload-area-v2:hover {
         background-color: #f1f3f5;
     }
+
     .upload-area-v2 #initial-state svg {
         width: 80px;
         height: 80px;
         fill: #ced4da;
     }
+
     .upload-area-v2 #selected-state svg {
         width: 80px;
         height: 80px;
         fill: #8d99ae;
     }
+
     .upload-area-v2 #upload-prompt-text {
         text-align: center;
         color: #6c757d;
         font-size: small;
         margin-top: 1rem;
     }
+
     .btn-custom-primary {
-        background-color: #4f46e5;
+        background-color: #4B68FB;
         color: white;
         font-weight: 600;
         border: none;
@@ -387,13 +427,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        box-shadow: 0 4px 15px rgba(75, 104, 251, 0.3);
         transition: all 0.2s ease-in-out;
     }
+
     .btn-custom-primary:hover {
+        background-color: #3A58DB;
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+        box-shadow: 0 6px 20px rgba(75, 104, 251, 0.4);
     }
+
     .btn-custom-primary:disabled {
         background-color: #e2e8f0;
         color: #94a3b8;
@@ -401,86 +444,98 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         transform: none;
         cursor: not-allowed;
     }
+
     .btn-custom-primary svg {
         margin-right: 0.5rem;
     }
 
-    /* === CSS BARU UNTUK SWEETALERT2 KUSTOM === */
     .custom-swal-popup {
-        background-color: #e9eef2 !important;
-        border-radius: 16px !important;
-        padding: 25px 30px !important;
+        background-color: #F8F9FA !important;
+        border-radius: 18px !important;
+        padding: 30px 35px !important;
         width: auto !important;
-        max-width: 460px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+        max-width: 480px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
     }
+
     .custom-swal-html-container {
         margin: 0 !important;
         padding: 0 !important;
     }
+
     .custom-swal-title {
-        font-size: 1.6rem !important;
+        font-size: 1.8rem !important;
         font-weight: 600 !important;
-        color: #374151 !important;
+        color: #343a40 !important;
         margin-top: 0 !important;
-        margin-bottom: 0.65rem !important;
+        margin-bottom: 12px !important;
         padding: 0 !important;
         text-align: center;
     }
+
     .custom-swal-text {
-        font-size: 1rem !important;
-        color: #4B5563 !important;
-        margin-bottom: 1.5rem !important;
+        font-size: 1.05rem !important;
+        color: #495057 !important;
+        margin-bottom: 25px !important;
         padding: 0 !important;
-        line-height: 1.6;
+        line-height: 1.65;
         text-align: center;
     }
+
     .custom-swal-actions {
-        margin-top: 15px !important;
-        gap: 10px !important;
+        margin-top: 20px !important;
+        gap: 15px !important;
         display: flex !important;
         justify-content: center !important;
     }
+
     .swal2-styled.swal2-confirm,
     .swal2-styled.swal2-cancel {
-        box-shadow: none !important;
-        font-size: 0.9rem !important;
-        padding: 9px 22px !important;
+        font-size: 0.95rem !important;
+        padding: 12px 28px !important;
         border-radius: 10px !important;
-        font-weight: 500 !important;
-        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        font-weight: 600 !important;
+        transition: all 0.2s ease-in-out;
         flex-grow: 0;
-        min-width: 110px;
-        border-width: 1.5px !important;
+        min-width: 130px;
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        text-transform: capitalize;
     }
+
+    .swal2-styled.swal2-confirm:hover,
+    .swal2-styled.swal2-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
     .custom-swal-confirm-button {
-        background-color: #28a745 !important;
+        background-color: #4FD382 !important;
         color: white !important;
-        border-color: #28a745 !important;
     }
+
     .custom-swal-confirm-button:hover {
-        background-color: #218838 !important;
-        border-color: #1e7e34 !important;
+        background-color: #3FA970 !important;
     }
+
     .custom-swal-cancel-button {
-        background-color: transparent !important;
-        color: #dc3545 !important;
-        border-color: #dc3545 !important;
+        background-color: #FD7D7D !important;
+        color: white !important;
     }
+
     .custom-swal-cancel-button:hover {
-        background-color: rgba(220, 53, 69, 0.05) !important;
-        border-color: #bd2130 !important;
-        color: #bd2130 !important;
+        background-color: #FA6868 !important;
     }
+
     .custom-swal-popup .swal2-icon {
         display: none !important;
     }
+
     .custom-swal-popup > .swal2-title,
     .custom-swal-popup > .swal2-content {
         display: none !important;
     }
 
-    /* === CSS BARU UNTUK MODAL DETAIL CATATAN PERBAIKAN === */
     #modalDetail .modal-content {
         background-color: #FFFFFF !important;
         border-radius: 16px !important;
@@ -488,18 +543,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         box-shadow: 0px 8px 24px rgba(29, 36, 50, 0.15) !important;
         padding: 5px;
     }
+
     #modalDetail .modal-header {
         border-bottom: none !important;
         padding: 20px 25px 10px 25px;
         position: relative;
     }
+
     #modalDetail #modalDetailLabel {
         font-size: 1.6rem;
-        font-weight: 600;  
-        color: #3A3A58;    
+        font-weight: 600;
+        color: #3A3A58;
         width: calc(100% - 40px);
         text-align: left;
     }
+
     #modalDetail .modal-header .btn-close {
         background-color: #e9ecef;
         border-radius: 50%;
@@ -508,22 +566,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         box-shadow: none !important;
         font-size: 0.8rem;
     }
+
     #modalDetail .modal-header .btn-close:hover {
         opacity: 1;
     }
+
     #modalDetail .modal-body {
         padding: 5px 25px 20px 25px;
         font-size: 0.9rem;
-        color: #525278;  
+        color: #525278;
         line-height: 1.6;
     }
+
     #modalDetail .modal-footer {
         border-top: none !important;
         padding: 10px 25px 20px 25px;
         justify-content: flex-end !important;
     }
+
     #modalDetail .modal-footer .btn-custom-tutup-modal {
-        background-color: #4A4A7D !important;
+        background-color: #4B68FB !important;
         color: white !important;
         border: none !important;
         border-radius: 50px !important;
@@ -531,12 +593,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         font-size: 0.85rem;
         font-weight: 500;
     }
+
     #modalDetail .modal-footer .btn-custom-tutup-modal:hover {
-        background-color: #3A3A5D !important;
+        background-color: #3A58DB !important;
     }
 
-    /* === RESPONSIVE DESIGN === */
-    @media (max-width: 700px) { 
+    @media (max-width: 700px) {
         .NavSide__sidebar {
             width: 250px;
             transform: translateX(-100%);
@@ -544,20 +606,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             z-index: 1040;
             padding-top: 60px;
         }
+
         .NavSide__sidebar.NavSide__sidebar--active-mobile {
             transform: translateX(0);
             box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
         }
-        .NavSide__sidebar-brand { padding: 20px 10px 15px 10px; }
-        .NavSide__sidebar h4 { margin-bottom: 1rem; padding: 0;}
-        .NavSide__sidebar-nav { padding-top: 10px; }
-        .NavSide__sidebar-item a { padding: 15px 20px; height: auto; }
+
+        .NavSide__sidebar-brand {
+            padding: 20px 10px 15px 10px;
+        }
+
+        .NavSide__sidebar-brand img {
+            max-width: 140px;
+        }
+
+        .NavSide__sidebar-nav {
+            padding-top: 10px;
+        }
+
+        .NavSide__sidebar-item a {
+            padding: 15px 20px;
+            height: auto;
+        }
 
         .NavSide__topbar {
             display: flex;
             margin-left: 0;
             z-index: 1045;
         }
+
         .NavSide__topbar .NavSide__toggle {
             display: flex;
             position: relative;
@@ -566,13 +643,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: transparent;
             box-shadow: none;
         }
-<<<<<<< HEAD
-        .NavSide__topbar .NavSide__toggle i.bi.open { 
-            display: block; 
-=======
+
         .NavSide__topbar .NavSide__toggle i.bi.open {
             display: block;
->>>>>>> 0f5c28876a1270d09fca079fe951d48fc45ec7ab
         }
 
         .NavSide__main-content {
@@ -581,71 +654,107 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding-top: calc(60px + 1rem);
             width: 100%;
         }
-        
+
         .main-page-title {
             font-size: 1.75rem;
         }
+
         .page-content-header-wrapper .sub-header-line .section-subtitle {
             font-size: 1.25rem;
         }
-        
-        .upload-area-v2 { padding: 1.5rem; }
-        .upload-area-v2 #initial-state svg, 
-        .upload-area-v2 #selected-state svg { width: 60px; height: 60px; }
-        .btn-custom-primary { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+
+        .upload-area-v2 {
+            padding: 1.5rem;
+        }
+
+        .upload-area-v2 #initial-state svg,
+        .upload-area-v2 #selected-state svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .btn-custom-primary {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
 
         .custom-swal-popup {
             padding: 20px 25px !important;
             max-width: calc(100% - 30px);
         }
+
         .custom-swal-title {
             font-size: 1.4rem !important;
         }
+
         .custom-swal-text {
             font-size: 0.9rem !important;
             margin-bottom: 1.25rem !important;
         }
+
         .custom-swal-actions {
             gap: 8px !important;
         }
+
         .swal2-styled.swal2-confirm,
         .swal2-styled.swal2-cancel {
             padding: 8px 20px !important;
             border-radius: 8px !important;
         }
 
-        #modalDetail .modal-content { padding: 10px; }
-        #modalDetail .modal-header { padding: 15px 20px 5px 20px; }
-        #modalDetail #modalDetailLabel { font-size: 1.3rem; }
-        #modalDetail .modal-header .btn-close { padding: 0.35em; font-size: 0.7rem; }
-        #modalDetail .modal-body { padding: 5px 20px 15px 20px; font-size: 0.85rem; }
-        #modalDetail .modal-footer { padding: 10px 20px 15px 20px; }
-        #modalDetail .modal-footer .btn-custom-tutup-modal { padding: 7px 20px !important; font-size: 0.8rem; }
+        #modalDetail .modal-content {
+            padding: 10px;
+        }
+
+        #modalDetail .modal-header {
+            padding: 15px 20px 5px 20px;
+        }
+
+        #modalDetail #modalDetailLabel {
+            font-size: 1.3rem;
+        }
+
+        #modalDetail .modal-header .btn-close {
+            padding: 0.35em;
+            font-size: 0.7rem;
+        }
+
+        #modalDetail .modal-body {
+            padding: 5px 20px 15px 20px;
+            font-size: 0.85rem;
+        }
+
+        #modalDetail .modal-footer {
+            padding: 10px 20px 15px 20px;
+        }
+
+        #modalDetail .modal-footer .btn-custom-tutup-modal {
+            padding: 7px 20px !important;
+            font-size: 0.8rem;
+        }
     }
     </style>
 </head>
 <body>
 
-<div id="NavSide">
-    <div id="main-sidebar" class="NavSide__sidebar">
-        <div class="NavSide__sidebar-brand">
-            <h4>ASTRAtech</h4>
-        </div>
-        <ul class="NavSide__sidebar-nav">
-            <li class="NavSide__sidebar-item"> 
-                <b></b><b></b>
-                <a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
-            </li>
-            <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                <b></b><b></b>
-                <a href="#"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
-            </li>
-            <li class="NavSide__sidebar-item">
-                <b></b><b></b>
-                <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
-            </li>
-        </ul>
+<div id="main-sidebar" class="NavSide__sidebar">
+    <div class="NavSide__sidebar-brand">
+        <img src="../../assets/img/WhiteAstra.png" alt="ASTRAtech Logo"> 
     </div>
+    <ul class="NavSide__sidebar-nav">
+        <li class="NavSide__sidebar-item"> 
+            <b></b><b></b>
+            <a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+        </li>
+        <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <b></b><b></b>
+            <a href="#"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
+        </li>
+        <li class="NavSide__sidebar-item">
+            <b></b><b></b>
+            <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+        </li>
+    </ul>
+</div>
 
     <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
         <div class="NavSide__topbar">
@@ -653,15 +762,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
             </div>
-        </div>
+            </div>
 
         <main class="NavSide__main-content">
             <div class="page-content-header-wrapper">
                 <h1 class="main-page-title">Detail Sidang - Sistem Pengajuan Sidang</h1>
                 <div class="d-flex justify-content-between align-items-center sub-header-line mt-3">
                     <h2 class="section-subtitle mb-0">Catatan Perbaikan</h2>
-                    <span class="badge-custom">Status Revisi : Belum Disetujui</span>
-                </div>
+                    <span class="badge-custom status-belum-disetujui">Status Revisi : Belum Disetujui</span>
+                    </div>
             </div>
             
             <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
@@ -699,7 +808,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mt-4">
-                <button type="button" id="btnKembali" class="btn btn-custom-primary">
+                <button type="button" id="btnKembali" class="btn btn-custom-primary" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
                     Kembali
                 </button>
@@ -738,13 +847,14 @@ if (!empty($pesan)):
     $isSuccess = strpos(strtolower($pesan), 'sukses') !== false;
     $icon = $isSuccess ? 'success' : 'error';
     $title = $isSuccess ? 'Berhasil!' : 'Oops...';
+    $confirmButtonColor = $isSuccess ? '#4FD382' : '#FD7D7D'; 
 ?>
 <script>
     Swal.fire({
         title: '<?php echo $title; ?>',
         text: '<?php echo addslashes(preg_replace("/\r|\n/", "\\n", $pesan)); ?>',
         icon: '<?php echo $icon; ?>',
-        confirmButtonColor: '<?php echo $isSuccess ? "#198754" : "#dc3545"; ?>'
+        confirmButtonColor: '<?php echo $confirmButtonColor; ?>' 
     });
 </script>
 <?php endif; ?>
@@ -811,7 +921,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (btnKembali) {
         btnKembali.addEventListener('click', function() {
-            history.back();
+            window.location.href = 'mSidang.php'; // MODIFIKASI DI SINI
         });
     }
 
