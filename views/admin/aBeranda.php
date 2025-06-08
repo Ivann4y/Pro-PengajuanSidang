@@ -117,7 +117,7 @@ if ($_SESSION['role'] !== 'admin') {
         
         .notifItem .notif-check {
             position: absolute;
-            right: 15px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: #007bff;
@@ -231,7 +231,7 @@ if ($_SESSION['role'] !== 'admin') {
           <li class="NavSide__sidebar-item">
             <b></b>
             <b></b>
-            <a href="aLogin.php">
+            <a href="../../index.php">
               <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
                     </a>
                 </li>
