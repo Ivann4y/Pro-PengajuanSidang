@@ -211,12 +211,14 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
             </div>
 
-            <!-- modal keluar -->
+             <!-- Modal keluar-->
             <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="modal-header mx-auto">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+                        <div style="background-color: rgb(67, 54, 240);">
+                            <div class="modal-header">
+                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                            </div>
                         </div>
                         <div class="modal-body mx-auto">
                             Apakah anda yakin ingin keluar?
