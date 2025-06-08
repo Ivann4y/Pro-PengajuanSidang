@@ -214,7 +214,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-            <button type="button" class="btn btn-success" onclick="window.location.href='../../index.php'">Lanjutkan</button>
+            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
         </div>
         </div>
     </div>
