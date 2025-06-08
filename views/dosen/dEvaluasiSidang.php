@@ -357,7 +357,7 @@
         }
 
         .form-card {
-            background: #E6E6E6; 
+            background:rgb(235, 238, 245);
             border-radius: 30px; 
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 25px;
@@ -417,7 +417,7 @@
 
         .btn-kirim {
             background-color: #4FD382; /* Changed from #4cfaab to button setuju color */
-            color: black; /* Text color remains black */
+            color: #FFFFFF; /* Text color remains black */
             border: none;
             border-radius: 20px;
             padding: 0 25px;
