@@ -296,11 +296,7 @@ if ($_SESSION['role'] !== 'dosen') {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-<<<<<<< HEAD
-                    <a href="logout.html"><span class="NavSide__sidebar-title">Keluar</span></a>
-=======
                     <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
->>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
                 </li>
             </ul>
         </div>
@@ -439,6 +435,23 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
             </div>
             </div>
+    </div>
+
+      <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header mx-auto">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+            </div>
+            <div class="modal-body mx-auto">
+                Apakah anda yakin ingin keluar?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                <button type="button" class="btn btn-success" onclick="window.location.href='../../index.php'">Lanjutkan</button>
+            </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>

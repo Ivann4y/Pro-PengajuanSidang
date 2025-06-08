@@ -132,7 +132,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             background-color: #F3F4F6;
             /* Match card background */
             z-index: 10;
-            padding-top: 0.3rem;
+            padding-top: 0.7rem;
             /* Adjust to match card's padding if link wraps it */
             padding-bottom: 0.5rem;
             /* If .notifikasi-card has padding, section-title might need negative margins
@@ -178,7 +178,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             top: 0;
             background-color: #F3F4F6;
             z-index: 10;
-            padding-top: 0.3rem;
+            padding-top: 0.7rem;
             padding-bottom: 0.5rem;
             margin-top: 0;
             margin-bottom: 0;
@@ -199,27 +199,39 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             margin-bottom: 0;
         }
 
+        /* --- Corrected Calendar CSS for Cross-Browser Compatibility --- */
+
         .calendar-card {
             background-color: #4F46E5;
             color: white;
             display: flex;
+            /* This is correct, it makes the card a flex container */
             flex-direction: column;
+            /* This is correct, it stacks children vertically */
             padding: 1rem;
-            border-radius: 12px;
+            border-radius: 5vh;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             min-height: 300px;
-            /* Ensures the card has a decent minimum height */
+            margin-bottom: 2vh;
         }
 
         .calendar-card .section-title-container {
+            /* No changes needed here, this is fine */
             display: flex;
-            justify-content: space-between;
             align-items: center;
             padding-bottom: 0.5rem;
+            flex-shrink: 0;
+            /* Prevents this header from shrinking */
+        }
+
+        .calendar-card .calendar-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
         }
 
         .calendar-card .section-title {
-            /* This is the month/year text */
             color: white;
             margin-bottom: 0;
             font-size: 1.1rem;
@@ -238,51 +250,72 @@ if ($_SESSION['role'] !== 'mahasiswa') {
         }
 
         .calendar-card .calendar {
-            /* The <table> element */
             width: 100%;
             border-collapse: collapse;
             margin-top: 0.5rem;
             flex-grow: 1;
-            /* Allows table to take available vertical space in the flex card */
+            /* This is key: it makes the <table> fill available space */
+            display: flex;
+            /* IMPORTANT: Treat the table itself as a flex container */
+            flex-direction: column;
+            /* Stack its children (thead, tbody) vertically */
+        }
+
+        .calendar-card .calendar thead,
+        .calendar-card .calendar tbody {
+            display: flex;
+            /* Treat thead and tbody as flex containers */
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .calendar-card .calendar tbody {
+            flex-grow: 1;
+            /* Make the body grow to fill the table's space */
+        }
+
+        .calendar-card .calendar tr {
+            display: flex;
+            /* Treat each row as a flex container */
+            flex-grow: 1;
+            /* Make each row take up equal vertical space in tbody */
+            width: 100%;
+        }
+
+        .calendar-card .calendar th,
+        .calendar-card .calendar td {
+            flex: 1;
+            /* This is the magic! Makes each cell take up equal horizontal space */
+            display: flex;
+            /* Use flex to center the content inside the cell */
+            align-items: center;
+            justify-content: center;
+            padding: 0.1rem;
+            /* Keep your padding for the cell */
+            text-align: center;
         }
 
         .calendar-card .calendar th {
-            /* Day headers: Min, Sen, etc. */
-            padding: 0.3rem 0.25rem;
-            text-align: center;
+            /* Styles specific to header cells */
             font-weight: 500;
             font-size: 0.75rem;
             color: #C7D2FE;
             text-transform: uppercase;
+            padding: 0.3rem 0.25rem;
         }
-
-        .calendar-card .calendar td {
-            /* Cells for each day */
-            padding: 0.1rem;
-            /* Small padding around the day bubble */
-            text-align: center;
-            vertical-align: middle;
-            /* Vertically aligns the day bubble in the cell */
-            /* REMOVED explicit height: calc(100% / 6); to let table rows auto-adjust height */
-        }
-
-        /* REMOVED .calendar-card .calendar tbody, .calendar-card .calendar tr { height: 100%; } */
-        /* These rules were causing issues. Table rows will now naturally distribute height. */
 
         .calendar-card .calendar-day {
-            /* The <span> bubble for each day number */
+            /* No changes needed here, this styling is for the bubble inside the cell */
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 32px;
             height: 32px;
             line-height: 32px;
-            /* Should match height for vertical centering of single-line text */
             border-radius: 50%;
             font-size: 0.8rem;
             font-weight: 500;
             margin: 0 auto;
-            /* Horizontal centering within the <td> */
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
@@ -295,22 +328,6 @@ if ($_SESSION['role'] !== 'mahasiswa') {
 
         .calendar-card .calendar-day:hover:not(.current-day) {
             background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .calendar-card .calendar-day:hover:not(.current-day) {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Ensure calendar table can take up space */
-        .calendar-card .calendar tbody,
-        .calendar-card .calendar tr {
-            height: 100%;
-            /* if needed to help distribute space, test this */
-        }
-
-        .calendar-card .calendar td {
-            height: calc(100% / 6);
-            /* Distribute height among rows, adjust divisor if max rows change */
         }
 
 
@@ -330,7 +347,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             background-color: #F3F4F6;
             /* Ensure this matches card background */
             z-index: 10;
-            padding-top: 0.3rem;
+            padding-top: 0.7rem;
             /* Adjust if card has padding */
             padding-bottom: 0.5rem;
             margin-top: 0;
@@ -347,7 +364,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             background-color: #E0E7FF;
             padding: 0.75rem 1rem;
             border-radius: 12px;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1vh;
         }
 
         .sidang-mendatang-card .item:last-child {
@@ -503,9 +520,9 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 <div class="col-lg-5">
                     <div class="dashboard-card calendar-card">
                         <div class="section-title-container">
-                            <h3 class="section-title" id="currentMonthYear"></h3>
                             <div class="calendar-nav">
                                 <i class="bi bi-chevron-left" id="prevMonth"></i>
+                                <h3 class="section-title" id="currentMonthYear"></h3>
                                 <i class="bi bi-chevron-right" id="nextMonth"></i>
                             </div>
                         </div>

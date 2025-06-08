@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,64 +15,62 @@
     <link rel="stylesheet" href="../../extra/style.css">
     <title>Dosen - Pengajuan</title>
     <style>
-        
         table {
-        border-spacing: 0 10px;
-        border-collapse: separate;
-        width: 100%;
+            border-spacing: 0 10px;
+            border-collapse: separate;
+            width: 100%;
         }
 
         thead {
-        border-bottom: 2px solid rgb(0, 0, 0) !important;
+            border-bottom: 2px solid rgb(0, 0, 0) !important;
         }
 
         thead th {
-        padding: 12px 15px;
-        text-align: left;
+            padding: 12px 15px;
+            text-align: left;
         }
 
         thead th:nth-child(1) {
-        text-align: center;
-        width: 5%;
+            text-align: center;
+            width: 5%;
         }
 
         thead th:nth-child(2) {
-        width: 20%;
+            width: 20%;
         }
 
         thead th:nth-child(3) {
-        width: 20%;
+            width: 20%;
         }
 
         thead th:nth-child(4) {
-        width: 20%;
+            width: 20%;
         }
 
         thead th:nth-child(5) {
-        width: 20%;
+            width: 20%;
         }
 
         .isiTabel td {
-        padding: 12px 15px;
-        font-family: "Poppins";
-        font-weight: 400;
-        vertical-align: middle;
+            padding: 12px 15px;
+            font-family: "Poppins";
+            font-weight: 400;
+            vertical-align: middle;
         }
 
         .isiTabel td:nth-child(1) {
-        border-radius: 20px 0 0 20px;
-        text-align: center;
+            border-radius: 20px 0 0 20px;
+            text-align: center;
         }
 
         .isiTabel td:nth-child(5) {
-        border-radius: 0 20px 20px 0;
+            border-radius: 0 20px 20px 0;
         }
-
-        
     </style>
 </head>
+
 <body>
-     <div id="NavSide">
+    <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
@@ -123,147 +122,150 @@
                 </div>
             </div>
 
-    <div class="container-fluid">
-        <div class="container-fluid">
-            <div class="row">
-                <h2 class="bodyHeading">
-                    Pengajuan Sidang
-                </h2>
-            </div><br><br>
-            <div class="row">
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddDPengajuan">
-                        Sidang TA
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" id="ddDSidangMenu" onclick="switchDPengajuan();">Sidang Semester</a></li>
-                    </ul>
+            <div class="container-fluid">
+                <div class="container-fluid">
+                    <div class="row">
+                        <h2 class="bodyHeading">
+                            Pengajuan Sidang
+                        </h2>
+                    </div><br><br>
+                    <div class="row">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddDPengajuan">
+                                Sidang TA
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" id="ddDSidangMenu" onclick="switchDPengajuan();">Sidang Semester</a></li>
+                            </ul>
+                        </div>
+                    </div><br><br>
+                    <div class="row">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">NIM</th>
+                                    <th scope="col">Nama</th>
+                                    <th scope="col">Mata Kuliah</th>
+                                    <th scope="col">Dosen Pembimbing</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dPengajuanTA">
+                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240033', 'TA')">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240053', 'TA')">
+                                    <td>2</td>
+                                    <td>0920240053</td>
+                                    <td>Nayaka Ivanna</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240055', 'TA')">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                            </tbody>
+                            <tbody id="dPengajuanSem" style="display: none;">
+                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240033', 'Semester')">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240053', 'Semester')">
+                                    <td>2</td>
+                                    <td>0920240053</td>
+                                    <td>Nayaka Ivanna</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240055', 'Semester')">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div><br><br>
-            <div class="row">
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col">No</th>
-                            <th scope="col">NIM</th>
-                            <th scope="col">Nama</th>
-                            <th scope="col">Mata Kuliah</th>
-                            <th scope="col">Dosen Pembimbing</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dPengajuanTA">
-                        <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240033', 'TA')">
-                            <td>1</td>
-                            <td>0920240033</td>
-                            <td>M. Harris Nur S.</td>
-                            <td>Tugas Akhir</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                        <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240053', 'TA')">
-                            <td>2</td>
-                            <td>0920240053</td>
-                            <td>Nayaka Ivanna</td>
-                            <td>Tugas Akhir</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                        <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240055', 'TA')">
-                            <td>3</td>
-                            <td>0920240055</td>
-                            <td>Nur Widya Astuti</td>
-                            <td>Tugas Akhir</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                    </tbody>
-                    <tbody id="dPengajuanSem" style="display: none;">
-                    <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240033', 'Semester')">
-                            <td>1</td>
-                            <td>0920240033</td>
-                            <td>M. Harris Nur S.</td>
-                            <td>Pemrograman 2</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                        <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240053', 'Semester')">
-                            <td>2</td>
-                            <td>0920240053</td>
-                            <td>Nayaka Ivanna</td>
-                            <td>Pemrograman 2</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                        <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240055', 'Semester')">
-                            <td>3</td>
-                            <td>0920240055</td>
-                            <td>Nur Widya Astuti</td>
-                            <td>Pemrograman 2</td>
-                            <td>Timotius Victory</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
-        </div>
-    </div>
-    
-    <!-- Modal keluar-->
-    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        <div class="modal-header mx-auto">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
-        </div>
-        <div class="modal-body mx-auto">
-             Apakah anda yakin ingin keluar?
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-            <button type="button" class="btn btn-success" onclick="window.location.href='../../index.php'">Lanjutkan</button>
-        </div>
-        </div>
-    </div>
-    </div>
-<script>
-// Sidebar Toggle Logic
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
 
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
+            <!-- Modal keluar-->
+            <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div style="background-color: rgb(67, 54, 240);">
+                            <div class="modal-header">
+                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                            </div>
+                        </div>
+                        <div class="modal-body mx-auto">
+                            Apakah anda yakin ingin keluar?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                // Sidebar Toggle Logic
+                let menuToggle = document.querySelector(".NavSide__toggle");
+                let sidebar = document.getElementById("main-sidebar");
 
-        // Sidebar Active Item Logic
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function() {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+
+                // Sidebar Active Item Logic
+                let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+                for (let i = 0; i < listItems.length; i++) {
+                    listItems[i].onclick = function() {
+                        if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                            for (let j = 0; j < listItems.length; j++) {
+                                listItems[j].classList.remove("NavSide__sidebar-item--active");
+                            }
+                            this.classList.add("NavSide__sidebar-item--active");
+                        }
+                    };
                 }
-            };
-        }
-let isTA = true;
+                let isTA = true;
 
-function switchDPengajuan() {
-    const taTable = document.getElementById('dPengajuanTA');
-    const semTable = document.getElementById('dPengajuanSem');
-    const dropdownButton = document.getElementById('ddDPengajuan');
-    const dropdownMenuItem = document.getElementById('ddDSidangMenu');
+                function switchDPengajuan() {
+                    const taTable = document.getElementById('dPengajuanTA');
+                    const semTable = document.getElementById('dPengajuanSem');
+                    const dropdownButton = document.getElementById('ddDPengajuan');
+                    const dropdownMenuItem = document.getElementById('ddDSidangMenu');
 
-    if (isTA) {
-        taTable.style.display = 'none';
-        semTable.style.display = 'table-row-group';
-        dropdownButton.textContent = 'Sidang Semester';
-        dropdownMenuItem.textContent = 'Sidang TA';
-    } else {
-        taTable.style.display = 'table-row-group';
-        semTable.style.display = 'none';
-        dropdownButton.textContent = 'Sidang TA';
-        dropdownMenuItem.textContent = 'Sidang Semester';
-    }
+                    if (isTA) {
+                        taTable.style.display = 'none';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Sidang Semester';
+                        dropdownMenuItem.textContent = 'Sidang TA';
+                    } else {
+                        taTable.style.display = 'table-row-group';
+                        semTable.style.display = 'none';
+                        dropdownButton.textContent = 'Sidang TA';
+                        dropdownMenuItem.textContent = 'Sidang Semester';
+                    }
 
-    isTA = !isTA;
-}
-    </script>
-    <script src="../../assets/js/main.js"></script>
+                    isTA = !isTA;
+                }
+            </script>
+            <script src="../../assets/js/main.js"></script>
 </body>
+
 </html>
