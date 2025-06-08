@@ -406,7 +406,7 @@
 
         /* --- CSS BARU UNTUK HALAMAN EVALUASI --- */
         .form-card {
-            background: #E6E6E6; 
+            background: rgb(235, 238, 245); 
             border-radius: 30px; 
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 25px; 
@@ -466,7 +466,7 @@
 
         .btn-kirim {
             background-color: #4FD382; /* Changed from #4cfaab to button setuju color */
-            color: black; /* Text color remains black */
+            color: #ffffff; /* Text color remains black */
             border: none;
             border-radius: 20px;
             /* UBAH: Padding vertikal 0, sentralisasi dengan flexbox */
@@ -579,11 +579,6 @@
                     </a>
                 </li>
             </ul>
-        </div>
-
-        <div class="NavSide__toggle">
-            <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
         </div>
 
         <main class="NavSide__main-content">
