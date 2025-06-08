@@ -332,11 +332,9 @@ if ($_SESSION['role'] !== 'mahasiswa') {
 
 
         /* --- Sidang Mendatang Card (User's latest version) --- */
-        /* ... (Your existing .sidang-mendatang-card styles should be fine) ... */
         .sidang-mendatang-card {
             overflow-y: auto;
             max-height: 36vh;
-            /* As per your original style */
             padding-top: 0rem;
             padding-bottom: 1rem;
         }
@@ -345,15 +343,11 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             position: sticky;
             top: 0;
             background-color: #F3F4F6;
-            /* Ensure this matches card background */
             z-index: 10;
             padding-top: 0.7rem;
-            /* Adjust if card has padding */
             padding-bottom: 0.5rem;
             margin-top: 0;
-            /* Reset margin */
             margin-bottom: 0;
-            /* Reset margin */
             border-bottom: 1px solid #DEE2E6;
         }
 
@@ -361,18 +355,19 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: #E0E7FF;
+            background-color: #FFFFFF;
             padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 1vh;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
         }
 
         .sidang-mendatang-card .item:last-child {
-            margin-bottom: 0;
+            margin-bottom: 2vh;
         }
 
         .sidang-mendatang-card .date-bubble {
-            background-color: white;
+            background-color: #EEF2FF;
             border-radius: 8px;
             padding: 0.4rem 0rem;
             text-align: center;
@@ -555,62 +550,76 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                                 <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
                         </a>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">05</span>
-                                <span class="month">Jun</span>
+                        <a href="mdetailsidangta.php" style="text-decoration: none; color: inherit;">
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">05</span>
+                                    <span class="month">Jun</span>
+                                </div>
+                                <span class="info">Revisi Proposal KP</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
-                            <span class="info">Revisi Proposal KP</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">10</span>
-                                <span class="month">Jun</span>
+                        </a>
+                        <a href="mdetailsidangta.php" style="text-decoration: none; color: inherit;">
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">10</span>
+                                    <span class="month">Jun</span>
+                                </div>
+                                <span class="info">Sidang Akhir TA</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
-                            <span class="info">Sidang Akhir TA</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">15</span>
-                                <span class="month">Jun</span>
+                        </a>
+                        <a href="mdetailsidangta.php" style="text-decoration: none; color: inherit;">
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">15</span>
+                                    <span class="month">Jun</span>
+                                </div>
+                                <span class="info">Presentasi Proyek</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
-                            <span class="info">Presentasi Proyek</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">20</span>
-                                <span class="month">Jun</span>
+                        </a>
+                        <a href="mdetailsidangta.php" style="text-decoration: none; color: inherit;">
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">20</span>
+                                    <span class="month">Jun</span>
+                                </div>
+                                <span class="info">Ujian Komprehensif</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
-                            <span class="info">Ujian Komprehensif</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">25</span>
-                                <span class="month">Jun</span>
+                        </a>
+                        <a href="mdetailsidangta.php" style="text-decoration: none; color: inherit;">
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">25</span>
+                                    <span class="month">Jun</span>
+                                </div>
+                                <span class="info">Revisi Skripsi Bab 1-3</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
-                            <span class="info">Revisi Skripsi Bab 1-3</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">28</span>
-                                <span class="month">Jun</span>
+                        </a>
+                        <a href="mdetailsidangta.php" style="text-decoration: none; color: inherit;">
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">28</span>
+                                    <span class="month">Jun</span>
+                                </div>
+                                <span class="info">Bimbingan Akhir</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
-                            <span class="info">Bimbingan Akhir</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">02</span>
-                                <span class="month">Jul</span>
+                        </a>
+                        <a href="mdetailsidangta.php" style="text-decoration: none; color: inherit;">
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">02</span>
+                                    <span class="month">Jul</span>
+                                </div>
+                                <span class="info">Pengumpulan Laporan</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                             </div>
-                            <span class="info">Pengumpulan Laporan</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
