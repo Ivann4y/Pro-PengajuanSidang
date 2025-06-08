@@ -7,8 +7,16 @@ $statusFilter = ($selectedStatus == 'disetujui') ? true : false;
 $jsonData = file_get_contents('data_sidang.json');
 $data = json_decode($jsonData, true);
 
+// Fallback for cases where json is not an array
+if (!is_array($data)) {
+    $data = [];
+}
+
 $filteredData = array_filter($data, function($entry) use ($selectedTipe, $statusFilter) {
-    return $entry['tipeSidang'] == $selectedTipe && $entry['statusPersetujuan'] === $statusFilter;
+    // Ensure keys exist to avoid warnings
+    $tipeMatch = isset($entry['tipeSidang']) && $entry['tipeSidang'] == $selectedTipe;
+    $statusMatch = isset($entry['statusPersetujuan']) && $entry['statusPersetujuan'] === $statusFilter;
+    return $tipeMatch && $statusMatch;
 });
 ?>
 <!DOCTYPE html>
@@ -17,12 +25,11 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Admin!</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
     body {
       margin: 0;
@@ -213,7 +220,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     }
 
     .data-table tbody td {
-      background-color: #e2e2e2;
+      background-color: #f5f5f5;
       padding: 15px 20px;
       vertical-align: middle;
       transition: all 0.3s ease;
@@ -222,7 +229,9 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .data-table tbody tr:hover td {
       background-color: #4538db;
       color: white;
-      cursor: pointer;
+    }
+    .data-table tbody tr.clickable:hover{
+        cursor: pointer;
     }
 
     .data-table tbody tr td:first-child {
@@ -251,6 +260,36 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         min-width: 600px;
       }
     }
+    /* MODAL STYLES */
+    .modal-content-custom-form { border-radius: 25px !important; }
+    .modal-body .form-container { padding: 15px; background-color:rgb(255, 255, 255); border-radius: 20px; }
+    .modal-body .form-container h2 { font-size: 1.25rem; margin-bottom: 20px; text-align: center; color: rgb(255, 255, 255); }
+    .modal-body .form-group { display: flex; align-items: center; margin-bottom: 15px; }
+    .modal-body .form-group label { width: 160px; flex-shrink: 0; color:rgb(51, 47, 47); font-weight: bold; font-size: 14px; margin-right: 15px; text-align: left; }
+    .modal-body .form-group .input-with-buttons, .modal-body .form-group .time-input-range, .modal-body .form-group > input[type="text"], .modal-body .form-group > input[type="date"] { flex-grow: 1; height: 35px; display: flex; align-items: center; }
+    .modal-body .form-group input[type="text"], .modal-body .form-group input[type="time"], .modal-body .form-group input[type="date"] { width: 100%; height: 35px; padding: 0 15px; border: 1px solid #D1D5DB; background-color:rgb(255, 255, 255); box-sizing: border-box; font-size: 14px; color: #374151; border-radius: 26px; }
+    .modal-body .form-group input[readonly] { background-color: #f3f4f6; cursor: not-allowed; }
+    .modal-body .bobot-input-new { width: 30px; height: auto; text-align: center; border: none; font-size: 16px; color: #2d2d52; background-color: transparent; margin: 0 5px; -moz-appearance: textfield; pointer-events: none; }
+    .modal-body .bobot-input-new::-webkit-outer-spin-button, .modal-body .bobot-input-new::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .modal-body .input-with-buttons { display: flex; align-items: center; gap: 10px; width: 100%; }
+    .modal-body .input-with-buttons input[type="text"] { flex-grow: 1; }
+    .modal-body .bobot-nilai-input-group { display: inline-flex; align-items: center; background-color: #F9FAFB; border-radius: 35px; padding: 2px 6px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
+    .modal-body .btn-bobot-new { width: auto; height: auto; background-color: transparent; border: none; color: #2d2d52; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 8px; line-height: 1; border-radius: 35px; transition: background-color 0.2s ease; }
+    .modal-body .btn-bobot-new:hover { background-color:rgba(0, 0, 0, 0.05); }
+    .modal-body .time-input-range { gap: 10px; width: 100%; }
+    .modal-body .time-input-range input[type="time"] { flex-grow: 1; }
+    .modal-body .time-input-range .time-separator { flex-shrink: 0; color: #374151; font-size: 20px; font-weight: bold; }
+    .modal-body .form-actions { display: flex; justify-content: flex-end; margin-top: 25px; }
+    .modal-body .form-actions .btn-batal { background-color: #ff5f5f; color:rgb(255, 255, 255); border: none; border-radius: 20px; padding: 5px 10px; height: 40px; width: 120px; margin-right: 10px; }
+    .modal-body .form-actions .btn-submit { background-color:rgb(67, 54, 240); color: white; border: none; border-radius: 20px; padding: 5px 10px; height: 40px; width: 200px; }
+    .modal-body .form-actions .btn-submit:hover { background-color: rgb(106, 95, 255); }
+    .modal-body > h2 { font-size: 30px; color: #374151; font-weight: 580; margin-bottom: 1.5rem; }
+    #penjadwalanSidangTAModal .modal-dialog, #penjadwalanSidangSemModal .modal-dialog { max-width: 600px; }
+    .modal-body .form-toggle-buttons { display: inline-flex; gap: 5px; align-items: center; }
+    .modal-body .form-toggle-buttons button { width: 30px; height: 30px; font-size: 18px; border-radius: 35px; border: 1px solid #ccc; cursor: pointer; background-color: white; }
+    .modal-body .form-toggle-buttons button:hover { background-color: #ddd; }
+    .form-error-message { color: red; margin-bottom: 15px; text-align: left; font-weight: 500;}
+
   </style>
 </head>
 <body>
@@ -280,9 +319,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         </li>
         <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
             <b></b><b></b>
-                <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-                </li>
-            </a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
         </li>
     </ul>
 </div>
@@ -300,7 +337,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       </div>
     </div>
    
-    <!-- Inside .bodyContainer, after the search bar container -->
     <div class="d-flex" id="dropdownAdminPenjadwalan">
         <div class="dropdown me-2">
             <button class="filter-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -330,25 +366,53 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
             <th>ID</th>
             <th>NIM</th>
             <th>Nama</th>
-            <th>Judul Sidang</th>
-            <th>Pembimbing</th>
+            <th><?= $selectedTipe == 'TA' ? 'Judul Sidang' : 'Mata Kuliah' ?></th>
+            <th><?= $selectedTipe == 'TA' ? 'Pembimbing' : 'Dosen Pengampu' ?></th>
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($filteredData as $entry): ?>
-          <tr onclick="window.location.href='DetailSidang.php?id=<?= urlencode($entry['id']) ?>'">
-            <td><?= htmlspecialchars($entry['id']) ?></td>
-            <td><?= htmlspecialchars($entry['nim']) ?></td>
-            <td><?= htmlspecialchars($entry['nama']) ?></td>
-            <td><?= htmlspecialchars($entry['judulSidang']) ?></td>
-            <td><?= htmlspecialchars($entry['pembimbing']) ?></td>
-          </tr>
-          <?php endforeach; ?>
+          <?php if (empty($filteredData)): ?>
+            <tr><td colspan="5" class="text-center">Tidak ada data untuk ditampilkan.</td></tr>
+          <?php else: ?>
+            <?php foreach ($filteredData as $entry): ?>
+              <?php
+                $row_props = "";
+                if ($selectedStatus == 'disetujui') {
+                    $dosen_pengampu_json = isset($entry['dosenPengampu']) ? htmlspecialchars(json_encode($entry['dosenPengampu'])) : '[]';
+                    $row_props = "class='clickable' onclick='openJadwalModal(this)' "
+                               . "data-id='".htmlspecialchars($entry['id'] ?? '')."'"
+                               . "data-nim='".htmlspecialchars($entry['nim'] ?? '')."'"
+                               . "data-nama='".htmlspecialchars($entry['nama'] ?? '')."'"
+                               . "data-judul='".htmlspecialchars($entry['judulSidang'] ?? '')."'"
+                               . "data-pembimbing='".htmlspecialchars($entry['pembimbing'] ?? '')."'"
+                               . "data-prodi='".htmlspecialchars($entry['prodi'] ?? 'Teknologi Rekayasa Perangkat Lunak')."'"
+                               . "data-tipe-sidang='".htmlspecialchars($entry['tipeSidang'] ?? '')."'"
+                               . "data-pengampu='".$dosen_pengampu_json."'";
+                }
+              ?>
+              <tr <?= $row_props ?>>
+                <td><?= htmlspecialchars($entry['id'] ?? 'N/A') ?></td>
+                <td><?= htmlspecialchars($entry['nim'] ?? 'N/A') ?></td>
+                <td><?= htmlspecialchars($entry['nama'] ?? 'N/A') ?></td>
+                <td><?= htmlspecialchars($entry['judulSidang'] ?? 'N/A') ?></td>
+                <td>
+                    <?php 
+                        if ($selectedTipe == 'TA') {
+                            echo htmlspecialchars($entry['pembimbing'] ?? 'N/A');
+                        } else {
+                            echo isset($entry['dosenPengampu']) ? htmlspecialchars(implode(', ', $entry['dosenPengampu'])) : htmlspecialchars($entry['pembimbing'] ?? 'N/A');
+                        }
+                    ?>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
   </div>
 
+  <!-- Logout Modal -->
   <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -364,16 +428,302 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         </div>
         </div>
     </div>
-    </div>
+  </div>
+  
+  <!-- MODAL FOR SIDANG TA -->
+  <div class="modal fade" id="penjadwalanSidangTAModal" aria-labelledby="penjadwalanSidangTAModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content modal-content-custom-form">
+              <div class="modal-body">
+                  <h2>Penjadwalan Sidang TA</h2>
+                  <form id="formDalamModal-ta" novalidate>
+                      <div class="form-container">
+                          <div class="form-group"><label for="modal_nim-ta">NIM</label><input type="text" id="modal_nim-ta" readonly /></div>
+                          <div class="form-group"><label for="modal_judul_sidang-ta">Judul Sidang</label><input type="text" id="modal_judul_sidang-ta" readonly /></div>
+                          <div class="form-group"><label for="modal_pembimbing-ta">Pembimbing</label><input type="text" id="modal_pembimbing-ta" readonly /></div>
+                          <div id="penguji-wrapper-ta">
+                              <div class="form-group" id="penguji-form-ta-1">
+                                  <label for="modal_penguji-ta-1">Penguji 1</label>
+                                  <div class="input-with-buttons">
+                                      <input type="text" id="modal_penguji-ta-1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+                                      <div class="bobot-nilai-input-group">
+                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-1')">-</button>
+                                          <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
+                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-1')">+</button>
+                                      </div>
+                                      <div class="form-toggle-buttons">
+                                          <button type="button" onclick="addPenguji()">+</button>
+                                          <button type="button" onclick="removePenguji()">-</button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="form-group"><label for="modal_prodi-ta">Prodi</label><input type="text" id="modal_prodi-ta" readonly /></div>
+                          <div class="form-group"><label for="modal_ruangan-ta">Ruangan</label><input type="text" id="modal_ruangan-ta" name="ruangan" /></div>
+                          <div class="form-group"><label for="modal_tanggal-ta">Tanggal</label><input type="date" id="modal_tanggal-ta" name="tanggal" /></div>
+                          <div class="form-group">
+                              <label for="modal_jam_awal-ta">Jam</label>
+                              <div class="time-input-range">
+                                  <input type="time" id="modal_jam_awal-ta" name="jam_awal" /><span class="time-separator">-</span><input type="time" id="modal_jam_akhir-ta" name="jam_akhir" />
+                              </div>
+                          </div>
+                          <div class="form-error-message" id="form-error-ta"></div>
+                          <div class="form-actions">
+                              <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
+                              <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
+                          </div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
 
+  <!-- MODAL FOR SIDANG SEMESTER -->
+  <div class="modal fade" id="penjadwalanSidangSemModal" aria-labelledby="penjadwalanSidangSemModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content modal-content-custom-form">
+              <div class="modal-body">
+                  <h2>Penjadwalan Sidang Semester</h2>
+                  <form id="formDalamModal-sem" novalidate>
+                      <div class="form-container">
+                          <div class="form-group"><label for="modal_nim-sem">NIM</label><input type="text" id="modal_nim-sem" readonly /></div>
+                          <div class="form-group"><label for="modal_matkul-sem">Mata Kuliah</label><input type="text" id="modal_matkul-sem" readonly /></div>
+                          <div id="pengampu-wrapper-sem">
+                              <div class="form-group" id="pengampu-form-sem-1">
+                                  <label for="modal_pengampu-sem-1">Pengampu 1</label>
+                                  <div class="input-with-buttons">
+                                      <input type="text" id="modal_pengampu-sem-1" name="pengampu_nama[]" placeholder="Nama Pengampu 1" />
+                                      <div class="bobot-nilai-input-group">
+                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-1')">-</button>
+                                          <input type="number" id="modal_qty_pengampu-sem-1" class="bobot-input-new" value="0" min="0" />
+                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-1')">+</button>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="form-group" id="pengampu-form-sem-2">
+                                  <label for="modal_pengampu-sem-2">Pengampu 2</label>
+                                  <div class="input-with-buttons">
+                                      <input type="text" id="modal_pengampu-sem-2" name="pengampu_nama[]" placeholder="Nama Pengampu 2" />
+                                      <div class="bobot-nilai-input-group">
+                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-2')">-</button>
+                                          <input type="number" id="modal_qty_pengampu-sem-2" class="bobot-input-new" value="0" min="0" />
+                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-2')">+</button>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="form-group"><label for="modal_prodi-sem">Prodi</label><input type="text" id="modal_prodi-sem" readonly /></div>
+                          <div class="form-group"><label for="modal_ruangan-sem">Ruangan</label><input type="text" id="modal_ruangan-sem" name="ruangan" /></div>
+                          <div class="form-group"><label for="modal_tanggal-sem">Tanggal</label><input type="date" id="modal_tanggal-sem" name="tanggal" /></div>
+                          <div class="form-group">
+                              <label for="modal_jam_awal-sem">Jam</label>
+                              <div class="time-input-range">
+                                  <input type="time" id="modal_jam_awal-sem" name="jam_awal" /><span class="time-separator">-</span><input type="time" id="modal_jam_akhir-sem" name="jam_akhir" />
+                              </div>
+                          </div>
+                          <div class="form-error-message" id="form-error-sem"></div>
+                          <div class="form-actions">
+                              <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
+                              <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
+                          </div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
-    function markAllRead() {
-      document.querySelectorAll('.notifItem').forEach(item => item.remove());
+    let taModalInstance, semModalInstance;
+    let pengujiCount = 1;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const taModalEl = document.getElementById('penjadwalanSidangTAModal');
+        if (taModalEl) taModalInstance = new bootstrap.Modal(taModalEl);
+        
+        const semModalEl = document.getElementById('penjadwalanSidangSemModal');
+        if (semModalEl) semModalInstance = new bootstrap.Modal(semModalEl);
+
+        const formTA = document.getElementById('formDalamModal-ta');
+        if(formTA) formTA.addEventListener('submit', handleFormSubmit);
+
+        const formSem = document.getElementById('formDalamModal-sem');
+        if(formSem) formSem.addEventListener('submit', handleFormSubmit);
+    });
+
+    function openJadwalModal(element) {
+        const tipeSidang = element.dataset.tipeSidang;
+        if (tipeSidang === 'TA') {
+            resetAndPopulateTAModal(element);
+            taModalInstance.show();
+        } else if (tipeSidang === 'Semester') {
+            populateSemModal(element);
+            semModalInstance.show();
+        }
     }
 
-    function markOneRead(el) {
-      el.closest('.notifItem').remove();
+    function resetAndPopulateTAModal(el) {
+        // Reset dynamic penguji fields to 1
+        const wrapper = document.getElementById('penguji-wrapper-ta');
+        wrapper.innerHTML = `
+            <div class="form-group" id="penguji-form-ta-1">
+                <label for="modal_penguji-ta-1">Penguji 1</label>
+                <div class="input-with-buttons">
+                    <input type="text" id="modal_penguji-ta-1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+                    <div class="bobot-nilai-input-group">
+                        <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-1')">-</button>
+                        <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
+                        <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-1')">+</button>
+                    </div>
+                    <div class="form-toggle-buttons">
+                        <button type="button" onclick="addPenguji()">+</button>
+                        <button type="button" onclick="removePenguji()">-</button>
+                    </div>
+                </div>
+            </div>`;
+        pengujiCount = 1;
+
+        // Populate data
+        document.getElementById('modal_nim-ta').value = el.dataset.nim || '';
+        document.getElementById('modal_judul_sidang-ta').value = el.dataset.judul || '';
+        document.getElementById('modal_pembimbing-ta').value = el.dataset.pembimbing || '';
+        document.getElementById('modal_prodi-ta').value = el.dataset.prodi || '';
     }
+
+    function populateSemModal(el) {
+        document.getElementById('modal_nim-sem').value = el.dataset.nim || '';
+        document.getElementById('modal_matkul-sem').value = el.dataset.judul || '';
+        document.getElementById('modal_prodi-sem').value = el.dataset.prodi || '';
+        
+        const pengampu = JSON.parse(el.dataset.pengampu || '[]');
+        document.getElementById('modal_pengampu-sem-1').value = pengampu[0] || '';
+        document.getElementById('modal_pengampu-sem-2').value = pengampu[1] || '';
+    }
+
+    function addPenguji() {
+        pengujiCount++;
+        const wrapper = document.getElementById('penguji-wrapper-ta');
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.id = `penguji-form-ta-${pengujiCount}`;
+        div.innerHTML = `
+            <label for="modal_penguji-ta-${pengujiCount}">Penguji ${pengujiCount}</label>
+            <div class="input-with-buttons">
+                <input type="text" id="modal_penguji-ta-${pengujiCount}" name="penguji_nama[]" placeholder="Nama Penguji ${pengujiCount}" />
+                <div class="bobot-nilai-input-group">
+                    <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-${pengujiCount}')">-</button>
+                    <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
+                    <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-${pengujiCount}')">+</button>
+                </div>
+            </div>`;
+        wrapper.appendChild(div);
+    }
+
+    function removePenguji() {
+        if (pengujiCount > 1) {
+            const lastForm = document.getElementById(`penguji-form-ta-${pengujiCount}`);
+            if (lastForm) {
+                lastForm.remove();
+                pengujiCount--;
+            }
+        }
+    }
+    
+    function incrementValue(inputId) {
+        const input = document.getElementById(inputId);
+        if (input) input.value = parseInt(input.value, 10) + 1;
+    }
+
+    function decrementValue(inputId) {
+        const input = document.getElementById(inputId);
+        if (input) {
+            let val = parseInt(input.value, 10);
+            if (val > (input.min || 0)) {
+                input.value = val - 1;
+            }
+        }
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const modalType = form.id.includes('-ta') ? 'TA' : 'Sem';
+        
+        if (validateForm(modalType)) {
+            const modalInstance = modalType === 'TA' ? taModalInstance : semModalInstance;
+            modalInstance.hide();
+            
+            Swal.fire({
+                title: 'Berhasil',
+                text: 'Jadwal Berhasil Dibuat.',
+                imageUrl: '../../assets/img/centang.svg',
+                imageWidth: 120,
+                imageHeight: 120,
+                imageAlt: 'Success checkmark',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4336F0'
+            }).then(() => {
+                // You can add redirection or table refresh logic here
+                // For example: location.reload();
+            });
+        }
+    }
+
+    function validateForm(modalType) {
+        const suffix = modalType === 'TA' ? '-ta' : '-sem';
+        const errorBox = document.getElementById(`form-error${suffix}`);
+        errorBox.textContent = '';
+        let errorMessage = '';
+
+        // Validate Dosen/Penguji names
+        const dosenInputs = document.querySelectorAll(`input[name="${modalType === 'TA' ? 'penguji' : 'pengampu'}_nama[]"]`);
+        for (let i = 0; i < dosenInputs.length; i++) {
+            if (dosenInputs[i].value.trim() === '') {
+                errorMessage = `Nama ${modalType === 'TA' ? 'Penguji' : 'Pengampu'} ${i + 1} harus diisi!`;
+                break;
+            }
+        }
+        if (errorMessage) { errorBox.textContent = errorMessage; return false; }
+        
+        // Validate Ruangan
+        const ruangan = document.getElementById(`modal_ruangan${suffix}`).value.trim();
+        if (ruangan === '') {
+            errorBox.textContent = 'Ruangan harus diisi!';
+            return false;
+        }
+
+        // Validate Tanggal
+        const tanggal = document.getElementById(`modal_tanggal${suffix}`).value;
+        if (tanggal === '') {
+            errorBox.textContent = 'Tanggal harus dipilih!';
+            return false;
+        }
+        const today = new Date();
+        const selectedDate = new Date(tanggal);
+        today.setHours(0, 0, 0, 0); // Compare dates only
+        if (selectedDate < today) {
+            errorBox.textContent = 'Tanggal tidak boleh kurang dari tanggal hari ini!';
+            return false;
+        }
+
+        // Validate Jam
+        const jamAwal = document.getElementById(`modal_jam_awal${suffix}`).value;
+        const jamAkhir = document.getElementById(`modal_jam_akhir${suffix}`).value;
+        if (jamAwal === '' || jamAkhir === '') {
+            errorBox.textContent = 'Jam awal dan jam akhir harus diisi!';
+            return false;
+        }
+        if (jamAkhir <= jamAwal) {
+            errorBox.textContent = 'Jam akhir harus setelah jam awal!';
+            return false;
+        }
+
+        return true; // All validations passed
+    }
+
   </script>
 </body>
 </html>
