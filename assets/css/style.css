@@ -5,7 +5,7 @@
   left: 0;
   width: 15vw;
   height: 100%;
-  background-color: rgb(67, 54, 240);
+  background-color: #4b68fb;
   padding: 2%;
 }
 * {
@@ -27,7 +27,7 @@ body {
 }
 
 .text-heading {
-  color: rgb(67, 54, 240);
+  color: #4b68fb;
   font-weight: 550;
 }
 
@@ -42,7 +42,7 @@ body {
 }
 
 .jadiBiru:hover {
-  background-color: rgb(67, 54, 240);
+  background-color: #4b68fb;
   color: white !important;
 }
 
@@ -108,8 +108,8 @@ body {
   width: 280px;
   border-radius: 1px;
   box-sizing: border-box;
-  border-left: 5px solid rgb(67, 54, 240);
-  background: rgb(67, 54, 240);
+  border-left: 5px solid #4b68fb;
+  background: #4b68fb;
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 1000;
@@ -159,7 +159,7 @@ body {
 }
 
 .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-  color: rgb(67, 54, 240);
+  color: #4b68fb;
 }
 
 .NavSide__sidebar-item b:nth-child(1) {
@@ -180,7 +180,7 @@ body {
   width: 100%;
   height: 100%;
   border-bottom-right-radius: 20px;
-  background: rgb(67, 54, 240);
+  background: #4b68fb;
   display: block;
 }
 
@@ -202,7 +202,7 @@ body {
   width: 100%;
   height: 100%;
   border-top-right-radius: 20px;
-  background: rgb(67, 54, 240);
+  background: #4b68fb;
   display: block;
 }
 
@@ -246,11 +246,11 @@ body {
 }
 
 .NavSide__toggle i.bi.open {
-  color: rgb(67, 54, 240);
+  color: #4b68fb;
 }
 
 .NavSide__toggle i.bi.close {
-  color: rgb(67, 54, 240);
+  color: #4b68fb;
 }
 
 .NavSide__toggle.NavSide__toggle--active i.bi.open {
@@ -361,7 +361,7 @@ body {
 
   .NavSide__toggle.NavSide__toggle--active {
     left: calc(50% + 10px);
-    color: rgb(67, 54, 240);
+    color: #4b68fb;
     background-color: aliceblue;
   }
 
@@ -387,9 +387,9 @@ body {
 }
 
 .dashboard-header .page-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #333;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #4b68fb;
 }
 
 .dashboard-header .header-icons {
