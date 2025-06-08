@@ -528,7 +528,7 @@
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-lg-3 mb-3 d-flex align-items-center">
+              <div class="col-lg-3 col-md-3 mb-3 d-flex align-items-center">
                   <label for="Penyampaian" id="labelpenilaian">Penyampaian</label>
                   <label for=":" class="colon3">:</label>
                 <input
