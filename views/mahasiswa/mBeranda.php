@@ -19,7 +19,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
     <link rel="stylesheet" href="../../extra/style.css"> 
     <style>
         .sidang-status-card {
-            background-color: #4F46E5;
+            background-color: #4B68FB;
             color: white;
             display: flex;
             align-items: center;
@@ -202,7 +202,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
         /* --- Corrected Calendar CSS for Cross-Browser Compatibility --- */
 
         .calendar-card {
-            background-color: #4F46E5;
+            background-color: #4B68FB;
             color: white;
             display: flex;
             /* This is correct, it makes the card a flex container */
@@ -322,7 +322,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
 
         .calendar-card .calendar-day.current-day {
             background-color: white;
-            color: #4F46E5;
+            color: #4B68FB;
             font-weight: 700;
         }
 
@@ -383,7 +383,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
         .sidang-mendatang-card .date-bubble .day {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #4F46E5;
+            color: #4B68FB;
             line-height: 1.1;
         }
 
@@ -403,7 +403,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
 
         .sidang-mendatang-card .arrow i {
             font-size: 1.2rem;
-            color: #4F46E5;
+            color: #4B68FB;
         }
     </style>
 </head>
