@@ -125,7 +125,6 @@
             white-space: normal;
             text-align: center;
             line-height: 1.5;
-            color:white;
         }
 
         /* UBAH: Active state di pindah ke Evaluasi */
@@ -134,7 +133,11 @@
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
+<<<<<<< HEAD
+            color: rgb(67, 54, 240);
+=======
             color: #4B68FB !important; /* Changed from rgb(67, 54, 240) */
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
         }
 
         .NavSide__sidebar-item b:nth-child(1) {
@@ -563,8 +566,13 @@
                 <!-- MENU "Detail Sidang" DIHAPPU S DARI SINI -->
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Evaluasi aktif -->
                     <b></b><b></b>
+<<<<<<< HEAD
+                    <a href="#">
+                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+=======
                     <a href="dEvaluasiSidang.php">
                         <span class="fw-semibold">Evaluasi</span>
+>>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">

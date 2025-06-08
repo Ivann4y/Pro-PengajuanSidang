@@ -257,7 +257,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   
   <div id="main-sidebar" class="NavSide__sidebar">
     <div class="NavSide__sidebar-brand">
-        <img src="../../assets/img/Logo_Astratech_White-8.png" alt="AstraTech Logo">
+        <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
     </div>
     <ul class="NavSide__sidebar-nav">
         <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aBeranda.php' ? 'NavSide__sidebar-item--active' : ''); ?>" id="berandaNav">
