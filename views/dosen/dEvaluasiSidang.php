@@ -577,7 +577,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#">
+                    <a href="dDokumenRevisi.php">
                         <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
                     </a>
                 </li>
