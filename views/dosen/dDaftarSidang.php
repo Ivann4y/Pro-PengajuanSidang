@@ -99,7 +99,7 @@ if ($_SESSION['role'] !== 'dosen') {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -120,9 +120,10 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
             </div>
         </div>
-        <main class="NavSide__main-content" id="mBeranda">
+
+        <main class="NavSide__main-content">
             <div class="dashboard-header">
-                <h2 class="page-title"> </h2>
+                <h2 class="page-title"></h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
@@ -211,12 +212,14 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
             </div>
 
-            <!-- modal keluar -->
+             <!-- Modal keluar-->
             <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="modal-header mx-auto">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+                        <div style="background-color: rgb(67, 54, 240);">
+                            <div class="modal-header">
+                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                            </div>
                         </div>
                         <div class="modal-body mx-auto">
                             Apakah anda yakin ingin keluar?
@@ -233,10 +236,10 @@ if ($_SESSION['role'] !== 'dosen') {
                 let menuToggle = document.querySelector(".NavSide__toggle");
                 let sidebar = document.getElementById("main-sidebar");
 
-                menuToggle.onclick = function() {
-                    menuToggle.classList.toggle("NavSide__toggle--active");
-                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                };
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
 
                 // Sidebar Active Item Logic
                 let listItems = document.querySelectorAll(".NavSide__sidebar-item");

@@ -13,6 +13,7 @@ if ($_SESSION['role'] !== 'admin') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Admin</title>
      <link rel="stylesheet" href="../../assets/css/style.css"/>
+      <link rel="stylesheet" href="../../extra/style.css"> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -20,182 +21,387 @@ if ($_SESSION['role'] !== 'admin') {
    
 
     <style>
-        body {
-            margin: 0;
-            font-family: "Poppins", sans-serif;
-            background-color: rgb(255, 255, 255);
-        }
-        
-        .bodyContainer {
-            margin-left: 15vw;
-            padding: 4vh 3vw;
-        }
-        
-        .bodyHeading {
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        
-        .welcomeText {
-            color: #555;
-            font-size: 2rem;
-        }
-        
-        .dashboardTitle {
-            color: #4538db;
+
+         .dashboardTitle {
+            color: #4B68FB;
             font-size: 1.5rem;
             font-weight: 500;
         }
         
-        .statusCard {
-            padding: 20px;
-            border-radius: 15px;
-            height: 100%;
-            transition: 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .statusCardItem {
-            position: relative;
-            word-wrap: break-word;
-            /* Pecah kata jika terlalu panjang */
-            word-break: break-word;
-            /* Tambahan untuk jaga-jaga */
-            white-space: normal;
-            /* Pastikan teks bisa turun ke bawah */
-            overflow-wrap: break-word;
-            /* Untuk browser modern */
-            max-width: 100%;
-            /* Biar tidak melebihi lebar parent */
-            font-size: 1rem;
-        }
-        
-        .statusCard:hover {
-            transform: scale(1.05);
-        }
-        
-        .card-penjadwalan {
-            background-color: #4538db;
+          .penjadwalan-status-card {
+            background-color: #4B68FB;
             color: white;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            /* Added for hover effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
-        .card-pengajuan {
-            background-color: #e2e2e2;
-            color: #444;
+
+        .penjadwalan-status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
         }
-        
-        .statusTitle {
+
+        .penjadwalan-status-card .number {
+            font-size: 4.8rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-right: 1.2rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .penjadwalan-status-card .text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .penjadwalan-status-card .text .title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        .penjadwalan-status-card .text .description {
+            font-size: 1.05rem;
             font-weight: 600;
-            margin-bottom: 10px;
-            word-break: break-word;
         }
-        
-        .statusNumber {
-            font-size: 2.5rem;
-            font-weight: bold;
+
+        .pengajuan-status-card {
+            background-color: rgb(239, 239, 239);
+            display: flex;
+            align-items: center;
+            /* Added for hover effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            /* Base shadow for consistency */
         }
-        
-        .notifBox {
-            background-color: #dcdcdc;
-            padding: 20px;
-            border-radius: 15px;
-            position: relative;
+
+        .pengajuan-status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
-        
-        .notifBox h5 {
+
+        .pengajuan-status-card .number {
+            font-size: 4.8rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-right: 1.2rem;
+            color: rgb(37, 44, 54);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .pengajuan-status-card .text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .pengajuan-status-card .text .title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #4B5563;
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        .pengajuan-status-card .text .description {
+            font-size: 1.05rem;
             font-weight: 600;
-            margin-bottom: 15px;
+            color: #1F2937;
         }
-        
-        .notifItem {
+
+        /* ... (your .content-card and .notifikasi-card styles) ... */
+        /* Keep your existing .notifikasi-card and .tanggungan-card styles for scrolling and sticky headers */
+        .content-card {
+            background-color: #F3F4F6;
+        }
+
+        .content-card .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 1rem;
+        }
+
+        /* --- Notifikasi Card Styles --- */
+        .notifikasi-card {
+            overflow-y: auto;
+            max-height: 35vh;
+            padding-top: 0rem;
+            padding-bottom: 1rem;
+        }
+
+        .notifikasi-card .section-title {
+            position: sticky;
+            top: 0;
+            background-color: #F3F4F6;
+            /* Match card background */
+            z-index: 10;
+            padding-top: 0.3rem;
+            /* Adjust to match card's padding if link wraps it */
+            padding-bottom: 0.5rem;
+            /* If .notifikasi-card has padding, section-title might need negative margins
+           to span full width if it's inside a padded linked container.
+           However, given the link will wrap the dashboard-card which itself has padding,
+           this should be okay. The title's background needs to be the same as the card's.
+        */
+            border-bottom: 1px solid #DEE2E6;
+            /* Resetting margins that might be inherited if card padding is on the link */
+            margin-top: 0;
+            /* If the card has padding, and title is inside */
+            margin-bottom: 0;
+        }
+
+        /* Make sure padding of notifikasi-card is applied if link wraps it,
+       or adjust title padding/margin if sticky element is inside a padded link */
+
+
+        .notifikasi-card .notifikasi-item {
             background-color: white;
-            padding: 10px 15px;
-            margin-bottom: 10px;
+            color: #4B5563;
+            padding: 0.75rem 1rem;
             border-radius: 10px;
-            position: relative;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
-        
-        .notifItem .notif-check {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #007bff;
+
+        .notifikasi-card .notifikasi-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* --- Tanggungan Card Styles --- */
+        .tanggungan-card {
+            overflow-y: auto;
+            max-height: 37.5vh;
+            padding-top: 0rem;
+            padding-bottom: 1rem;
+        }
+
+        .tanggungan-card .section-title {
+            position: sticky;
+            top: 0;
+            background-color: #F3F4F6;
+            z-index: 10;
+            padding-top: 0.3rem;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+            margin-bottom: 0;
+            border-bottom: 1px solid #DEE2E6;
+        }
+
+        .tanggungan-card .tanggungan-item {
+            background-color: white;
+            color: #374151;
+            padding: 0.8rem 1.1rem;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .tanggungan-card .tanggungan-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .calendar-card {
+            background-color: #4B68FB;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            min-height: 300px;
+            /* Ensures the card has a decent minimum height */
+        }
+
+        .calendar-card .section-title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.5rem;
+        }
+
+        .calendar-card .section-title {
+            /* This is the month/year text */
+            color: white;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .calendar-card .calendar-nav i {
             font-size: 1.2rem;
             cursor: pointer;
-            transition: color 0.3s;
+            padding: 0 0.5rem;
+            color: #C7D2FE;
         }
-        
-        .notifItem .notif-check:hover {
-            color: #0056b3;
+
+        .calendar-card .calendar-nav i:hover {
+            color: white;
         }
-        
-        .notif-all-check {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            color: #007bff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        
-        .notif-all-check:hover {
-            color: #0056b3;
-        }
-        
-        /* mobile screen image */
-        @media (max-width: 768px) {
-            .img-slot {
-                display: none;
-            }
-            .img-slot img {
-                display: none;
-            }
-        }
-        
-        .img-slot {
+
+        .calendar-card .calendar {
+            /* The <table> element */
             width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+            flex-grow: 1;
+            /* Allows table to take available vertical space in the flex card */
+        }
+
+        .calendar-card .calendar th {
+            /* Day headers: Min, Sen, etc. */
+            padding: 0.3rem 0.25rem;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.75rem;
+            color: #C7D2FE;
+            text-transform: uppercase;
+        }
+
+        .calendar-card .calendar td {
+            /* Cells for each day */
+            padding: 0.1rem;
+            /* Small padding around the day bubble */
+            text-align: center;
+            vertical-align: middle;
+            /* Vertically aligns the day bubble in the cell */
+            /* REMOVED explicit height: calc(100% / 6); to let table rows auto-adjust height */
+        }
+
+        /* REMOVED .calendar-card .calendar tbody, .calendar-card .calendar tr { height: 100%; } */
+        /* These rules were causing issues. Table rows will now naturally distribute height. */
+
+        .calendar-card .calendar-day {
+            /* The <span> bubble for each day number */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            /* Should match height for vertical centering of single-line text */
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 0 auto;
+            /* Horizontal centering within the <td> */
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .calendar-card .calendar-day.current-day {
+            background-color: white;
+            color: #4B68FB;
+            font-weight: 700;
+        }
+
+        .calendar-card .calendar-day:hover:not(.current-day) {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-card .calendar-day:hover:not(.current-day) {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Ensure calendar table can take up space */
+        .calendar-card .calendar tbody,
+        .calendar-card .calendar tr {
             height: 100%;
+            /* if needed to help distribute space, test this */
+        }
+
+        .calendar-card .calendar td {
+            height: calc(100% / 6);
+            /* Distribute height among rows, adjust divisor if max rows change */
+        }
+
+
+        /* --- Sidang Mendatang Card (User's latest version) --- */
+        /* ... (Your existing .sidang-mendatang-card styles should be fine) ... */
+        .sidang-mendatang-card {
+            overflow-y: auto;
+            max-height: 36vh;
+            /* As per your original style */
+            padding-top: 0rem;
+            padding-bottom: 1rem;
+        }
+
+        .sidang-mendatang-card .section-title {
+            position: sticky;
+            top: 0;
+            background-color: #F3F4F6;
+            /* Ensure this matches card background */
+            z-index: 10;
+            padding-top: 0.3rem;
+            /* Adjust if card has padding */
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+            /* Reset margin */
+            margin-bottom: 0;
+            /* Reset margin */
+            border-bottom: 1px solid #DEE2E6;
+        }
+
+        .sidang-mendatang-card .item {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #E0E7FF;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidang-mendatang-card .item:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidang-mendatang-card .date-bubble {
+            background-color: white;
+            border-radius: 8px;
+            padding: 0.4rem 0rem;
+            text-align: center;
+            margin-right: 1rem;
+            min-width: 48px;
+            height: 48px;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 250px;
-            position: relative;
         }
-        
-        .img-slot img {
-            width: 80%;
-            height: 90%;
-            transform: translateY(-20%);
+
+        .sidang-mendatang-card .date-bubble .day {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #4B68FB;
+            line-height: 1.1;
         }
-        
-        .profile-icon {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            font-size: 1.8rem;
-            color: #444;
-            cursor: pointer;
-            transition: color 0.3s;
+
+        .sidang-mendatang-card .date-bubble .month {
+            font-size: 0.7rem;
+            color: #6B7280;
+            line-height: 1;
+            text-transform: uppercase;
         }
-        
-        .notif-icon {
-            position: absolute;
-            top: 30px;
-            right: 80px;
-            font-size: 1.8rem;
-            color: #444;
-            cursor: pointer;
-            transition: color 0.3s;
+
+        .sidang-mendatang-card .info {
+            flex-grow: 1;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #374151;
         }
-        
-        .profile-icon:hover {
-            color: #007bff;
-        }
-        
-        .notif-icon:hover {
-            color: #007bff;
+
+        .sidang-mendatang-card .arrow i {
+            font-size: 1.2rem;
+            color: #4B68FB;
         }
     </style>
 </head>
@@ -228,10 +434,9 @@ if ($_SESSION['role'] !== 'admin') {
                         <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
             </a>
           </li>
-    
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -242,52 +447,183 @@ if ($_SESSION['role'] !== 'admin') {
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
-                <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                     <i class="bi bi-bell-fill"></i>
                 </a>
-                <div class="profile-icon">
-                    <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
-                    <i class="bi bi-person-fill fs-5"></i>
+                 <div class="profile-icon">
+                    <a href="aProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
+                        <i class="bi bi-person-fill fs-5"></i>
                     </a>
                 </div>
             </div>
+
         </div>
 
         <main class="NavSide__main-content">
-            <div class="profile-icon">
-                <i class="fas fa-user-circle"></i>
+    
+        <div class="dashboard-header">
+                <h2 class="page-title">Dashboard Admin</h2>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon">
+                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                    </div>
+                </div>
             </div>
-            <!-- <div class="notif-icon">
-                <i class="fa-solid fa-bell"></i>
-            </div> -->
-            <div class="dashboardTitle">Dashboard Admin</div>
+
+           
             <h2 class="welcomeText">Selamat Datang, Admin!</h2>
 
-            <div class="row my-4">
-                <div class="col-md-3 mb-3">
-                    <div class="statusCard card-penjadwalan" id="cardPenjadwalan" onclick="location.href='aPenjadwalan.php'">
-                        <div class="statusTitle">Penjadwalan</div>
-                        <div class="d-flex align-items-center">
-                            <div class="statusNumber me-3">4</div>
-                            <div class="statusCardItem">Menunggu Dijadwalkan</div>
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="mSidang.php" style="text-decoration: none; color: inherit; display: block;">
+                                <div class="dashboard-card penjadwalan-status-card">
+                                    <div class="number">4</div>
+                                    <div class="text">
+                                        <span class="title">Penjadwalan</span>
+                                        <span class="description">Menunggu Dijadwalkan</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit; display: block;">
+                                <div class="dashboard-card pengajuan-status-card">
+                                    <div class="number">2</div>
+                                    <div class="text">
+                                        <span class="title">Pengajuan</span>
+                                        <span class="description">Menunggu Persetujuan</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="dashboard-card content-card tanggungan-card">
+                                <h3 class="section-title">Tanggungan</h3>
+                                <div class="tanggungan-item">Belum terjadwal Sidang PRG</div>
+                                <div class="tanggungan-item">Belum terjadwal Sidang Basdat</div>
+                                <div class="tanggungan-item">Belum terjadwal Sidang TA</div>
+                                <div class="tanggungan-item">Belum terjadwal Sidang Orkom</div>
+                                <div class="tanggungan-item">Belum terjadwal Sidang </div>
+                            </div>
                         </div>
                     </div>
+
+                    <a href="aNotifikasi.php" style="text-decoration: none; color: inherit; display: block;">
+                        <div class="dashboard-card content-card notifikasi-card">
+                            <h3 class="section-title">Notifikasi</h3>
+                            <div class="notifikasi-item">Sidang PRG Telah Disetujui oleh Dosen Pembimbing</div>
+                            <div class="notifikasi-item">Revisi Sidang BasDat Telah Selesai Dinilai</div>
+                            <div class="notifikasi-item">Sidang TA Nayaka Ivana Putra telah selesai dinilai</div>
+                        </div>
+                    </a>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <div class="statusCard card-pengajuan" id="cardPengajuan" onclick="location.href='aPenjadwalan.php'">
-                        <div class="statusTitle">Pengajuan</div>
-                        <div class="d-flex align-items-center">
-                            <div class="statusNumber me-3">2</div>
-                            <div class="statusCardItem">Menunggu Persetujuan</div>
+
+                <div class="col-lg-5">
+                    <div class="dashboard-card calendar-card">
+                        <div class="section-title-container">
+                            <h3 class="section-title" id="currentMonthYear"></h3>
+                            <div class="calendar-nav">
+                                <i class="bi bi-chevron-left" id="prevMonth"></i>
+                                <i class="bi bi-chevron-right" id="nextMonth"></i>
+                            </div>
+                        </div>
+                        <table class="calendar" id="calendarTable">
+                            <thead>
+                                <tr>
+                                    <th>Min</th>
+                                    <th>Sen</th>
+                                    <th>Sel</th>
+                                    <th>Rab</th>
+                                    <th>Kam</th>
+                                    <th>Jum</th>
+                                    <th>Sab</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="dashboard-card content-card sidang-mendatang-card">
+                        <h3 class="section-title">Sidang Mendatang</h3>
+                       
+                            <div class="item">
+                                <div class="date-bubble">
+                                    <span class="day">02</span>
+                                    <span class="month">Jun</span>
+                                </div>
+                                <span class="info">Sistem Pengajuan Skripsi</span>
+                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                            </div>
+                        
+                        <div class="item">
+                            <div class="date-bubble">
+                                <span class="day">05</span>
+                                <span class="month">Jun</span>
+                            </div>
+                            <span class="info">Revisi Proposal KP</span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble">
+                                <span class="day">10</span>
+                                <span class="month">Jun</span>
+                            </div>
+                            <span class="info">Sidang Akhir TA</span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble">
+                                <span class="day">15</span>
+                                <span class="month">Jun</span>
+                            </div>
+                            <span class="info">Presentasi Proyek</span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble">
+                                <span class="day">20</span>
+                                <span class="month">Jun</span>
+                            </div>
+                            <span class="info">Ujian Komprehensif</span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble">
+                                <span class="day">25</span>
+                                <span class="month">Jun</span>
+                            </div>
+                            <span class="info">Revisi Skripsi Bab 1-3</span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble">
+                                <span class="day">28</span>
+                                <span class="month">Jun</span>
+                            </div>
+                            <span class="info">Bimbingan Akhir</span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble">
+                                <span class="day">02</span>
+                                <span class="month">Jul</span>
+                            </div>
+                            <span class="info">Pengumpulan Laporan</span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
                     </div>
                 </div>
             </div>
+        </main>
+    </div>
 
-            <!-- modal keluar -->
-            <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
+     <!-- Modal keluar-->
+    <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
                 <div class="modal-header mx-auto">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
                 </div>
@@ -298,76 +634,99 @@ if ($_SESSION['role'] !== 'admin') {
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                     <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                 </div>
-                </div>
             </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div class="notifBox">
-                        <h5>Notifikasi</h5>
-                        <div class="notif-all-check" onclick="markAllRead()">
-                            <i class="fa-solid fa-check-double"></i>
-                        </div>
-                        <div class="notifItem">
-                            Sidang PRG telah disetujui oleh dosen pembimbing
-                            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i
-                ></span>
-                        </div>
-                        <div class="notifItem">
-                            Sidang BasDat telah selesai dinilai
-                            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i
-                ></span>
-                        </div>
-                        <div class="notifItem">
-                            Sidang TA Nayaka Ivana Putra telah selesai dinilai
-                            <span class="notif-check" onclick="markOneRead(this)"><i class="fa-solid fa-check"></i
-                ></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3" style="top: -50px; z-index: 10">
-                    <div class="img-slot">
-                        <img src="../../assets/img/img4.png" />
-                    </div>
-                </div>
-            </div>
-        </main>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function markAllRead() {
-            document
-                .querySelectorAll(".notifItem")
-                .forEach((item) => item.remove());
-        }
-
-        function markOneRead(el) {
-            el.closest(".notifItem").remove();
-        }
-
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar"); // More direct access
-
         // Toggle sidebar visibility
+       // Sidebar Toggle Logic
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+
         menuToggle.onclick = function() {
             menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile"); // Specific class for mobile active state
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
 
-        // Active menu item highlighting
+        // Sidebar Active Item Logic
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
         for (let i = 0; i < listItems.length; i++) {
             listItems[i].onclick = function() {
-                // Remove active class from all items
-                for (let j = 0; j < listItems.length; j++) {
-                    listItems[j].classList.remove("NavSide__sidebar-item--active");
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
                 }
-                // Add active class to the clicked item
-                this.classList.add("NavSide__sidebar-item--active");
             };
         }
+
+        
+        // Real-time Calendar Logic
+        const calendarTableBody = document.querySelector("#calendarTable tbody");
+        const currentMonthYearHeader = document.getElementById("currentMonthYear");
+        const prevMonthBtn = document.getElementById("prevMonth");
+        const nextMonthBtn = document.getElementById("nextMonth");
+
+        let currentDate = new Date();
+        let activeDate = new Date();
+
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+
+        function renderCalendar() {
+            calendarTableBody.innerHTML = "";
+            currentMonthYearHeader.textContent = `${monthNames[activeDate.getMonth()]} ${activeDate.getFullYear()}`;
+
+            const year = activeDate.getFullYear();
+            const month = activeDate.getMonth();
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let date = 1;
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement("tr");
+
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement("td");
+                    if (i === 0 && j < firstDayOfMonth) {
+                        cell.innerHTML = "";
+                    } else if (date > daysInMonth) {
+                        cell.innerHTML = "";
+                    } else {
+                        const daySpan = document.createElement("span");
+                        daySpan.classList.add("calendar-day");
+                        daySpan.textContent = date;
+
+                        if (date === currentDate.getDate() && month === currentDate.getMonth() && year === currentDate.getFullYear()) {
+                            daySpan.classList.add("current-day");
+                        }
+                        cell.appendChild(daySpan);
+                        date++;
+                    }
+                    row.appendChild(cell);
+                }
+                calendarTableBody.appendChild(row);
+            }
+        }
+
+        prevMonthBtn.addEventListener("click", () => {
+            activeDate.setMonth(activeDate.getMonth() - 1);
+            activeDate.setDate(1);
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener("click", () => {
+            activeDate.setMonth(activeDate.getMonth() + 1);
+            activeDate.setDate(1);
+            renderCalendar();
+        });
+
+        renderCalendar();
     </script>
 </body>
 

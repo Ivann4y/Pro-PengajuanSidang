@@ -70,8 +70,8 @@
       width: 280px;
       border-radius: 1px;
       box-sizing: border-box;
-      border-left: 5px solid rgb(67, 54, 240);
-      background: rgb(67, 54, 240);
+      border-left: 5px solid #4B68FB;
+      background: #4B68FB;
       overflow-x: hidden;
       overflow-y: auto;
       z-index: 1000;
@@ -122,7 +122,7 @@
     }
 
     .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-      color: rgb(67, 54, 240);
+      color: #4B68FB;
     }
 
     .NavSide__sidebar-item b:nth-child(1) {
@@ -143,7 +143,7 @@
       width: 100%;
       height: 100%;
       border-bottom-right-radius: 20px;
-      background: rgb(67, 54, 240);
+      background: #4B68FB;
       display: block;
     }
 
@@ -165,7 +165,7 @@
       width: 100%;
       height: 100%;
       border-top-right-radius: 20px;
-      background: rgb(67, 54, 240);
+      background: #4B68FB;
       display: block;
     }
 
@@ -210,11 +210,11 @@
     }
 
     .NavSide__toggle i.bi.open {
-      color: rgb(67, 54, 240);
+      color: #4B68FB;
     }
 
     .NavSide__toggle i.bi.close {
-      color: rgb(67, 54, 240);
+      color: #4B68FB;
     }
 
     .NavSide_toggle.NavSide_toggle--active i.bi.open {

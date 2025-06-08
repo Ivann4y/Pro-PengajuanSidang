@@ -35,13 +35,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluasi Sidang</title> <!-- Judul halaman diubah -->
+    <title>Evaluasi Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* --- General and Body Styles --- */
         * {
             margin: 0;
             padding: 0;
@@ -51,13 +52,32 @@
 
         body {
             min-height: 100vh;
-            background-color: #ffffff; /* FFFFFF */
+            background-color: #ffffff;
         }
 
+        /* --- Base Sidebar, Main Content, and Info Card Styles --- */
         #NavSide {
             display: flex;
             min-height: 100vh;
             position: relative;
+        }
+
+        .NavSide__sidebar {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            width: 280px;
+            border-radius: 1px;
+            box-sizing: border-box;
+            border-left: 5px solid #4B68FB;
+            background: #4B68FB;
+            overflow-x: hidden;
+            overflow-y: auto;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
         }
 
         .NavSide__sidebar-brand {
@@ -70,24 +90,7 @@
             max-width: 180px;
             height: auto;
             display: inline-block;
-        }
-
-        .NavSide__sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 280px;
-            border-radius: 1px;
-            box-sizing: border-box;
-            border-left: 5px solid #4B68FB; /* Changed from rgb(67, 54, 240) */
-            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
-            overflow-x: hidden;
-            overflow-y: auto;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
+            filter: brightness(0) invert(1);
         }
 
         .NavSide__sidebar-nav {
@@ -104,8 +107,7 @@
             width: 100%;
             border-top-left-radius: 20px;
             border-bottom-left-radius: 20px;
-            /* BARU: Menyesuaikan jarak antar item menu */
-            margin-bottom: 15px; /* Sesuaikan nilai ini sesuai keinginan Anda */
+            margin-bottom: 15px;
         }
 
         .NavSide__sidebar-item a {
@@ -125,15 +127,15 @@
             white-space: normal;
             text-align: center;
             line-height: 1.5;
+            color: white;
         }
 
-        /* UBAH: Active state di pindah ke Evaluasi */
         .NavSide__sidebar-item.NavSide__sidebar-item--active {
             background: #ffffff;
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: #4B68FB !important; /* Changed from rgb(67, 54, 240) */
+            color: #4B68FB !important;
         }
 
         .NavSide__sidebar-item b:nth-child(1) {
@@ -144,6 +146,7 @@
             background: rgb(255, 255, 255);
             display: none;
         }
+
         .NavSide__sidebar-item b:nth-child(1)::before {
             content: "";
             position: absolute;
@@ -152,9 +155,10 @@
             width: 100%;
             height: 100%;
             border-bottom-right-radius: 20px;
-            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
+            background: #4B68FB;
             display: block;
         }
+
         .NavSide__sidebar-item b:nth-child(2) {
             position: absolute;
             bottom: -20px;
@@ -163,6 +167,7 @@
             background: rgb(255, 255, 255);
             display: none;
         }
+
         .NavSide__sidebar-item b:nth-child(2)::before {
             content: "";
             position: absolute;
@@ -171,9 +176,10 @@
             width: 100%;
             height: 100%;
             border-top-right-radius: 20px;
-            background: #4B68FB; /* Changed from rgb(67, 54, 240) */
+            background: #4B68FB;
             display: block;
         }
+
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
             display: block;
@@ -181,27 +187,27 @@
 
         .NavSide__main-content {
             flex-grow: 1;
-            padding: 20px 20px 20px calc(20px + 1cm); 
+            padding: 20px 20px 20px calc(20px + 1cm);
             margin-left: 280px;
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
         }
 
-        /* --- Modifikasi Margin Global --- */
-        .NavSide__main-content h2 { 
+        .NavSide__main-content h2 {
             margin-bottom: 1.2cm;
-            font-weight: 700; 
-        }
-
-        .NavSide__main-content h3 { /* Gaya baru untuk sub-judul seperti "Nilai Sidang (Sementara)" */
             font-weight: 700;
-            font-size: 1.4rem; /* Sedikit lebih kecil dari h2 */
-            margin-bottom: 0.2cm; 
         }
 
+        .NavSide__main-content h3 {
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 0.2cm;
+        }
+
+        /* Keep the rest of your existing styles */
         .status-badge { 
-            background-color: #FFA3A3; /* Changed from rgb(253, 68, 59) to FFA3A3 */
-            color: black; /* Changed to black for consistency with previous request */
+            background-color: #FFA3A3;
+            color: black;
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block; 
@@ -211,15 +217,14 @@
             margin-bottom: 1.2cm; 
         }
 
-        /* Gaya untuk status "Disetujui" */
         .status-badge.approved {
-            background-color: #4BFBAF; /* Changed from rgb(108, 222, 137) to 4BFBAF */
+            background-color: #4BFBAF;
         }
 
         .info-card {
             position: relative;
-            background: rgb(235, 238, 245); 
-            border-radius: 30px; 
+            background: rgb(235, 238, 245);
+            border-radius: 30px;
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 25px;
             display: flex;
@@ -227,17 +232,17 @@
             flex-wrap: wrap;
             overflow: hidden;
             transition: background-color 0.4s ease;
-            margin-bottom: 1.2cm; 
+            margin-bottom: 1.2cm;
         }
 
-        .info-card::after { 
+        .info-card::after {
             content: "";
             position: absolute;
             top: 0;
             right: 0;
-            width: 60px; 
+            width: 60px;
             height: 100%;
-            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
+            background-color: #4B68FB;
             border-top-right-radius: 20px;
             border-bottom-right-radius: 20px;
             transition: width 0.4s ease;
@@ -250,33 +255,40 @@
         }
 
         .info-card .section {
-            flex: 0 0 48%; 
+            flex: 0 0 48%;
             z-index: 1;
             color: #333;
             transition: color 0.4s ease;
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .info-card:hover .section {
             color: white;
         }
 
-        /* Styling untuk baris label dan nilai */
+        .info-card .section .info-group {
+            margin-bottom: 1rem;
+        }
+
+        .info-card .section .info-group:last-child {
+            margin-bottom: 0;
+        }
+
         .info-card .section .label-row {
             display: flex;
             align-items: center;
-            margin-bottom: 0.25rem; 
-            font-size: 1rem; 
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
         }
 
         .info-card .section .label-row i {
-            margin-right: 10px; 
-            color: #495057; 
-            font-weight: 900; 
+            margin-right: 10px;
+            color: #495057;
+            font-weight: 900;
             transition: color 0.4s ease;
-            width: 20px; 
+            width: 20px;
             text-align: center;
         }
 
@@ -285,236 +297,153 @@
         }
 
         .info-card .section .label-row .fw-bold {
-            font-weight: 600; 
-            font-size: 1.05rem; 
+            font-weight: 600;
+            font-size: 1.05rem;
         }
 
         .info-card .section .value-row {
-            margin-left: 30px; 
+            margin-left: 30px;
             line-height: 1.5;
-            font-size: 0.95rem; 
-            margin-bottom: 0; 
+            font-size: 0.95rem;
+            margin-bottom: 0;
         }
-       
+
         .btn-kembali {
-            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-            color: white; 
-            border: none;
-            border-radius: 20px;
-            /* UBAH: Padding vertikal 0, sentralisasi dengan flexbox */
-            padding: 0 25px; 
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; 
-            /* UBAH: Gunakan display: flex untuk konten internal */
-            display: flex; 
-            align-items: center; 
-            justify-content: center; /* Pusat konten horizontal di dalam tombol */
-            margin-top: 1.2cm; 
-            height: 45px; 
-        }
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white; 
-            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-        }
-        
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px; 
-            height: 30px; 
-            background-color: white; 
-            border-radius: 50%;
-            margin-right: 10px; 
-            transition: background-color 0.3s ease; 
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-        }
-
-        /* --- PERBAIKAN WARNA PANAH DI SINI --- */
-        .btn-kembali .icon-circle i {
-            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white; 
-        }
-        /* --- AKHIR PERBAIKAN WARNA PANAH --- */
-
-        /* --- CSS Baru untuk Tombol Berkas (dipertahankan tapi tidak digunakan di Evaluasi) --- */
-        .file-button {
-            display: inline-flex; 
-            align-items: center;
-            background-color: rgb(235, 238, 245); 
-            border-radius: 20px; 
-            padding: 12px 20px;
-            margin-right: 15px; 
-            margin-bottom: 15px; 
-            text-decoration: none; 
-            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-            font-weight: 500;
-            font-size: 1rem;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
-        }
-
-        .file-button:hover {
-            background-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-            color: white; 
-            text-decoration: none; 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
-        }
-
-        .file-button i {
-            font-size: 1.25rem; 
-            margin-right: 10px; 
-            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-            transition: color 0.2s ease; 
-        }
-
-        .file-button:hover i { 
+            background-color: #4B68FB;
             color: white;
-        }
-
-        /* Responsive adjustments for file buttons */
-        @media (max-width: 576px) {
-            .file-button {
-                width: 100%; 
-                display: flex; 
-                margin-right: 0; 
-            }
-        }
-        /* --- Akhir CSS Baru --- */
-
-        /* --- CSS untuk info-group dan spacer --- */
-        .info-card .section .info-group {
-            margin-bottom: 1rem; 
-        }
-        .info-card .section .info-group:last-child {
-            margin-bottom: 0; 
-        }
-        .info-card .section .spacer {
-            flex-grow: 1; 
-        }
-        /* --- Akhir CSS info-group dan spacer --- */
-
-        /* --- CSS BARU UNTUK HALAMAN EVALUASI --- */
-        .form-card {
-            background: rgb(235, 238, 245); 
-            border-radius: 30px; 
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 15px 25px; 
-            margin-bottom: 1.2cm; 
-        }
-
-        .form-card h4 {
-            font-weight: 600; 
-            font-size: 1.05rem; 
-            margin-bottom: 0.8cm; 
-        }
-
-        .form-group-custom { 
-            margin-bottom: 1rem; 
-            display: flex;
-            align-items: center; 
-            flex-wrap: wrap; 
-        }
-
-        .form-group-custom label {
-            flex: 0 0 180px; 
-            margin-right: 20px; 
-            font-size: 1rem;
-            font-weight: 500; 
-            color: #333;
-        }
-        
-        .form-group-custom .form-control-custom {
-            flex: 1; 
-            min-width: 200px; 
-            background-color: white;
-            border: 1px solid #F2F2F2; /* Added solid */
-            border-radius: 10px; 
-            padding: 10px 15px;
-            font-size: 0.95rem;
-            height: 45px; 
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .form-group-custom .form-control-custom:focus {
-            border-color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-            box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25); /* Adjusted RGBA for new blue */
-            outline: none;
-        }
-
-        .form-group-custom textarea.form-control-custom {
-            min-height: 200px; 
-            resize: vertical; 
-        }
-        
-        /* Tombol Kirim */
-        .button-group-bottom {
-            display: flex;
-            justify-content: space-between; 
-            align-items: center; /* Ini yang membuat mereka sejajar secara vertikal */
-            margin-top: 1.2cm; 
-        }
-
-        .btn-kirim {
-            background-color: #4FD382; /* Changed from #4cfaab to button setuju color */
-            color: #ffffff; /* Text color remains black */
             border: none;
             border-radius: 20px;
-            /* UBAH: Padding vertikal 0, sentralisasi dengan flexbox */
-            padding: 0 25px; 
+            padding: 0 25px;
             cursor: pointer;
             font-size: 0.95rem;
             font-weight: 500;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            /* UBAH: Gunakan display: flex untuk konten internal */
-            display: flex; 
+            display: flex;
             align-items: center;
-            justify-content: center; /* Pusat konten horizontal di dalam tombol */
-            height: 45px; 
-            margin-top: 55px; /* BARU: Ini yang menggeser tombol Kirim sedikit ke bawah */
+            justify-content: center;
+            margin-top: 1.2cm;
+            height: 45px;
+        }
+
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white;
+            color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white;
+        }
+
+        .form-card {
+            background: #E6E6E6; 
+            border-radius: 30px; 
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px 25px;
+            margin-bottom: 1.2cm;
+        }
+
+        .form-card h4 {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.8cm;
+        }
+
+        .form-group-custom {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .form-group-custom label {
+            flex: 0 0 180px;
+            margin-right: 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group-custom .form-control-custom {
+            flex: 1;
+            min-width: 200px;
+            background-color: white;
+            border: 1px solid #F2F2F2;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            height: 45px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group-custom .form-control-custom:focus {
+            border-color: #4B68FB;
+            box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25);
+            outline: none;
+        }
+
+        .form-group-custom textarea.form-control-custom {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .button-group-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.2cm;
+        }
+
+        .btn-kirim {
+            background-color: #4FD382; /* Changed from #4cfaab to button setuju color */
+            color: black; /* Text color remains black */
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            margin-top: 55px;
         }
 
         .btn-kirim:hover {
-            background-color: #3AB070; /* Adjusted for consistency with new button setuju color */
-            color: white; 
-        }
-        /* --- AKHIR CSS BARU --- */
-
-        /* Responsive adjustment for form-group-custom */
-        @media (max-width: 768px) {
-            .form-group-custom {
-                flex-direction: column; 
-                align-items: flex-start; 
-            }
-            .form-group-custom label {
-                flex: none; 
-                width: 100%; 
-                margin-bottom: 0.5rem; 
-                margin-right: 0; 
-            }
-            .form-group-custom .form-control-custom {
-                width: 100%; 
-                min-width: unset; 
-            }
+            background-color: #3AB070;
+            color: white;
         }
 
-        /* --- CSS for Success Modal --- */
         .success-modal-content {
-            background-color: rgb(235, 238, 245); /* Matching form-card background */
-            border-radius: 30px; /* Same as form-card */
+            background-color: rgb(235, 238, 245);
+            border-radius: 30px;
             border: none;
-            padding: 20px; /* Adjust padding as needed */
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05); /* Similar shadow */
+            padding: 20px;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
         }
 
         .success-modal-body {
@@ -523,16 +452,14 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 30px 20px; /* More padding inside for spacing */
+            padding: 30px 20px;
         }
 
-        /* --- PERUBAHAN UNTUK IKON SUKSES DI SINI --- */
         .success-icon {
-            width: 6rem;   /* Mengatur lebar gambar */
-            height: 6rem;  /* Mengatur tinggi gambar */
+            width: 6rem;
+            height: 6rem;
             margin-bottom: 20px;
         }
-        /* --- AKHIR PERUBAHAN UNTUK IKON SUKSES --- */
 
         .success-message {
             font-size: 1.2rem;
@@ -540,15 +467,144 @@
             color: #333;
         }
 
-        /* BARU: CSS untuk pesan error */
         .error-message {
             color: red;
             font-size: 0.9rem;
             font-weight: 500;
-            display: none; /* Sembunyikan secara default */
-            margin-top: 10px; /* Space from the last form-group-custom */
-            margin-left: 0; /* Ubah ini untuk rata kiri */
-            text-align: left; /* Ensure it's left-aligned */
+            display: none;
+            margin-top: 10px;
+            margin-left: 0;
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .form-group-custom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .form-group-custom label {
+                flex: none;
+                width: 100%;
+                margin-bottom: 0.5rem;
+                margin-right: 0;
+            }
+            .form-group-custom .form-control-custom {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+
+        /* --- Responsive Design Styles --- */
+        .NavSide__toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            z-index: 1100;
+            transition: left 0.5s ease-in-out;
+            cursor: pointer;
+            border-radius: 5px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .NavSide__toggle i.bi {
+            position: absolute;
+            font-size: 28px;
+            display: none;
+        }
+
+        .NavSide__toggle i.bi.open {
+            color: #4B68FB;
+        }
+
+        .NavSide__toggle i.bi.close {
+            color: #4B68FB;
+        }
+
+        .NavSide__toggle.NavSide__toggle--active i.bi.open {
+            display: none;
+        }
+
+        .NavSide__toggle.NavSide__toggle--active i.bi.close {
+            display: block;
+        }
+
+        .NavSide__topbar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            align-items: center;
+            padding: 0 15px;
+            justify-content: space-between;
+        }
+
+        /* Responsive styles for screens smaller than 700px */
+        @media (max-width: 700px) {
+            .NavSide__sidebar {
+                width: 50%;
+                transform: translateX(-100%);
+                border-left-width: 0;
+            }
+
+            .NavSide__sidebar.NavSide__sidebar--active-mobile {
+                transform: translateX(0);
+                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .NavSide__main-content {
+                margin-left: 0;
+                padding: 15px;
+                padding-top: 75px;
+            }
+
+            .NavSide__toggle {
+                display: flex;
+                position: relative;
+                top: auto;
+                left: 0;
+                background-color: transparent;
+                box-shadow: none;
+            }
+
+            .NavSide__toggle i.bi.open {
+                display: block;
+            }
+
+            .NavSide__toggle.NavSide__toggle--active {
+                color: #4B68FB;
+            }
+
+            .NavSide__topbar {
+                display: flex;
+            }
+
+            .info-card .section {
+                flex: 0 0 100%;
+                margin-bottom: 1rem;
+            }
+
+            .info-card .section:last-child {
+                margin-bottom: 0;
+            }
+
+            .button-group-bottom {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn-kembali, .btn-kirim {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -556,20 +612,19 @@
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /> <!-- Path diubah -->
+                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
             </div>
             <ul class="NavSide__sidebar-nav">
-                <!-- MENU "Detail Sidang" DIHAPPU S DARI SINI -->
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Evaluasi aktif -->
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+                    <a href="dEvaluasiSidang.php">
+                        <span class="fw-semibold">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="dDokumenRevisi.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
+                        <span class="fw-semibold">Dokumen</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
@@ -579,6 +634,11 @@
                     </a>
                 </li>
             </ul>
+        </div>
+
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
         </div>
 
         <main class="NavSide__main-content">
@@ -717,27 +777,26 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
-        // Skrip untuk toggle sidebar dan active menu item
+        // --- Sidebar Toggle Logic for Mobile ---
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
 
-        if (menuToggle && sidebar) {
-            menuToggle.onclick = function () {
-                menuToggle.classList.toggle("NavSide__toggle--active");
-                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-            };
-        }
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
 
+        // Sidebar Active Item Logic
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        if (listItems.length > 0) {
-            for (let i = 0; i < listItems.length; i++) {
-                listItems[i].onclick = function (event) {
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function() {
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
                     for (let j = 0; j < listItems.length; j++) {
                         listItems[j].classList.remove("NavSide__sidebar-item--active");
                     }
                     this.classList.add("NavSide__sidebar-item--active");
-                };
-            }
+                }
+            };
         }
 
         // BARU: Logika validasi form
