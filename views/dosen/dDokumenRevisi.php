@@ -329,7 +329,6 @@
                 margin-left: 0;
                 padding: 15px;
                 padding-top: 75px;
-                /* Space for the fixed top bar */
             }
 
             .NavSide__toggle {
@@ -346,7 +345,6 @@
             }
 
             .NavSide__toggle.NavSide__toggle--active {
-                /* This can be adjusted if needed */
                 color: #4B68FB;
             }
 
@@ -356,13 +354,94 @@
 
             .info-card .section {
                 flex: 0 0 100%;
-                /* Stacks the info sections on mobile */
                 margin-bottom: 1rem;
             }
 
             .info-card .section:last-child {
                 margin-bottom: 0;
             }
+        }
+
+        /* Button Styles */
+        .button-group-bottom {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.2cm;
+        }
+
+        .btn-tolak {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            height: 45px;
+        }
+
+        .btn-tolak:hover {
+            background-color: #bb2d3b;
+        }
+
+        .btn-setujui {
+            background-color: #198754;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            height: 45px;
+        }
+
+        .btn-setujui:hover {
+            background-color: #157347;
+        }
+
+        @media (max-width: 700px) {
+            .button-group-bottom {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn-tolak, .btn-setujui {
+                width: 100%;
+            }
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+
+        .modal-body {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            min-width: 100px;
         }
     </style>
 </head>
@@ -384,7 +463,7 @@
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="dDokumenRevisi.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
+                        <span class="fw-semibold">Dokumen</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
@@ -457,35 +536,55 @@
                     </div>
                 </div>
             </div>
+
+            <div class="button-group-bottom">
+                <button class="btn-tolak" onclick="showModal('Ditolak')">Tolak</button>
+                <button class="btn-setujui" onclick="showModal('Disetujui')">Setujui</button>
+            </div>
         </main>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="../../assets/img/centang.svg" width="100" class="mx-auto mb-3" alt="Check Icon">
+                    <h5 class="modal-title" id="notifModalLabel"></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
         // --- Sidebar Toggle Logic for Mobile ---
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
 
-        if (menuToggle && sidebar) {
-            menuToggle.onclick = function() {
-                menuToggle.classList.toggle("NavSide__toggle--active");
-                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-            };
-        }
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
 
-        // --- Sidebar Active Menu Item Algorithm ---
+        // Sidebar Active Item Logic
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-
-        if (listItems.length > 0) {
-            for (let i = 0; i < listItems.length; i++) {
-                listItems[i].onclick = function(event) {
-                    event.preventDefault();
-
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function() {
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
                     for (let j = 0; j < listItems.length; j++) {
                         listItems[j].classList.remove("NavSide__sidebar-item--active");
                     }
                     this.classList.add("NavSide__sidebar-item--active");
-                };
-            }
+                }
+            };
+        }
+
+        function showModal(status) {
+            const modalLabel = document.getElementById('notifModalLabel');
+            modalLabel.innerText = `Sidang telah berhasil ${status.toLowerCase()}`;
+            const modal = new bootstrap.Modal(document.getElementById('notifModal'));
+            modal.show();
         }
     </script>
 
