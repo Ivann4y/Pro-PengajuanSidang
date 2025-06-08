@@ -417,11 +417,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-<<<<<<< HEAD
-                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-=======
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
->>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
+                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>

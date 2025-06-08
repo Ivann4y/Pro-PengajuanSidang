@@ -224,22 +224,11 @@ if ($_SESSION['role'] !== 'admin') {
                 <li class="NavSide__sidebar-item">
                     <b></b>
                     <b></b>
-<<<<<<< HEAD
                     <a href="aDaftarSidang.php">
                         <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
             </a>
           </li>
-          <li class="NavSide__sidebar-item">
-            <b></b>
-            <b></b>
-            <a href="../../index.php">
-              <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
-=======
-                    <a href="#">
-                        <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
->>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
-                    </a>
-                </li>
+    
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="#" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>

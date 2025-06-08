@@ -13,7 +13,7 @@
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
         
-<<<<<<< HEAD
+
         .text-heading { 
             font-size: 1.75rem;
             font-weight: 600;
@@ -79,8 +79,7 @@
             }
         }
         /* NavSide styles from mBeranda.php - END */
-=======
->>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
+
 
         /* Original mPengajuan table structural styles - START */
         table {
@@ -168,13 +167,12 @@
         .dropdown-menu .dropdown-item {
             font-family: "Poppins", sans-serif; 
         }
-<<<<<<< HEAD
-=======
+
         /* Edit icon hover effect */
         tr.isiTabel:hover .bi-pencil-square {
             color: white !important;
         }
->>>>>>> f3e35a794bba0f28378b6b3cec778fd6bbe6f7ca
+
         /* Original mPengajuan table structural styles - END */
 
 
