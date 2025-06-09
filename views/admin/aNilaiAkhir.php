@@ -317,26 +317,6 @@
   </div>
   
 
-  <!-- konfimasi Modal Nilai -->
-  <div class="modal fade" id="konfirmasiModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-3">
-        <div class="modal-body">
-          <p class="fs-5 fw-semibold">Apakah nilai akhir sama dengan nilai sementara?</p>
-          <div class="d-flex justify-content-center row mb5">
-            <div class="col-md-6">
-              <button type="button" class="btnKonfirmasi" onclick="TutupKonfirmasiModal()">Tidak</button>
-            </div>
-            <div class="col-md-6">
-              <button type="button" class="btnKonfirmasi" onclick="isiNilaiAkhir()">Iya</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-
   <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   
@@ -366,29 +346,6 @@
       };
     }
     
-    function bukaKonfirmasiModal() {
-      const modal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
-      modal.show();
-    }
-    
-    function TutupKonfirmasiModal() {
-      const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-      modal.hide();
-      setTimeout(() => {
-        const input = document.getElementById("nilaiMahasiswa");
-        input.focus();
-      }, 300);
-    }
-    
-    function isiNilaiAkhir() {
-      document.getElementById("nilaiMahasiswa").value = "A";
-      document.getElementsByName("nilaiLaporan")[0].value = "90";
-      document.getElementsByName("MateriPresentasi")[0].value = "85";
-      document.getElementsByName("Penyampaian")[0].value = "88";
-      document.getElementsByName("NilaiProyek")[0].value = "92";
-      const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-      modal.hide(); 
-    }
   </script>
 </body>
 </html>
