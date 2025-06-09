@@ -365,9 +365,101 @@
         /* Button Styles */
         .button-group-bottom {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             gap: 1rem;
             margin-top: 1.2cm;
+        }
+
+        .btn-kembali {
+            background-color: #4B68FB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white;
+            color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white;
+        }
+
+        /* File Button Styles */
+        .file-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgb(235, 238, 245);
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-right: 15px;
+            margin-bottom: 15px;
+            text-decoration: none;
+            color: #4B68FB;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .file-button:hover {
+            background-color: #4B68FB;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-button i {
+            font-size: 1.25rem;
+            margin-right: 10px;
+            color: #4B68FB;
+            transition: color 0.2s ease;
+        }
+
+        .file-button:hover i {
+            color: white;
+        }
+
+        /* Penyesuaian responsif untuk tombol berkas */
+        @media (max-width: 576px) {
+            .file-button {
+                flex-basis: 100;
+                width: 100%;
+                display: flex;
+                margin-right: 0;
+            }
         }
 
         .btn-tolak {
@@ -537,9 +629,25 @@
                 </div>
             </div>
 
+            <h5>Dokumen Sidang</h5>
+            <div class="file-buttons-container d-flex flex-wrap">
+                <a href="#" class="file-button">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    dokumen_revisi_kel-1.zip
+                </a>
+            </div>
+
             <div class="button-group-bottom">
-                <button class="btn-tolak" onclick="showModal('Ditolak')">Tolak</button>
-                <button class="btn-setujui" onclick="showModal('Disetujui')">Setujui</button>
+                <button class="btn-kembali" onclick="location.href='dEvaluasiSidang.php'">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
+                    Kembali
+                </button>
+                <div>
+                    <button class="btn-tolak" onclick="showModal('Ditolak')">Tolak</button>
+                    <button class="btn-setujui" onclick="showModal('Disetujui')">Setujui</button>
+                </div>
             </div>
         </main>
     </div>
