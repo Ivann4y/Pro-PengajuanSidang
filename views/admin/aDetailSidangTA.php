@@ -461,7 +461,7 @@
 
 
         }
-        .modal-body .bobot-input-new {
+        .modal-body .bobot-input-new {  
             width: 30px; 
             height: auto;
             text-align: center;
@@ -647,7 +647,7 @@
 
             <div class="info-card">
                 <div class="section">
-                    <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br>Basis Data 1</p>
+                    <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br>Sistem Pengajuan Sidang</p>
                     <p><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br>Dr. Rida Indah Fariani, S.Kom, M.Kom</p>
                     <p><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>Timotius Victory, S.Kom, M.Kom<br>Ning Ratwasturi, S.Kom, M.Kom</p>
                 </div>
