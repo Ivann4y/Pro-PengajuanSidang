@@ -472,7 +472,6 @@
             background-color: transparent;
             padding: 0; 
             margin: 0 5px; 
-            -moz-appearance: textfield;
             pointer-events: none;
         }
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
@@ -518,20 +517,34 @@
            background-color:rgba(0, 0, 0, 0.05); 
         }
 
-        .modal-body .time-input-range { gap: 10px; width: 100%; }
-        .modal-body .time-input-range input[type="time"] { flex-grow: 1; }
+        .modal-body .time-input-range { 
+          gap: 10px; 
+          width: 100%; 
+        }
+        .modal-body .time-input-range input[type="time"] { 
+          flex-grow: 1; 
+        }
         .modal-body .time-input-range .time-separator { 
-          flex-shrink: 0; color: #374151; font-size: 20px;
-          font-weight: bold; line-height: 1; padding: 0 5px; 
-          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; 
+          color: #374151; 
+          font-size: 20px;
+          font-weight: bold; 
+          line-height: 1; 
+          padding: 0 5px; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center;
         }
         .modal-body .form-actions {
-            display: flex; justify-content: flex-end; margin-top: 25px; 
+            display: flex; 
+            justify-content: flex-end; 
+            margin-top: 25px; 
             padding-left: calc(160px + 15px); 
         }
         .modal-body .form-actions .btn { /* Styling untuk tombol di form jika ada */ }
         .modal-body .form-actions .btn-batal { 
-          background-color: #ff5f5f; color:rgb(255, 255, 255); 
+          background-color: #ff5f5f; 
+          color:rgb(255, 255, 255); 
           border: none; 
           border-radius: 20px;
           padding: 5px 10px;
@@ -549,7 +562,9 @@
           width: 200px;
           
         }
-        .modal-body .form-actions .btn-submit:hover { background-color: rgb(106, 95, 255); }
+        .modal-body .form-actions .btn-submit:hover { 
+          background-color: rgb(106, 95, 255); 
+        }
 
         .modal-body > h2 {
             font-size: 30px; 
