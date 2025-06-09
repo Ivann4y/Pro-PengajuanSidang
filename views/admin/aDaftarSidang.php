@@ -100,7 +100,7 @@
     }
 
     .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-        color: rgb(67, 54, 240);
+        color: #4B68FB;
     }
 
     .NavSide__sidebar-item b:nth-child(1) {
@@ -121,7 +121,7 @@
         width: 100%;
         height: 100%;
         border-bottom-right-radius: 20px;
-        background: rgb(67, 54, 240);
+        background: #4B68FB;
         display: block;
     }
 
@@ -143,7 +143,7 @@
         width: 100%;
         height: 100%;
         border-top-right-radius: 20px;
-        background: rgb(67, 54, 240);
+        background: #4B68FB;
         display: block;
     }
 
@@ -185,11 +185,11 @@
     }
 
     .NavSide__toggle i.bi.open {
-        color: rgb(67, 54, 240);
+        color: #4B68FB;
     }
 
     .NavSide__toggle i.bi.close {
-        color: rgb(67, 54, 240);
+        color: #4B68FB;
     }
 
     .NavSide__toggle.NavSide__toggle--active i.bi.open {
@@ -486,7 +486,7 @@
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span></a></li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="logout.html" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="logout.html" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                     </a>
                 </li>
             </ul>
@@ -547,20 +547,26 @@
         </main>
     </div>
 
-    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- Modal keluar-->
+    <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-            <div class="modal-header mx-auto"> <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+                <div style="background-color: rgb(67, 54, 240);">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
                 </div>
-            <div class="modal-body text-center"> Apakah anda yakin ingin keluar?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-            </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let menuToggle = document.querySelector(".NavSide__toggle");
@@ -572,26 +578,26 @@
             };
         }
 
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function(event) {
-                const linkInItem = this.querySelector('a');
-                if (linkInItem && linkInItem.getAttribute('data-bs-toggle') === 'modal' && linkInItem.getAttribute('data-bs-target') === '#logout') {
-                    return; 
-                }
+        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        // for (let i = 0; i < listItems.length; i++) {
+        //     listItems[i].onclick = function(event) {
+        //         const linkInItem = this.querySelector('a');
+        //         if (linkInItem && linkInItem.getAttribute('data-bs-toggle') === 'modal' && linkInItem.getAttribute('data-bs-target') === '#logout') {
+        //             return; 
+        //         }
 
-                if (this.classList.contains("NavSide__sidebar-item--active") && this.querySelector('a[href="#.php"]')) {
-                    return;
-                }
+        //         if (this.classList.contains("NavSide__sidebar-item--active") && this.querySelector('a[href="#.php"]')) {
+        //             return;
+        //         }
 
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
+        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+        //             for (let j = 0; j < listItems.length; j++) {
+        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+        //             }
+        //             this.classList.add("NavSide__sidebar-item--active");
+        //         }
+        //     };
+        // }
 
         function switchAdminSidangView(viewType, clickedElement) {
             const taTable = document.getElementById("adminSidangTA");

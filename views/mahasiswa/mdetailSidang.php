@@ -251,7 +251,7 @@
         .status-badge {
             margin-bottom: 1.2cm; 
             background-color: #FFA3A3;
-            color: black;
+            color: #464869;
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block; 
@@ -634,7 +634,7 @@
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-book"></i>
-                                <span class="fw-bold">Judang</span>
+                                <span class="fw-bold">Judul Mata Kuliah</span>
                             </div>
                             <div class="value-row">Pemrograman 2</div>
                         </div>

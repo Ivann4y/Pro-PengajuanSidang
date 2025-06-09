@@ -101,11 +101,11 @@
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons d-flex d-md-none">
-                <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                <a href="dNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                     <i class="bi bi-bell-fill"></i>
                 </a>
                 <div class="profile-icon">
-                    <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
+                    <a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-person-fill fs-5"></i>
                     </a>
                 </div>
@@ -115,9 +115,9 @@
             <div class="dashboard-header">
                 <h2 class="page-title"> </h2>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
-                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        <a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
                 </div>
             </div>
@@ -231,17 +231,17 @@
                 };
 
                 // Sidebar Active Item Logic
-                let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-                for (let i = 0; i < listItems.length; i++) {
-                    listItems[i].onclick = function() {
-                        if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                            for (let j = 0; j < listItems.length; j++) {
-                                listItems[j].classList.remove("NavSide__sidebar-item--active");
-                            }
-                            this.classList.add("NavSide__sidebar-item--active");
-                        }
-                    };
-                }
+                // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+                // for (let i = 0; i < listItems.length; i++) {
+                //     listItems[i].onclick = function() {
+                //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                //             for (let j = 0; j < listItems.length; j++) {
+                //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+                //             }
+                //             this.classList.add("NavSide__sidebar-item--active");
+                //         }
+                //     };
+                // }
                 let isTA = true;
 
                 function switchDPengajuan() {

@@ -52,8 +52,8 @@
           width: 280px; /* Fixed width for desktop */
           border-radius: 1px;
           box-sizing: border-box; /* border-box is usually more intuitive */
-          border-left: 5px solid rgb(67, 54, 240);
-          background: rgb(67, 54, 240);
+          border-left: 5px solid #4B68FB;
+          background: #4B68FB;
           overflow-x: hidden;
           overflow-y: auto;
           z-index: 1000; /* Higher z-index */
@@ -102,7 +102,7 @@
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-          color: rgb(67, 54, 240);
+          color: #4B68FB;
         }
 
         /* Rounded corner effects for active item */
@@ -122,7 +122,7 @@
           width: 100%;
           height: 100%;
           border-bottom-right-radius: 20px;
-          background: rgb(67, 54, 240);
+          background: #4B68FB;
           display: block;
         }
         .NavSide__sidebar-item b:nth-child(2) {
@@ -141,7 +141,7 @@
           width: 100%;
           height: 100%;
           border-top-right-radius: 20px;
-          background: rgb(67, 54, 240);
+          background: #4B68FB;
           display: block;
         }
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
@@ -181,8 +181,8 @@
         }
 
         .NavSide__toggle i.bi.open {
-          color: rgb(67, 54, 240); /* Blue to match sidebar */
-          display: none; /* Open icon visible by default */
+          color: #4B68FB; /* Blue to match sidebar */
+          display: block; /* Open icon visible by default */
         }
         .NavSide__toggle i.bi.close {
           color: rgb(
@@ -261,7 +261,7 @@
 
        
         .status-badge {
-          background-color: #4cfaab;
+          background-color: #4BFBAF;
           color: rgb(48, 48, 110);
           border-radius: 20px;
           padding: 8px 18px; 
@@ -293,7 +293,7 @@
           right: 0;
           width: 60px; 
           height: 100%;
-          background-color: rgb(67, 54, 240);
+          background-color: #4B68FB;
           border-top-right-radius: 20px;
           border-bottom-right-radius: 20px;
           transition: width 0.4s ease;
@@ -357,7 +357,7 @@
         }
 
         .btn-kembali {
-          background-color: rgb(67, 54, 240);
+          background-color: #4B68FB;
           color: white;
           border: none;
           border-radius: 20px;
@@ -645,8 +645,8 @@
             <h5 class="mt-4">Aksi</h5>
             <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
             <br><br>
-            <button class="btn-kembali"><i class="fa-solid fa-circle-arrow-left"></i> Kembali</button>
-            
+            <a href="aDaftarSidang.php"><button class="btn-kembali"><i class="fa-solid fa-circle-arrow-left"></i>Kembali</button></a>
+
             <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content modal-content-custom-form">

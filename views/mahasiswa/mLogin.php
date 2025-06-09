@@ -34,7 +34,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
         }
 
         .bgBiru {
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB;
             width: 60%;
             height: 100vh;
         }
