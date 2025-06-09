@@ -162,23 +162,7 @@
         <div class="mb-3">
           <img src="https://cdn-icons-png.flaticon.com/512/463/463612.png" alt="Warning Icon" style="width: 100px;" />
         </div>
-        <p class="fw-semibold mb-0">Mohon unggah semua dokumen sebelum mengirim pengajuan sidang</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Peringatan Simpan-->
-<div class="modal fade" id="modalPeringatanSimpan" tabindex="-1" aria-labelledby="modalPeringatanLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-      <div class="modal-header border-0 justify-content-center">
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <img src="https://cdn-icons-png.flaticon.com/512/463/463612.png" alt="Warning Icon" style="width: 100px;" />
-        </div>
-        <p class="fw-semibold mb-0">Mohon unggah semua dokumen sebelum menyimpan pengajuan sidang</p>
+        <p class="fw-semibold mb-0">Dokumen Tidak Boleh Kosong</p>
       </div>
     </div>
   </div>
@@ -338,10 +322,9 @@
   btnSimpan.addEventListener('click', function() {
     const laporan = document.getElementById('laporanSidang').files.length;
     const pendukung = document.getElementById('dokPendukung').files.length;
-    const modalPeringatanSimpan = new bootstrap.Modal(document.getElementById('modalPeringatanSimpan'));
 
     if (laporan === 0 || pendukung === 0) {
-      modalPeringatanSimpan.show();
+      modalPeringatan.show();
     } else {
       history.back();
     }
