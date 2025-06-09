@@ -25,7 +25,16 @@
     <link rel="stylesheet" href="../../extra/style.css" />
     <title>Mahasiswa - Nilai Akhir</title>
     <style>
- 
+
+       @media (max-width: 750px) {
+              .row.mt-5.justify-content-between {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+  }
+
   .row.mt-5.justify-content-between .col-auto {
     flex: auto;
     text-align: center;
@@ -33,17 +42,6 @@
     padding: 10px;
   }
 
-  .btn-kirim {
-    width: 100% !important;
-    max-width: 150px;
-    margin: auto;
-  }
-
-  .btn-kembali {
-    width: 100% !important;
-    max-width: 150px;
-    margin: auto;
-  }
   #carddetailPenilaian,
   #cardcatatan {
     width: 100% !important;
@@ -53,10 +51,11 @@
     width: 100% !important;
     margin-left: 0 !important;
   }
+  
   #nilaiMahasiswa {
     font-size: 5rem !important;
 
-    
+
   }
 
   #detailpenilaian {
@@ -69,7 +68,7 @@
 
   .row.mt-5 .col-auto {
     width: 100%;
-    text-align: center;
+    text-align: left;
     margin-bottom: 10px;
   }
   .btn-kirim {
@@ -167,17 +166,13 @@
     padding: 10px;
   }
 
-  .NavSide__main-content .btn-kirim {
+/* --- ATURAN RESPONSIVE ANDA (TETAP DIPERTAHANKAN) --- */
+.NavSide__main-content .btn-kembali {
     width: 100% !important;
     max-width: 150px;
     margin: auto;
-  }
+}
 
-  .NavSide__main-content .btn-kembali {
-    width: 100% !important;
-    max-width: 150px;
-    margin: auto;
-  }
  .NavSide__main-content  #carddetailPenilaian,
   .NavSide__main-content #cardcatatan {
     width: 100% !important;
@@ -203,7 +198,7 @@
 
   .NavSide__main-content .row.mt-5 .col-auto {
     width: 100%;
-    text-align: center;
+    text-align: left;
     margin-bottom: 10px;
   }
   .NavSide__main-content .btn-kirim {
@@ -232,8 +227,6 @@
     flex-wrap: nowrap !important;
     gap: 150px !important;
   }
-  
-
 
   .kakimodal .col-md-6,
   .mb5 .col-md-6 {
@@ -285,12 +278,6 @@
       flex: 3;
     }
 }
-
-
-
-
-
-        
       body,
       .card,
       .form-control,
@@ -366,63 +353,63 @@
         margin-top: 20px;
         
       }
-          .btn-kembali {
-      background-color: #4B68FB;
-      color: white;
-      border-radius: 50px;
-    }
+ 
+     
+        .btn-kembali {
+            background-color: #4B68FB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: inline-flex; 
+            align-items: center; 
+            margin-top: 1.2cm;
+        }
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white;
+            color: #4B68FB;
+        }
+        
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px; 
+            height: 30px; 
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px; 
+            transition: background-color 0.3s ease;
+        }
 
-    .btn-kembali:hover {
-      border-color: #4B68FB;
-      background-color: #ffffff;
-      color: #4B68FB;
-    }
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
 
-    .btn-kirim {
-      background-color: #4CD964;
-      color: white;
-      border-radius: 50px;
-    }
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+            font-size: 1rem; 
+            transition: color 0.3s ease;
+        }
 
-    .btn-kirim:hover {
-      border-color: #4CD964;
-      background-color: #ffffff;
-      color: #4CD964;
-    }
-    .icon-circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content:center;
-  background-color: white;
-  color: #4B68FB;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  font-size: 16px;
-}
+        .btn-kembali:hover .icon-circle i {
+            color: white;
+        }
 
 
-    .modal-content {
-  border-radius: 30px !important;
-}
-    .btnKonfirmasi {
-      background-color: #464869;
-      color: white;
-      border-radius: 15px;
-      padding: 10px 20px;
-      font-size: 0.9rem;
-      height: 40px;
-      width: 100px;
-    }
-    
+        
     </style>
   </head>
   <body>
-
-      <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
-            <div class="NavSide__sidebar-brand">
+            <div class="NavSide__sidebar-brand img ">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
@@ -453,109 +440,65 @@
                 </div>
             </div>
         </div>
-        <main class="NavSide__main-content">
-       
-      
-
-      <div class="container-fluid ">
-          <div class="row mb-5">
-                 <h2 style="margin-left: 50px ;">
+   <main class="NavSide__main-content">
+    <div class="container-fluid ">
+        <div class="row mb-5">
+            <h2 style="margin-left: 50px ;">
                 <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
             </h2>
-            </div> 
+        </div>
         <div class="row mt-5 align-items-center justify-content-between">
-          <div class="col-md-6">
-            <div class="card" id="cardNilai">
-              <div class="card-body">
-                <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
-                <div id ="nilaiMahasiswa">
-                    --
+            <div class="col-md-6">
+                <div class="card" id="cardNilai">
+                    <div class="card-body">
+                        <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
+                        <div>
+                            <input type="text" class="form-control form-control-lg text-center mx-auto"
+                                id="nilaiMahasiswa" placeholder="" value="--" readonly />
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <img
-              src="../../assets/img/img5.png"
-              alt="Mahasiswa"
-              class="img-fluid "
-              style="max-width: 100%; height: auto;"
-            />
-          </div>
+            <div class="col-lg-6 col-md-12 mb-3">
+                <img src="../../assets/img/img5.png" alt="Mahasiswa" class="img-fluid rounded" />
+            </div>
         </div>
         <div class="row mt-5 align-items-center justify-content-between">
             <div class="card" id="carddetailPenilaian">
-        <div class="card-body">
-            <h3 class="card-title">Detail Penilaian :</h3>
-        <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-        <span><strong>Nilai Laporan:</strong> --</span>
-        <span><strong>Materi Presentasi:</strong> --</span>
-        <span><strong>Penyampaian:</strong> --</span>
-        <span><strong>Nilai Proyek:</strong> --</span>
-        </div>
-        </div>
-        </div>
-      </div>
-      <div class="row mt-5 align-items-center justify-content-between">
-        <div class="col-md-12">
-          <div class="card" id="cardcatatan">
-            <div class="card-body">
-              <h3 class="card-title">Catatan:</h3>
-                --
+                <div class="card-body">
+                    <h3 class="card-title">Detail Penilaian :</h3>
+                    <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
+                        <span><strong>Nilai Laporan:</strong> --</span>
+                        <span><strong>Materi Presentasi:</strong> --</span>
+                        <span><strong>Penyampaian:</strong> --</span>
+                        <span><strong>Nilai Proyek:</strong> --</span>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        
         <div class="row mt-5 align-items-center justify-content-between">
-        <div class="col-auto">
-           <button class="btn btn-kembali" style="margin-left: 50px;"  onclick="pindahKeHalamanDaftarSidang()">
-    <span class="icon-circle">
-      <i class="bi bi-arrow-left"></i>
-    </span>
-    Kembali
-  </button>
+            <div class="col-md-12">
+                <div class="card" id="cardcatatan">
+                    <div class="card-body">
+                        <h3 class="card-title">Catatan:</h3>
+                        --
+                    </div>
+                </div>
+            </div>
         </div>
-      </main>
-    </div>
 
-     
-                <!--apabila terdapat catatan maka akan ada text catatan -->
-                    <!-- <div class="form-control form-control-lg" style="min-height: 100px;">
-            </div> -->
-
-        <!-- tanpa toggle fokus desktop -->
-   <!-- <div id="main-sidebar" class="NavSide__sidebar">
-  <div class="NavSide__sidebar-brand">
-    <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
-  </div>
-  <ul class="NavSide__sidebar-nav">
-    <li class="NavSide__sidebar-item">
-      <b></b><b></b>
-      <a href="detail-pengajuan.php">
-        <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
-      </a>
-    </li>
-    <li class="NavSide__sidebar-item">
-      <b></b><b></b>
-      <a href="mPerbaikan.php">
-        <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
-      </a>
-    </li>
-    <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-      <b></b><b></b>
-      <a href="nilai-akhir.php">
-        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-      </a>
-    </li>
-  </ul>
- </div> -->
- 
-    <!-- Bagian Script atau menjalankan fungsi -->
+               <button class="btn-kembali" onclick="location.href='mSidang.php'">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
+                    Kembali
+                </button>
+</main>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-
     function pindahKeHalamanDaftarSidang() {
-    window.location.href = "mSidang.php";
+      window.location.href = "mSidang.php";
     }
         // Sidebar Toggle Logic
         let menuToggle = document.querySelector(".NavSide__toggle");
@@ -566,7 +509,7 @@
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
 
-        // Sidebar Active Item Logic (no change needed here as it's already functional)
+        // Sidebar Active Item Logic
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
         for (let i = 0; i < listItems.length; i++) {
             listItems[i].onclick = function () {
