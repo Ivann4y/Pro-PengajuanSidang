@@ -30,17 +30,12 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Linking to your existing, unchanged style.css -->
+  <!-- Linking to your existing style.css file -->
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-    /* CSS for elements NOT in style.css */
-    .dashboardTitle {
-      margin-top: 2vh;
-      color: #4538db;
-      font-size: 1.5rem;
-      font-weight: 500;
-    }
+    /* CSS for page-specific elements NOT in the main style.css */
+    /* NOTE: General layout styles (like margins for the container) are now handled by style.css */
 
     .search-input-container {
       position: relative;
@@ -78,10 +73,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       color: #777;
     }
 
+    /* Your profile icon is inside .dashboard-header in style.css, but if you need to override: */
     .profile-icon {
-      position: absolute;
-      top: 30px;
-      right: 30px;
       font-size: 1.8rem;
       color: #444;
       cursor: pointer;
@@ -139,7 +132,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .table-container {
       margin-top: 30px;
       width: 100%;
-      overflow-x: auto; /* Added for better mobile experience */
+      overflow-x: auto;
     }
 
     .data-table {
@@ -147,7 +140,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       border-collapse: separate;
       border-spacing: 0 15px;
       margin-top: 1rem;
-      min-width: 800px; /* Prevents table from crushing on small screens */
+      min-width: 800px;
     }
 
     .data-table thead th {
@@ -204,11 +197,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .modal-body .form-toggle-buttons button:hover { background-color: #ddd; }
     .form-error-message { color: red; margin-bottom: 15px; text-align: left; font-weight: 500; padding-left: 175px;}
     
-    /* Responsive styles for page-specific elements */
-    @media (max-width: 768px) {
-        .profile-icon { display: none; } /* Hide desktop profile icon */
-        
-        /* Adjust header content on mobile */
+    @media (max-width: 768px) { /* This media query is slightly different than style.css, which is fine for page-specific overrides */
         .main-header-content {
             flex-direction: column;
             align-items: stretch !important;
@@ -237,14 +226,14 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 </head>
 <body>
 
-  <!-- ADDED: MOBILE TOP BAR & TOGGLE BUTTON -->
+  <!-- MOBILE TOP BAR: The logic for this is in style.css -->
   <div class="NavSide__topbar">
       <div class="NavSide__toggle" id="nav-toggle">
           <i class="fas fa-bars"></i>
       </div>
   </div>
   
-  <!-- Sidebar (Unchanged) -->
+  <!-- Sidebar: Your style.css refers to this as .NavSide__sidebar -->
   <div id="main-sidebar" class="NavSide__sidebar">
     <div class="NavSide__sidebar-brand">
         <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
@@ -268,12 +257,19 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     </ul>
   </div>
 
-  <!-- Main Content Container: Using bodyContainer as per your original file -->
-  <div class="bodyContainer position-relative">
-    <div class="profile-icon">
-      <i class="fas fa-user-circle"></i>
-    </div>
-     <div class="dashboardTitle mb-5">Penjadwalan Sidang</div>
+  <!-- CORRECTED: Main Content Container, using the class from your style.css -->
+  <main class="NavSide__main-content">
+    
+    <!-- CORRECTED: Header structure to match style.css for proper layout -->
+    <header class="dashboard-header">
+        <h1 class="page-title">Penjadwalan Sidang</h1>
+        <div class="header-icons">
+             <div class="profile-icon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+    </header>
+
      <div class="d-flex justify-content-between align-items-center mb-3 main-header-content">
       <h2 class="section-title ">Pengajuan Sidang</h2>
       <div class="search-input-container">
@@ -354,7 +350,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         </tbody>
       </table>
     </div>
-  </div>
+  </main> <!-- End of NavSide__main-content -->
 
   <!-- Logout Modal -->
   <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -486,16 +482,15 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     let pengujiCount = 1;
 
     document.addEventListener("DOMContentLoaded", function() {
-        // --- ADDED: JAVASCRIPT FOR MOBILE SIDEBAR TOGGLE ---
+        // --- JAVASCRIPT FOR MOBILE SIDEBAR TOGGLE ---
+        // Your style.css uses .NavSide__sidebar--active-mobile
         const toggleButton = document.getElementById('nav-toggle');
         const sidebar = document.getElementById('main-sidebar');
 
         if (toggleButton && sidebar) {
             toggleButton.addEventListener('click', () => {
-                // This toggles the class that your existing style.css uses for mobile
                 sidebar.classList.toggle('NavSide__sidebar--active-mobile');
                 
-                // Change icon from bars to 'X' and back
                 const icon = toggleButton.querySelector('i');
                 if (sidebar.classList.contains('NavSide__sidebar--active-mobile')) {
                     icon.classList.remove('fa-bars');
@@ -522,7 +517,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         if(formSem) formSem.addEventListener('submit', handleFormSubmit);
     });
 
-    // --- ALL JAVASCRIPT FUNCTIONS ---
+    // --- ALL JAVASCRIPT FUNCTIONS (UNCHANGED) ---
 
     function openJadwalModal(element) {
         const tipeSidang = element.dataset.tipeSidang;
@@ -536,7 +531,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     }
 
     function resetAndPopulateTAModal(el) {
-        // Reset dynamic penguji fields back to 1
         const wrapper = document.getElementById('penguji-wrapper-ta');
         wrapper.innerHTML = `
             <div class="form-group" id="penguji-form-ta-1">
@@ -556,7 +550,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
             </div>`;
         pengujiCount = 1;
 
-        // Populate data into the form fields
         document.getElementById('modal_nim-ta').value = el.dataset.nim || '';
         document.getElementById('modal_judul_sidang-ta').value = el.dataset.judul || '';
         document.getElementById('modal_pembimbing-ta').value = el.dataset.pembimbing || '';
@@ -636,7 +629,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#4336F0'
             }).then(() => {
-                // Optionally, refresh the page or update the table
                 // location.reload(); 
             });
         }
@@ -648,7 +640,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         errorBox.textContent = '';
         let errorMessage = '';
 
-        // Validate Dosen/Penguji names
         const dosenInputs = document.querySelectorAll(`input[name="${modalType === 'TA' ? 'penguji' : 'pengampu'}_nama[]"]`);
         for (let i = 0; i < dosenInputs.length; i++) {
             if (dosenInputs[i].value.trim() === '') {
@@ -661,14 +652,12 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
             return false; 
         }
         
-        // Validate Ruangan
         const ruangan = document.getElementById(`modal_ruangan${suffix}`).value.trim();
         if (ruangan === '') {
             errorBox.textContent = 'Ruangan harus diisi!';
             return false;
         }
 
-        // Validate Tanggal
         const tanggal = document.getElementById(`modal_tanggal${suffix}`).value;
         if (tanggal === '') {
             errorBox.textContent = 'Tanggal harus dipilih!';
@@ -676,13 +665,12 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         }
         const today = new Date();
         const selectedDate = new Date(tanggal);
-        today.setHours(0, 0, 0, 0); // Compare dates only
+        today.setHours(0, 0, 0, 0); 
         if (selectedDate < today) {
             errorBox.textContent = 'Tanggal tidak boleh kurang dari tanggal hari ini!';
             return false;
         }
 
-        // Validate Jam
         const jamAwal = document.getElementById(`modal_jam_awal${suffix}`).value;
         const jamAkhir = document.getElementById(`modal_jam_akhir${suffix}`).value;
         if (jamAwal === '' || jamAkhir === '') {
@@ -694,7 +682,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
             return false;
         }
 
-        return true; // All validations passed
+        return true;
     }
   </script>
 </body>
