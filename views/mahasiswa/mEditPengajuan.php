@@ -16,28 +16,6 @@
   <link rel="stylesheet" href="../../extra/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <title>Edit Pengajuan Sidang</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-    }
-
-    label {
-      font-weight: 500;
-      margin-bottom: 5px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .form-control, .form-select {
-      font-family: "Poppins", sans-serif;
-      font-size: 16px;
-      padding: 12px 15px;
-      border-radius: 12px;
-}
-
-  </style>
 </head>
 <body>
   <div id="NavSide">
@@ -71,22 +49,34 @@
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
+              <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                 <i class="bi bi-bell-fill"></i>
+              </a>
                 <div class="profile-icon">
+                  <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                     <i class="bi bi-person-fill fs-5"></i>
+                  </a>
                 </div>
             </div>
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-         <div class="container-fluid">
     <div class="container-fluid">
+       <div class="dashboard-header">
+        <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon">
+                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                    </div>
+                </div>
+            </div>
       <div class="row">
         <div class="col-12">
-        <h2 class="text-heading"><b>Nayaka Ivana Putra (Mahasiswa)</b></h2>
+
         <h5 class="fw-bold mt-4 mb-3">Tambah Sidang</h5>
         <hr>
-      </div>
+    </div>
 
       <form action="#" method="post">
         <div class="mb-3">
@@ -157,49 +147,10 @@
             <p class="mt-2 text-muted small">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
           </div>
         </label>
-        <input type="file" id="dokPendukung" name="dokPendukung" accept=".pdf,.docx,.pptx,.zip" hidden />
       </form>
     </div>
   </div>
 </div>
-
-<style>
-.upload-box {
-  background-color: #e9ecef;
-  border-radius: 16px;
-  padding: 40px 20px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.upload-box:hover {
-  background-color: #dee2e6;
-}
-
-.upload-box.file-selected {
-  background-color: #d1e7dd; /* Hijau muda */
-  border: 2px solid #0f5132;
-  color: #0f5132;
-}
-.upload-content {
-  min-height: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-</style>
-
-
-
-
-        <div class="d-flex justify-content-end gap-2 mt-3">
-          <button type="button" class="btn btn-secondary" onclick="history.back()">Simpan</button>
-<!-- Trigger -->
-<button type="button" class="btn btn-primary" id="btnOpenModalKonfirmasi">
-  Kirim
-</button>
 
 <!-- Modal Peringatan -->
 <div class="modal fade" id="modalPeringatan" tabindex="-1" aria-labelledby="modalPeringatanLabel" aria-hidden="true">
@@ -218,8 +169,6 @@
 </div>
 
 
-
-
 <!-- Modal -->
 <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -236,7 +185,16 @@
       </div>
     </div>
   </div>
-</div> 
+</div>
+
+<!-- Verifikasi Modal -->
+<div class="d-flex justify-content-end gap-2 mt-3">
+<button type="button" class="btn btn-secondary" onclick="history.back()">Simpan</button>
+<!-- Trigger -->
+<button type="button" class="btn btn-primary" id="btnOpenModalKonfirmasi">
+  Kirim
+</button>
+
 
 <!-- Modal Berhasil -->
 <div class="modal fade" id="modalBerhasil" tabindex="-1" aria-labelledby="modalBerhasilLabel" aria-hidden="true">
@@ -254,18 +212,92 @@
     </div>
   </div>
 </div>
-
-      </form>
-    </div>
+    </form>
   </div>
+</div>
 
 
           
       </main>
     </div>
 
- 
+<style>
+
+      body {
+      font-family: "Poppins", sans-serif;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .form-control, .form-select {
+      font-family: "Poppins", sans-serif;
+      font-size: 16px;
+      padding: 12px 15px;
+      border-radius: 12px;
+
+}
+.upload-box {
+  background-color: #e9ecef;
+  border-radius: 16px;
+  padding: 40px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-box:hover {
+  background-color: #dee2e6;
+}
+
+.upload-box.file-selected {
+  background-color: #d1e7dd; /* Hijau muda */
+  border: 2px solid #0f5132;
+  color: #0f5132;
+}
+
+.upload-content {
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+        // Sidebar Toggle Logic 
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+
+        if (menuToggle) {
+            menuToggle.onclick = function() {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
+        }
+
+        // Sidebar Active Item Logic
+        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function(event) { 
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                }
+            };
+        }
+
   const btnOpenModalKonfirmasi = document.getElementById('btnOpenModalKonfirmasi');
   const modalKonfirmasiEl = document.getElementById('modalKonfirmasi');
   const modalPeringatanEl = document.getElementById('modalPeringatan');
