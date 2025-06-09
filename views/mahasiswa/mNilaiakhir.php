@@ -353,8 +353,7 @@
         margin-top: 20px;
         
       }
- 
-     
+
         .btn-kembali {
             background-color: #4B68FB;
             color: white;
@@ -400,10 +399,8 @@
 
         .btn-kembali:hover .icon-circle i {
             color: white;
-        }
+        }        
 
-
-        
     </style>
   </head>
   <body>

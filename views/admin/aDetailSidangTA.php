@@ -284,6 +284,7 @@
           margin-bottom: 25px;
           overflow: hidden;
           transition: background-color 0.4s ease;
+          margin-right: 30px;
         }
 
         .info-card::after { 
@@ -540,7 +541,7 @@
         }
  
         .modal-body .form-actions .btn-submit { 
-          background-color:rgb(67, 54, 240); color: white; 
+          background-color: #4B68FB; color: white; 
           border: none;
           border-radius: 20px;
           padding: 5px 10px;
