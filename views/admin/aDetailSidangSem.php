@@ -284,6 +284,7 @@
           margin-bottom: 25px;
           overflow: hidden;
           transition: background-color 0.4s ease;
+          margin-right: 30px;
         }
 
         .info-card::after { 
