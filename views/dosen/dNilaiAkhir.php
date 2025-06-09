@@ -341,15 +341,15 @@
       label
         {
             margin-top: 20px;
-            margin-right: 15px; ;
+            margin-right: 15px;
             font-weight: bold;
         }
         #detailpenilaian {
            width: 75px; ;
            font-size: 1rem; 
-           margin-right: auto;
+          
            margin-top: 20px;
-           text-size-adjust: 100000px;
+           
         }
         #carddetailPenilaian {
             width: 100%;
@@ -501,12 +501,12 @@
           </div>
         </div>
         <div class="row mt-5">
-          <div class="col-12">
+          <div class="">
             <div class="card" id="carddetailPenilaian">
         <div class="card-body">
             <h3 class="card-title">Detail Penilaian :</h3>
             <div class="row justify-content-center align-items-center">
-              <div class="col-lg-3 col-md-3 mb-3 d-flex align-items-center justify-content-center">
+              <div class="col d-flex align-items-center">
                 <label for="nilaiLaporan" id="labelpenilaian">Nilai laporan</label>
                 <label for=":" class="colon1">:</label>
                 <input
@@ -517,7 +517,7 @@
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-lg-3 col-md-3 mb-3 d-flex align-items-center">
+              <div class="col d-flex align-items-center">
                   <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi</label>
                   <label for=":" class="colon2">:</label>
                 <input
@@ -528,7 +528,7 @@
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-lg-3 mb-3 d-flex align-items-center">
+              <div class="col d-flex align-items-center ">
                   <label for="Penyampaian" id="labelpenilaian">Penyampaian</label>
                   <label for=":" class="colon3">:</label>
                 <input
@@ -539,7 +539,7 @@
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-lg-3 col-md-3 mb-3 d-flex align-items-center">
+              <div class="col d-flex align-items-center ">
                   <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek</label>
                   <label for=":" class="colon4">:</label>
                 <input

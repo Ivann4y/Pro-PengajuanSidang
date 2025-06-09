@@ -478,7 +478,7 @@ if ($_SESSION['role'] !== 'admin') {
                 <div class="col-lg-7">
                     <div class="row">
                         <div class="col-md-6">
-                            <a href="mSidang.php" style="text-decoration: none; color: inherit; display: block;">
+                            <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="dashboard-card penjadwalan-status-card">
                                     <div class="number">4</div>
                                     <div class="text">
@@ -488,7 +488,7 @@ if ($_SESSION['role'] !== 'admin') {
                                 </div>
                             </a>
 
-                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit; display: block;">
+                            <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="dashboard-card pengajuan-status-card">
                                     <div class="number">2</div>
                                     <div class="text">
