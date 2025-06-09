@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             .bgBiru {
                 background-color: rgb(67, 54, 240);
-                height: 20vh;
+                height: 15vh;
             }
 
             .teks h2 {

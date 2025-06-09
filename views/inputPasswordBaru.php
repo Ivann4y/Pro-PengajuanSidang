@@ -109,7 +109,7 @@
             </div>
             <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
                 <label for="">Sistem Pengajuan Sidang</label>
-                <label for="">Politeknik Astra</label>  
+                <label for="">Politeknik Astra</label>
             </div>
             <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000" style="padding: 5% 10% 5% 10%;">
                 <div class="carousel-inner">
@@ -152,11 +152,11 @@
             </div>
 
             <div class="button-container">
-                <button type="submit" class="btn btn-primary px-3 w-25 rounded rounded-5">
+                <button type="submit" class="btn btn-primary px-3 rounded rounded-5" onclick="history.back()">
                     <img src="../assets/img/Kembali.svg" alt="" class="me-1">
-                    <label>Kembali</label>
+                    Kembali
                     <button type="submit" class="btn btn-success w-25 px-3 rounded rounded-5 float-end me-3" onclick="toIndex()">
-                        <label>Kirim</label>
+                        Kirim
                     </button>
                 </button>
             </div>
