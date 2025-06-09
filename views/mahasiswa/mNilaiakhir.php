@@ -25,7 +25,6 @@
     <link rel="stylesheet" href="../../extra/style.css" />
     <title>Mahasiswa - Nilai Akhir</title>
     <style>
-
        @media (max-width: 750px) {
               .row.mt-5.justify-content-between {
     flex-direction: row !important;
@@ -166,7 +165,7 @@
     padding: 10px;
   }
 
-/* --- ATURAN RESPONSIVE ANDA (TETAP DIPERTAHANKAN) --- */
+
 .NavSide__main-content .btn-kembali {
     width: 100% !important;
     max-width: 150px;
@@ -440,9 +439,7 @@
    <main class="NavSide__main-content">
     <div class="container-fluid ">
         <div class="row mb-5">
-            <h2 style="margin-left: 50px ;">
-                <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
-            </h2>
+
         </div>
         <div class="row mt-5 align-items-center justify-content-between">
             <div class="col-md-6">
