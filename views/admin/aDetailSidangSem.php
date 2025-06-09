@@ -518,15 +518,28 @@
            background-color:rgba(0, 0, 0, 0.05); 
         }
 
-        .modal-body .time-input-range { gap: 10px; width: 100%; }
-        .modal-body .time-input-range input[type="time"] { flex-grow: 1; }
+        .modal-body .time-input-range { 
+          gap: 10px; 
+          width: 100%; 
+        }
+        .modal-body .time-input-range input[type="time"] { 
+          flex-grow: 1; 
+        }
         .modal-body .time-input-range .time-separator { 
-          flex-shrink: 0; color: #374151; font-size: 20px;
-          font-weight: bold; line-height: 1; padding: 0 5px; 
-          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; 
+          color: #374151; 
+          font-size: 20px;
+          font-weight: bold; 
+          line-height: 1; 
+          padding: 0 5px; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center;
         }
         .modal-body .form-actions {
-            display: flex; justify-content: flex-end; margin-top: 25px; 
+            display: flex; 
+            justify-content: flex-end; 
+            margin-top: 25px; 
             padding-left: calc(160px + 15px); 
         }
         .modal-body .form-actions .btn { /* Styling untuk tombol di form jika ada */ }
