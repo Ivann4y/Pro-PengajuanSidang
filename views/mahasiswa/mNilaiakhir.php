@@ -165,6 +165,7 @@
     padding: 10px;
   }
 
+  
 .NavSide__main-content .btn-kembali {
     width: 100% !important;
     max-width: 150px;
