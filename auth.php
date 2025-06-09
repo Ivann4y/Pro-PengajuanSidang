@@ -7,7 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Cek kosong
     if (empty($username) || empty($password)) {
         header("Location: views/$role/{$role[0]}Login.php?error=empty&username=" . urlencode($username));
         exit();

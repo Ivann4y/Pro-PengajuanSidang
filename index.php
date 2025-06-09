@@ -5,7 +5,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'];
     $_SESSION['role'] = $role;
 
-    // Redirect to the appropriate dashboard based on the role
     switch ($role) {
         case 'dosen':
             header('Location: views/dosen/dLogin.php');
