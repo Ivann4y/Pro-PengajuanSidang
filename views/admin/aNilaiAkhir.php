@@ -180,7 +180,7 @@
 
           <div class="NavSide__toggle">
         <i class="bi bi-list open"></i>
-        <i class="bi bi-x-lg close"></i>
+        <i class="bi bi-x-lg close"> </i>
       </div>
 
       
