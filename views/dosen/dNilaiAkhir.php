@@ -12,6 +12,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
       rel="stylesheet"
@@ -22,6 +23,7 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/button-styles.css" />
     <link rel="stylesheet" href="../../extra/style.css" />
     <title>Dosen - Nilai Akhir</title>
     <style>
@@ -372,58 +374,33 @@
         border-radius: 30px;
         font-size: 1rem;
         margin-top: 20px;
-        
-      }
-          .btn-kembali {
-      background-color: #4B68FB;
-      color: white;
-      border-radius: 50px;
     }
 
-    .btn-kembali:hover {
-      border-color: #4B68FB;
-      background-color: #ffffff;
-      color: #4B68FB;
-    }
-
-    .btn-kirim {
-      background-color: #4CD964;
-      color: white;
-      border-radius: 50px;
-    }
-
-    .btn-kirim:hover {
-      border-color: #4CD964;
-      background-color: #ffffff;
-      color: #4CD964;
-    }
     .icon-circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content:center;
-  background-color: white;
-  color: #4B68FB;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  font-size: 16px;
-}
-
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        color: #4B68FB;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 16px;
+    }
 
     .modal-content {
-  border-radius: 30px !important;
-}
-    .btnKonfirmasi {
-      background-color: #464869;
-      color: white;
-      border-radius: 15px;
-      padding: 10px 20px;
-      font-size: 0.9rem;
-      height: 40px;
-      width: 100px;
+        border-radius: 30px !important;
     }
 
-
+    .btnKonfirmasi {
+        background-color: #464869;
+        color: white;
+        border-radius: 15px;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        height: 40px;
+        width: 100px;
+    }
     </style>
   </head>
   <body>
@@ -444,7 +421,7 @@
           <li class="NavSide__sidebar-item">
             <b></b>
             <b></b>
-            <a href="#">
+            <a href="dDokumenRevisi.php">
               <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
             </a>
           </li>
@@ -573,15 +550,15 @@
       </div>
        <div class="row mt-5 justify-content-between">
         <div class="col-auto">
-           <button class="btn btn-kembali">
+           <button class="btn btn-kembali" onclick="pindahKeHalamanDaftarSidang()">
     <span class="icon-circle">
-      <i class="bi bi-arrow-left"></i>
+      <i class="fa-solid fa-arrow-left"></i>
     </span>
     Kembali
   </button>
         </div>
         <div class="col-auto">
-          <button class="btn btn-kirim" onclick="bukaKonfirmasiModalKirim()" style="width: 120px;">
+          <button class="btn btn-setujui" onclick="bukaKonfirmasiModalKirim()">
             Kirim
           </button>
         </div>
