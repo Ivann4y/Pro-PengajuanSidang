@@ -286,7 +286,7 @@
                 class="form-control form-control-lg text-center"
                 name="NilaiProyek"
                 id="detailpenilaian"
-                placeholder="93"
+                placeholder="87"
                 maxlength="3"
                 readonly>
             </div>
