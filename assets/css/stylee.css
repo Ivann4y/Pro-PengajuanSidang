@@ -93,7 +93,7 @@ body {
    ================================= */
 
 .badge-custom {
-  background-color: #72e967cc;
+  background-color: #4BFBAF;
   color: white;
   font-weight: 600;
   padding: 8px 14px;
@@ -127,10 +127,11 @@ body {
    Tombol Kirim
    ================================= */
 .btn-kirim {
+   text-decoration: none;  /* Hilangkan garis bawah */
   background-color: #4b68fb;
   color: white;
   border-radius: 10px;
-  padding: 10px 30px;
+  padding: 10px 30px; 
   font-weight: bold;
   box-shadow: 0 4px 15px #4b68fb;
 }
@@ -208,7 +209,7 @@ body {
 }
 
 .approved-badge {
-  color: #28a745;
+  color: #4BFBAF;
   background-color: #e6f4ec;
   font-size: 0.8rem;
   padding: 5px 10px;

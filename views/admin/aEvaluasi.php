@@ -152,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="revision-card shadow-sm">
   <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
   <div class="revision-cardUp">
-  <p class="text-center text-muted small mt-2" ><b>Dokumen_Revisi_SidangSemester_XX</b></p>
+  <p class="text-center text-muted small mt-2" ><b>berkas_laporan_kel.pdf</b></p>
 
   <div class="text-center mt-3">
     
@@ -167,8 +167,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
     <p class="text-center text-muted small mt-2" id="upload-prompt-text">Unduh berkas revisi dengan format pdf, docx, pptx, dan zip</p> <br/>
       <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn-kirim" id="submitBtn" disabled>unduh</button>
-            </div>
+          <a href="aEvaluasi.php" class="btn-kirim" download>
+              Unduh
+          </a>
+      </div>
+
 
 </div>
             <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
@@ -244,7 +247,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
- 
+
+  
+<script>
+
 
   <?php
   if (!empty($pesan) && strpos(strtolower($pesan), 'sukses') !== false):
