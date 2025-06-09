@@ -293,7 +293,7 @@
           right: 0;
           width: 60px; 
           height: 100%;
-          background-color: rgb(67, 54, 240);
+          background-color: #4B68FB;
           border-top-right-radius: 20px;
           border-bottom-right-radius: 20px;
           transition: width 0.4s ease;
