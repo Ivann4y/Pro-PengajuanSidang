@@ -4,7 +4,7 @@ session_start();
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
     $pesan = $_SESSION['pesan'];
-    unset($_SESSION['pesan']); 
+    unset($_SESSION['pesan']);
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -96,6 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Detail Sidang & Perbaikan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
@@ -347,7 +348,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     .card-comment {
-        background-color: #cbcbcb;
+        background-color:#f1f3f5;
         padding: 20px;
         border-radius: 15px;
         margin-bottom: 20px;
@@ -466,7 +467,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .custom-swal-title {
         font-size: 1.8rem !important;
         font-weight: 600 !important;
-        color: #343a40 !important;
+        color:rgb(177, 180, 183) !important;
         margin-top: 0 !important;
         margin-bottom: 12px !important;
         padding: 0 !important;
@@ -596,6 +597,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     #modalDetail .modal-footer .btn-custom-tutup-modal:hover {
         background-color: #3A58DB !important;
+    }
+
+    .btn-kembali {
+        background-color: #4B68FB;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 25px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+        display: inline-flex; 
+        align-items: center; 
+        margin-top: 1.2cm;
+    }
+    .btn-kembali:hover {
+        position: relative;
+        background-color: white;
+        color: #4B68FB;
+    }
+    
+    .btn-kembali .icon-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px; 
+        height: 30px; 
+        background-color: white;
+        border-radius: 50%;
+        margin-right: 10px; 
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-kembali:hover .icon-circle {
+        background-color: #4B68FB;
+    }
+
+    .btn-kembali .icon-circle i {
+        color: #4B68FB;
+        font-size: 1rem; 
+        transition: color 0.3s ease;
+    }
+
+    .btn-kembali:hover .icon-circle i {
+        color: white;
     }
 
     @media (max-width: 700px) {
@@ -732,6 +780,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding: 7px 20px !important;
             font-size: 0.8rem;
         }
+        
+        .btn-kembali {
+            margin-top: 0.5cm;
+        }
     }
     </style>
 </head>
@@ -808,8 +860,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mt-4">
-                <button type="button" id="btnKembali" class="btn btn-custom-primary" >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
+                <button class="btn-kembali" onclick="location.href='mSidang.php'">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
                     Kembali
                 </button>
             </div>
@@ -864,7 +918,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
     const submitBtn = document.getElementById('submitBtn');
     const revisionForm = document.getElementById('revisionForm');
-    const btnKembali = document.getElementById('btnKembali');
     
     const initialState = document.getElementById('initial-state');
     const selectedState = document.getElementById('selected-state');
@@ -917,12 +970,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.warn("Peringatan: Salah satu elemen HTML untuk fungsionalitas upload tidak ditemukan.");
-    }
-
-    if (btnKembali) {
-        btnKembali.addEventListener('click', function() {
-            window.location.href = 'mSidang.php'; // MODIFIKASI DI SINI
-        });
     }
 
     const sidebarToggleBtn = document.querySelector('.NavSide__topbar .NavSide__toggle'); 

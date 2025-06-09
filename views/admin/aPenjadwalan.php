@@ -4,10 +4,12 @@ $selectedTipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'TA';
 $selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'belum';
 $statusFilter = ($selectedStatus == 'disetujui') ? true : false;
 
-$jsonData = file_get_contents('data_sidang.json');
+// Path to your JSON file - using __DIR__ makes it more reliable
+$jsonPath = __DIR__ . '/data_sidang.json'; 
+$jsonData = file_exists($jsonPath) ? file_get_contents($jsonPath) : '[]';
 $data = json_decode($jsonData, true);
 
-// Fallback for cases where json is not an array
+// Fallback for cases where json is not an array or file is missing
 if (!is_array($data)) {
     $data = [];
 }
@@ -24,37 +26,17 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Admin!</title>
+  <title>Dashboard Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Linking to your existing, unchanged style.css -->
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-    body {
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      background-color: #f9f9f9;
-      min-height: 100vh;
-    }
-
-    .bodyContainer {
-      margin-left: 280px; /* Matches width: 280px of .NavSide__sidebar in style.css */
-      padding: 4vh 3vw;
-      position: relative;
-    }
-
-    .bodyHeading {
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-
-    .welcomeText {
-      color: #555;
-      font-size: 2rem;
-    }
-
+    /* CSS for elements NOT in style.css */
     .dashboardTitle {
+      margin-top: 2vh;
       color: #4538db;
       font-size: 1.5rem;
       font-weight: 500;
@@ -96,31 +78,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       color: #777;
     }
 
-    .statusCard {
-      padding: 20px;
-      border-radius: 15px;
-      height: 100%;
-      transition: 0.3s ease;
-      cursor: pointer;
-    }
-
-    .statusCard:hover {
-      transform: scale(1.05);
-    }
-
-    .img-slot {
-      width: 100%;
-      height: 100%;
-      background-color: #e0e0e0;
-      border-radius: 15px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 14px;
-      color: gray;
-      min-height: 250px;
-    }
-
     .profile-icon {
       position: absolute;
       top: 30px;
@@ -147,16 +104,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       margin-right: 15px;
       transition: background-color 0.2s ease, color 0.2s;
     }
-
-    .filter-btn.secondary {
-      background-color: #4538db;
-      color: white;
-    }
-
     .filter-btn:hover {
-      background-color: #312a9e;
-    }
-    .filter-btn.secondary:hover {
       background-color: #312a9e;
     }
 
@@ -168,32 +116,21 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         background-color: #4538db;
     }
 
-    .dropdown-menu:hover{
-        background-color: #4538db;
-        color:rgb(255, 255, 255);
-        border-radius: 20px;
-    }
-
     .dropdown-item {
         padding: 10px 20px;
         font-size: 0.95rem;
         background-color: #4538db;
         color:rgb(180, 180, 180);
-        transition: background-color 0.2s, color 0.2s;
+        transition: color 0.2s;
         border-radius: 20px;
     }
 
     .dropdown-item:hover,
     .dropdown-item:focus {
         background-color: #4538db;
-        border-radius: 20px;
         color:rgb(255, 255, 255);
     }
-
-    .dropdown-divider {
-        border-top: 1px solid #eee;
-    }
-
+    
     .dropdown-toggle::after {
         vertical-align: 0.15em;
         margin-left: 0.5em;
@@ -202,6 +139,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .table-container {
       margin-top: 30px;
       width: 100%;
+      overflow-x: auto; /* Added for better mobile experience */
     }
 
     .data-table {
@@ -209,6 +147,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       border-collapse: separate;
       border-spacing: 0 15px;
       margin-top: 1rem;
+      min-width: 800px; /* Prevents table from crushing on small screens */
     }
 
     .data-table thead th {
@@ -225,122 +164,128 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       vertical-align: middle;
       transition: all 0.3s ease;
     }
-
+    
     .data-table tbody tr:hover td {
       background-color: #4538db;
       color: white;
     }
+
     .data-table tbody tr.clickable:hover{
         cursor: pointer;
     }
 
-    .data-table tbody tr td:first-child {
-      border-radius: 15px 0 0 15px;
-    }
-    .data-table tbody tr td:last-child {
-      border-radius: 0 15px 15px 0;
-    }
-
-    .data-table th:nth-child(1),
-    .data-table td:nth-child(1) { width: 7%; }
-    .data-table th:nth-child(2),
-    .data-table td:nth-child(2) { width: 10%; }
-    .data-table th:nth-child(3),
-    .data-table td:nth-child(3) { width: 12%; }
-    .data-table th:nth-child(4),
-    .data-table td:nth-child(4) { width: 20%; }
-    .data-table th:nth-child(5),
-    .data-table td:nth-child(5) { width: 15%; }
-
-    @media (max-width: 768px) {
-      .table-container {
-        overflow-x: auto;
-      }
-      .data-table {
-        min-width: 600px;
-      }
-    }
+    .data-table tbody tr td:first-child { border-radius: 15px 0 0 15px; }
+    .data-table tbody tr td:last-child { border-radius: 0 15px 15px 0; }
+    
     /* MODAL STYLES */
     .modal-content-custom-form { border-radius: 25px !important; }
     .modal-body .form-container { padding: 15px; background-color:rgb(255, 255, 255); border-radius: 20px; }
-    .modal-body .form-container h2 { font-size: 1.25rem; margin-bottom: 20px; text-align: center; color: rgb(255, 255, 255); }
     .modal-body .form-group { display: flex; align-items: center; margin-bottom: 15px; }
     .modal-body .form-group label { width: 160px; flex-shrink: 0; color:rgb(51, 47, 47); font-weight: bold; font-size: 14px; margin-right: 15px; text-align: left; }
-    .modal-body .form-group .input-with-buttons, .modal-body .form-group .time-input-range, .modal-body .form-group > input[type="text"], .modal-body .form-group > input[type="date"] { flex-grow: 1; height: 35px; display: flex; align-items: center; }
-    .modal-body .form-group input[type="text"], .modal-body .form-group input[type="time"], .modal-body .form-group input[type="date"] { width: 100%; height: 35px; padding: 0 15px; border: 1px solid #D1D5DB; background-color:rgb(255, 255, 255); box-sizing: border-box; font-size: 14px; color: #374151; border-radius: 26px; }
+    .modal-body .form-group .input-with-buttons, .modal-body .form-group .time-input-range, .modal-body .form-group > input { flex-grow: 1; }
+    .modal-body .form-group input { width: 100%; height: 35px; padding: 0 15px; border: 1px solid #D1D5DB; box-sizing: border-box; font-size: 14px; color: #374151; border-radius: 26px; }
     .modal-body .form-group input[readonly] { background-color: #f3f4f6; cursor: not-allowed; }
     .modal-body .bobot-input-new { width: 30px; height: auto; text-align: center; border: none; font-size: 16px; color: #2d2d52; background-color: transparent; margin: 0 5px; -moz-appearance: textfield; pointer-events: none; }
     .modal-body .bobot-input-new::-webkit-outer-spin-button, .modal-body .bobot-input-new::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .modal-body .input-with-buttons { display: flex; align-items: center; gap: 10px; width: 100%; }
-    .modal-body .input-with-buttons input[type="text"] { flex-grow: 1; }
     .modal-body .bobot-nilai-input-group { display: inline-flex; align-items: center; background-color: #F9FAFB; border-radius: 35px; padding: 2px 6px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
     .modal-body .btn-bobot-new { width: auto; height: auto; background-color: transparent; border: none; color: #2d2d52; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 8px; line-height: 1; border-radius: 35px; transition: background-color 0.2s ease; }
     .modal-body .btn-bobot-new:hover { background-color:rgba(0, 0, 0, 0.05); }
-    .modal-body .time-input-range { gap: 10px; width: 100%; }
-    .modal-body .time-input-range input[type="time"] { flex-grow: 1; }
-    .modal-body .time-input-range .time-separator { flex-shrink: 0; color: #374151; font-size: 20px; font-weight: bold; }
+    .modal-body .time-input-range { display: flex; gap: 10px; width: 100%; align-items: center; }
+    .modal-body .time-input-range .time-separator { color: #374151; font-size: 20px; font-weight: bold; }
     .modal-body .form-actions { display: flex; justify-content: flex-end; margin-top: 25px; }
-    .modal-body .form-actions .btn-batal { background-color: #ff5f5f; color:rgb(255, 255, 255); border: none; border-radius: 20px; padding: 5px 10px; height: 40px; width: 120px; margin-right: 10px; }
-    .modal-body .form-actions .btn-submit { background-color:rgb(67, 54, 240); color: white; border: none; border-radius: 20px; padding: 5px 10px; height: 40px; width: 200px; }
+    .modal-body .form-actions .btn-batal { background-color: #ff5f5f; color:rgb(255, 255, 255); border-radius: 20px; width: 120px; margin-right: 10px; }
+    .modal-body .form-actions .btn-submit { background-color:rgb(67, 54, 240); color: white; border-radius: 20px; width: 200px; }
     .modal-body .form-actions .btn-submit:hover { background-color: rgb(106, 95, 255); }
-    .modal-body > h2 { font-size: 30px; color: #374151; font-weight: 580; margin-bottom: 1.5rem; }
-    #penjadwalanSidangTAModal .modal-dialog, #penjadwalanSidangSemModal .modal-dialog { max-width: 600px; }
+    .modal-body .form-actions .btn { border: none; padding: 5px 10px; height: 40px; }
+    .modal-body > h2 { font-size: 1.8rem; color: #374151; font-weight: 600; margin-bottom: 1.5rem; text-align:center; }
     .modal-body .form-toggle-buttons { display: inline-flex; gap: 5px; align-items: center; }
     .modal-body .form-toggle-buttons button { width: 30px; height: 30px; font-size: 18px; border-radius: 35px; border: 1px solid #ccc; cursor: pointer; background-color: white; }
     .modal-body .form-toggle-buttons button:hover { background-color: #ddd; }
-    .form-error-message { color: red; margin-bottom: 15px; text-align: left; font-weight: 500;}
-
+    .form-error-message { color: red; margin-bottom: 15px; text-align: left; font-weight: 500; padding-left: 175px;}
+    
+    /* Responsive styles for page-specific elements */
+    @media (max-width: 768px) {
+        .profile-icon { display: none; } /* Hide desktop profile icon */
+        
+        /* Adjust header content on mobile */
+        .main-header-content {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 15px;
+        }
+        .search-input-container { width: 100%; }
+        
+        #dropdownAdminPenjadwalan {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #dropdownAdminPenjadwalan .filter-btn { margin-right: 0; }
+        
+        /* Responsive modal forms */
+        .modal-body .form-group {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        .modal-body .form-group label { width: 100%; margin-right: 0; }
+        .modal-body .form-actions { flex-direction: column; gap: 10px; }
+        .modal-body .form-actions .btn { width: 100%; margin-right: 0; }
+        .form-error-message { padding-left: 0; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- ADDED: MOBILE TOP BAR & TOGGLE BUTTON -->
+  <div class="NavSide__topbar">
+      <div class="NavSide__toggle" id="nav-toggle">
+          <i class="fas fa-bars"></i>
+      </div>
+  </div>
   
+  <!-- Sidebar (Unchanged) -->
   <div id="main-sidebar" class="NavSide__sidebar">
     <div class="NavSide__sidebar-brand">
         <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
     </div>
     <ul class="NavSide__sidebar-nav">
-        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aBeranda.php' ? 'NavSide__sidebar-item--active' : ''); ?>" id="berandaNav">
-            <b></b><b></b>
-            <a href="aBeranda.php" onclick="location.href='aBeranda.php'">
-                <span class="NavSide__sidebar-title fw-semibold">Beranda</span>
-            </a>
+        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aBeranda.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
+            <b></b><b></b><a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
         </li>
-        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aPenjadwalan.php' ? 'NavSide__sidebar-item--active' : ''); ?>" id="penjadwalanNav">
-            <b></b><b></b>
-            <a href="aPenjadwalan.php" onclick="location.href='aPenjadwalan.php'">
-                <span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span>
-            </a>
+        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aPenjadwalan.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
+            <b></b><b></b><a href="aPenjadwalan.php"><span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span></a>
         </li>
         <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aDaftarSidang.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
-            <b></b><b></b>
-            <a href="aDaftarSidang.php" onclick="location.href='aDaftarSidang.php'">
-                <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
-            </a>
+            <b></b><b></b><a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
         </li>
         <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
             <b></b><b></b>
                 <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+        <li class="NavSide__sidebar-item">
+            <b></b><b></b><a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
         </li>
     </ul>
-</div>
+  </div>
 
+  <!-- Main Content Container: Using bodyContainer as per your original file -->
   <div class="bodyContainer position-relative">
     <div class="profile-icon">
       <i class="fas fa-user-circle"></i>
     </div>
      <div class="dashboardTitle mb-5">Penjadwalan Sidang</div>
-     <div class="d-flex justify-content-between align-items-center mb-3">
+     <div class="d-flex justify-content-between align-items-center mb-3 main-header-content">
       <h2 class="section-title ">Pengajuan Sidang</h2>
       <div class="search-input-container">
         <i class="fas fa-search"></i>
-        <input type="text" class="form-control search-input " placeholder="Nama Mahasiswa">
+        <input type="text" class="form-control search-input" placeholder="Cari Nama Mahasiswa...">
       </div>
     </div>
    
     <div class="d-flex" id="dropdownAdminPenjadwalan">
         <div class="dropdown me-2">
             <button class="filter-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <?= $selectedTipe == 'TA' ? 'Sidang TA' : 'Sidang Semester' ?>
+                <?= htmlspecialchars($selectedTipe == 'TA' ? 'Sidang TA' : 'Sidang Semester') ?>
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="?tipe=TA&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
@@ -348,8 +293,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
             </ul>
         </div>
         <div class="dropdown me-2">
-            <button class="filter-btn secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <?= $selectedStatus == 'belum' ? 'Belum Disetujui' : 'Disetujui' ?>
+            <button class="filter-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <?= htmlspecialchars($selectedStatus == 'belum' ? 'Belum Disetujui' : 'Disetujui') ?>
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=belum">Belum Disetujui</a></li>
@@ -358,7 +303,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         </div>
     </div>
 
-
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -366,8 +310,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
             <th>ID</th>
             <th>NIM</th>
             <th>Nama</th>
-            <th><?= $selectedTipe == 'TA' ? 'Judul Sidang' : 'Mata Kuliah' ?></th>
-            <th><?= $selectedTipe == 'TA' ? 'Pembimbing' : 'Dosen Pengampu' ?></th>
+            <th><?= htmlspecialchars($selectedTipe == 'TA' ? 'Judul Sidang' : 'Mata Kuliah') ?></th>
+            <th><?= htmlspecialchars($selectedTipe == 'TA' ? 'Pembimbing' : 'Dosen Pengampu') ?></th>
           </tr>
         </thead>
         <tbody>
@@ -378,7 +322,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
               <?php
                 $row_props = "";
                 if ($selectedStatus == 'disetujui') {
-                    $dosen_pengampu_json = isset($entry['dosenPengampu']) ? htmlspecialchars(json_encode($entry['dosenPengampu'])) : '[]';
+                    $dosen_pengampu_json = isset($entry['dosenPengampu']) ? htmlspecialchars(json_encode($entry['dosenPengampu']), ENT_QUOTES, 'UTF-8') : '[]';
                     $row_props = "class='clickable' onclick='openJadwalModal(this)' "
                                . "data-id='".htmlspecialchars($entry['id'] ?? '')."'"
                                . "data-nim='".htmlspecialchars($entry['nim'] ?? '')."'"
@@ -400,7 +344,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                         if ($selectedTipe == 'TA') {
                             echo htmlspecialchars($entry['pembimbing'] ?? 'N/A');
                         } else {
-                            echo isset($entry['dosenPengampu']) ? htmlspecialchars(implode(', ', $entry['dosenPengampu'])) : htmlspecialchars($entry['pembimbing'] ?? 'N/A');
+                            echo isset($entry['dosenPengampu']) && is_array($entry['dosenPengampu']) ? htmlspecialchars(implode(', ', $entry['dosenPengampu'])) : htmlspecialchars($entry['pembimbing'] ?? 'N/A');
                         }
                     ?>
                 </td>
@@ -412,26 +356,23 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     </div>
   </div>
 
-   <!-- Modal keluar-->
-    <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div style="background-color: rgb(67, 54, 240);">
-                    <div class="modal-header">
-                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                    </div>
-                </div>
-                <div class="modal-body mx-auto">
-                    Apakah anda yakin ingin keluar?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-                </div>
-            </div>
+  <!-- Logout Modal -->
+  <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header mx-auto">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+        </div>
+        <div class="modal-body mx-auto">
+             Apakah anda yakin ingin keluar?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+        </div>
         </div>
     </div>
-
+  </div>
   
   <!-- MODAL FOR SIDANG TA -->
   <div class="modal fade" id="penjadwalanSidangTAModal" aria-labelledby="penjadwalanSidangTAModalLabel" aria-hidden="true">
@@ -540,22 +481,48 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
+    // Global variables for modals and dynamic fields
     let taModalInstance, semModalInstance;
     let pengujiCount = 1;
 
     document.addEventListener("DOMContentLoaded", function() {
+        // --- ADDED: JAVASCRIPT FOR MOBILE SIDEBAR TOGGLE ---
+        const toggleButton = document.getElementById('nav-toggle');
+        const sidebar = document.getElementById('main-sidebar');
+
+        if (toggleButton && sidebar) {
+            toggleButton.addEventListener('click', () => {
+                // This toggles the class that your existing style.css uses for mobile
+                sidebar.classList.toggle('NavSide__sidebar--active-mobile');
+                
+                // Change icon from bars to 'X' and back
+                const icon = toggleButton.querySelector('i');
+                if (sidebar.classList.contains('NavSide__sidebar--active-mobile')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        }
+        
+        // --- Modal Initialization ---
         const taModalEl = document.getElementById('penjadwalanSidangTAModal');
         if (taModalEl) taModalInstance = new bootstrap.Modal(taModalEl);
         
         const semModalEl = document.getElementById('penjadwalanSidangSemModal');
         if (semModalEl) semModalInstance = new bootstrap.Modal(semModalEl);
 
+        // --- Form Submission Listeners ---
         const formTA = document.getElementById('formDalamModal-ta');
         if(formTA) formTA.addEventListener('submit', handleFormSubmit);
 
         const formSem = document.getElementById('formDalamModal-sem');
         if(formSem) formSem.addEventListener('submit', handleFormSubmit);
     });
+
+    // --- ALL JAVASCRIPT FUNCTIONS ---
 
     function openJadwalModal(element) {
         const tipeSidang = element.dataset.tipeSidang;
@@ -569,7 +536,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     }
 
     function resetAndPopulateTAModal(el) {
-        // Reset dynamic penguji fields to 1
+        // Reset dynamic penguji fields back to 1
         const wrapper = document.getElementById('penguji-wrapper-ta');
         wrapper.innerHTML = `
             <div class="form-group" id="penguji-form-ta-1">
@@ -589,7 +556,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
             </div>`;
         pengujiCount = 1;
 
-        // Populate data
+        // Populate data into the form fields
         document.getElementById('modal_nim-ta').value = el.dataset.nim || '';
         document.getElementById('modal_judul_sidang-ta').value = el.dataset.judul || '';
         document.getElementById('modal_pembimbing-ta').value = el.dataset.pembimbing || '';
@@ -669,8 +636,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#4336F0'
             }).then(() => {
-                // You can add redirection or table refresh logic here
-                // For example: location.reload();
+                // Optionally, refresh the page or update the table
+                // location.reload(); 
             });
         }
     }
@@ -689,7 +656,10 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 break;
             }
         }
-        if (errorMessage) { errorBox.textContent = errorMessage; return false; }
+        if (errorMessage) { 
+            errorBox.textContent = errorMessage; 
+            return false; 
+        }
         
         // Validate Ruangan
         const ruangan = document.getElementById(`modal_ruangan${suffix}`).value.trim();
@@ -726,7 +696,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 
         return true; // All validations passed
     }
-
   </script>
 </body>
 </html>

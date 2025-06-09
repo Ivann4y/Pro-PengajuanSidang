@@ -100,7 +100,14 @@
 <body>
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
-            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5">
+            <img src="../assets/img/awan.png"
+                class="position-absolute"
+                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
+                alt="Background">
+            <div class="position-absolute"
+                style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
+            </div>
+            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
                 <label for="">Sistem Pengajuan Sidang</label>
                 <label for="">Politeknik Astra</label>
             </div>
@@ -145,11 +152,11 @@
             </div>
 
             <div class="button-container">
-                <button type="submit" class="btn btn-primary px-3 w-25 rounded rounded-5">
+                <button type="submit" class="btn btn-primary px-3 rounded rounded-5" onclick="history.back()">
                     <img src="../assets/img/Kembali.svg" alt="" class="me-1">
-                    <label>Kembali</label>
+                    Kembali
                     <button type="submit" class="btn btn-success w-25 px-3 rounded rounded-5 float-end me-3" onclick="toIndex()">
-                        <label>Kirim</label>
+                        Kirim
                     </button>
                 </button>
             </div>
