@@ -251,7 +251,7 @@
         .status-badge {
             margin-bottom: 1.2cm; 
             background-color: #FFA3A3;
-            color: black;
+            color: #464869;
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block; 

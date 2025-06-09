@@ -1,45 +1,16 @@
-<?php
-    // Ambil parameter dari URL
-    $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
-    $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
-
-    $mahasiswa = [];
-
-    if ($tipe === 'TA') {
-        $mahasiswa = [
-            'nama'        => 'M. Haaris Nur S.',
-            'nim'         => '0920240033',
-            'mata_kuliah' => 'Tugas Akhir',
-        ];
-    } elseif ($tipe === 'Semester') {
-        $mahasiswa = [
-            'nama'         => 'M. Harris Nur S.',
-            'nim'          => '0920240033',
-            'mata_kuliah'  => 'Pemrograman 2',
-            'judul_sidang' => 'Sistem Pengajuan Sidang'
-        ];
-    } else {
-        // Data default jika tipe tidak dikenali
-        $mahasiswa = [
-            'nama'          => 'Data Tidak Ditemukan',
-            'nim'           => 'N/A',
-            'mata_kuliah'   => 'N/A',
-            'file_laporan'  => '#',
-            'file_pendukung' => '#'
-        ];
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluasi Sidang</title>
+    <title>Dokumen Revisi - Responsive</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 
     <style>
         /* --- General and Body Styles --- */
@@ -198,29 +169,6 @@
             font-weight: 700;
         }
 
-        .NavSide__main-content h3 {
-            font-weight: 700;
-            font-size: 1.4rem;
-            margin-bottom: 0.2cm;
-        }
-
-        /* Keep the rest of your existing styles */
-        .status-badge { 
-            background-color: #FFA3A3;
-            color: black;
-            border-radius: 20px;
-            padding: 8px 18px; 
-            display: inline-block; 
-            font-size: 0.875rem; 
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
-            font-weight: bold; 
-            margin-bottom: 1.2cm; 
-        }
-
-        .status-badge.approved {
-            background-color: #4BFBAF;
-        }
-
         .info-card {
             position: relative;
             background: rgb(235, 238, 245);
@@ -308,192 +256,6 @@
             margin-bottom: 0;
         }
 
-        .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1.2cm;
-            height: 45px;
-        }
-
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
-
-        .form-card {
-            background:rgb(235, 238, 245);
-            border-radius: 30px; 
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 15px 25px;
-            margin-bottom: 1.2cm;
-        }
-
-        .form-card h4 {
-            font-weight: 600;
-            font-size: 1.05rem;
-            margin-bottom: 0.8cm;
-        }
-
-        .form-group-custom {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .form-group-custom label {
-            flex: 0 0 180px;
-            margin-right: 20px;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .form-group-custom .form-control-custom {
-            flex: 1;
-            min-width: 200px;
-            background-color: white;
-            border: 1px solid #F2F2F2;
-            border-radius: 10px;
-            padding: 10px 15px;
-            font-size: 0.95rem;
-            height: 45px;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .form-group-custom .form-control-custom:focus {
-            border-color: #4B68FB;
-            box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25);
-            outline: none;
-        }
-
-        .form-group-custom textarea.form-control-custom {
-            min-height: 200px;
-            resize: vertical;
-        }
-
-        .button-group-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1.2cm;
-        }
-
-        .btn-kirim {
-            background-color: #4FD382; /* Changed from #4cfaab to button setuju color */
-            color: #FFFFFF; /* Text color remains black */
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 45px;
-            margin-top: 55px;
-        }
-
-        .btn-kirim:hover {
-            background-color: #3AB070;
-            color: white;
-        }
-
-        .success-modal-content {
-            background-color: rgb(235, 238, 245);
-            border-radius: 30px;
-            border: none;
-            padding: 20px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .success-modal-body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px 20px;
-        }
-
-        .success-icon {
-            width: 6rem;
-            height: 6rem;
-            margin-bottom: 20px;
-        }
-
-        .success-message {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .error-message {
-            color: red;
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: none;
-            margin-top: 10px;
-            margin-left: 0;
-            text-align: left;
-        }
-
-        @media (max-width: 768px) {
-            .form-group-custom {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .form-group-custom label {
-                flex: none;
-                width: 100%;
-                margin-bottom: 0.5rem;
-                margin-right: 0;
-            }
-            .form-group-custom .form-control-custom {
-                width: 100%;
-                min-width: unset;
-            }
-        }
-
         /* --- Responsive Design Styles --- */
         .NavSide__toggle {
             position: fixed;
@@ -506,6 +268,7 @@
             cursor: pointer;
             border-radius: 5px;
             display: none;
+            /* Hidden by default for larger screens */
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -535,6 +298,7 @@
 
         .NavSide__topbar {
             display: none;
+            /* Hidden by default */
             position: fixed;
             top: 0;
             left: 0;
@@ -596,18 +360,92 @@
             .info-card .section:last-child {
                 margin-bottom: 0;
             }
+        }
 
+        /* Button Styles */
+        .button-group-bottom {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.2cm;
+        }
+
+        .btn-tolak {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            height: 45px;
+        }
+
+        .btn-tolak:hover {
+            background-color: #bb2d3b;
+        }
+
+        .btn-setujui {
+            background-color: #198754;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            height: 45px;
+        }
+
+        .btn-setujui:hover {
+            background-color: #157347;
+        }
+
+        @media (max-width: 700px) {
             .button-group-bottom {
                 flex-direction: column;
                 gap: 1rem;
             }
 
-            .btn-kembali, .btn-kirim {
+            .btn-tolak, .btn-setujui {
                 width: 100%;
             }
         }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+
+        .modal-body {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            min-width: 100px;
+        }
     </style>
 </head>
+
 <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -615,13 +453,14 @@
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <!-- MENU "Detail Sidang" DIHAPPU S DARI SINI -->
+                <li class="NavSide__sidebar-item "> <!-- Evaluasi aktif -->
                     <b></b><b></b>
                     <a href="dEvaluasiSidang.php">
                         <span class="fw-semibold">Evaluasi</span>
                     </a>
                 </li>
-                <li class="NavSide__sidebar-item">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="dDokumenRevisi.php">
                         <span class="fw-semibold">Dokumen</span>
@@ -636,39 +475,35 @@
             </ul>
         </div>
 
-        <div class="NavSide__toggle">
-            <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
         </div>
 
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-            <!-- Badge Status Pengajuan Dihapus sesuai gambar -->
-            
+
             <div class="info-card">
                 <div class="section">
-                    <!-- Judul Sidang -->
                     <div class="info-group">
                         <div class="label-row">
-                            <i class="fa-solid fa-file-invoice"></i> <!-- Icon berubah -->
+                            <i class="fa-solid fa-file-invoice"></i>
                             <span class="fw-bold">Judul Sidang</span>
                         </div>
-                        <div class="value-row">Struktur Data</div> <!-- Nilai berubah -->
+                        <div class="value-row">Struktur Data</div>
                     </div>
-
-                    <!-- Dosen Pembimbing -->
                     <div class="info-group">
                         <div class="label-row">
-                            <i class="fa-solid fa-user-tie"></i> <!-- Icon baru -->
+                            <i class="fa-solid fa-user-tie"></i>
                             <span class="fw-bold">Dosen Pembimbing</span>
                         </div>
-                        <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div> <!-- Nilai baru -->
+                        <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div>
                     </div>
-                    
-                    <!-- Dosen Penguji -->
                     <div class="info-group">
                         <div class="label-row">
-                            <i class="fa-solid fa-user-group"></i> 
+                            <i class="fa-solid fa-user-group"></i>
                             <span class="fw-bold">Dosen Penguji</span>
                         </div>
                         <div class="value-row">
@@ -678,7 +513,6 @@
                     </div>
                 </div>
                 <div class="section">
-                    <!-- Ruangan -->
                     <div class="info-group">
                         <div class="label-row">
                             <i class="fa-solid fa-door-open"></i>
@@ -686,8 +520,6 @@
                         </div>
                         <div class="value-row">CB101 - RPL 1B</div>
                     </div>
-
-                    <!-- Tanggal -->
                     <div class="info-group">
                         <div class="label-row">
                             <i class="fa-solid fa-calendar-days"></i>
@@ -695,8 +527,6 @@
                         </div>
                         <div class="value-row">Selasa, 22 April 2025</div>
                     </div>
-
-                    <!-- Jam -->
                     <div class="info-group">
                         <div class="label-row">
                             <i class="fa-solid fa-clock"></i>
@@ -706,76 +536,27 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- BAGIAN BARU: Nilai Sidang (Sementara) -->
-            <h3>Nilai Sidang (Sementara)</h3>
-            <div class="form-card">
-                <h4>Masukkan Nilai Sidang</h4>
-                <div class="form-group-custom">
-                    <label for="nilaiLaporan">Nilai Laporan</label>
-                    <input type="text" id="nilaiLaporan" class="form-control-custom">
-                </div>
-                <div class="form-group-custom">
-                    <label for="materiPresentasi">Materi Presentasi</label>
-                    <input type="text" id="materiPresentasi" class="form-control-custom">
-                </div>
-                <div class="form-group-custom">
-                    <label for="nilaiPenyampaian">Nilai Penyampaian</label>
-                    <input type="text" id="nilaiPenyampaian" class="form-control-custom">
-                </div>
-                <div class="form-group-custom">
-                    <label for="nilaiProyek">Nilai Proyek</label>
-                    <input type="text" id="nilaiProyek" class="form-control-custom">
-                </div>
-                <!-- Elemen untuk pesan error Nilai Sidang -->
-                <p class="error-message" id="nilaiSidangErrorMessage"> *Harus diisi!</p>
-            </div>
 
-            <!-- BAGIAN BARU: Catatan Evaluasi Sidang -->
-            <h3>Catatan Evaluasi Sidang</h3>
-            <div class="form-card">
-                <h4>Masukkan Catatan Evaluasi Sidang</h4>
-                <div class="form-group-custom">
-                    <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label> 
-                    <textarea id="catatanEvaluasi" class="form-control-custom"></textarea>
-                </div>
-                <!-- Elemen untuk pesan error Catatan Evaluasi -->
-                <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
-            </div>
-            
             <div class="button-group-bottom">
-                <!-- Corrected HTML for the "Kembali" button -->
-                <button class="btn-kembali" onclick="location.href='dDaftarSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>
-                <!-- Tombol Kirim: data-bs-toggle dan data-bs-target dihapus -->
-                <button class="btn-kirim" id="btnKirim">
-                    Kirim
-                </button>
+                <button class="btn-tolak" onclick="showModal('Ditolak')">Tolak</button>
+                <button class="btn-setujui" onclick="showModal('Disetujui')">Setujui</button>
             </div>
         </main>
     </div>
-    
-    <!-- Success Modal HTML -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+
+    <!-- Modal -->
+    <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content success-modal-content">
-                <div class="modal-body success-modal-body">
-                    <!-- --- PERUBAHAN IKON SUKSES DI SINI --- -->
-                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon"> <!-- Path diubah -->
-                    <!-- --- AKHIR PERUBAHAN UNTUK IKON SUKSES --- -->
-                    <p class="success-message">Evaluasi Sidang Berhasil Dikirim!</p>
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="../../assets/img/centang.svg" width="100" class="mx-auto mb-3" alt="Check Icon">
+                    <h5 class="modal-title" id="notifModalLabel"></h5>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script type="text/javascript">
         // --- Sidebar Toggle Logic for Mobile ---
         let menuToggle = document.querySelector(".NavSide__toggle");
@@ -799,62 +580,14 @@
             };
         }
 
-        // BARU: Logika validasi form
-        document.addEventListener('DOMContentLoaded', function() {
-            const btnKirim = document.getElementById('btnKirim');
-            const nilaiLaporan = document.getElementById('nilaiLaporan');
-            const materiPresentasi = document.getElementById('materiPresentasi');
-            const nilaiPenyampaian = document.getElementById('nilaiPenyampaian');
-            const nilaiProyek = document.getElementById('nilaiProyek');
-            const catatanEvaluasi = document.getElementById('catatanEvaluasi');
-
-            const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage');
-            const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage');
-
-            // Dapatkan elemen modal sukses
-            const successModalElement = document.getElementById('successModal');
-
-            // Tambahkan event listener untuk saat modal sukses disembunyikan
-            if (successModalElement) {
-                successModalElement.addEventListener('hidden.bs.modal', function () {
-                    // Arahkan kembali ke halaman dDaftarSidang.php
-                    window.location.href = 'dDaftarSidang.php';
-                });
-            }
-
-            btnKirim.addEventListener('click', function(event) {
-                let isValid = true;
-
-                // Sembunyikan pesan error sebelumnya
-                nilaiSidangError.style.display = 'none';
-                catatanEvaluasiError.style.display = 'none';
-
-                // Validasi kolom "Nilai Sidang (Sementara)"
-                if (nilaiLaporan.value.trim() === '' ||
-                    materiPresentasi.value.trim() === '' ||
-                    nilaiPenyampaian.value.trim() === '' ||
-                    nilaiProyek.value.trim() === '') {
-                    
-                    nilaiSidangError.style.display = 'block';
-                    isValid = false;
-                }
-
-                // Validasi kolom "Catatan Evaluasi Sidang"
-                if (catatanEvaluasi.value.trim() === '') {
-                    catatanEvaluasiError.style.display = 'block';
-                    isValid = false;
-                }
-
-                // Jika validasi gagal
-                if (!isValid) {
-                    event.preventDefault(); // Hentikan tindakan default
-                } else {
-                    // Jika validasi sukses, tampilkan modal secara manual
-                    const successModal = new bootstrap.Modal(successModalElement); // Gunakan referensi elemen yang sudah diambil
-                    successModal.show();
-                }
-            });
-        });
+        function showModal(status) {
+            const modalLabel = document.getElementById('notifModalLabel');
+            modalLabel.innerText = `Sidang telah berhasil ${status.toLowerCase()}`;
+            const modal = new bootstrap.Modal(document.getElementById('notifModal'));
+            modal.show();
+        }
     </script>
+
 </body>
+
 </html>
