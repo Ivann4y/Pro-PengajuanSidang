@@ -4,8 +4,14 @@ require 'users.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'];
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
+
+    // Cek kosong
+    if (empty($username) || empty($password)) {
+        header("Location: views/$role/{$role[0]}Login.php?error=empty&username=" . urlencode($username));
+        exit();
+    }
 
     if (!isset($users[$role])) {
         header("Location: views/$role/{$role[0]}Login.php?error=role");
@@ -27,7 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: views/$role/{$role[0]}Beranda.php");
         exit();
     } else {
-        header("Location: views/$role/{$role[0]}Login.php?error=1");
+        // Kalau salah username/password
+        header("Location: views/$role/{$role[0]}Login.php?error=1&username=" . urlencode($username));
         exit();
     }
 }
+
