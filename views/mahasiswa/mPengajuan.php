@@ -14,6 +14,73 @@
 
         
 
+        .text-heading { 
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem; 
+        }
+
+        @media (max-width: 700px) {
+            .NavSide__sidebar {
+                width: 50%;
+                transform: translateX(-100%);
+                border-left-width: 0;
+            }
+
+            .NavSide__sidebar.NavSide__sidebar--active-mobile {
+                transform: translateX(0);
+                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .NavSide__sidebar-brand {
+                padding: 20px 10px 30px 10px;
+            }
+
+            .NavSide__sidebar-brand img {
+                width: 90%;
+            }
+
+            .NavSide__sidebar-nav {
+                padding-top: 20%;
+            }
+
+            .NavSide__sidebar-item a {
+                padding: 12% 10%;
+                height: auto;
+            }
+
+            .NavSide__main-content {
+                margin-left: 0;
+                padding: 15px;
+                padding-top: 75px;
+            }
+
+            .NavSide__toggle {
+                display: flex;
+                position: relative;
+                top: auto;
+                background-color: transparent;
+                box-shadow: none;
+                left: 0;
+            }
+
+            .NavSide__toggle i.bi.open {
+                display: block;
+            }
+
+            .NavSide__toggle.NavSide__toggle--active {
+                left: calc(50% + 10px); 
+                background-color: aliceblue;
+            }
+
+            .NavSide__topbar {
+                display: flex;
+            }
+        }
+        /* NavSide styles from mBeranda.php - END */
+
+
         /* Original mPengajuan table structural styles - START */
         table {
             border-spacing: 0 10px;
@@ -100,10 +167,12 @@
         .dropdown-menu .dropdown-item {
             font-family: "Poppins", sans-serif; 
         }
+
         /* Edit icon hover effect */
         tr.isiTabel:hover .bi-pencil-square {
             color: white !important;
         }
+
         /* Original mPengajuan table structural styles - END */
 
 
@@ -131,7 +200,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                     <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -195,6 +264,26 @@
         </main>
     </div>
 
+     <!-- Modal keluar-->
+    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color: rgb(67, 54, 240);">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
+                </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Sidebar Toggle Logic 
@@ -208,18 +297,19 @@
             };
         }
 
+
         // Sidebar Active Item Logic
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function(event) { 
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
+        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        // for (let i = 0; i < listItems.length; i++) {
+        //     listItems[i].onclick = function(event) { 
+        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+        //             for (let j = 0; j < listItems.length; j++) {
+        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+        //             }
+        //             this.classList.add("NavSide__sidebar-item--active");
+        //         }
+        //     };
+        // }
 
         // Original mPengajuan.php script
         const dataTA = [{
