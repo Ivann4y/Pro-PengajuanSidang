@@ -177,11 +177,13 @@
       </ul>
     </div>
 
+
           <div class="NavSide__toggle">
         <i class="bi bi-list open"></i>
         <i class="bi bi-x-lg close"></i>
       </div>
 
+      
     <main class="NavSide__main-content"> <!-- panjang lebar tampilan nilai akhir menyesuaikan -->
 
     <div class="container-fluid bodyContainer">
@@ -191,6 +193,7 @@
         </h2>
       </div>
       
+
       <!-- Main Content Row -->
       <div class="row mt-5 align-items-center justify-content-between">
         <!-- Nilai Card -->
@@ -200,7 +203,6 @@
               <h3 class="card-title" style="padding:10px;">Nilai Mahasiswa:</h3>
               <div>
                 <input
-                  
                   type="text"
                   class="form-control form-control-lg text-center text"
                   id="nilaiMahasiswa"
@@ -214,6 +216,7 @@
           </div>
         </div>
         
+
         <!-- Gambar  -->
         <div class="col-md-6">
           <img
@@ -275,12 +278,12 @@
                 maxlength="3"
                 disabled>
                 
-
             </div>
           </div>
         </div>
       </div>
       
+
       <!-- Catatan Card -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-md-12">
@@ -298,10 +301,11 @@
         </div>
       </div>
       
+
       <!-- Fungsi Tombol Kembali -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
-          <button class="btn btn-kembali" style="margin-left: 50px;" onclick="pindahKeHalamanDaftarSidang()" >
+          <button class="btn btn-kembali" style="margin-left: 50px;" onclick="pindahKeHalamanDaftarSidang()">
             <span class="icon-circle">
               <i class="bi bi-arrow-left"></i>
             </span>
@@ -312,6 +316,7 @@
     </div>
   </div>
   
+
   <!-- konfimasi Modal Nilai -->
   <div class="modal fade" id="konfirmasiModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -360,7 +365,7 @@
         }
       };
     }
-
+    
     function bukaKonfirmasiModal() {
       const modal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
       modal.show();
