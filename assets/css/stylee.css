@@ -111,11 +111,11 @@ body {
 }
 
 .card-comment:hover {
-<<<<<<< HEAD
+
   background-color:   #007bff !important;
-=======
+
   background-color: #4b68fb;
->>>>>>> 7550f6c627cc7fd7b390e3cb424fef4be4aea87c
+
   color: #fff;
 }
 
