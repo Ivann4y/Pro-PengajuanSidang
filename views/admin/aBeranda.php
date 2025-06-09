@@ -478,7 +478,7 @@ if ($_SESSION['role'] !== 'admin') {
                 <div class="col-lg-7">
                     <div class="row">
                         <div class="col-md-6">
-                            <a href="mSidang.php" style="text-decoration: none; color: inherit; display: block;">
+                            <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="dashboard-card penjadwalan-status-card">
                                     <div class="number">4</div>
                                     <div class="text">
@@ -488,7 +488,7 @@ if ($_SESSION['role'] !== 'admin') {
                                 </div>
                             </a>
 
-                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit; display: block;">
+                            <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="dashboard-card pengajuan-status-card">
                                     <div class="number">2</div>
                                     <div class="text">
@@ -622,10 +622,12 @@ if ($_SESSION['role'] !== 'admin') {
 
      <!-- Modal keluar-->
     <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header mx-auto">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+                <div style="background-color: rgb(67, 54, 240);">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
                 </div>
                 <div class="modal-body mx-auto">
                     Apakah anda yakin ingin keluar?
@@ -651,17 +653,17 @@ if ($_SESSION['role'] !== 'admin') {
         };
 
         // Sidebar Active Item Logic
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function() {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
+        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        // for (let i = 0; i < listItems.length; i++) {
+        //     listItems[i].onclick = function() {
+        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+        //             for (let j = 0; j < listItems.length; j++) {
+        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+        //             }
+        //             this.classList.add("NavSide__sidebar-item--active");
+        //         }
+        //     };
+        // }
 
         
         // Real-time Calendar Logic

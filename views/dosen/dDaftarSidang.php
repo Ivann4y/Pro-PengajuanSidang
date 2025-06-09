@@ -242,17 +242,17 @@ if ($_SESSION['role'] !== 'dosen') {
         };
 
                 // Sidebar Active Item Logic
-                let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-                for (let i = 0; i < listItems.length; i++) {
-                    listItems[i].onclick = function() {
-                        if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                            for (let j = 0; j < listItems.length; j++) {
-                                listItems[j].classList.remove("NavSide__sidebar-item--active");
-                            }
-                            this.classList.add("NavSide__sidebar-item--active");
-                        }
-                    };
-                }
+                // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+                // for (let i = 0; i < listItems.length; i++) {
+                //     listItems[i].onclick = function() {
+                //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                //             for (let j = 0; j < listItems.length; j++) {
+                //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+                //             }
+                //             this.classList.add("NavSide__sidebar-item--active");
+                //         }
+                //     };
+                // }
                 let isTA = true;
 
                 function goToEvaluasi(nim, tipe) {
