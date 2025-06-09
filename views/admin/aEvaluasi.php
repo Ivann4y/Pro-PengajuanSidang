@@ -165,9 +165,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
   </div>
-    <p class="text-center text-muted small mt-2" id="upload-prompt-text">Unggah berkas revisi dengan format pdf, docx, pptx, dan zip</p> <br/>
+    <p class="text-center text-muted small mt-2" id="upload-prompt-text">Unduh berkas revisi dengan format pdf, docx, pptx, dan zip</p> <br/>
       <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn-kirim" id="submitBtn" disabled>unggah</button>
+                <button type="submit" class="btn-kirim" id="submitBtn" disabled>unduh</button>
             </div>
 
 </div>

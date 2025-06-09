@@ -284,6 +284,7 @@
           margin-bottom: 25px;
           overflow: hidden;
           transition: background-color 0.4s ease;
+          margin-right: 30px;
         }
 
         .info-card::after { 
@@ -460,7 +461,7 @@
 
 
         }
-        .modal-body .bobot-input-new {
+        .modal-body .bobot-input-new {  
             width: 30px; 
             height: auto;
             text-align: center;
@@ -471,7 +472,6 @@
             background-color: transparent;
             padding: 0; 
             margin: 0 5px; 
-            -moz-appearance: textfield;
             pointer-events: none;
         }
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
@@ -517,20 +517,34 @@
            background-color:rgba(0, 0, 0, 0.05); 
         }
 
-        .modal-body .time-input-range { gap: 10px; width: 100%; }
-        .modal-body .time-input-range input[type="time"] { flex-grow: 1; }
+        .modal-body .time-input-range { 
+          gap: 10px; 
+          width: 100%; 
+        }
+        .modal-body .time-input-range input[type="time"] { 
+          flex-grow: 1; 
+        }
         .modal-body .time-input-range .time-separator { 
-          flex-shrink: 0; color: #374151; font-size: 20px;
-          font-weight: bold; line-height: 1; padding: 0 5px; 
-          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; 
+          color: #374151; 
+          font-size: 20px;
+          font-weight: bold; 
+          line-height: 1; 
+          padding: 0 5px; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center;
         }
         .modal-body .form-actions {
-            display: flex; justify-content: flex-end; margin-top: 25px; 
+            display: flex; 
+            justify-content: flex-end; 
+            margin-top: 25px; 
             padding-left: calc(160px + 15px); 
         }
         .modal-body .form-actions .btn { /* Styling untuk tombol di form jika ada */ }
         .modal-body .form-actions .btn-batal { 
-          background-color: #ff5f5f; color:rgb(255, 255, 255); 
+          background-color: #ff5f5f; 
+          color:rgb(255, 255, 255); 
           border: none; 
           border-radius: 20px;
           padding: 5px 10px;
@@ -540,7 +554,7 @@
         }
  
         .modal-body .form-actions .btn-submit { 
-          background-color:rgb(67, 54, 240); color: white; 
+          background-color: #4B68FB; color: white; 
           border: none;
           border-radius: 20px;
           padding: 5px 10px;
@@ -548,7 +562,9 @@
           width: 200px;
           
         }
-        .modal-body .form-actions .btn-submit:hover { background-color: rgb(106, 95, 255); }
+        .modal-body .form-actions .btn-submit:hover { 
+          background-color: rgb(106, 95, 255); 
+        }
 
         .modal-body > h2 {
             font-size: 30px; 
@@ -631,7 +647,7 @@
 
             <div class="info-card">
                 <div class="section">
-                    <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br>Basis Data 1</p>
+                    <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br>Sistem Pengajuan Sidang</p>
                     <p><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br>Dr. Rida Indah Fariani, S.Kom, M.Kom</p>
                     <p><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>Timotius Victory, S.Kom, M.Kom<br>Ning Ratwasturi, S.Kom, M.Kom</p>
                 </div>
