@@ -222,8 +222,7 @@
                   id="nilaiMahasiswa"
                   placeholder="A"
                   maxlength="1"
-                  disabled 
-                />
+                  readonly/>
               </div>
             </div>
           </div>
@@ -241,7 +240,7 @@
         </div>
       </div>
 
-
+    
       <!-- Detail Penilaian Card -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="card" id="carddetailPenilaian">
@@ -256,7 +255,7 @@
                 id="detailpenilaian"
                 placeholder="90"
                 maxlength="3"
-                disabled>
+                readonly>
                 
                 
               <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
@@ -267,7 +266,7 @@
                 id="detailpenilaian"
                 placeholder="85"
                 maxlength="3"
-                disabled>
+                readonly>
                 
 
               <label for="Penyampaian" id="labelpenilaian">Penyampaian:</label>
@@ -278,9 +277,9 @@
                 id="detailpenilaian"
                 placeholder="95"
                 maxlength="3"
-                disabled>
+                readonly>
                 
-
+               
               <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek:</label>
               <input
                 type="type"
@@ -289,7 +288,7 @@
                 id="detailpenilaian"
                 placeholder="93"
                 maxlength="3"
-                disabled>
+                readonly>
             </div>
           </div>
         </div>
@@ -305,9 +304,8 @@
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
-                placeholder="Pertahankan terus semangat belajarnya kurangin main banyakin minum air putih derr biar ga sariawan " 
-                disabled>
-              </textarea>
+                placeholder="Pertahankan terus semangat belajarnya, kurangin main, banyakin minum air putih derr biar ga sariawan"
+                readonly></textarea>
             </div>
           </div>
         </div>
@@ -358,7 +356,10 @@
         }
       };
     }
-    
+
+    function pindahKeHalamanDaftarSidang() {
+    window.location.href = "aDaftarSidang.php"; // GANTI kalau harus ke halaman lain
+  }
   </script>
 </body>
 </html>
