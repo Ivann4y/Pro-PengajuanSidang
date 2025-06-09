@@ -100,9 +100,16 @@
 <body>
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
-            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5">
+            <img src="../assets/img/awan.png"
+                class="position-absolute"
+                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
+                alt="Background">
+            <div class="position-absolute"
+                style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
+            </div>
+            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
                 <label for="">Sistem Pengajuan Sidang</label>
-                <label for="">Politeknik Astra</label>
+                <label for="">Politeknik Astra</label>  
             </div>
             <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000" style="padding: 5% 10% 5% 10%;">
                 <div class="carousel-inner">

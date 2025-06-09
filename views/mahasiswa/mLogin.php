@@ -143,10 +143,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
                     <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIM" required>
                 </div>
                 <div class="mb-3">
-                    <input type="password" class="form-control form-control-lg border border-dark" id="password" name="password" placeholder="Password" required>
+                    <input type="password" class="form-control form-control-lg border border-dark" id="password" name="password" placeholder="Kata Sandi" required>
                     <a href="../lupaPassword.php" class="float-end"> Lupa kata sandi?</a>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Masuk</button>
             </form>
         </div>
     </div>
