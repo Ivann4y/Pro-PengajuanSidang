@@ -30,6 +30,7 @@
       color: #464869;
     }
     
+
     /* Card Styles */
     #cardNilai {
       background-color: #f2f2f2;
@@ -40,6 +41,7 @@
       margin-left: 50px;
     }
     
+
     #carddetailPenilaian {
       width: 1000px;
       margin-left: 60px;
@@ -48,6 +50,7 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     
+
     #cardcatatan {
       background-color: #f2f2f2;
       border-radius: 20px;
@@ -56,6 +59,7 @@
       margin-left: 50px;
     }
     
+
     /* Input Styles */
     #nilaiMahasiswa {
       font-size: 9.5rem !important;
@@ -69,11 +73,13 @@
       border-color: #f2f2f2;
     }
     
+
     input.form-control:not(:placeholder-shown) {
       background: #f2f2f2 !important;
       border-color: #f2f2f2 !important;
     }
     
+
     #detailpenilaian {
       width: 75px;
       font-size: 1rem;
@@ -84,6 +90,7 @@
       border-color: #f2f2f2; 
     }
     
+
     #catatan {
       width: 100%;
       height: 150px;
@@ -94,6 +101,7 @@
       border-color: #f2f2f2;
     }
     
+
     /* Label Styles */
     label {
       margin-top: 20px;
@@ -101,10 +109,12 @@
       font-weight: bold;
     }
     
+
     #labelpenilaian {
       margin-left: 30px;
     }
     
+
     /* Button Styles */
     .btn-kembali {
       background-color: #4B68FB;
@@ -112,13 +122,14 @@
       border-radius: 50px;
     }
     
+
     .btn-kembali:hover {
       border-color: #4B68FB;
       background-color: #ffffff;
       color: #4B68FB;
     }
     
-    
+
     .btnKonfirmasi {
       background-color: #464869;
       color: white;
@@ -129,6 +140,7 @@
       width: 100px;
     }
     
+
     /* Icon Styles */
     .icon-circle {
       display: inline-flex;
@@ -147,6 +159,7 @@
       border-radius: 30px !important;
     }
     
+
     /* Image Styles */
     .student-image {
       width: 500px;
@@ -183,8 +196,9 @@
         <i class="bi bi-x-lg close"> </i>
       </div>
 
-      
+
     <main class="NavSide__main-content"> <!-- panjang lebar tampilan nilai akhir menyesuaikan -->
+
 
     <div class="container-fluid bodyContainer">
       <div class="row mb-5">
@@ -208,8 +222,7 @@
                   id="nilaiMahasiswa"
                   placeholder="A"
                   maxlength="1"
-                  disabled
-                  
+                  disabled 
                 />
               </div>
             </div>
@@ -228,7 +241,7 @@
         </div>
       </div>
 
-      
+
       <!-- Detail Penilaian Card -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="card" id="carddetailPenilaian">
@@ -277,7 +290,6 @@
                 placeholder="93"
                 maxlength="3"
                 disabled>
-                
             </div>
           </div>
         </div>
@@ -332,6 +344,7 @@
       menuToggle.classList.toggle("NavSide__toggle--active");
       sidebar.classList.toggle("NavSide__sidebar--active-mobile");
     };
+
 
     // Sidebar Active Item Logic
     let listItems = document.querySelectorAll(".NavSide__sidebar-item");
