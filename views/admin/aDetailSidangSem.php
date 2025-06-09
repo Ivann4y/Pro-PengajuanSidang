@@ -628,14 +628,14 @@
                 <li class="NavSide__sidebar-item">
                     <b></b>
                     <b></b>
-                    <a href="aEvaluasi.">
+                    <a href="aEvaluasi.php">
                         <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b>
                     <b></b>
-                    <a href="aNilaiAkhir.">
+                    <a href="aNilaiAkhir.php">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
@@ -717,6 +717,7 @@
                         
                         <div class="form-group">
                           <label for="modal_prodi">Prodi</label>
+                          
                           <select id="modal_prodi" name="prodi" class="form-control">
                             <option value="">-- Pilih Prodi --</option>
                             <option value="TRPL">TRPL</option>
@@ -729,7 +730,9 @@
                             <option value="TKBG">TKBG</option>
                             <option value="TPM">TPM</option>
                           </select>
+                          
                         </div>
+                       
 
                         <div class="form-group">
                           <label for="modal_ruangan">Ruangan</label>
@@ -897,12 +900,7 @@
           }
       }
 
-      
-        
- 
-
-
-
+  
        document.getElementById('formDalamModal').addEventListener('submit', function(event) {
             event.preventDefault(); 
 
