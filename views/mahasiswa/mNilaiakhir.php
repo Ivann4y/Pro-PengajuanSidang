@@ -25,7 +25,6 @@
     <link rel="stylesheet" href="../../extra/style.css" />
     <title>Mahasiswa - Nilai Akhir</title>
     <style>
-
        @media (max-width: 750px) {
               .row.mt-5.justify-content-between {
     flex-direction: row !important;
@@ -166,7 +165,6 @@
     padding: 10px;
   }
 
-/* --- ATURAN RESPONSIVE ANDA (TETAP DIPERTAHANKAN) --- */
 .NavSide__main-content .btn-kembali {
     width: 100% !important;
     max-width: 150px;
