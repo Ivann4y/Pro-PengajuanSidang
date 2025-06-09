@@ -358,8 +358,8 @@
         }
 
         .form-card {
-            background: #E6E6E6;
-            border-radius: 30px;
+            background:rgb(235, 238, 245);
+            border-radius: 30px; 
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 25px;
             margin-bottom: 1.2cm;
@@ -417,8 +417,8 @@
         }
 
         .btn-kirim {
-            background-color: #4FD382;
-            color: black;
+            background-color: #4FD382; /* Changed from #4cfaab to button setuju color */
+            color: #FFFFFF; /* Text color remains black */
             border: none;
             border-radius: 20px;
             padding: 0 25px;
@@ -646,11 +646,9 @@
             </ul>
         </div>
 
-        <div class="NavSide__topbar">
-            <div class="NavSide__toggle">
-                <i class="bi bi-list open"></i>
-                <i class="bi bi-x-lg close"></i>
-            </div>
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
         </div>
 
         <main class="NavSide__main-content">

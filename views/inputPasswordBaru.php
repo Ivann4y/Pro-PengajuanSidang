@@ -1,3 +1,29 @@
+<?php
+session_start();
+$success = '';
+$error = '';
+$errorType = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $newPassword = $_POST['newPassword'] ?? '';
+    $confirmPassword = $_POST['confirmPassword'] ?? '';
+
+    if (empty($newPassword) || empty($confirmPassword)) {
+        $errorType = 'empty';
+        // $error = "Tidak boleh kosong.";
+    } elseif (strlen($newPassword) < 2) {
+        $errorType = 'short';
+        // $error = "Kata sandi minimal 2 karakter.";
+    } elseif ($newPassword !== $confirmPassword) {
+        $errorType = 'mismatch';
+        // $error = "Kata sandi dan konfirmasi tidak cocok.";
+    } else {
+        $_SESSION['reset_user']['password'] = $newPassword;
+        $success = "Kata sandi berhasil diubah!";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -100,7 +126,14 @@
 <body>
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
-            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5">
+            <img src="../assets/img/awan.png"
+                class="position-absolute"
+                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
+                alt="Background">
+            <div class="position-absolute"
+                style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
+            </div>
+            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
                 <label for="">Sistem Pengajuan Sidang</label>
                 <label for="">Politeknik Astra</label>
             </div>
@@ -129,38 +162,61 @@
 
         <div class="right-column-wrapper">
             <div class="log">
-                <form action="#" method="POST">
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                     <div class="text-center pt-5 mb-4">
-                        <h2 class="fs-2 fw-bold">Lupa Kata Sandi?</h2>
+                        <h2 class="fs-2 fw-bold">Ubah Kata Sandi</h2>
+                        <?php if (!empty($success)): ?>
+                            <div class="alert alert-success mt-3">
+                                <?= $success ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="">Masukkan Kata Sandi Baru</label>
-                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
+                        <input type="password"
+                            class="form-control form-control-lg <?= in_array($errorType, ['empty', 'short']) ? 'border border-danger' : 'border border-dark' ?>"
+                            name="newPassword">
+                        <?php if ($errorType === 'empty'): ?>
+                            <div class="text-danger">Kata sandi tidak boleh kosong.</div>
+                        <?php elseif ($errorType === 'short'): ?>
+                            <div class="text-danger">Kata sandi minimal 2 karakter.</div>
+                        <?php endif; ?>
                     </div>
+
                     <div class="mb-3">
-                        <label for="">Konfirmasi Kata Sandi baru</label>
-                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
+                        <label for="">Konfirmasi Kata Sandi Baru</label>
+                        <input type="password"
+                            class="form-control form-control-lg <?= in_array($errorType, ['empty', 'mismatch']) ? 'border border-danger' : 'border border-dark' ?>"
+                            name="confirmPassword">
+                        <?php if ($errorType === 'empty'): ?>
+                            <div class="text-danger">Konfirmasi kata sandi tidak boleh kosong.</div>
+                        <?php elseif ($errorType === 'mismatch'): ?>
+                            <div class="text-danger">Kata sandi dan konfirmasi tidak cocok.</div>
+                        <?php endif; ?>
                     </div>
-                </form>
             </div>
 
             <div class="button-container">
-                <button type="submit" class="btn btn-primary px-3 w-25 rounded rounded-5">
+                <button type="submit" class="btn btn-primary px-3 rounded rounded-5" onclick="history.back()">
                     <img src="../assets/img/Kembali.svg" alt="" class="me-1">
-                    <label>Kembali</label>
-                    <button type="submit" class="btn btn-success w-25 px-3 rounded rounded-5 float-end me-3" onclick="toIndex()">
-                        <label>Kirim</label>
+                    Kembali
+                    <button type="submit" class="btn btn-success w-25 px-3 rounded rounded-5 float-end me-3">
+                        Kirim
                     </button>
                 </button>
             </div>
+            </form>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-    <script>
-        function toIndex() {
-            window.open("../index.php", "_self")
-        }
-    </script>
+    <?php if (!empty($success)): ?>
+        <script>
+            setTimeout(() => {
+                window.location.href = '../index.php';
+            }, 2000);
+        </script>
+    <?php endif; ?>
+
 </body>
 
 </html>

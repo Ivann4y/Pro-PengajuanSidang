@@ -5,7 +5,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'];
     $_SESSION['role'] = $role;
 
-    // Redirect to the appropriate dashboard based on the role
     switch ($role) {
         case 'dosen':
             header('Location: views/dosen/dLogin.php');
@@ -84,6 +83,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transform: translate(-50%, -50%);
             width: 100%;
         }
+
+        @media (max-width: 600px) {
+            body {
+                overflow-y: auto;
+            }
+
+            .bgBiru {
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                background-color: rgb(67, 54, 240);
+                height: auto;
+                padding: 2vh 0;
+            }
+
+            .teks {
+                text-align: center;
+                padding-top: 2vh;
+                color: white;
+                margin: 0 0 2vh 0;
+                padding-left: 20%;
+            }
+
+            .img-topRight,
+            .img-buttomLeft,
+            .img-buttomRight{
+                display: none;
+            }
+
+            .img-topLeft{
+                position: absolute;
+                top: 90%;
+                right: 12%;
+            }
+
+            .letak-LogBox {
+                position: relative;
+                left: 13%;
+                top: 20%;
+                transform: none;
+                width: 75%;
+                z-index: 1001;
+            }
+
+            .letak-LogBox .container {
+                padding: 1.5em;
+            }
+        }
     </style>
 </head>
 
@@ -92,12 +139,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="fullscreen">
         <!-- Header Section -->
         <div class="bgBiru d-flex justify-content-between align-items-center">
-            <img src="assets/img/img6-noBg.png" alt="" class="ms-5" width="400vh" height="372vh">
+            <img src="assets/img/img6-noBg.png" alt="" class="img-topLeft ms-5" width="400vh" height="372vh">
             <div class="teks text-white text-center" style="z-index: 999;">
                 <h2><strong>Sistem Pengajuan Sidang</strong></h2>
                 <h2><strong>Politeknik Astra</strong></h2>
             </div>
-            <img src="assets/img/img4-noBg.png" alt="" class="me-5" width="372vh" height="372vh">
+            <img src="assets/img/img4-noBg.png" alt="" class="img-topRight me-5" width="372vh" height="372vh">
         </div>
 
         <!-- Login Box -->
@@ -128,8 +175,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Footer Section -->
         <div class="bgWhite d-flex justify-content-between align-items-end">
-            <img src="assets/img/img1.png" alt="" class="ms-5" width="480vh" height="372vh">
-            <img src="assets/img/img3-noBg.png" alt="" class="me-5" width="420vh" height="372vh">
+            <img src="assets/img/img1.png" alt="" class="img-buttomLeft ms-5" width="480vh" height="372vh">
+            <img src="assets/img/img3-noBg.png" alt="" class="img-buttomRight me-5" width="420vh" height="372vh">
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>

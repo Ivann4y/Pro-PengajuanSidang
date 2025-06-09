@@ -147,7 +147,6 @@
             <p class="mt-2 text-muted small">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
           </div>
         </label>
-        <input type="file" id="dokPendukung" name="dokPendukung" accept=".pdf,.docx,.pptx,.zip" hidden />
       </form>
     </div>
   </div>
@@ -163,12 +162,11 @@
         <div class="mb-3">
           <img src="https://cdn-icons-png.flaticon.com/512/463/463612.png" alt="Warning Icon" style="width: 100px;" />
         </div>
-        <p class="fw-semibold mb-0">Mohon unggah semua dokumen sebelum mengirim pengajuan sidang</p>
+        <p class="fw-semibold mb-0">Dokumen Tidak Boleh Kosong</p>
       </div>
     </div>
   </div>
 </div>
-
 
 <!-- Modal -->
 <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
@@ -190,7 +188,7 @@
 
 <!-- Verifikasi Modal -->
 <div class="d-flex justify-content-end gap-2 mt-3">
-<button type="button" class="btn btn-secondary" onclick="history.back()">Simpan</button>
+<button type="button" class="btn btn-secondary" id="btnSimpan">Simpan</button>
 <!-- Trigger -->
 <button type="button" class="btn btn-primary" id="btnOpenModalKonfirmasi">
   Kirim
@@ -318,9 +316,23 @@
       modalKonfirmasi.show();
     }
   });
+
+    const btnSimpan = document.getElementById('btnSimpan');
+
+  btnSimpan.addEventListener('click', function() {
+    const laporan = document.getElementById('laporanSidang').files.length;
+    const pendukung = document.getElementById('dokPendukung').files.length;
+
+    if (laporan === 0 || pendukung === 0) {
+      modalPeringatan.show();
+    } else {
+      history.back();
+    }
+  });
+
   const laporanInput = document.getElementById('laporanSidang');
   const uploadIcon = document.getElementById('uploadIcon');
-const laporanBox = laporanInput.closest('.upload-box');
+  const laporanBox = laporanInput.closest('.upload-box');
 
 laporanInput.addEventListener('change', function () {
   if (laporanInput.files.length > 0) {
@@ -348,6 +360,8 @@ function updateUploadBox(input, box) {
     box.querySelector('.upload-content p').textContent = 'Upload file revisi dengan format pdf, docx, pptx, dan zip';
   }
 }
+
+
 
 laporanInput.addEventListener('change', () => updateUploadBox(laporanInput, laporanBox));
 pendukungInput.addEventListener('change', () => updateUploadBox(pendukungInput, pendukungBox));

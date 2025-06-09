@@ -30,6 +30,7 @@
       color: #464869;
     }
     
+
     /* Card Styles */
     #cardNilai {
       background-color: #f2f2f2;
@@ -40,6 +41,7 @@
       margin-left: 50px;
     }
     
+
     #carddetailPenilaian {
       width: 1000px;
       margin-left: 60px;
@@ -48,6 +50,7 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     
+
     #cardcatatan {
       background-color: #f2f2f2;
       border-radius: 20px;
@@ -56,6 +59,7 @@
       margin-left: 50px;
     }
     
+
     /* Input Styles */
     #nilaiMahasiswa {
       font-size: 9.5rem !important;
@@ -69,11 +73,13 @@
       border-color: #f2f2f2;
     }
     
+
     input.form-control:not(:placeholder-shown) {
       background: #f2f2f2 !important;
       border-color: #f2f2f2 !important;
     }
     
+
     #detailpenilaian {
       width: 75px;
       font-size: 1rem;
@@ -84,6 +90,7 @@
       border-color: #f2f2f2; 
     }
     
+
     #catatan {
       width: 100%;
       height: 150px;
@@ -94,6 +101,7 @@
       border-color: #f2f2f2;
     }
     
+
     /* Label Styles */
     label {
       margin-top: 20px;
@@ -101,10 +109,12 @@
       font-weight: bold;
     }
     
+
     #labelpenilaian {
       margin-left: 30px;
     }
     
+
     /* Button Styles */
     .btn-kembali {
       background-color: #4B68FB;
@@ -112,13 +122,14 @@
       border-radius: 50px;
     }
     
+
     .btn-kembali:hover {
       border-color: #4B68FB;
       background-color: #ffffff;
       color: #4B68FB;
     }
     
-    
+
     .btnKonfirmasi {
       background-color: #464869;
       color: white;
@@ -129,6 +140,7 @@
       width: 100px;
     }
     
+
     /* Icon Styles */
     .icon-circle {
       display: inline-flex;
@@ -147,6 +159,7 @@
       border-radius: 30px !important;
     }
     
+
     /* Image Styles */
     .student-image {
       width: 500px;
@@ -177,12 +190,15 @@
       </ul>
     </div>
 
+
           <div class="NavSide__toggle">
         <i class="bi bi-list open"></i>
-        <i class="bi bi-x-lg close"></i>
+        <i class="bi bi-x-lg close"> </i>
       </div>
 
+
     <main class="NavSide__main-content"> <!-- panjang lebar tampilan nilai akhir menyesuaikan -->
+
 
     <div class="container-fluid bodyContainer">
       <div class="row mb-5">
@@ -191,6 +207,7 @@
         </h2>
       </div>
       
+
       <!-- Main Content Row -->
       <div class="row mt-5 align-items-center justify-content-between">
         <!-- Nilai Card -->
@@ -200,20 +217,18 @@
               <h3 class="card-title" style="padding:10px;">Nilai Mahasiswa:</h3>
               <div>
                 <input
-                  
                   type="text"
                   class="form-control form-control-lg text-center text"
                   id="nilaiMahasiswa"
                   placeholder="A"
                   maxlength="1"
-                  disabled
-                  
-                />
+                  readonly/>
               </div>
             </div>
           </div>
         </div>
         
+
         <!-- Gambar  -->
         <div class="col-md-6">
           <img
@@ -225,7 +240,7 @@
         </div>
       </div>
 
-      
+    
       <!-- Detail Penilaian Card -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="card" id="carddetailPenilaian">
@@ -240,7 +255,7 @@
                 id="detailpenilaian"
                 placeholder="90"
                 maxlength="3"
-                disabled>
+                readonly>
                 
                 
               <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
@@ -251,7 +266,7 @@
                 id="detailpenilaian"
                 placeholder="85"
                 maxlength="3"
-                disabled>
+                readonly>
                 
 
               <label for="Penyampaian" id="labelpenilaian">Penyampaian:</label>
@@ -262,25 +277,24 @@
                 id="detailpenilaian"
                 placeholder="95"
                 maxlength="3"
-                disabled>
+                readonly>
                 
-
+               
               <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek:</label>
               <input
                 type="type"
                 class="form-control form-control-lg text-center"
                 name="NilaiProyek"
                 id="detailpenilaian"
-                placeholder="93"
+                placeholder="87"
                 maxlength="3"
-                disabled>
-                
-
+                readonly>
             </div>
           </div>
         </div>
       </div>
       
+
       <!-- Catatan Card -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-md-12">
@@ -290,42 +304,23 @@
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
-                placeholder="Pertahankan terus semangat belajarnya kurangin main banyakin minum air putih derr biar ga sariawan " 
-                disabled>
-              </textarea>
+                placeholder="Pertahankan terus semangat belajarnya, kurangin main, banyakin minum air putih derr biar ga sariawan"
+                readonly></textarea>
             </div>
           </div>
         </div>
       </div>
       
+
       <!-- Fungsi Tombol Kembali -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
-          <button class="btn btn-kembali" style="margin-left: 50px;" onclick="pindahKeHalamanDaftarSidang()" >
+          <button class="btn btn-kembali" style="margin-left: 50px;" onclick="pindahKeHalamanDaftarSidang()">
             <span class="icon-circle">
               <i class="bi bi-arrow-left"></i>
             </span>
             Kembali
           </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- konfimasi Modal Nilai -->
-  <div class="modal fade" id="konfirmasiModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-3">
-        <div class="modal-body">
-          <p class="fs-5 fw-semibold">Apakah nilai akhir sama dengan nilai sementara?</p>
-          <div class="d-flex justify-content-center row mb5">
-            <div class="col-md-6">
-              <button type="button" class="btnKonfirmasi" onclick="TutupKonfirmasiModal()">Tidak</button>
-            </div>
-            <div class="col-md-6">
-              <button type="button" class="btnKonfirmasi" onclick="isiNilaiAkhir()">Iya</button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -348,6 +343,7 @@
       sidebar.classList.toggle("NavSide__sidebar--active-mobile");
     };
 
+
     // Sidebar Active Item Logic
     let listItems = document.querySelectorAll(".NavSide__sidebar-item");
     for (let i = 0; i < listItems.length; i++) {
@@ -361,29 +357,9 @@
       };
     }
 
-    function bukaKonfirmasiModal() {
-      const modal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
-      modal.show();
-    }
-    
-    function TutupKonfirmasiModal() {
-      const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-      modal.hide();
-      setTimeout(() => {
-        const input = document.getElementById("nilaiMahasiswa");
-        input.focus();
-      }, 300);
-    }
-    
-    function isiNilaiAkhir() {
-      document.getElementById("nilaiMahasiswa").value = "A";
-      document.getElementsByName("nilaiLaporan")[0].value = "90";
-      document.getElementsByName("MateriPresentasi")[0].value = "85";
-      document.getElementsByName("Penyampaian")[0].value = "88";
-      document.getElementsByName("NilaiProyek")[0].value = "92";
-      const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-      modal.hide(); 
-    }
+    function pindahKeHalamanDaftarSidang() {
+    window.location.href = "aDaftarSidang.php"; // GANTI kalau harus ke halaman lain
+  }
   </script>
 </body>
 </html>
