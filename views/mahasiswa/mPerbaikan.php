@@ -1,15 +1,12 @@
 <?php
-// Langkah 1: Mulai session di baris paling pertama
 session_start();
 
-// Langkah 3: Cek apakah ada pesan dari proses sebelumnya, lalu hapus.
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
     $pesan = $_SESSION['pesan'];
-    unset($_SESSION['pesan']); // Hapus pesan dari session agar tidak muncul lagi saat di-refresh
+    unset($_SESSION['pesan']);
 }
 
-// Cek apakah form telah disubmit menggunakan metode POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
@@ -32,9 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 "pdf" => "application/pdf",
                 "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                "zip" => "application/zip" // Tipe MIME utama
+                "zip" => "application/zip" 
             );
-            $mime_alternatif_zip = "application/x-zip-compressed"; // Tipe MIME alternatif untuk ZIP
+            $mime_alternatif_zip = "application/x-zip-compressed"; 
 
             if (!in_array($ekstensi_file, $ekstensi_diizinkan)) {
                 $pesan = "Error: Format file tidak diizinkan (berdasarkan ekstensi). Hanya .pdf, .docx, .pptx, dan .zip yang boleh diunggah.";
@@ -60,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
             
-            if (empty($pesan) && $_FILES["fileInput"]["size"] > 5242880) { // Maksimal 5 MB
+            if (empty($pesan) && $_FILES["fileInput"]["size"] > 5242880) { 
                 $pesan = "Error: Ukuran file terlalu besar. Maksimal 5 MB.";
             }
             
@@ -99,40 +96,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Detail Sidang & Perbaikan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif; /* ==== FONT GLOBAL POPPINS ==== */
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
 
     body {
         margin: 0;
-        background-color: #F9FAFB;
+        background-color: #FFFFFF;
     }
 
-    /* === CSS LAYOUT NAVIGASI (SESUAI dDaftarSidang.php) === */
     #NavSide {
         display: flex;
         min-height: 100vh;
         position: relative;
     }
+
     .NavSide__sidebar-brand {
-        padding: 10% 5% 50% 5%; /* Gaya dari dDaftarSidang */
+        padding: 10% 5% 50% 5%;
         text-align: center;
     }
+
     .NavSide__sidebar-brand img {
-        width: 90%; /* Gaya dari dDaftarSidang */
-        max-width: 180px; /* Gaya dari dDaftarSidang */
+        width: 90%;
+        max-width: 180px;
         height: auto;
         display: inline-block;
     }
-    /* .NavSide__sidebar h4 sudah tidak dipakai untuk brand */
 
     .NavSide__sidebar {
         position: fixed;
@@ -142,8 +140,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 280px;
         border-radius: 1px;
         box-sizing: border-box;
-        border-left: 5px solid rgb(67, 54, 240);
-        background: rgb(67, 54, 240);
+        border-left: 5px solid #4B68FB;
+        background: #4B68FB;
         overflow-x: hidden;
         overflow-y: auto;
         z-index: 1000;
@@ -151,6 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         flex-direction: column;
         transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
     }
+
     .NavSide__sidebar-nav {
         width: 100%;
         padding-left: 0;
@@ -158,6 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         list-style: none;
         flex-grow: 1;
     }
+
     .NavSide__sidebar-item {
         position: relative;
         display: block;
@@ -166,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border-bottom-left-radius: 20px;
         margin-bottom: 10px;
     }
+
     .NavSide__sidebar-item a {
         position: relative;
         display: flex;
@@ -178,26 +179,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         height: 60px;
         box-sizing: border-box;
     }
+
     .NavSide__sidebar-title {
         white-space: normal;
         text-align: center;
         line-height: 1.5;
     }
+
     .NavSide__sidebar-item.NavSide__sidebar-item--active {
-        background: #ffffff;
+        background: #FFFFFF;
     }
+
     .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-        color: rgb(67, 54, 240);
+        color: #4B68FB;
     }
+
     .NavSide__sidebar-item b:nth-child(1) {
         position: absolute;
         top: -20px;
         height: 20px;
         width: 100%;
-        background: rgb(255, 255, 255);
+        background: #FFFFFF;
         display: none;
         right: 0;
     }
+
     .NavSide__sidebar-item b:nth-child(1)::before {
         content: "";
         position: absolute;
@@ -206,18 +212,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         height: 100%;
         border-bottom-right-radius: 20px;
-        background: rgb(67, 54, 240);
+        background: #4B68FB;
         display: block;
     }
+
     .NavSide__sidebar-item b:nth-child(2) {
         position: absolute;
         bottom: -20px;
         height: 20px;
         width: 100%;
-        background: rgb(255, 255, 255);
+        background: #FFFFFF;
         display: none;
         right: 0;
     }
+
     .NavSide__sidebar-item b:nth-child(2)::before {
         content: "";
         position: absolute;
@@ -226,9 +234,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         height: 100%;
         border-top-right-radius: 20px;
-        background: rgb(67, 54, 240);
+        background: #4B68FB;
         display: block;
     }
+
     .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
     .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
         display: block;
@@ -243,208 +252,538 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         margin-left: 280px;
         height: 60px;
-        background-color: #ffffff;
+        background-color: #FFFFFF;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         z-index: 999;
         padding: 0 15px;
         justify-content: flex-start;
         transition: margin-left 0.5s ease-in-out;
     }
+
     .NavSide__topbar .NavSide__toggle {
         width: 40px;
         height: 40px;
         cursor: pointer;
         border-radius: 5px;
-        display: none; 
+        display: none;
         align-items: center;
         justify-content: center;
-        padding:0;
+        padding: 0;
     }
+
     .NavSide__topbar .NavSide__toggle i.bi {
         position: absolute;
         font-size: 24px;
-        display: none; 
-        color: rgb(67, 54, 240);
+        display: none;
+        color: #4B68FB;
         transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
     }
-    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open { display: none; }
-    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close { display: block; }
-    .NavSide__topbar .NavSide__toggle i.bi.open { 
-        display: block; 
+
+    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open {
+        display: none;
     }
-    
+
+    .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close {
+        display: block;
+    }
+
+    .NavSide__topbar .NavSide__toggle i.bi.open {
+        display: block;
+    }
+
     .NavSide__main-content {
         flex-grow: 1;
         padding: 2rem;
         margin-left: 280px;
         overflow-y: auto;
         transition: margin-left 0.5s ease-in-out;
-        background-color: #F9FAFB;
-        padding-top: calc(60px + 2rem); 
+        background-color: #FFFFFF;
+        padding-top: calc(60px + 2rem);
     }
 
-    /* CSS KONTEN SPESIFIK mPerbaikan.php (Tidak diubah, hanya memastikan konsistensi font) */
-    .page-content-header-wrapper { margin-bottom: 2.5rem; }
-    .main-page-title { font-size: 2.25rem; font-weight: 700; color: #212529; margin-bottom: 0.75rem; }
-    .page-content-header-wrapper .sub-header-line .section-subtitle { font-weight: 600; font-size: 1.75rem; color: #212529; margin-bottom: 0; }
-    #fileNameDisplay { margin-top: 1rem; margin-bottom: 1rem; font-weight: 600; min-height: 1.5rem; color: #495057; }
-    .badge-custom { background-color: #f78d8d; color: white; font-weight: 600; padding: 8px 14px; border-radius: 20px; }
-    .card-comment { background-color: #cbcbcb; padding: 20px; border-radius: 15px; margin-bottom: 20px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease; border: none; }
-    .card-comment:hover { background-color: #007bff; color: #fff; }
-    .card-comment:hover strong { color: #fff; }
-    .text-truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .revision-card { background-color: white; border-radius: 1.5rem; padding: 2rem; border: 1px solid #e9ecef; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075); }
-    .upload-area-v2 { background-color: #f8f9fa; border: 2px dashed #e0e0e0; border-radius: 1rem; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.2s; min-height: 180px; }
-    .upload-area-v2:hover { background-color: #f1f3f5; }
-    .upload-area-v2 #initial-state svg { width: 80px; height: 80px; fill: #ced4da; }
-    .upload-area-v2 #selected-state svg { width: 80px; height: 80px; fill: #8d99ae; }
-    .upload-area-v2 #upload-prompt-text { text-align: center; color: #6c757d; font-size: small; margin-top: 1rem; }
-    .btn-custom-primary { background-color: #4f46e5; color: white; font-weight: 600; border: none; border-radius: 50px; padding: 0.75rem 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); transition: all 0.2s ease-in-out; }
-    .btn-custom-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5); }
-    .btn-custom-primary:disabled { background-color: #e2e8f0; color: #94a3b8; box-shadow: none; transform: none; cursor: not-allowed; }
-    .btn-custom-primary svg { margin-right: 0.5rem; }
-    .custom-swal-popup { background-color: #e9eef2 !important; border-radius: 16px !important; padding: 25px 30px !important; width: auto !important; max-width: 460px; box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important; }
-    .custom-swal-html-container { margin: 0 !important; padding: 0 !important; }
-    .custom-swal-title { font-size: 1.6rem !important; font-weight: 600 !important; color: #374151 !important; margin-top: 0 !important; margin-bottom: 0.65rem !important; padding: 0 !important; text-align: center; }
-    .custom-swal-text { font-size: 1rem !important; color: #4B5563 !important; margin-bottom: 1.5rem !important; padding: 0 !important; line-height: 1.6; text-align: center; }
-    .custom-swal-actions { margin-top: 15px !important; gap: 10px !important; display: flex !important; justify-content: center !important; }
-    /* === CSS BARU UNTUK TOMBOL SWEETALERT2 (Menggantikan yang lama) === */
-/* === CSS BARU UNTUK SWEETALERT2 KUSTOM (SESUAI image_967016.png) === */
-.custom-swal-popup { /* Ini untuk dialognya, pastikan sesuai dengan keinginan */
-    background-color: #F8F9FA !important; 
-    border-radius: 18px !important;    
-    padding: 30px 35px !important;     
-    width: auto !important;
-    max-width: 480px; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important; 
-}
+    .page-content-header-wrapper {
+        margin-bottom: 2.5rem;
+    }
 
-.custom-swal-html-container { /* Jika Anda menggunakan html parameter, bukan title/text standar */
-    margin: 0 !important;
-    padding: 0 !important;
-}
+    .main-page-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 0.75rem;
+    }
 
-.custom-swal-title { /* Untuk teks "Perhatian" jika menggunakan parameter html */
-    font-size: 1.8rem !important; 
-    font-weight: 600 !important;
-    color: #343a40 !important; 
-    margin-top: 0 !important;
-    margin-bottom: 12px !important; 
-    padding: 0 !important;
-    text-align: center;
-}
+    .page-content-header-wrapper .sub-header-line .section-subtitle {
+        font-weight: 600;
+        font-size: 1.75rem;
+        color: #212529;
+        margin-bottom: 0;
+    }
 
-.custom-swal-text { /* Untuk teks "Apakah anda sudah yakin..." jika menggunakan parameter html */
-    font-size: 1.05rem !important; 
-    color: #495057 !important;   
-    margin-bottom: 25px !important; 
-    padding: 0 !important;
-    line-height: 1.65;
-    text-align: center;
-}
+    .text-primary {
+        color: #4B68FB !important;
+    }
 
-.custom-swal-actions {
-    margin-top: 20px !important;
-    gap: 15px !important; 
-    display: flex !important;
-    justify-content: center !important;
-}
+    #fileNameDisplay {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        min-height: 1.5rem;
+        color: #495057;
+    }
 
-/* Gaya dasar untuk kedua tombol di SweetAlert2 */
-.swal2-styled.swal2-confirm,
-.swal2-styled.swal2-cancel {
-    font-size: 0.95rem !important;
-    padding: 12px 28px !important; 
-    border-radius: 10px !important; /* Sudut tombol */
-    font-weight: 600 !important;
-    transition: all 0.2s ease-in-out;
-    flex-grow: 0;
-    min-width: 130px; 
-    border: none !important; /* Hilangkan border default */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important; 
-    text-transform: capitalize; /* Membuat huruf awal besar, mis: Batalkan, Lanjutkan */
-}
+    .badge-custom.status-belum-disetujui {
+        background-color: #FFA3A3;
+        color: white;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 20px;
+    }
 
-.swal2-styled.swal2-confirm:hover,
-.swal2-styled.swal2-cancel:hover {
-    transform: translateY(-2px); /* Efek sedikit naik saat hover */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-}
+    .badge-custom.status-setuju {
+        background-color: #4BFBAF;
+        color: #1E4620;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 20px;
+    }
 
-/* Tombol Lanjutkan (Confirm) */
-.custom-swal-confirm-button { 
-    background-color: #5DC99C !important; /* Warna hijau muda/mint */
-    color: white !important;
-    border-radius:5px;
-    width: 100px;
-    height: 30px;
-}
+    .card-comment {
+        background-color:#f1f3f5;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        border: none;
+    }
 
-.custom-swal-confirm-button:hover {
-    background-color: #4AB887 !important; /* Hijau sedikit lebih gelap */
-}
+    .card-comment:hover {
+        background-color: #4B68FB;
+        color: #fff;
+    }
 
-/* Tombol Batalkan (Cancel) */
-.custom-swal-cancel-button { 
-    background-color: #FF7A7A !important; /* Warna merah muda/coral */
-    color: white !important;
-    border-radius:5px;
-    width: 100px;
-    height: 30px;
+    .card-comment:hover strong {
+        color: #fff;
+    }
 
-}
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 
+    .revision-card {
+        background-color: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
 
-.custom-swal-cancel-button:hover {
-    background-color: #FF6363 !important; /* Merah muda/coral sedikit lebih gelap */
-}
+    .upload-area-v2 {
+        background-color: #f8f9fa;
+        border: 2px dashed #e0e0e0;
+        border-radius: 1rem;
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        min-height: 180px;
+    }
 
-/* Sembunyikan ikon standar SweetAlert jika tidak diinginkan (sesuai gambar dialog "Perhatian") */
-.custom-swal-popup .swal2-icon {
-    display: none !important; 
-}
-/* === AKHIR CSS BARU UNTUK SWEETALERT2 === */
-/* === AKHIR CSS BARU UNTUK TOMBOL SWEETALERT2 === */
-    .custom-swal-popup .swal2-icon { display: none !important; }
-    .custom-swal-popup > .swal2-title, .custom-swal-popup > .swal2-content { display: none !important; }
-    #modalDetail .modal-content { background-color: #FFFFFF !important; border-radius: 16px !important; border: none !important; box-shadow: 0px 8px 24px rgba(29, 36, 50, 0.15) !important; padding: 5px; }
-    #modalDetail .modal-header { border-bottom: none !important; padding: 20px 25px 10px 25px; position: relative; }
-    #modalDetail #modalDetailLabel { font-size: 1.6rem; font-weight: 600; color: #3A3A58; width: calc(100% - 40px); text-align: left; }
-    #modalDetail .modal-header .btn-close { background-color: #e9ecef; border-radius: 50%; padding: 0.4em; opacity: 0.7; box-shadow: none !important; font-size: 0.8rem; }
-    #modalDetail .modal-header .btn-close:hover { opacity: 1; }
-    #modalDetail .modal-body { padding: 5px 25px 20px 25px; font-size: 0.9rem; color: #525278; line-height: 1.6; }
-    #modalDetail .modal-footer { border-top: none !important; padding: 10px 25px 20px 25px; justify-content: flex-end !important; }
-    #modalDetail .modal-footer .btn-custom-tutup-modal { background-color: #4A4A7D !important; color: white !important; border: none !important; border-radius: 50px !important; padding: 8px 22px !important; font-size: 0.85rem; font-weight: 500; }
-    #modalDetail .modal-footer .btn-custom-tutup-modal:hover { background-color: #3A3A5D !important; }
+    .upload-area-v2:hover {
+        background-color: #f1f3f5;
+    }
+
+    .upload-area-v2 #initial-state svg {
+        width: 80px;
+        height: 80px;
+        fill: #ced4da;
+    }
+
+    .upload-area-v2 #selected-state svg {
+        width: 80px;
+        height: 80px;
+        fill: #8d99ae;
+    }
+
+    .upload-area-v2 #upload-prompt-text {
+        text-align: center;
+        color: #6c757d;
+        font-size: small;
+        margin-top: 1rem;
+    }
+
+    .btn-custom-primary {
+        background-color: #4B68FB;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(75, 104, 251, 0.3);
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-custom-primary:hover {
+        background-color: #3A58DB;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(75, 104, 251, 0.4);
+    }
+
+    .btn-custom-primary:disabled {
+        background-color: #e2e8f0;
+        color: #94a3b8;
+        box-shadow: none;
+        transform: none;
+        cursor: not-allowed;
+    }
+
+    .btn-custom-primary svg {
+        margin-right: 0.5rem;
+    }
+
+    .custom-swal-popup {
+        background-color: #F8F9FA !important;
+        border-radius: 18px !important;
+        padding: 30px 35px !important;
+        width: auto !important;
+        max-width: 480px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+
+    .custom-swal-html-container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .custom-swal-title {
+        font-size: 1.8rem !important;
+        font-weight: 600 !important;
+        color:rgb(177, 180, 183) !important;
+        margin-top: 0 !important;
+        margin-bottom: 12px !important;
+        padding: 0 !important;
+        text-align: center;
+    }
+
+    .custom-swal-text {
+        font-size: 1.05rem !important;
+        color: #495057 !important;
+        margin-bottom: 25px !important;
+        padding: 0 !important;
+        line-height: 1.65;
+        text-align: center;
+    }
+
+    .custom-swal-actions {
+        margin-top: 20px !important;
+        gap: 15px !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .swal2-styled.swal2-confirm,
+    .swal2-styled.swal2-cancel {
+        font-size: 0.95rem !important;
+        padding: 12px 28px !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease-in-out;
+        flex-grow: 0;
+        min-width: 130px;
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        text-transform: capitalize;
+    }
+
+    .swal2-styled.swal2-confirm:hover,
+    .swal2-styled.swal2-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .custom-swal-confirm-button {
+        background-color: #4FD382 !important;
+        color: white !important;
+    }
+
+    .custom-swal-confirm-button:hover {
+        background-color: #3FA970 !important;
+    }
+
+    .custom-swal-cancel-button {
+        background-color: #FD7D7D !important;
+        color: white !important;
+    }
+
+    .custom-swal-cancel-button:hover {
+        background-color: #FA6868 !important;
+    }
+
+    .custom-swal-popup .swal2-icon {
+        display: none !important;
+    }
+
+    .custom-swal-popup > .swal2-title,
+    .custom-swal-popup > .swal2-content {
+        display: none !important;
+    }
+
+    #modalDetail .modal-content {
+        background-color: #FFFFFF !important;
+        border-radius: 16px !important;
+        border: none !important;
+        box-shadow: 0px 8px 24px rgba(29, 36, 50, 0.15) !important;
+        padding: 5px;
+    }
+
+    #modalDetail .modal-header {
+        border-bottom: none !important;
+        padding: 20px 25px 10px 25px;
+        position: relative;
+    }
+
+    #modalDetail #modalDetailLabel {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: #3A3A58;
+        width: calc(100% - 40px);
+        text-align: left;
+    }
+
+    #modalDetail .modal-header .btn-close {
+        background-color: #e9ecef;
+        border-radius: 50%;
+        padding: 0.4em;
+        opacity: 0.7;
+        box-shadow: none !important;
+        font-size: 0.8rem;
+    }
+
+    #modalDetail .modal-header .btn-close:hover {
+        opacity: 1;
+    }
+
+    #modalDetail .modal-body {
+        padding: 5px 25px 20px 25px;
+        font-size: 0.9rem;
+        color: #525278;
+        line-height: 1.6;
+    }
+
+    #modalDetail .modal-footer {
+        border-top: none !important;
+        padding: 10px 25px 20px 25px;
+        justify-content: flex-end !important;
+    }
+
+    #modalDetail .modal-footer .btn-custom-tutup-modal {
+        background-color: #4B68FB !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 50px !important;
+        padding: 8px 22px !important;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    #modalDetail .modal-footer .btn-custom-tutup-modal:hover {
+        background-color: #3A58DB !important;
+    }
+
+    .btn-kembali {
+        background-color: #4B68FB;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 25px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+        display: inline-flex; 
+        align-items: center; 
+        margin-top: 1.2cm;
+    }
+    .btn-kembali:hover {
+        position: relative;
+        background-color: white;
+        color: #4B68FB;
+    }
     
-    @media (max-width: 700px) { 
-        .NavSide__sidebar { width: 250px; transform: translateX(-100%); border-left-width: 0; z-index: 1040; padding-top: 60px; }
-        .NavSide__sidebar.NavSide__sidebar--active-mobile { transform: translateX(0); box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); }
-        .NavSide__sidebar-brand { padding: 20px 10px 15px 10px; } /* Disesuaikan untuk mobile */
-        .NavSide__sidebar-brand img { max-width: 140px; } /* Ukuran logo di mobile */
-        .NavSide__sidebar-nav { padding-top: 10px; }
-        .NavSide__sidebar-item a { padding: 15px 20px; height: auto; }
-        .NavSide__topbar { display: flex; margin-left: 0; z-index: 1045; }
-        .NavSide__topbar .NavSide__toggle { display: flex; position: relative; top: auto; left: auto; background-color: transparent; box-shadow: none; }
-        .NavSide__topbar .NavSide__toggle i.bi.open { display: block; }
-        .NavSide__main-content { margin-left: 0; padding: 1rem; padding-top: calc(60px + 1rem); width: 100%; }
-        .main-page-title { font-size: 1.75rem; }
-        .page-content-header-wrapper .sub-header-line .section-subtitle { font-size: 1.25rem; }
-        .upload-area-v2 { padding: 1.5rem; }
-        .upload-area-v2 #initial-state svg, .upload-area-v2 #selected-state svg { width: 60px; height: 60px; }
-        .btn-custom-primary { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
-        .custom-swal-popup { padding: 20px 25px !important; max-width: calc(100% - 30px); }
-        .custom-swal-title { font-size: 1.4rem !important; }
-        .custom-swal-text { font-size: 0.9rem !important; margin-bottom: 1.25rem !important; }
-        .custom-swal-actions { gap: 8px !important; }
-        .swal2-styled.swal2-confirm, .swal2-styled.swal2-cancel { padding: 8px 20px !important; border-radius: 8px !important; }
-        #modalDetail .modal-content { padding: 10px; }
-        #modalDetail .modal-header { padding: 15px 20px 5px 20px; }
-        #modalDetail #modalDetailLabel { font-size: 1.3rem; }
-        #modalDetail .modal-header .btn-close { padding: 0.35em; font-size: 0.7rem; }
-        #modalDetail .modal-body { padding: 5px 20px 15px 20px; font-size: 0.85rem; }
-        #modalDetail .modal-footer { padding: 10px 20px 15px 20px; }
-        #modalDetail .modal-footer .btn-custom-tutup-modal { padding: 7px 20px !important; font-size: 0.8rem; }
+    .btn-kembali .icon-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px; 
+        height: 30px; 
+        background-color: white;
+        border-radius: 50%;
+        margin-right: 10px; 
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-kembali:hover .icon-circle {
+        background-color: #4B68FB;
+    }
+
+    .btn-kembali .icon-circle i {
+        color: #4B68FB;
+        font-size: 1rem; 
+        transition: color 0.3s ease;
+    }
+
+    .btn-kembali:hover .icon-circle i {
+        color: white;
+    }
+
+    @media (max-width: 700px) {
+        .NavSide__sidebar {
+            width: 250px;
+            transform: translateX(-100%);
+            border-left-width: 0;
+            z-index: 1040;
+            padding-top: 60px;
+        }
+
+        .NavSide__sidebar.NavSide__sidebar--active-mobile {
+            transform: translateX(0);
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .NavSide__sidebar-brand {
+            padding: 20px 10px 15px 10px;
+        }
+
+        .NavSide__sidebar-brand img {
+            max-width: 140px;
+        }
+
+        .NavSide__sidebar-nav {
+            padding-top: 10px;
+        }
+
+        .NavSide__sidebar-item a {
+            padding: 15px 20px;
+            height: auto;
+        }
+
+        .NavSide__topbar {
+            display: flex;
+            margin-left: 0;
+            z-index: 1045;
+        }
+
+        .NavSide__topbar .NavSide__toggle {
+            display: flex;
+            position: relative;
+            top: auto;
+            left: auto;
+            background-color: transparent;
+            box-shadow: none;
+        }
+
+        .NavSide__topbar .NavSide__toggle i.bi.open {
+            display: block;
+        }
+
+        .NavSide__main-content {
+            margin-left: 0;
+            padding: 1rem;
+            padding-top: calc(60px + 1rem);
+            width: 100%;
+        }
+
+        .main-page-title {
+            font-size: 1.75rem;
+        }
+
+        .page-content-header-wrapper .sub-header-line .section-subtitle {
+            font-size: 1.25rem;
+        }
+
+        .upload-area-v2 {
+            padding: 1.5rem;
+        }
+
+        .upload-area-v2 #initial-state svg,
+        .upload-area-v2 #selected-state svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .btn-custom-primary {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .custom-swal-popup {
+            padding: 20px 25px !important;
+            max-width: calc(100% - 30px);
+        }
+
+        .custom-swal-title {
+            font-size: 1.4rem !important;
+        }
+
+        .custom-swal-text {
+            font-size: 0.9rem !important;
+            margin-bottom: 1.25rem !important;
+        }
+
+        .custom-swal-actions {
+            gap: 8px !important;
+        }
+
+        .swal2-styled.swal2-confirm,
+        .swal2-styled.swal2-cancel {
+            padding: 8px 20px !important;
+            border-radius: 8px !important;
+        }
+
+        #modalDetail .modal-content {
+            padding: 10px;
+        }
+
+        #modalDetail .modal-header {
+            padding: 15px 20px 5px 20px;
+        }
+
+        #modalDetail #modalDetailLabel {
+            font-size: 1.3rem;
+        }
+
+        #modalDetail .modal-header .btn-close {
+            padding: 0.35em;
+            font-size: 0.7rem;
+        }
+
+        #modalDetail .modal-body {
+            padding: 5px 20px 15px 20px;
+            font-size: 0.85rem;
+        }
+
+        #modalDetail .modal-footer {
+            padding: 10px 20px 15px 20px;
+        }
+
+        #modalDetail .modal-footer .btn-custom-tutup-modal {
+            padding: 7px 20px !important;
+            font-size: 0.8rem;
+        }
+        
+        .btn-kembali {
+            margin-top: 0.5cm;
+        }
     }
     </style>
 </head>
@@ -482,8 +821,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h1 class="main-page-title">Detail Sidang - Sistem Pengajuan Sidang</h1>
                 <div class="d-flex justify-content-between align-items-center sub-header-line mt-3">
                     <h2 class="section-subtitle mb-0">Catatan Perbaikan</h2>
-                    <span class="badge-custom">Status Revisi : Belum Disetujui</span>
-                </div>
+                    <span class="badge-custom status-belum-disetujui">Status Revisi : Belum Disetujui</span>
+                    </div>
             </div>
             
             <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
@@ -521,8 +860,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mt-4">
-                <button type="button" id="btnKembali" class="btn btn-custom-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
+                <button class="btn-kembali" onclick="location.href='mSidang.php'">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
                     Kembali
                 </button>
             </div>
@@ -560,13 +901,14 @@ if (!empty($pesan)):
     $isSuccess = strpos(strtolower($pesan), 'sukses') !== false;
     $icon = $isSuccess ? 'success' : 'error';
     $title = $isSuccess ? 'Berhasil!' : 'Oops...';
+    $confirmButtonColor = $isSuccess ? '#4FD382' : '#FD7D7D'; 
 ?>
 <script>
     Swal.fire({
         title: '<?php echo $title; ?>',
         text: '<?php echo addslashes(preg_replace("/\r|\n/", "\\n", $pesan)); ?>',
         icon: '<?php echo $icon; ?>',
-        confirmButtonColor: '<?php echo $isSuccess ? "#198754" : "#dc3545"; ?>'
+        confirmButtonColor: '<?php echo $confirmButtonColor; ?>' 
     });
 </script>
 <?php endif; ?>
@@ -576,7 +918,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
     const submitBtn = document.getElementById('submitBtn');
     const revisionForm = document.getElementById('revisionForm');
-    const btnKembali = document.getElementById('btnKembali');
     
     const initialState = document.getElementById('initial-state');
     const selectedState = document.getElementById('selected-state');
@@ -629,12 +970,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.warn("Peringatan: Salah satu elemen HTML untuk fungsionalitas upload tidak ditemukan.");
-    }
-
-    if (btnKembali) {
-        btnKembali.addEventListener('click', function() {
-            history.back();
-        });
     }
 
     const sidebarToggleBtn = document.querySelector('.NavSide__topbar .NavSide__toggle'); 

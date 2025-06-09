@@ -27,7 +27,7 @@
         }
 
         .bgBiru {
-            background-color: rgb(67, 54, 240);
+            background-color: #4B68FB;
             width: 60%;
             height: 100vh;
         }
@@ -154,9 +154,9 @@
             </div>
 
             <div class="back-button-container">
-                <button type="submit" class="btn btn-primary px-3 rounded rounded-5">
+                <button type="submit" class="btn btn-primary px-3 rounded rounded-5" onclick="history.back()">
                     <img src="../assets/img/Kembali.svg" alt="" class="me-1">
-                    <label>Kembali</label>
+                    Kembali
                 </button>
             </div>
         </div>

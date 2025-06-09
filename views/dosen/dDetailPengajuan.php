@@ -37,12 +37,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <title>Detail Pengajuan</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f4f4f4;
     }
 
     #NavSide {
@@ -71,8 +71,8 @@
       width: 280px;
       border-radius: 1px;
       box-sizing: border-box;
-      border-left: 5px solid rgb(67, 54, 240);
-      background: rgb(67, 54, 240);
+      border-left: 5px solid #4B68FB;
+      background: #4B68FB;
       overflow-x: hidden;
       overflow-y: auto;
       z-index: 1000;
@@ -123,7 +123,7 @@
     }
 
     .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-      color: rgb(67, 54, 240);
+      color: #4B68FB;
     }
 
     .NavSide__sidebar-item b:nth-child(1) {
@@ -144,7 +144,7 @@
       width: 100%;
       height: 100%;
       border-bottom-right-radius: 20px;
-      background: rgb(67, 54, 240);
+      background: #4B68FB;
       display: block;
     }
 
@@ -166,7 +166,7 @@
       width: 100%;
       height: 100%;
       border-top-right-radius: 20px;
-      background: rgb(67, 54, 240);
+      background: #4B68FB;
       display: block;
     }
 
@@ -211,11 +211,11 @@
     }
 
     .NavSide__toggle i.bi.open {
-      color: rgb(67, 54, 240);
+      color: #4B68FB;
     }
 
     .NavSide__toggle i.bi.close {
-      color: rgb(67, 54, 240);
+      color: #4B68FB;
     }
 
     .NavSide_toggle.NavSide_toggle--active i.bi.open {
@@ -445,13 +445,30 @@
 
     .file-link {
       display: inline-block;
+      align-items: center;
+      gap: 8px;
       padding: 6px 12px;
-      margin-right: 10px;
-      border-radius: 20px;
+      border: 1px solid #212529;  /* border hitam default */
+      border-radius: 8px;
       background-color: transparent;
-      transition: background-color 0.3s ease, color 0.3s ease;
       color: #212529;
-      border: 1px solid #212529;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .file-link i {
+      transition: color 0.3s ease;
+      color: inherit;
+    }
+
+    .file-link.berkas-laporan:hover {
+      background-color: #fff;
+      border-color: #fff;  
+      color: #0d6efd;          
+    }
+
+    .file-link.berkas-laporan:hover i {
+      color: #0d6efd; 
     }
 
     .dokumen-sidang:hover .file-link:hover {
@@ -535,17 +552,19 @@
         </div>
     </div>
 </div>
-  <div class="card mb-3 dokumen-sidang">
-    <h5 class="fw-semibold">Dokumen Sidang</h5>
-    <div class="mt-2">
-      <a class="file-pill text-decoration-none file-link" href="#" download>
-        <i class="bi bi-file-earmark-pdf"></i> berkas_laporan_kel-1.pdf
-      </a>
-      <a class="file-pill text-decoration-none file-link" href="#" download>
-        <i class="bi bi-file-earmark-zip"></i> dokumen_pendukung_kel-1.zip
-      </a>
-    </div>
+
+<div class="card mb-3 dokumen-sidang">
+  <h5 class="fw-semibold">Dokumen Sidang</h5>
+  <div class="mt-2">
+    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
+      <i class="fa-solid fa-file-lines"></i> berkas_laporan_kel-1.pdf
+    </a>
+    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
+      <i class="fa-solid fa-file-zipper"></i> dokumen_pendukung_kel-1.zip
+    </a>
   </div>
+</div>
+
 
   <div class="d-flex justify-content-between">
     <a href="dpengajuan.php" class="btn btn-primary btn-circle">Kembali</a>

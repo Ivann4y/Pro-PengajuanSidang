@@ -1,5 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-
+.sideNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 15vw;
+  height: 100%;
+  background-color: #4B68FB;
+  padding: 2%;
+}
 * {
   margin: 0;
   padding: 0;
@@ -19,7 +27,7 @@ body {
 }
 
 .text-heading {
-  color: rgb(67, 54, 240);
+  color: #4B68FB;
   font-weight: 550;
 }
 
@@ -34,8 +42,8 @@ body {
 }
 
 .jadiBiru:hover {
-  background-color: rgb(67, 54, 240);
-  color: white;
+  background-color: #4B68FB;
+  color: white !important;
 }
 
 .btn-link {
@@ -56,7 +64,7 @@ body {
     margin-left: 0;
     width: 100%;
   }
-  .text-heading {
+  /* .text-heading {
     font-size: large;
   }
   .dropdown-toggle,
@@ -65,7 +73,7 @@ body {
   }
   table {
     font-size: small;
-  }
+  } */
 
   thead th:nth-child(1),
   thead th:nth-child(5) {
@@ -100,8 +108,8 @@ body {
   width: 280px;
   border-radius: 1px;
   box-sizing: border-box;
-  border-left: 5px solid rgb(67, 54, 240);
-  background: rgb(67, 54, 240);
+  border-left: 5px solid #4B68FB;
+  background: #4B68FB;
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 1000;
@@ -151,7 +159,7 @@ body {
 }
 
 .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-  color: rgb(67, 54, 240);
+  color: #4B68FB;
 }
 
 .NavSide__sidebar-item b:nth-child(1) {
@@ -172,7 +180,7 @@ body {
   width: 100%;
   height: 100%;
   border-bottom-right-radius: 20px;
-  background: rgb(67, 54, 240);
+  background: #4B68FB;
   display: block;
 }
 
@@ -194,7 +202,7 @@ body {
   width: 100%;
   height: 100%;
   border-top-right-radius: 20px;
-  background: rgb(67, 54, 240);
+  background: #4B68FB;
   display: block;
 }
 
@@ -238,11 +246,11 @@ body {
 }
 
 .NavSide__toggle i.bi.open {
-  color: rgb(67, 54, 240);
+  color: #4B68FB;
 }
 
 .NavSide__toggle i.bi.close {
-  color: rgb(67, 54, 240);
+  color: #4B68FB;
 }
 
 .NavSide__toggle.NavSide__toggle--active i.bi.open {
@@ -353,7 +361,7 @@ body {
 
   .NavSide__toggle.NavSide__toggle--active {
     left: calc(50% + 10px);
-    color: rgb(67, 54, 240);
+    color: #4B68FB;
     background-color: aliceblue;
   }
 
@@ -379,9 +387,9 @@ body {
 }
 
 .dashboard-header .page-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #333;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #4B68FB;
 }
 
 .dashboard-header .header-icons {
