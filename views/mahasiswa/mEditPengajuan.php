@@ -147,7 +147,6 @@
             <p class="mt-2 text-muted small">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
           </div>
         </label>
-        <input type="file" id="dokPendukung" name="dokPendukung" accept=".pdf,.docx,.pptx,.zip" hidden />
       </form>
     </div>
   </div>
