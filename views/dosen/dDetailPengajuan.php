@@ -83,12 +83,6 @@
       padding: 24px;
     }
 
-    .btn-circle {
-      border-radius: 12px;
-      padding: 6px 24px;
-      font-weight: 500;
-    }
-
     .file-pill {
       background: #f4f6fa;
       border: 2px solid #2f3a8f;

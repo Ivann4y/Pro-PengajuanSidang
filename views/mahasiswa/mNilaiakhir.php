@@ -23,6 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../css/style.css" />
     <link rel="stylesheet" href="../../extra/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <title>Mahasiswa - Nilai Akhir</title>
     <style>
        @media (max-width: 750px) {
@@ -169,7 +170,7 @@
 .NavSide__main-content .btn-kembali {
     width: 100% !important;
     max-width: 150px;
-    margin: auto;
+    margin: 40px auto 0; 
 }
 
  .NavSide__main-content  #carddetailPenilaian,
@@ -186,7 +187,6 @@
 
     
   }
-
   .NavSide__main-content #detailpenilaian {
     width: 15% !important;
   }
@@ -311,10 +311,10 @@
       
       #cardPenilaian {
         background-color: #f2f2f2;
-        border-radius: 50px;
+        border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
-        margin-left: 50px;
+        margin-left: 0;
       }
       label
         {
@@ -347,7 +347,7 @@
       #catatan {
         width: 100%;
         height: 150px;
-        border-radius: 30px;
+        border-radius: 20px;
         font-size: 1rem;
         margin-top: 20px;
         
@@ -366,7 +366,7 @@
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
             display: inline-flex; 
             align-items: center; 
-            margin-top: 1.2cm;
+            margin-top:50px; 
         }
         .btn-kembali:hover {
             position: relative;
@@ -390,15 +390,15 @@
             background-color: #4B68FB;
         }
 
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
+        .btn-kembali .icon-circle i.fa-solid.fa-arrow-left {
+            color: #4B68FB !important;
             font-size: 1rem; 
             transition: color 0.3s ease;
         }
 
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }        
+        .btn-kembali:hover .icon-circle i.fa-solid.fa-arrow-left {
+            color: white !important;
+        }
 
     </style>
   </head>
@@ -439,16 +439,18 @@
    <main class="NavSide__main-content">
     <div class="container-fluid ">
         <div class="row mb-5">
-
+            <h2 style="margin-left: 5px ;">
+                <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
+            </h2>
         </div>
-        <div class="row mt-5 align-items-center justify-content-between">
+          <div class="row mt-5 align-items-center justify-content-between">
             <div class="col-md-6">
                 <div class="card" id="cardNilai">
                     <div class="card-body">
                         <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
                         <div>
                             <input type="text" class="form-control form-control-lg text-center mx-auto"
-                                id="nilaiMahasiswa" placeholder="" value="--" readonly />
+                                id="nilaiMahasiswa" placeholder="" value="A" readonly />
                         </div>
                     </div>
                 </div>
@@ -457,30 +459,33 @@
                 <img src="../../assets/img/img5.png" alt="Mahasiswa" class="img-fluid rounded" />
             </div>
         </div>
-        <div class="row mt-5 align-items-center justify-content-between">
-            <div class="card" id="carddetailPenilaian">
-                <div class="card-body">
-                    <h3 class="card-title">Detail Penilaian :</h3>
-                    <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-                        <span><strong>Nilai Laporan:</strong> --</span>
-                        <span><strong>Materi Presentasi:</strong> --</span>
-                        <span><strong>Penyampaian:</strong> --</span>
-                        <span><strong>Nilai Proyek:</strong> --</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-5 align-items-center justify-content-between">
-            <div class="col-md-12">
-                <div class="card" id="cardcatatan">
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card" id="carddetailPenilaian">
                     <div class="card-body">
-                        <h3 class="card-title">Catatan:</h3>
-                        --
+                        <h3 class="card-title">Detail Penilaian :</h3>
+                        <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
+                            <span><strong>Nilai Laporan :</strong> 95</span>
+                            <span><strong>Materi Presentasi :</strong> 90</span>
+                            <span><strong>Penyampaian :</strong> 94</span>
+                            <span><strong>Nilai Proyek :</strong> 93</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+              <div class="row mt-5">
+                  <div class="col-12">
+                      <div class="card" id="cardcatatan">
+                          <div class="card-body">
+                              <h3 class="card-title">Catatan:</h3>
+                              tidak  catatan
+                          </div>
+                      </div>
+                  </div>
+              </div>
                <button class="btn-kembali" onclick="location.href='mSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>

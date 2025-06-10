@@ -1,21 +1,17 @@
 <?php
-// Read and filter JSON data
 $selectedTipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'TA';
-$selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'belum';
+$selectedStatus = issegitt($_GET['status']) ? $_GET['status'] : 'belum';
 $statusFilter = ($selectedStatus == 'disetujui') ? true : false;
 
-// Path to your JSON file - using __DIR__ makes it more reliable
 $jsonPath = __DIR__ . '/data_sidang.json'; 
 $jsonData = file_exists($jsonPath) ? file_get_contents($jsonPath) : '[]';
 $data = json_decode($jsonData, true);
 
-// Fallback for cases where json is not an array or file is missing
 if (!is_array($data)) {
     $data = [];
 }
 
 $filteredData = array_filter($data, function($entry) use ($selectedTipe, $statusFilter) {
-    // Ensure keys exist to avoid warnings
     $tipeMatch = isset($entry['tipeSidang']) && $entry['tipeSidang'] == $selectedTipe;
     $statusMatch = isset($entry['statusPersetujuan']) && $entry['statusPersetujuan'] === $statusFilter;
     return $tipeMatch && $statusMatch;
@@ -30,13 +26,20 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Linking to your existing style.css file -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-    /* CSS for page-specific elements NOT in the main style.css */
-    /* NOTE: General layout styles (like margins for the container) are now handled by style.css */
 
+    .no-results-row td {
+        padding: 20px !important;
+        background-color: #f8f9fa !important;
+        font-style: italic;
+        color: #6c757d;
+    }
+    .header-icon{
+        color: white !important;
+    }
     .search-input-container {
       position: relative;
       width: 300px;
@@ -73,16 +76,14 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       color: #777;
     }
 
-    /* Your profile icon is inside .dashboard-header in style.css, but if you need to override: */
-    .profile-icon {
-      font-size: 1.8rem;
-      color: #444;
-      cursor: pointer;
-      transition: color 0.3s;
-    }
 
-    .profile-icon:hover {
-      color: #007bff;
+    .dashboard-header .profile-icon{
+        font-size: 2.5rem;
+        color: #343a40;
+        background-color: transparent;
+        width: auto;
+        height: auto;
+        border-radius: 0; font-weight: normal;
     }
 
     .filter-btn {
@@ -170,7 +171,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .data-table tbody tr td:first-child { border-radius: 15px 0 0 15px; }
     .data-table tbody tr td:last-child { border-radius: 0 15px 15px 0; }
     
-    /* MODAL STYLES */
+    
     .modal-content-custom-form { border-radius: 25px !important; }
     .modal-body .form-container { padding: 15px; background-color:rgb(255, 255, 255); border-radius: 20px; }
     .modal-body .form-group { display: flex; align-items: center; margin-bottom: 15px; }
@@ -178,7 +179,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .modal-body .form-group .input-with-buttons, .modal-body .form-group .time-input-range, .modal-body .form-group > input { flex-grow: 1; }
     .modal-body .form-group input { width: 100%; height: 35px; padding: 0 15px; border: 1px solid #D1D5DB; box-sizing: border-box; font-size: 14px; color: #374151; border-radius: 26px; }
     .modal-body .form-group input[readonly] { background-color: #f3f4f6; cursor: not-allowed; }
-    .modal-body .bobot-input-new { width: 30px; height: auto; text-align: center; border: none; font-size: 16px; color: #2d2d52; background-color: transparent; margin: 0 5px; -moz-appearance: textfield; pointer-events: none; }
+    .modal-body .bobot-input-new { width: 30px; height: auto; text-align: center; border: none; font-size: 16px; color: #2d2d52; background-color: transparent; margin: 0 5px; -moz-appearance: textfield; }
     .modal-body .bobot-input-new::-webkit-outer-spin-button, .modal-body .bobot-input-new::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .modal-body .input-with-buttons { display: flex; align-items: center; gap: 10px; width: 100%; }
     .modal-body .bobot-nilai-input-group { display: inline-flex; align-items: center; background-color: #F9FAFB; border-radius: 35px; padding: 2px 6px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
@@ -197,7 +198,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .modal-body .form-toggle-buttons button:hover { background-color: #ddd; }
     .form-error-message { color: red; margin-bottom: 15px; text-align: left; font-weight: 500; padding-left: 175px;}
     
-    @media (max-width: 768px) { /* This media query is slightly different than style.css, which is fine for page-specific overrides */
+    @media (max-width: 768px) { 
         .main-header-content {
             flex-direction: column;
             align-items: stretch !important;
@@ -211,7 +212,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         }
         #dropdownAdminPenjadwalan .filter-btn { margin-right: 0; }
         
-        /* Responsive modal forms */
         .modal-body .form-group {
             flex-direction: column;
             align-items: flex-start;
@@ -226,14 +226,12 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 </head>
 <body>
 
-  <!-- MOBILE TOP BAR: The logic for this is in style.css -->
   <div class="NavSide__topbar">
       <div class="NavSide__toggle" id="nav-toggle">
           <i class="fas fa-bars"></i>
       </div>
   </div>
   
-  <!-- Sidebar: Your style.css refers to this as .NavSide__sidebar -->
   <div id="main-sidebar" class="NavSide__sidebar">
     <div class="NavSide__sidebar-brand">
         <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
@@ -251,21 +249,16 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
             <b></b><b></b>
                 <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-        <li class="NavSide__sidebar-item">
-            <b></b><b></b><a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
         </li>
     </ul>
   </div>
 
-  <!-- CORRECTED: Main Content Container, using the class from your style.css -->
   <main class="NavSide__main-content">
-    
-    <!-- CORRECTED: Header structure to match style.css for proper layout -->
-    <header class="dashboard-header">
+        <header class="dashboard-header">
         <h1 class="page-title">Penjadwalan Sidang</h1>
         <div class="header-icons">
              <div class="profile-icon">
-                <i class="fas fa-user-circle"></i>
+                <i class="bi bi-person-circle"></i>
             </div>
         </div>
     </header>
@@ -350,9 +343,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         </tbody>
       </table>
     </div>
-  </main> <!-- End of NavSide__main-content -->
+  </main>
 
-  <!-- Logout Modal -->
   <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -370,9 +362,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     </div>
   </div>
   
-  <!-- MODAL FOR SIDANG TA -->
   <div class="modal fade" id="penjadwalanSidangTAModal" aria-labelledby="penjadwalanSidangTAModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content modal-content-custom-form">
               <div class="modal-body">
                   <h2>Penjadwalan Sidang TA</h2>
@@ -388,7 +379,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                                       <input type="text" id="modal_penguji-ta-1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
                                       <div class="bobot-nilai-input-group">
                                           <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-1')">-</button>
-                                          <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
+                                          <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="1" min="0" />
                                           <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-1')">+</button>
                                       </div>
                                       <div class="form-toggle-buttons">
@@ -419,9 +410,8 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       </div>
   </div>
 
-  <!-- MODAL FOR SIDANG SEMESTER -->
   <div class="modal fade" id="penjadwalanSidangSemModal" aria-labelledby="penjadwalanSidangSemModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content modal-content-custom-form">
               <div class="modal-body">
                   <h2>Penjadwalan Sidang Semester</h2>
@@ -436,7 +426,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                                       <input type="text" id="modal_pengampu-sem-1" name="pengampu_nama[]" placeholder="Nama Pengampu 1" />
                                       <div class="bobot-nilai-input-group">
                                           <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-1')">-</button>
-                                          <input type="number" id="modal_qty_pengampu-sem-1" class="bobot-input-new" value="0" min="0" />
+                                          <input type="number" id="modal_qty_pengampu-sem-1" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" />
                                           <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-1')">+</button>
                                       </div>
                                   </div>
@@ -447,7 +437,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                                       <input type="text" id="modal_pengampu-sem-2" name="pengampu_nama[]" placeholder="Nama Pengampu 2" />
                                       <div class="bobot-nilai-input-group">
                                           <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-2')">-</button>
-                                          <input type="number" id="modal_qty_pengampu-sem-2" class="bobot-input-new" value="0" min="0" />
+                                          <input type="number" id="modal_qty_pengampu-sem-2" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" />
                                           <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-2')">+</button>
                                       </div>
                                   </div>
@@ -477,13 +467,52 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
-    // Global variables for modals and dynamic fields
     let taModalInstance, semModalInstance;
     let pengujiCount = 1;
 
     document.addEventListener("DOMContentLoaded", function() {
-        // --- JAVASCRIPT FOR MOBILE SIDEBAR TOGGLE ---
-        // Your style.css uses .NavSide__sidebar--active-mobile
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchText = this.value.toLowerCase();
+                const tableRows = document.querySelectorAll('.data-table tbody tr');
+                let anyVisible = false;
+
+                tableRows.forEach(row => {
+                    if (row.classList.contains('text-center')) {
+                        row.style.display = 'none';
+                        return;
+                    }
+
+                    const namaCell = row.cells[2];
+                    if (!namaCell) return;
+
+                    const namaText = namaCell.textContent.toLowerCase();
+                    if (namaText.includes(searchText)) {
+                        row.style.display = '';
+                        anyVisible = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                const noDataRow = document.querySelector('.no-results-row');
+                if (!anyVisible && searchText !== '') {
+                    if (!noDataRow) {
+                        const tbody = document.querySelector('.data-table tbody');
+                        const tr = document.createElement('tr');
+                        tr.className = 'no-results-row text-center';
+                        tr.innerHTML = '<td colspan="5">Tidak ditemukan data yang sesuai</td>';
+                        tbody.appendChild(tr);
+                    }
+                } else if (noDataRow) {
+                    noDataRow.remove();
+                }
+            });
+        }
+    });
+    
+    document.addEventListener("DOMContentLoaded", function() {
         const toggleButton = document.getElementById('nav-toggle');
         const sidebar = document.getElementById('main-sidebar');
 
@@ -502,22 +531,18 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
             });
         }
         
-        // --- Modal Initialization ---
         const taModalEl = document.getElementById('penjadwalanSidangTAModal');
         if (taModalEl) taModalInstance = new bootstrap.Modal(taModalEl);
         
         const semModalEl = document.getElementById('penjadwalanSidangSemModal');
         if (semModalEl) semModalInstance = new bootstrap.Modal(semModalEl);
 
-        // --- Form Submission Listeners ---
         const formTA = document.getElementById('formDalamModal-ta');
         if(formTA) formTA.addEventListener('submit', handleFormSubmit);
 
         const formSem = document.getElementById('formDalamModal-sem');
         if(formSem) formSem.addEventListener('submit', handleFormSubmit);
     });
-
-    // --- ALL JAVASCRIPT FUNCTIONS (UNCHANGED) ---
 
     function openJadwalModal(element) {
         const tipeSidang = element.dataset.tipeSidang;
@@ -530,7 +555,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         }
     }
 
-    function resetAndPopulateTAModal(el) {
+        function resetAndPopulateTAModal(el) {
         const wrapper = document.getElementById('penguji-wrapper-ta');
         wrapper.innerHTML = `
             <div class="form-group" id="penguji-form-ta-1">
@@ -629,7 +654,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#4336F0'
             }).then(() => {
-                // location.reload(); 
+                location.reload(); 
             });
         }
     }
