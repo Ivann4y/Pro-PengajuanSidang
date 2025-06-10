@@ -202,6 +202,18 @@
       }
 
       @media (max-width: 750px) {
+        h2{
+          margin-left: 10px;
+        }
+             .NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 0;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  background-color: #f9fafb;
+  padding-top: 3vh;
+}
         .row.mt-5.justify-content-between {
           flex-direction: row !important;
           justify-content: center !important;
@@ -335,6 +347,7 @@
       }
 
       @media (max-width: 1000px) {
+       
         .NavSide__main-content .row.mt-5.justify-content-between {
           flex-direction: row !important;
           justify-content: space-between !important;
@@ -643,7 +656,7 @@
     <div class="modal-content text-center p-3">
       <div class="modal-body">
         <p class="fs-5 fw-semibold text-black">Apakah nilai akhir sama dengan nilai sementara?</p>
-        <div class="d-flex flex-row justify-content-center row mb-5 kakimodal">
+        <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
           <button type="button" class="btnKonfirmasi" onclick="TutupKonfirmasiModal()">Tidak</button>
           </div>
@@ -660,7 +673,7 @@
     <div class="modal-content text-center p-3">
       <div class="modal-body">
         <p class="fs-5 fw-bold text-black">Apakah yakin ingin mengirim nilai akhir?</p>
-        <div class="d-flex justify-content-center row mb5 kakimodal">
+        <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
           <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal">Tidak</button>
           </div>

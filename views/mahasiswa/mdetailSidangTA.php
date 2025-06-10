@@ -179,7 +179,7 @@
             /* Removed fixed position and left/top from here, as it's within topbar */
         }
         .NavSide__topbar .NavSide__toggle i.bi {
-            position: absolute; /* Relative to its parent .NavSide__toggle */
+
             font-size: 24px; /* Slightly smaller icon as per mPerbaikan.php */
             display: none; /* Hidden by default */
             color: #4B68FB;
@@ -331,6 +331,8 @@
                 z-index: 1045; /* Ensure topbar is on top */
                 background-color: #ffffff; /* Keep it white */
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Keep shadow on mobile */
+                padding-top: 0px; /* Add padding to move toggle button up */
+                height: 50px; /* Increase height to accommodate the moved toggle */
             }
             /* Mobile styles for NavSide__toggle (inside topbar) */
             .NavSide__topbar .NavSide__toggle {
@@ -340,16 +342,16 @@
                 left: auto;
                 background-color: transparent; /* Remove background */
                 box-shadow: none; /* Remove shadow */
+                margin-left: 15px; /* Add some margin from the left edge */
             }
             .NavSide__topbar .NavSide__toggle i.bi {
                  font-size: 28px; /* Reset icon size for mobile as per original detailSidang.php */
             }
 
-
             .NavSide__main-content {
                 margin-left: 0; 
                 padding: 20px; /* Adjust padding for mobile to be more consistent */
-                padding-top: calc(60px + 20px); /* Adjust padding-top for topbar height on mobile */
+                padding-top: calc(60px + 20px); /* Adjust padding-top for increased topbar height on mobile */
             }
             
             /* Sesuaikan margin vertikal agar elemen lebih rapat di mobile */

@@ -119,7 +119,7 @@
         <main class="NavSide__main-content" id="mSidang">
             <div class="container-fluid"> 
                 <div class="row">
-                    <h2 class="text-heading">
+                    <h2 class="text-heading" style="color:black">
                         Nayaka Ivana Putra (Mahasiswa)
                     </h2>
                 </div><br>
