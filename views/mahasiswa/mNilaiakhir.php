@@ -499,9 +499,7 @@
     function pindahKeHalamanDaftarSidang() {
       window.location.href = "mSidang.php";
     }
-        // Sidebar Toggle Logic
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
+
 
         menuToggle.onclick = function () {
             menuToggle.classList.toggle("NavSide__toggle--active");
