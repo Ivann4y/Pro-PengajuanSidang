@@ -27,6 +27,15 @@
     <link rel="stylesheet" href="../../extra/style.css" />
     <title>Dosen - Nilai Akhir</title>
     <style>
+      .NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 300px;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  background-color: #f9fafb;
+  padding-top: 3vh;
+}
       body,
       .card,
       .form-control,
@@ -121,7 +130,7 @@
       {
         margin-top: 20px;
         margin-right: 15px;
-        font-weight: bold;
+        font-weight: 550;
       }
 
       #detailpenilaian {
@@ -193,6 +202,18 @@
       }
 
       @media (max-width: 750px) {
+        h2{
+          margin-left: 10px;
+        }
+             .NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 0;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  background-color: #f9fafb;
+  padding-top: 3vh;
+}
         .row.mt-5.justify-content-between {
           flex-direction: row !important;
           justify-content: center !important;
@@ -326,6 +347,7 @@
       }
 
       @media (max-width: 1000px) {
+       
         .NavSide__main-content .row.mt-5.justify-content-between {
           flex-direction: row !important;
           justify-content: space-between !important;
@@ -508,7 +530,7 @@
       <div class="container-fluid">
            <div class="row mb-3">
       <div class="col-12">
-        <h2 class="text-heading fw-semibold">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+        <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
       </div>
     </div>
     <br>
@@ -516,7 +538,7 @@
           <div class="col-lg-6 col-md-12 mb-3">
             <div class="card" id="cardNilai">
               <div class="card-body card-soft px-4 py-3 text-center">
-                <h3 class="card-title mb-3" style="padding:10px ;">Nilai Mahasiswa:</h3>
+                <h3 class="card-title mb-3 text-black" style="padding:10px ;">Nilai Mahasiswa:</h3>
                 <div>
                 <input
                   onclick="bukaKonfirmasiModal()"
@@ -543,10 +565,10 @@
           <div class="">
             <div class="card" id="carddetailPenilaian">
         <div class="card-body">
-            <h3 class="card-title">Detail Penilaian :</h3>
+            <h3 class="card-title text-black">Detail Penilaian :</h3>
             <div class="row justify-content-center align-items-center">
               <div class="col d-flex align-items-center">
-                <label for="nilaiLaporan" id="labelpenilaian">Nilai laporan</label>
+                <label for="nilaiLaporan" id="labelpenilaian" class="text-black">Nilai laporan</label>
                 <label for=":" class="colon1">:</label>
                 <input
                   type="type"
@@ -557,7 +579,7 @@
                   maxlength="3"/>
               </div>
               <div class="col d-flex align-items-center">
-                  <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi</label>
+                  <label for="MateriPresentasi" id="labelpenilaian" class="text-black">Materi Presentasi</label>
                   <label for=":" class="colon2">:</label>
                 <input
                   type="type"
@@ -568,7 +590,7 @@
                   maxlength="3"/>
               </div>
               <div class="col d-flex align-items-center ">
-                  <label for="Penyampaian" id="labelpenilaian">Penyampaian</label>
+                  <label for="Penyampaian" id="labelpenilaian" class="text-black">Penyampaian</label>
                   <label for=":" class="colon3">:</label>
                 <input
                   type="type"
@@ -579,7 +601,7 @@
                   maxlength="3"/>
               </div>
               <div class="col d-flex align-items-center ">
-                  <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek</label>
+                  <label for="NilaiProyek" id="labelpenilaian" class="text-black">Nilai Proyek</label>
                   <label for=":" class="colon4">:</label>
                 <input
                   type="type"
@@ -599,7 +621,7 @@
         <div class="col-12">
           <div class="card" id="cardcatatan">
             <div class="card-body">
-              <h3 class="card-title">Catatan:</h3>
+              <h3 class="card-title text-black">Catatan:</h3>
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
@@ -633,8 +655,8 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center p-3">
       <div class="modal-body">
-        <p class="fs-5 fw-semibold">Apakah nilai akhir sama dengan nilai sementara?</p>
-        <div class="d-flex flex-row justify-content-center row mb-5 kakimodal">
+        <p class="fs-5 fw-semibold text-black">Apakah nilai akhir sama dengan nilai sementara?</p>
+        <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
           <button type="button" class="btnKonfirmasi" onclick="TutupKonfirmasiModal()">Tidak</button>
           </div>
@@ -651,7 +673,7 @@
     <div class="modal-content text-center p-3">
       <div class="modal-body">
         <p class="fs-5 fw-bold text-black">Apakah yakin ingin mengirim nilai akhir?</p>
-        <div class="d-flex justify-content-center row mb5 kakimodal">
+        <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
           <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal">Tidak</button>
           </div>

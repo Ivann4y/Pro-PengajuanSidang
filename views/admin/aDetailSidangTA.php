@@ -85,7 +85,7 @@
           justify-content: center; /* Center content horizontally */
           width: 100%;
           text-decoration: none;
-          color: rgb(252, 252, 252);
+          color: #ffffff;
           padding: 5% 2%;
           height: 60px;
           box-sizing: border-box;
