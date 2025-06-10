@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="../../css/button-styles.css" />
     <link rel="stylesheet" href="../../extra/style.css" />
     <title>Dosen - Nilai Akhir</title>
-    <style>
+    <styl>
       body,
       .card,
       .form-control,
@@ -508,7 +508,7 @@
       <div class="container-fluid">
            <div class="row mb-3">
       <div class="col-12">
-        <h2 class="text-heading fw-semibold">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+        <h2 class="text-heading fw-semibold" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
       </div>
     </div>
     <br>
