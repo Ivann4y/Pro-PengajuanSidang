@@ -170,7 +170,7 @@
 .NavSide__main-content .btn-kembali {
     width: 100% !important;
     max-width: 150px;
-    margin: auto;
+    margin: 40px auto 0; 
 }
 
  .NavSide__main-content  #carddetailPenilaian,
@@ -309,14 +309,7 @@
       background: #f2f2f2 !important;
       border-color: #f2f2f2 !important;
       }
-      
-      #cardPenilaian {
-        background-color: #f2f2f2;
-        border-radius: 50px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        margin-left: 50px;
-      }
+
       label
         {
             margin-top: 20px;
@@ -348,7 +341,7 @@
       #catatan {
         width: 100%;
         height: 150px;
-        border-radius: 30px;
+        border-radius: 20px;
         font-size: 1rem;
         margin-top: 20px;
         
@@ -367,7 +360,7 @@
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
             display: inline-flex; 
             align-items: center; 
-            margin-top: 1.2cm;
+            margin-top:50px; 
         }
         .btn-kembali:hover {
             position: relative;
@@ -483,7 +476,6 @@
                 </div>
             </div>
         </div>
-
                <button class="btn-kembali" onclick="location.href='mSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
