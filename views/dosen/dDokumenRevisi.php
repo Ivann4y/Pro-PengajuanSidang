@@ -432,6 +432,54 @@
         .modal-buttons button {
             min-width: 100px;
         }
+
+        .btn-kembali {
+            background-color: #4B68FB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1.2cm;
+            height: 45px;
+        }
+
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white;
+            color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white;
+        }
     </style>
 </head>
 

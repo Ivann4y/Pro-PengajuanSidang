@@ -323,7 +323,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 1.2cm;
             height: 45px;
         }
 
