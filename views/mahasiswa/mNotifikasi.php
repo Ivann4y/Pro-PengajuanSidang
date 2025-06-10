@@ -128,6 +128,18 @@
       text-align: center;
       border-radius: 0px 20px 20px 0px;
     }
+    #BelumDibaca td span {
+  cursor: pointer;
+}
+#ddMBelumDibaca:hover{
+  background-color:#4b68fb;
+  color: white;
+
+}
+    #ddMSudahDibaca:hover{
+  background-color:#4b68fb;
+  color: white;
+    }
   </style>
 </head>
 
@@ -204,7 +216,7 @@
                   <th scope="col">Pesan</th>
                   <th scope="col">Waktu</th>
                   <th scope="col">Status</th>
-                  <th></th>
+                  <th scope="col">Aksi</th>
                 </tr>
               </thead>
               <tbody id="BelumDibaca">
