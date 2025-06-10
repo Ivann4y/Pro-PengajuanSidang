@@ -465,10 +465,10 @@
                 <div class="card-body">
                     <h3 class="card-title">Detail Penilaian :</h3>
                     <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-                        <span><strong>Nilai Laporan:</strong> 95</span>
-                        <span><strong>Materi Presentasi:</strong> 90</span>
-                        <span><strong>Penyampaian:</strong> 94</span>
-                        <span><strong>Nilai Proyek:</strong> 93</span>
+                        <span><strong>Nilai Laporan :</strong> 95</span>
+                        <span><strong>Materi Presentasi :</strong> 90</span>
+                        <span><strong>Penyampaian :</strong> 94</span>
+                        <span><strong>Nilai Proyek :</strong> 93</span>
                     </div>
                 </div>
             </div>
