@@ -23,6 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../css/style.css" />
     <link rel="stylesheet" href="../../extra/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <title>Mahasiswa - Nilai Akhir</title>
     <style>
        @media (max-width: 750px) {
@@ -390,15 +391,15 @@
             background-color: #4B68FB;
         }
 
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
+        .btn-kembali .icon-circle i.fa-solid.fa-arrow-left {
+            color: #4B68FB !important;
             font-size: 1rem; 
             transition: color 0.3s ease;
         }
 
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }        
+        .btn-kembali:hover .icon-circle i.fa-solid.fa-arrow-left {
+            color: white !important;
+        }
 
     </style>
   </head>
@@ -439,16 +440,18 @@
    <main class="NavSide__main-content">
     <div class="container-fluid ">
         <div class="row mb-5">
-
+            <h2 style="margin-left: 5px ;">
+                <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
+            </h2>
         </div>
-        <div class="row mt-5 align-items-center justify-content-between">
+          <div class="row mt-5 align-items-center justify-content-between">
             <div class="col-md-6">
                 <div class="card" id="cardNilai">
                     <div class="card-body">
                         <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
                         <div>
                             <input type="text" class="form-control form-control-lg text-center mx-auto"
-                                id="nilaiMahasiswa" placeholder="" value="--" readonly />
+                                id="nilaiMahasiswa" placeholder="" value="A" readonly />
                         </div>
                     </div>
                 </div>
@@ -462,10 +465,10 @@
                 <div class="card-body">
                     <h3 class="card-title">Detail Penilaian :</h3>
                     <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-                        <span><strong>Nilai Laporan:</strong> --</span>
-                        <span><strong>Materi Presentasi:</strong> --</span>
-                        <span><strong>Penyampaian:</strong> --</span>
-                        <span><strong>Nilai Proyek:</strong> --</span>
+                        <span><strong>Nilai Laporan :</strong> 95</span>
+                        <span><strong>Materi Presentasi :</strong> 90</span>
+                        <span><strong>Penyampaian :</strong> 94</span>
+                        <span><strong>Nilai Proyek :</strong> 93</span>
                     </div>
                 </div>
             </div>

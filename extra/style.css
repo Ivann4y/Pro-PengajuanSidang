@@ -361,3 +361,109 @@ body {
   margin: 2vh 2vh;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
+
+/* Button Styles */
+.button-group-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.2cm;
+}
+
+.btn-kembali {
+  background-color: #4b68fb;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-kembali:hover {
+  position: relative;
+  background-color: white;
+  color: #4b68fb;
+}
+
+.btn-kembali .icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-kembali:hover .icon-circle {
+  background-color: #4b68fb;
+}
+
+.btn-kembali .icon-circle i {
+  color: #4b68fb;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.btn-kembali:hover .icon-circle i {
+  color: white;
+}
+
+.btn-setuju {
+  background-color: #4fd382;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  height: 45px;
+}
+
+.btn-setuju:hover {
+  background-color: #3ab070;
+  color: white;
+}
+
+.btn-tolak {
+  background-color: #fd7d7d;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  height: 45px;
+}
+
+.btn-tolak:hover {
+  background-color: #e56a6a;
+  color: white;
+}
+
+@media (max-width: 700px) {
+  .button-group-bottom {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .btn-tolak,
+  .btn-setuju,
+  .btn-kembali {
+    width: 100%;
+  }
+}
