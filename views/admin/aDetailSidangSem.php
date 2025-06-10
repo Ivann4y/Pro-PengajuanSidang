@@ -25,360 +25,329 @@
         }
 
         #NavSide {
-          /* Main wrapper for the entire layout */
-          display: flex;
-          min-height: 100vh;
-          position: relative; /* For positioning toggle if needed relative to this */
+            display: flex;
+            min-height: 100vh;
+            position: relative;
         }
 
         .NavSide__sidebar-brand {
-          padding: 10% 5% 50% 5%; /* Added some right padding */
-          text-align: center; /* Center the image container if needed */
+            padding: 10% 5% 50% 5%;
+            text-align: center;
         }
 
         .NavSide__sidebar-brand img {
-          width: 90%; /* Adjusted for padding */
-          max-width: 180px; /* Prevent it from getting too large */
-          height: auto;
-          display: inline-block;
+            width: 90%;
+            max-width: 180px;
+            height: auto;
+            display: inline-block;
         }
 
-        /* --- DEFAULT STYLES FOR SIDEBAR ON LARGER SCREENS (>= 701px) --- */
         .NavSide__sidebar {
-          position: fixed;
-          top: 0px;
-          left: 0px;
-          bottom: 0px;
-          width: 280px; /* Fixed width for desktop */
-          border-radius: 1px;
-          box-sizing: border-box; /* border-box is usually more intuitive */
-          border-left: 5px solid #4B68FB;
-          background: #4B68FB;
-          overflow-x: hidden;
-          overflow-y: auto;
-          z-index: 1000; /* Higher z-index */
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.5s ease-in-out, width 0.5s ease-in-out; /* Added width transition */
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            width: 280px;
+            border-radius: 1px;
+            box-sizing: border-box;
+            border-left: 5px solid #4B68FB;
+            background: #4B68FB;
+            overflow-x: hidden;
+            overflow-y: auto;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
         }
 
         .NavSide__sidebar-nav {
-          width: 100%;
-          padding-left: 0;
-          padding-top: 0; /* Adjusted, space controlled by brand padding */
-          list-style: none;
-          flex-grow: 1; /* Allow nav to take remaining space */
+            width: 100%;
+            padding-left: 0;
+            padding-top: 0;
+            list-style: none;
+            flex-grow: 1;
         }
 
         .NavSide__sidebar-item {
-          position: relative;
-          display: block;
-          width: 100%;
-          border-top-left-radius: 20px;
-          border-bottom-left-radius: 20px;
+            position: relative;
+            display: block;
+            width: 100%;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
         }
 
         .NavSide__sidebar-item a {
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center; /* Center content horizontally */
-          width: 100%;
-          text-decoration: none;
-          color: rgb(252, 252, 252);
-          padding: 5% 2%;
-          height: 60px;
-          box-sizing: border-box;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-decoration: none;
+            color: #ffffff;
+            padding: 5% 2%;
+            height: 60px;
+            box-sizing: border-box;
         }
 
         .NavSide__sidebar-title {
-          white-space: normal; /* Allow text to wrap if needed, though centered might look odd */
-          text-align: center;
-          line-height: 1.5;
+            white-space: normal;
+            text-align: center;
+            line-height: 1.5;
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active {
-          background: #ffffff;
+            background: #ffffff;
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-          color: #4B68FB;
+            color: #4B68FB;
         }
 
-        /* Rounded corner effects for active item */
         .NavSide__sidebar-item b:nth-child(1) {
-          position: absolute;
-          top: -20px;
-          height: 20px;
-          width: 100%;
-          background: rgb(255, 255, 255);
-          display: none;
+            position: absolute;
+            top: -20px;
+            height: 20px;
+            width: 100%;
+            background: rgb(255, 255, 255);
+            display: none;
         }
         .NavSide__sidebar-item b:nth-child(1)::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          border-bottom-right-radius: 20px;
-          background: #4B68FB;
-          display: block;
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-bottom-right-radius: 20px;
+            background: #4B68FB;
+            display: block;
         }
         .NavSide__sidebar-item b:nth-child(2) {
-          position: absolute;
-          bottom: -20px;
-          height: 20px;
-          width: 100%;
-          background: rgb(255, 255, 255);
-          display: none;
+            position: absolute;
+            bottom: -20px;
+            height: 20px;
+            width: 100%;
+            background: rgb(255, 255, 255);
+            display: none;
         }
         .NavSide__sidebar-item b:nth-child(2)::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          border-top-right-radius: 20px;
-          background: #4B68FB;
-          display: block;
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-top-right-radius: 20px;
+            background: #4B68FB;
+            display: block;
         }
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
-          display: block;
+            display: block;
         }
 
+        /* === PERUBAHAN CSS BAGIAN 1: GAYA TOPBAR === */
+        .NavSide__topbar {
+            display: none; /* Sembunyikan di desktop, muncul di mobile */
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0; /* Dimulai dari kiri */
+            width: 100%; /* Lebar penuh */
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1045; /* Pastikan di atas sidebar saat mobile */
+            padding-left: 15px; /* Beri sedikit jarak untuk tombol toggle */
+        }
+        
         .NavSide__main-content {
-          flex-grow: 1;
-          padding: 20px;
-          margin-left: 280px; /* Matches sidebar width */
-          overflow-y: auto;
-          transition: margin-left 0.5s ease-in-out;
+            flex-grow: 1;
+            padding: 20px;
+            margin-left: 280px;
+            overflow-y: auto;
+            transition: margin-left 0.5s ease-in-out;
+            /* Tambahkan padding-top agar konten tidak tertutup topbar di mobile */
+            padding-top: calc(60px + 20px);
         }
 
+        /* === PERUBAHAN CSS BAGIAN 2: GAYA H2 === */
+        .NavSide__main-content h2 {
+            margin-bottom: 1.2cm; /* Menyamakan margin-bottom */
+            font-weight: 700;     /* Menyamakan ketebalan font */
+            /* Ukuran font (font-size) dihapus agar mengikuti default browser atau Bootstrap yg lebih responsif */
+        }
+        
         .NavSide__toggle {
-          display: none; /* Hidden by default on large screens */
-          position: fixed;
-          top: 15px;
-          left: 15px;
-          width: 40px; /* Give toggle explicit size for better icon centering */
-          height: 40px;
-          z-index: 1100;
-          transition: left 0.5s ease-in-out;
-          cursor: pointer;
-          border-radius: 5px;
-          display: flex; /* For icon centering */
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            position: relative; /* ubah ke relative agar ikon bisa absolute di dalamnya */
         }
 
         .NavSide__toggle i.bi {
-          position: absolute; /* Icons sit on top of each other */
-          font-size: 28px;
-          display: none;
+            position: absolute;
+            font-size: 28px;
+            display: none;
+            color: #4B68FB;
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
         }
 
         .NavSide__toggle i.bi.open {
-          color: #4B68FB; /* Blue to match sidebar */
-          display: block; /* Open icon visible by default */
+            display: block;
         }
-        .NavSide__toggle i.bi.close {
-          color: rgb(
-            67,
-            54,
-            240
-          ); /* Also blue, or white if toggle background changes */
-        }
-
-        /* Toggle active state controls icon visibility */
         .NavSide__toggle.NavSide__toggle--active i.bi.open {
-          display: none;
+            display: none;
         }
         .NavSide__toggle.NavSide__toggle--active i.bi.close {
-          display: block;
+            display: block;
         }
 
-        /* --- Responsive Design for Small Screens (<= 700px) --- */
         @media (max-width: 700px) {
-          .NavSide__sidebar {
-            width: 50%; /* Slightly narrower for mobile */
-            transform: translateX(-100%); /* Hidden by default */
-            border-left-width: 0; /* Remove border when overlay */
-          }
-
-          /* This class is added by JS to show the sidebar on mobile */
-          .NavSide__sidebar.NavSide__sidebar--active-mobile {
-            transform: translateX(0);
-            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); /* Add shadow when overlayed */
-          }
-
-          .NavSide__sidebar-brand {
-            padding: 20px 10px 30px 10px; /* Adjust padding for mobile */
-          }
-          .NavSide__sidebar-brand img {
-            width: 90%;
-          }
-
-          .NavSide__sidebar-nav {
-            padding-top: 20%;
-          }
-          .NavSide__sidebar-item a {
-            padding: 12% 10%; /* Slightly smaller padding */
-            height: 2vh;
-          }
-
-          .NavSide__main-content {
-            margin-left: 7vh; /* Full width when sidebar is hidden or overlaid */
-          }
-
-          /* When sidebar is open on mobile, push main content or overlay.
-            Current setup is overlay, so main-content margin doesn't change.
-            If you wanted main-content to shift:
-            #NavSide.NavSide--sidebar-open-mobile .NavSide__main-content {
-              margin-left: 250px;
+            .NavSide__topbar {
+                display: flex;
             }
-            But this would require adding 'NavSide--sidebar-open-mobile' to #NavSide via JS.
-            For simplicity, overlay is maintained.
-          */
 
-          .NavSide__toggle {
-            display: flex; /* Show toggle */
-          }
+            .NavSide__sidebar {
+                width: 50%;
+                transform: translateX(-100%);
+                border-left-width: 0;
+                z-index: 1040;
+                padding-top: 60px; /* Sisakan ruang untuk topbar */
+            }
 
-          .NavSide__toggle i.bi.open {
-            color: rgb(67, 54, 240); /* Blue to match sidebar */
-            display: block; /* Open icon visible by default */
-          }
+            .NavSide__sidebar.NavSide__sidebar--active-mobile {
+                transform: translateX(0);
+                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+            }
 
-          .NavSide__toggle.NavSide__toggle--active {
-            /* Move toggle button to be near the edge of the opened sidebar */
-            left: calc(50% + 10px); /* sidebar width + some space */
-            background-color: aliceblue;
-          }
+            .NavSide__main-content {
+                margin-left: 0; /* Konten memenuhi layar */
+                padding: 20px; /* Reset padding */
+                padding-top: calc(60px + 20px); /* Jaga jarak dari topbar */
+            }
         }
-
-       
+        
+        /* Gaya lain yang sudah ada dipertahankan */
         .status-badge {
-          background-color: #4BFBAF;
-          color: rgb(48, 48, 110);
-          border-radius: 20px;
-          padding: 8px 18px; 
-          display: inline-block;
-          font-size: 0.95rem; 
-          margin-bottom: 20px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-          font-weight: 500;
+            background-color: #4BFBAF;
+            color: rgb(48, 48, 110);
+            border-radius: 20px;
+            padding: 8px 18px; 
+            display: inline-block;
+            font-size: 0.95rem; 
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            font-weight: 500;
         }
 
         .info-card {
-          position: relative;
-          background: rgb(235, 238, 245); 
-          border-radius: 30px; 
-          box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-          padding: 25px;
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          margin-bottom: 25px;
-          overflow: hidden;
-          transition: background-color 0.4s ease;
-          margin-right: 30px;
+            position: relative;
+            background: rgb(235, 238, 245); 
+            border-radius: 30px; 
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: background-color 0.4s ease;
+            margin-right: 30px;
         }
 
         .info-card::after { 
-          content: "";
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 60px; 
-          height: 100%;
-          background-color: #4B68FB;
-          border-top-right-radius: 20px;
-          border-bottom-right-radius: 20px;
-          transition: width 0.4s ease;
-          z-index: 0;
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px; 
+            height: 100%;
+            background-color: #4B68FB;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: width 0.4s ease;
+            z-index: 0;
         }
 
         .info-card:hover::after {
-          width: 100%;
-          border-radius: 20px;
+            width: 100%;
+            border-radius: 20px;
         }
 
         .info-card .section {
-          flex: 0 0 48%; 
-          margin-bottom: 15px;
-          z-index: 1;
-          color: #333;
-          transition: color 0.4s ease;
+            flex: 0 0 48%; 
+            margin-bottom: 15px;
+            z-index: 1;
+            color: #333;
+            transition: color 0.4s ease;
         }
 
         .info-card:hover .section {
-          color: white;
-        }
-
-        .mb-3 {
-          font-weight: 580;
-          font-size: 42px;
+            color: white;
         }
 
         .info-card .section i {
-          margin-right: 10px; 
-          color: rgb(70, 70, 70);
-          transition: color 0.4s ease;
-          width: 20px; 
-          text-align: center;
+            margin-right: 10px; 
+            color: rgb(70, 70, 70);
+            transition: color 0.4s ease;
+            width: 20px; 
+            text-align: center;
         }
 
         .info-card:hover .section i{
-          color: white;
+            color: white;
         }
 
         .btn-ubah {
-          background-color: #ff5f5f;
-          color: white;
-          border: 2px solid #ff5f5f;
-          border-radius: 20px; 
-          margin-bottom: 10px;
-          padding: 12px 30px; 
-          cursor: pointer;
-          font-size: 0.95rem;
-          font-weight: 500;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+            background-color: #ff5f5f;
+            color: white;
+            border: 2px solid #ff5f5f;
+            border-radius: 20px; 
+            margin-bottom: 10px;
+            padding: 12px 30px; 
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
         }
 
         .btn-ubah:hover {
-          background-color:rgb(255, 255, 255);
-          border: 2px solid #ff5f5f; 
-          color : #ff5f5f;
-          position: relative;
-          
+            background-color:rgb(255, 255, 255);
+            border: 2px solid #ff5f5f; 
+            color : #ff5f5f;
+            position: relative;
         }
 
         .btn-kembali {
-          background-color: #4B68FB;
-          color: white;
-          border: none;
-          border-radius: 20px;
-          padding: 10px 25px;
-          cursor: pointer;
-          font-size: 0.95rem;
-          font-weight: 500;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          transition: background-color 0.3s ease, transform 0.2s ease;
-          display: inline-flex;
-          align-items: center;
-          margin-top: 4cm;
-          width: auto;
-          gap: 10px;
+            background-color: #4B68FB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 4cm;
+            width: auto;
+            gap: 10px;
         }
         .btn-kembali:hover {
-           position: relative;
+            position: relative;
             background-color: rgb(59, 54, 136);
         }
         
+        /* Sisa CSS untuk modal dan lainnya dipertahankan seperti aslinya */
         .modal-content-custom-form {
             border-radius: 25px !important;
         }
@@ -387,92 +356,68 @@
             background-color:rgb(255, 255, 255); 
             border-radius: 20px; 
         }
-         .modal-body .form-container h2 {
+        .modal-body .form-container h2 {
             font-size: 1.25rem; 
             margin-bottom: 20px;
             text-align: center;
-            color: rgb(255, 255, 255); 
+            color: rgb(51, 47, 47); /* Warna teks disesuaikan agar terlihat */
         }
         .modal-body .form-group {
-          display: flex;
-          align-items: center;
-          margin-bottom: 15px; 
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px; 
         }
         .modal-body .form-group label {
-          width: 160px; 
-          flex-shrink: 0;
-          color:rgb(51, 47, 47);
-          font-weight: bold;
-          font-size: 14px;
-          margin-right: 15px;
-          text-align: left;
+            width: 160px; 
+            flex-shrink: 0;
+            color:rgb(51, 47, 47);
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 15px;
+            text-align: left;
         }
         .modal-body .form-group .input-with-buttons,
         .modal-body .form-group .time-input-range,
         .modal-body .form-group > input[type="text"] {
-          flex-grow: 1; 
-          height: 35px; 
-          display: flex; 
-          align-items: center;
-          
-        }
-        .modal-body .form-group input[type="text"],
-        .modal-body .form-group input[type="time"] {
-          width: 100%; 
-          height: 35px; 
-          padding: 0 15px;
-          border: 1px solid #D1D5DB;
-          background-color:rgb(255, 255, 255);
-          box-sizing: border-box;
-          font-size: 14px;
-          color: #374151;
-          border-radius: 26px; 
-          
+            flex-grow: 1; 
+            height: 35px; 
+            display: flex; 
+            align-items: center;
+
+        
         }
 
         .modal-body .form-group > input[type="date"] {
-           flex-grow: 1; 
-           height: 35px; 
-           
-           
+            flex-grow: 1; 
+            height: 35px; 
         }
 
-        .modal-body .form-group input[type="date"] {
-            width: 100%;
-            height: 35px;
+        .modal-body .form-group input[type="text"],
+        .modal-body .form-group input[type="date"],
+        .modal-body .form-group input[type="time"] {
+            width: 100%; 
+            height: 35px; 
             padding: 0 15px;
             border: 1px solid #D1D5DB;
-            background-color: rgb(255, 255, 255);
+            background-color:rgb(255, 255, 255);
             box-sizing: border-box;
             font-size: 14px;
             color: #374151;
-            border-radius: 26px; 
-        } 
-
-
-
-         
-
-         .modal-body .form-group input[readonly] {
-            background-color:rgb(255, 255, 255);
-            cursor: not-allowed;
-            height: 35px;
-            width: 100px;
-
-
+            border-radius: 26px;
         }
-        .modal-body .bobot-input-new {
+        .modal-body .form-group input[readonly] {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+        }
+        .modal-body .bobot-input-new { 
             width: 30px; 
             height: auto;
             text-align: center;
             border: none;
-            border-radius: 0;
             font-size: 16px;
             color: #2d2d52;
             background-color: transparent;
-            padding: 0; 
             margin: 0 5px; 
-            -moz-appearance: textfield;
             pointer-events: none;
         }
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
@@ -481,10 +426,10 @@
             margin: 0; 
         }
         .modal-body .input-with-buttons {
-          display: flex;
-          align-items: center;
-          gap: 10px; 
-          width: 100%; 
+            display: flex;
+            align-items: center;
+            gap: 10px; 
+            width: 100%; 
         }
         .modal-body .input-with-buttons input[type="text"] { 
             flex-grow: 1; 
@@ -510,31 +455,15 @@
             align-items: center;
             justify-content: center; 
             padding: 0 8px; 
-            line-height: 1;
             border-radius: 35px;
             transition: background-color 0.2s ease;
         }
         .modal-body .btn-bobot-new:hover {
-           background-color:rgba(0, 0, 0, 0.05); 
+            background-color:rgba(0, 0, 0, 0.05); 
         }
-
         .modal-body .time-input-range { 
-          gap: 10px; 
-          width: 100%; 
-        }
-        .modal-body .time-input-range input[type="time"] { 
-          flex-grow: 1; 
-        }
-        .modal-body .time-input-range .time-separator { 
-          flex-shrink: 0; 
-          color: #374151; 
-          font-size: 20px;
-          font-weight: bold; 
-          line-height: 1; 
-          padding: 0 5px; 
-          display: flex; 
-          align-items: center; 
-          justify-content: center;
+            gap: 10px; 
+            width: 100%; 
         }
         .modal-body .form-actions {
             display: flex; 
@@ -542,67 +471,53 @@
             margin-top: 25px; 
             padding-left: calc(160px + 15px); 
         }
-        .modal-body .form-actions .btn { /* Styling untuk tombol di form jika ada */ }
         .modal-body .form-actions .btn-batal { 
-          background-color: #ff5f5f; color:rgb(255, 255, 255); 
-          border: none; 
-          border-radius: 20px;
-          padding: 5px 10px;
-          height: 40px;
-          width: 120px;
-          margin-right: 10px;
+            background-color: #ff5f5f; 
+            color:rgb(255, 255, 255); 
+            border: none; 
+            border-radius: 20px;
+            padding: 5px 10px;
+            height: 40px;
+            width: 120px;
+            margin-right: 10px;
         }
- 
         .modal-body .form-actions .btn-submit { 
-          background-color:rgb(67, 54, 240); color: white; 
-          border: none;
-          border-radius: 20px;
-          padding: 5px 10px;
-          height: 40px;
-          width: 200px;
-          
+            background-color: #4B68FB; color: white; 
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+            height: 40px;
+            width: 200px;
         }
-        .modal-body .form-actions .btn-submit:hover { background-color: rgb(106, 95, 255); }
-
+        .modal-body .form-actions .btn-submit:hover { 
+            background-color: rgb(106, 95, 255); 
+        }
         .modal-body > h2 {
-            font-size: 30px; 
+            font-size: 20px; 
             color: #374151;
-            font-weight: 580;
+            font-weight: 600; /* Dibuat sedikit tebal */
         }
-
         #penjadwalanSidangModal .modal-dialog {
-          max-width: 600px;
-
+            max-width: 600px;
         }
-
-        .modal-body .bobot-nilai-input-group {
-          display: inline-flex;
-          align-items: center;
-          background-color: #F9FAFB;
-          border-radius: 35px;
-          padding: 2px 6px;
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
         .modal-body .form-toggle-buttons {
-          display: inline-flex;
-          gap: 5px;
-          align-items: center;
+            display: inline-flex;
+            gap: 5px;
+            align-items: center;
         }
-
         .modal-body .form-toggle-buttons button {
-          width: 30px;
-          height: 30px;
-          font-size: 18px;
-          border-radius: 35px;
-          border: 1px solid #ccc;
-          cursor: pointer;
-          background-color: white;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            border-radius: 50%; /* Dibuat bulat */
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: white;
+        }
+        .modal-body .form-toggle-buttons button:hover {
+            background-color: #ddd;
         }
 
-        .modal-body .form-toggle-buttons button:hover {
-          background-color: #ddd;
-        }
 
         .modal-body .form-group select {
           width: 100%;
@@ -618,9 +533,6 @@
           -webkit-appearance: none;
           -moz-appearance: none;
        }
-
-        
-
 
 
 
@@ -661,7 +573,7 @@
         </div>
 
         <main class="NavSide__main-content">
-            <h2 class="mb-3">Detail Sidang - Pemrograman 2</h2>
+            <h2>Detail Sidang - Pemrograman 2</h2>
             <div class="status-badge">Status Pengajuan : Disetujui</div>
 
             <div class="info-card">
