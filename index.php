@@ -6,7 +6,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'];
     $_SESSION['role'] = $role;
 
-    // Redirect to the appropriate dashboard based on the role
     switch ($role) {
         case 'dosen':
             header('Location: views/dosen/dLogin.php');
@@ -39,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -92,39 +91,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .bgBiru {
+                position: sticky;
+                top: 0;
+                z-index: 1000;
                 background-color: rgb(67, 54, 240);
-                height: 15vh;
-            }
-
-            .teks h2 {
-                font-size: 1.5rem;
-                margin: 0% 0% 0% 35%;
-                width: 100%;
-                top: 20%;
+                height: auto;
+                padding: 2vh 0;
             }
 
             .teks {
-                position: absolute;
-                margin-bottom: auto;
-                margin-top: 10%;
                 text-align: center;
+                padding-top: 2vh;
+                color: white;
+                margin: 0 0 2vh 0;
+                padding-left: 20%;
             }
 
-            img {
+            .img-topRight,
+            .img-buttomLeft,
+            .img-buttomRight{
                 display: none;
             }
 
-            .letak-LogBox {
+            .img-topLeft{
                 position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
+                top: 90%;
+                right: 12%;
+            }
+
+            .letak-LogBox {
+                position: relative;
+                left: 13%;
+                top: 20%;
+                transform: none;
                 width: 75%;
-                height: 50%;
+                z-index: 1001;
             }
 
             .letak-LogBox .container {
-                padding: 20px;
+                padding: 1.5em;
             }
         }
     </style>

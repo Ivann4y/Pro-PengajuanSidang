@@ -98,7 +98,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                     <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -119,7 +119,7 @@
         <main class="NavSide__main-content" id="mSidang">
             <div class="container-fluid"> 
                 <div class="row">
-                    <h2 class="text-heading">
+                    <h2 class="text-heading" style="color:black">
                         Nayaka Ivana Putra (Mahasiswa)
                     </h2>
                 </div><br>

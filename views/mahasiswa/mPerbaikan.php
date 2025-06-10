@@ -244,7 +244,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     .NavSide__topbar {
-        display: flex;
+        display: none;
         align-items: center;
         position: fixed;
         top: 0;
@@ -252,12 +252,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         margin-left: 280px;
         height: 60px;
-        background-color: #FFFFFF;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         z-index: 999;
-        padding: 0 15px;
-        justify-content: flex-start;
-        transition: margin-left 0.5s ease-in-out;
     }
 
     .NavSide__topbar .NavSide__toggle {
@@ -542,21 +539,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border-radius: 16px !important;
         border: none !important;
         box-shadow: 0px 8px 24px rgba(29, 36, 50, 0.15) !important;
-        padding: 5px;
+        padding: 1.5rem;
     }
 
     #modalDetail .modal-header {
         border-bottom: none !important;
-        padding: 20px 25px 10px 25px;
+        padding: 0 0 1rem 0;
         position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
     #modalDetail #modalDetailLabel {
         font-size: 1.6rem;
         font-weight: 600;
-        color: #3A3A58;
-        width: calc(100% - 40px);
-        text-align: left;
+        color: #4B68FB;
+        margin: 0;
     }
 
     #modalDetail .modal-header .btn-close {
@@ -566,6 +565,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         opacity: 0.7;
         box-shadow: none !important;
         font-size: 0.8rem;
+        transition: opacity 0.2s ease;
     }
 
     #modalDetail .modal-header .btn-close:hover {
@@ -573,15 +573,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     #modalDetail .modal-body {
-        padding: 5px 25px 20px 25px;
-        font-size: 0.9rem;
+        padding: 0.75rem 0 1rem 0;
+        font-size: 0.95rem;
         color: #525278;
         line-height: 1.6;
     }
 
     #modalDetail .modal-footer {
         border-top: none !important;
-        padding: 10px 25px 20px 25px;
+        padding: 1rem 0 0 0;
         justify-content: flex-end !important;
     }
 
@@ -590,9 +590,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         color: white !important;
         border: none !important;
         border-radius: 50px !important;
-        padding: 8px 22px !important;
-        font-size: 0.85rem;
+        padding: 0.5rem 1.5rem !important;
+        font-size: 0.9rem;
         font-weight: 500;
+        transition: background-color 0.2s ease;
     }
 
     #modalDetail .modal-footer .btn-custom-tutup-modal:hover {
@@ -751,11 +752,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         #modalDetail .modal-content {
-            padding: 10px;
+            padding: 1rem;
         }
 
         #modalDetail .modal-header {
-            padding: 15px 20px 5px 20px;
+            padding: 0 0 0.75rem 0;
         }
 
         #modalDetail #modalDetailLabel {
@@ -768,17 +769,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         #modalDetail .modal-body {
-            padding: 5px 20px 15px 20px;
+            padding: 0.5rem 0 0.75rem 0;
             font-size: 0.85rem;
         }
 
         #modalDetail .modal-footer {
-            padding: 10px 20px 15px 20px;
+            padding: 0.75rem 0 0 0;
         }
 
         #modalDetail .modal-footer .btn-custom-tutup-modal {
-            padding: 7px 20px !important;
-            font-size: 0.8rem;
+            padding: 0.4rem 1.25rem !important;
+            font-size: 0.85rem;
         }
         
         .btn-kembali {

@@ -429,7 +429,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -452,7 +452,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
         </div>
         <main class="NavSide__main-content" id="mBeranda">
             <div class="dashboard-header">
-                <h2 class="page-title">Beranda</h2>
+                <h2 class="page-title" style="color:#1F2937">Beranda</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
