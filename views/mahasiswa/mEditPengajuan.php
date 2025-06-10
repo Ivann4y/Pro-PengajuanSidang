@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../../assets/css/style.css" />
   <link rel="stylesheet" href="../../extra/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <title>Edit Pengajuan Sidang</title>
 </head>
 
@@ -230,8 +231,8 @@
                   <div class="modal-body">
                     <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda sudah yakin ingin mengajukan sidang?</p>
                     <div class="d-flex justify-content-center gap-4">
-                      <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
-                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold" id="submitBtn">Lanjutkan</button>
+                      <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn">Lanjutkan</button>
                     </div>
                   </div>
                 </div>
@@ -248,6 +249,7 @@
 
 
               <!-- Modal Berhasil -->
+              <!-- modal bootstap gajadi kepake dah diganti JS, might remove later -->
               <div class="modal fade" id="modalBerhasil" tabindex="-1" aria-labelledby="modalBerhasilLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
@@ -363,17 +365,19 @@
     pendukungInput.addEventListener('change', () => updateUploadBox(pendukungInput, pendukungBox));
 
     const submitBtn = document.getElementById('submitBtn');
-    const modalBerhasilEl = document.getElementById('modalBerhasil');
-    const modalBerhasil = new bootstrap.Modal(modalBerhasilEl);
 
     submitBtn.addEventListener('click', function() {
-      modalKonfirmasi.hide();
-      modalBerhasil.show();
-
-      setTimeout(() => {
-        modalBerhasil.hide();
-        history.back();
-      }, 2000);
+      Swal.fire({
+        title: 'Berhasil',
+        text: 'Nilai akhir telah dikirim.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          history.back();
+        }
+      });
     });
   </script>
 </body>
