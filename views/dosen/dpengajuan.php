@@ -66,6 +66,21 @@
         .isiTabel td:nth-child(5) {
             border-radius: 0 20px 20px 0;
         }
+
+        .btnKonfirmasi {
+            background-color: #464869;
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            height: 40px;
+            width: 100px;
+        }
+
+        .btnKonfirmasi:hover {
+            background-color: #3a3b54;
+            color: white;
+        }
     </style>
 </head>
 
