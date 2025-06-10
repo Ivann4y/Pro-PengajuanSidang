@@ -1,6 +1,6 @@
 <?php
 $selectedTipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'TA';
-$selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'belum';
+$selectedStatus = issegitt($_GET['status']) ? $_GET['status'] : 'belum';
 $statusFilter = ($selectedStatus == 'disetujui') ? true : false;
 
 $jsonPath = __DIR__ . '/data_sidang.json'; 
