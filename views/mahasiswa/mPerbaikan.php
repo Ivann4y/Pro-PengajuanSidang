@@ -565,7 +565,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <p id="fileNameDisplay" class="fw-bold mb-0"></p>
                         </div>
                         <div class="d-flex justify-content-end mt-4"><button type="submit"
-                                class="btn btn-custom-primary" id="submitBtn" disabled>Kirim</button></div>
+                                class="btn btn-custom-primary" id="submitBtn" >Kirim</button></div>
                     </form>
                 </div>
                 <div class="mt-4"><button class="btn-kembali" onclick="location.href='mSidang.php'"><span
