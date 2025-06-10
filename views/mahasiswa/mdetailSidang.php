@@ -189,7 +189,7 @@
 
         /* NEW: NavSide__topbar CSS (global, from your provided code) */
         .NavSide__topbar {
-            display: flex;
+            display: none; /* Hide by default */
             align-items: center;
             position: fixed;
             top: 0;
@@ -198,12 +198,17 @@
             margin-left: 280px; /* Pushed by sidebar on desktop */
             height: 60px;
             background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 999;
-            padding: 0 15px;
-            justify-content: flex-start;
-            transition: margin-left 0.5s ease-in-out;
         }
+
+        @media (max-width: 700px) {
+            .NavSide__topbar {
+                display: flex; /* Show only on mobile */
+                margin-left: 0; /* Reset margin on mobile */
+            }
+        }
+
         .NavSide__topbar .NavSide__toggle { /* Styles for toggle INSIDE topbar */
             width: 40px;
             height: 40px;
