@@ -187,20 +187,19 @@
             display: block;
         }
 
-        /* NEW: NavSide__topbar CSS (global, from your provided code) */
-        .NavSide__topbar {
-            display: none; /* Hide by default */
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            margin-left: 280px; /* Pushed by sidebar on desktop */
-            height: 60px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-        }
+    .NavSide__topbar {
+        display: none;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin-left: 280px;
+        height: 60px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+    }
 
         @media (max-width: 700px) {
             .NavSide__topbar {
