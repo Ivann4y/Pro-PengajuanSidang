@@ -37,6 +37,12 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     /* CSS for page-specific elements NOT in the main style.css */
     /* NOTE: General layout styles (like margins for the container) are now handled by style.css */
 
+    .no-results-row td {
+        padding: 20px !important;
+        background-color: #f8f9fa !important;
+        font-style: italic;
+        color: #6c757d;
+    }
     .search-input-container {
       position: relative;
       width: 300px;
@@ -481,6 +487,53 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     let taModalInstance, semModalInstance;
     let pengujiCount = 1;
 
+    document.addEventListener("DOMContentLoaded", function() {
+        // ... [existing DOMContentLoaded code] ...
+        
+        // --- Search Functionality ---
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchText = this.value.toLowerCase();
+                const tableRows = document.querySelectorAll('.data-table tbody tr');
+                let anyVisible = false;
+
+                tableRows.forEach(row => {
+                    if (row.classList.contains('text-center')) {
+                        // Hide the "no data" row when searching
+                        row.style.display = 'none';
+                        return;
+                    }
+
+                    const namaCell = row.cells[2]; // Nama column (index 2)
+                    if (!namaCell) return;
+
+                    const namaText = namaCell.textContent.toLowerCase();
+                    if (namaText.includes(searchText)) {
+                        row.style.display = '';
+                        anyVisible = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if no matches found
+                const noDataRow = document.querySelector('.no-results-row');
+                if (!anyVisible && searchText !== '') {
+                    if (!noDataRow) {
+                        const tbody = document.querySelector('.data-table tbody');
+                        const tr = document.createElement('tr');
+                        tr.className = 'no-results-row text-center';
+                        tr.innerHTML = '<td colspan="5">Tidak ditemukan data yang sesuai</td>';
+                        tbody.appendChild(tr);
+                    }
+                } else if (noDataRow) {
+                    noDataRow.remove();
+                }
+            });
+        }
+    });
+    
     document.addEventListener("DOMContentLoaded", function() {
         // --- JAVASCRIPT FOR MOBILE SIDEBAR TOGGLE ---
         // Your style.css uses .NavSide__sidebar--active-mobile

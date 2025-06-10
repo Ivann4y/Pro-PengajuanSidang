@@ -184,7 +184,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 1.2cm;
         height: 45px;
       }
 
@@ -509,7 +508,7 @@
       <div class="container-fluid">
            <div class="row mb-3">
       <div class="col-12">
-        <h2 class="text-heading">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+        <h2 class="text-heading fw-semibold">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
       </div>
     </div>
     <br>
@@ -651,7 +650,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center p-3">
       <div class="modal-body">
-        <p class="fs-5 fw-semibold">Apakah yakin ingin mengirim nilai akhir?</p>
+        <p class="fs-5 fw-bold text-black">Apakah yakin ingin mengirim nilai akhir?</p>
         <div class="d-flex justify-content-center row mb5 kakimodal">
           <div class="col-md-6">
           <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal">Tidak</button>
