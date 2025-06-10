@@ -234,6 +234,7 @@
             overflow: hidden;
             transition: background-color 0.4s ease;
             margin-bottom: 1.2cm;
+            margin-right: 30px;
         }
 
         .info-card::after {
@@ -248,6 +249,7 @@
             border-bottom-right-radius: 20px;
             transition: width 0.4s ease;
             z-index: 0;
+            
         }
 
         .info-card:hover::after {
@@ -362,6 +364,7 @@
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 25px;
             margin-bottom: 1.2cm;
+            margin-right: 30px;
         }
 
         .form-card h4 {
