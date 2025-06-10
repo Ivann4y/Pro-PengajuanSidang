@@ -58,9 +58,8 @@
       }
 
       .btn-kembali:hover {
-        position: relative;
-        background-color: white;
-        color: #4B68FB;
+        background-color: #3a56e8;
+        transform: translateY(-2px);
       }
 
       .btn-kembali .icon-circle {
