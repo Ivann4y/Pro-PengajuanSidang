@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
         <h5 class="mt-3">Catatan Perbaikan</h5>
       </div>
-      <span class="badge-custom">Status Revisi : Belum Disetujui</span>
+      <span class="badge-custom">Status Revisi : Disetujui</span>
     </div>
 
     <!-- <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
