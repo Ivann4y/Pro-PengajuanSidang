@@ -1,9 +1,3 @@
-<?php
-$judul = $_GET['judul'] ?? '';
-$matkul = $_GET['matkul'] ?? '';
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,6 +12,60 @@ $matkul = $_GET['matkul'] ?? '';
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <title>Edit Pengajuan Sidang</title>
 </head>
+
+<style>
+  body {
+    font-family: "Poppins", sans-serif;
+  }
+
+  label {
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .form-control,
+  .form-select {
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    padding: 12px 15px;
+    border-radius: 12px;
+
+  }
+
+  .upload-box {
+    background-color: #e9ecef;
+    border-radius: 16px;
+    padding: 40px 20px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .upload-box:hover {
+    background-color: #dee2e6;
+  }
+
+  .upload-box.file-selected {
+    background-color: #d1e7dd;
+    /* Hijau muda */
+    border: 2px solid #0f5132;
+    color: #0f5132;
+  }
+
+  .upload-content {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+
 
 <body>
   <div id="NavSide">
@@ -80,6 +128,10 @@ $matkul = $_GET['matkul'] ?? '';
             <hr>
           </div>
 
+          <?php
+          $judul = $_GET['judul'] ?? '';
+          $matkul = $_GET['matkul'] ?? '';
+          ?>
           <form action="#" method="post">
             <div class="mb-3">
               <label for="judul" class="form-label">Judul Sidang</label>
@@ -216,58 +268,6 @@ $matkul = $_GET['matkul'] ?? '';
       </div>
     </main>
   </div>
-
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-    }
-
-    label {
-      font-weight: 500;
-      margin-bottom: 5px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .form-control,
-    .form-select {
-      font-family: "Poppins", sans-serif;
-      font-size: 16px;
-      padding: 12px 15px;
-      border-radius: 12px;
-
-    }
-
-    .upload-box {
-      background-color: #e9ecef;
-      border-radius: 16px;
-      padding: 40px 20px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .upload-box:hover {
-      background-color: #dee2e6;
-    }
-
-    .upload-box.file-selected {
-      background-color: #d1e7dd;
-      /* Hijau muda */
-      border: 2px solid #0f5132;
-      color: #0f5132;
-    }
-
-    .upload-content {
-      min-height: 100px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-  </style>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>

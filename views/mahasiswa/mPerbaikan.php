@@ -7,6 +7,7 @@ if (isset($_SESSION['pesan'])) {
     unset($_SESSION['pesan']);
 }
 
+// ... (Sisa logika PHP Anda tetap sama) ...
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
@@ -323,6 +324,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             overflow: hidden;
         }
 
+        /* =============================================================== */
+        /* =================== STYLE CSS YANG DIMODIFIKASI =============== */
+        /* =============================================================== */
+        .text-selengkapnya {
+            font-weight: 600;
+            color: #4B68FB;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            margin-left: 4px; /* Memberi sedikit spasi dari teks sebelumnya */
+        }
+
+        .card-comment:hover .text-selengkapnya {
+            color: #ffffff;
+        }
+        /* =============================================================== */
+        /* ================= AKHIR STYLE CSS YANG DIMODIFIKASI =========== */
+        /* =============================================================== */
+
         .revision-card {
             background-color: white;
             border-radius: 1.5rem;
@@ -538,14 +558,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             class="badge-custom status-belum-disetujui">Status Revisi : Belum Disetujui</span>
                     </div>
                 </div>
-                <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail"><strong>Timotius
-                        Victory, S.Kom, M.Kom - Penguji</strong>
-                    <p class="mt-2 mb-0 text-truncate-2">Pastikan seluruh bagian dokumen mengikuti format penulisan...
+
+                <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
+                    <strong>Timotius Victory, S.Kom, M.Kom - Penguji</strong>
+                    <p class="mt-2 mb-0 text-truncate-2">
+                        Pastikan seluruh bagian dokumen mengikuti format penulisan...
+                        <span class="text-selengkapnya">Selengkapnya...</span>
                     </p>
                 </div>
-                <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail"><strong>Yosep Setiawan,
-                        S.Kom, M.Kom - Penguji</strong>
-                    <p class="mt-2 mb-0 text-truncate-2">Pastikan seluruh bagian dokumen mengikuti format penulisan...
+                <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
+                    <strong>Yosep Setiawan, S.Kom, M.Kom - Penguji</strong>
+                    <p class="mt-2 mb-0 text-truncate-2">
+                        Pastikan seluruh bagian dokumen mengikuti format penulisan...
+                        <span class="text-selengkapnya">Selengkapnya...</span>
                     </p>
                 </div>
                 <div class="revision-card">
@@ -580,17 +605,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
                             <div class="modal-body">
                                 <p>Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh
-                                panduan akademik,
-                                termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali
-                                penggunaan bahasa.
-                                Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa
-                                ilmiah yang baku dan konsisten.
-                                Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh
-                                panduan akademik,
-                                termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali
-                                penggunaan bahasa.
-                                Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa
-                                ilmiah yang baku dan konsisten.
+                                    panduan akademik,
+                                    termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali
+                                    penggunaan bahasa.
+                                    Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa
+                                    ilmiah yang baku dan konsisten.
+                                    Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh
+                                    panduan akademik,
+                                    termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali
+                                    penggunaan bahasa.
+                                    Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa
+                                    ilmiah yang baku dan konsisten.
 </p>
                             </div>
                             <div class="modal-footer"><button type="button" class="btn btn-secondary"
@@ -606,19 +631,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php
     if (!empty($pesan)):
+        // Cek apakah pesan mengandung kata 'sukses' untuk menentukan jenis notifikasi
         $isSuccess = strpos(strtolower($pesan), 'sukses') !== false;
-        $icon = $isSuccess ? 'success' : 'error';
-        $title = $isSuccess ? 'Berhasil!' : 'Oops...';
+        // Membersihkan prefiks "Sukses: " atau "Error: " dari pesan untuk ditampilkan
+        $cleanPesan = preg_replace('/^(Sukses|Error): /i', '', $pesan);
         ?>
         <script>
-            Swal.fire({
-                title: '<?php echo $title; ?>',
-                text: '<?php echo addslashes(preg_replace("/\r|\n/", "\\n", $pesan)); ?>',
-                icon: '<?php echo $icon; ?>',
-                confirmButtonColor: '<?php echo $isSuccess ? "#4FD382" : "#FD7D7D"; ?>'
-            });
+            // Gunakan if-else PHP untuk memilih template modal yang sesuai
+            <?php if ($isSuccess): ?>
+                // Tampilkan modal BERHASIL sesuai permintaan Anda
+                Swal.fire({
+                    title: 'Berhasil',
+                    text: '<?php echo addslashes($cleanPesan); ?>', // Menggunakan pesan dinamis
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4B68FB'
+                });
+            <?php else: ?>
+                // Tampilkan modal ERROR sesuai permintaan Anda
+                Swal.fire({
+                    title: 'Error',
+                    text: '<?php echo addslashes($cleanPesan); ?>', // Menggunakan pesan dinamis
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4B68FB'
+                });
+            <?php endif; ?>
         </script>
     <?php endif; ?>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const menuToggle = document.querySelector(".NavSide__toggle");
@@ -677,9 +718,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     event.preventDefault();
                     Swal.fire({
                         html: `
-                    <div class="custom-swal-title">Perhatian</div>
-                    <div class="custom-swal-text">Apakah anda sudah yakin ingin mengupload dokumen?</div>
-                `,
+                        <div class="custom-swal-title">Perhatian</div>
+                        <div class="custom-swal-text">Apakah anda sudah yakin ingin mengupload dokumen?</div>
+                    `,
                         showCancelButton: true,
                         confirmButtonText: 'Lanjutkan',
                         cancelButtonText: 'Batalkan',
