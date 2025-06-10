@@ -170,7 +170,7 @@
 .NavSide__main-content .btn-kembali {
     width: 100% !important;
     max-width: 150px;
-    margin: auto;
+    margin: 40px auto 0; 
 }
 
  .NavSide__main-content  #carddetailPenilaian,
@@ -312,10 +312,10 @@
       
       #cardPenilaian {
         background-color: #f2f2f2;
-        border-radius: 50px;
+        border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
-        margin-left: 50px;
+        margin-left: 0;
       }
       label
         {
@@ -348,7 +348,7 @@
       #catatan {
         width: 100%;
         height: 150px;
-        border-radius: 30px;
+        border-radius: 20px;
         font-size: 1rem;
         margin-top: 20px;
         
@@ -367,7 +367,7 @@
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
             display: inline-flex; 
             align-items: center; 
-            margin-top: 1.2cm;
+            margin-top:50px; 
         }
         .btn-kembali:hover {
             position: relative;
@@ -460,30 +460,33 @@
                 <img src="../../assets/img/img5.png" alt="Mahasiswa" class="img-fluid rounded" />
             </div>
         </div>
-        <div class="row mt-5 align-items-center justify-content-between">
-            <div class="card" id="carddetailPenilaian">
-                <div class="card-body">
-                    <h3 class="card-title">Detail Penilaian :</h3>
-                    <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-                        <span><strong>Nilai Laporan :</strong> 95</span>
-                        <span><strong>Materi Presentasi :</strong> 90</span>
-                        <span><strong>Penyampaian :</strong> 94</span>
-                        <span><strong>Nilai Proyek :</strong> 93</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-5 align-items-center justify-content-between">
-            <div class="col-md-12">
-                <div class="card" id="cardcatatan">
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card" id="carddetailPenilaian">
                     <div class="card-body">
-                        <h3 class="card-title">Catatan:</h3>
-                        --
+                        <h3 class="card-title">Detail Penilaian :</h3>
+                        <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
+                            <span><strong>Nilai Laporan :</strong> 95</span>
+                            <span><strong>Materi Presentasi :</strong> 90</span>
+                            <span><strong>Penyampaian :</strong> 94</span>
+                            <span><strong>Nilai Proyek :</strong> 93</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+              <div class="row mt-5">
+                  <div class="col-12">
+                      <div class="card" id="cardcatatan">
+                          <div class="card-body">
+                              <h3 class="card-title">Catatan:</h3>
+                              tidak  catatan
+                          </div>
+                      </div>
+                  </div>
+              </div>
                <button class="btn-kembali" onclick="location.href='mSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
