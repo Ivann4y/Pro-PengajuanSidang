@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="../../css/button-styles.css" />
     <link rel="stylesheet" href="../../extra/style.css" />
     <title>Dosen - Nilai Akhir</title>
-    <styl>
+    <style>
       body,
       .card,
       .form-control,
