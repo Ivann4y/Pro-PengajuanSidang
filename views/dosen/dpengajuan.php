@@ -66,6 +66,21 @@
         .isiTabel td:nth-child(5) {
             border-radius: 0 20px 20px 0;
         }
+
+        .btnKonfirmasi {
+            background-color: #464869;
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            height: 40px;
+            width: 100px;
+        }
+
+        .btnKonfirmasi:hover {
+            background-color: #3a3b54;
+            color: white;
+        }
     </style>
 </head>
 
@@ -213,7 +228,7 @@
                         <div class="modal-body mx-auto">
                             Apakah anda yakin ingin keluar?
                         </div>
-                        <div class="modal-footer justify-content-center">
+                        <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                             <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                         </div>

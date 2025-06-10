@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mime_alternatif_zip = "application/x-zip-compressed";
 
             if (!in_array($ekstensi_file, $ekstensi_diizinkan)) {
-                $pesan = "Error: Format file tidak diizinkan (berdasarkan ekstensi). Hanya .pdf, .docx, .pptx, dan .zip yang boleh diunggah.";
+                $pesan = "Error: Format file tidak diizinkan. Hanya .pdf, .docx, .pptx, dan .zip yang boleh diunggah.";
             } else {
                 $tipe_mime_file_asli = "";
                 if (function_exists('finfo_open')) {
@@ -71,7 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
         }
-
     } elseif (isset($_FILES["fileInput"])) {
         switch ($_FILES["fileInput"]["error"]) {
             case UPLOAD_ERR_INI_SIZE:
@@ -884,14 +883,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </form>
             </div>
 
-            <div class="mt-4">
-                <button class="btn-kembali" onclick="location.href='mSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>
-            </div>
+                <div class="mt-4">
+                    <button class="btn-kembali" onclick="location.href='mSidang.php'">
+                        <span class="icon-circle">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </span>
+                        Kembali
+                    </button>
+                </div>
 
             <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel"
                 aria-hidden="true">

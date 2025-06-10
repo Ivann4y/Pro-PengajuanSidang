@@ -222,8 +222,7 @@
                   id="nilaiMahasiswa"
                   placeholder="A"
                   maxlength="1"
-                  disabled 
-                />
+                  readonly/>
               </div>
             </div>
           </div>
@@ -241,7 +240,7 @@
         </div>
       </div>
 
-
+    
       <!-- Detail Penilaian Card -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="card" id="carddetailPenilaian">
@@ -256,7 +255,7 @@
                 id="detailpenilaian"
                 placeholder="90"
                 maxlength="3"
-                disabled>
+                readonly>
                 
                 
               <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
@@ -267,7 +266,7 @@
                 id="detailpenilaian"
                 placeholder="85"
                 maxlength="3"
-                disabled>
+                readonly>
                 
 
               <label for="Penyampaian" id="labelpenilaian">Penyampaian:</label>
@@ -278,18 +277,18 @@
                 id="detailpenilaian"
                 placeholder="95"
                 maxlength="3"
-                disabled>
+                readonly>
                 
-
+               
               <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek:</label>
               <input
                 type="type"
                 class="form-control form-control-lg text-center"
                 name="NilaiProyek"
                 id="detailpenilaian"
-                placeholder="93"
+                placeholder="87"
                 maxlength="3"
-                disabled>
+                readonly>
             </div>
           </div>
         </div>
@@ -305,9 +304,8 @@
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
-                placeholder="Pertahankan terus semangat belajarnya kurangin main banyakin minum air putih derr biar ga sariawan " 
-                disabled>
-              </textarea>
+                placeholder="Pertahankan terus semangat belajarnya, kurangin main, banyakin minum air putih derr biar ga sariawan"
+                readonly></textarea>
             </div>
           </div>
         </div>
@@ -328,7 +326,7 @@
     </div>
   </div>
   
-
+    
   <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   
@@ -336,7 +334,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   
   <script>
-    // Sidebar Toggle Logic
+    // Sidebar Toggle Logic//
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
 
@@ -358,7 +356,10 @@
         }
       };
     }
-    
+
+    function pindahKeHalamanDaftarSidang() {
+    window.location.href = "aDaftarSidang.php"; // GANTI kalau harus ke halaman lain
+  }
   </script>
 </body>
 </html>
