@@ -363,7 +363,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         </div>
                     </div>
                     <div>
-                        <div class="statusCard card-perbaikan" onclick="location.href='aPenjadwalan.php'">
+                        <div class="statusCard card-perbaikan" onclick="location.href='dDaftarSidang.php'">
                             <div class="statusTitle">Perbaikan</div>
                             <div class="statusNumberAndText">
                                 <div class="statusNumber">2</div>
@@ -375,7 +375,7 @@ if ($_SESSION['role'] !== 'dosen') {
 
                 <div class="col-lg-4">
                     <div class="mb-4">
-                        <div class="statusCard card-penilaian" onclick="location.href='aPenjadwalan.php'">
+                        <div class="statusCard card-penilaian" onclick="location.href='dDaftarSidang.php'">
                             <div class="statusTitle">Penilaian</div>
                             <div class="statusNumberAndText">
                                 <div class="statusNumber">2</div>
