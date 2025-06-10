@@ -244,7 +244,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     .NavSide__topbar {
-        display: flex;
+        display: none;
         align-items: center;
         position: fixed;
         top: 0;
@@ -252,12 +252,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 100%;
         margin-left: 280px;
         height: 60px;
-        background-color: #FFFFFF;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         z-index: 999;
-        padding: 0 15px;
-        justify-content: flex-start;
-        transition: margin-left 0.5s ease-in-out;
     }
 
     .NavSide__topbar .NavSide__toggle {
