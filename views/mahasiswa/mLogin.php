@@ -123,34 +123,50 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
         </div>
 
         <div class="log d-flex justify-content-center align-items-center pb-5">
-            <form action="../../auth.php" method="POST">
+            <?php
+            $error = $_GET['error'] ?? '';
+            ?>
+
+            <form action="../../auth.php" method="POST" novalidate>
                 <div class="text-center pt-5 mb-4">
                     <h2><strong>Masuk Akun Mahasiswa</strong></h2>
                 </div>
+                <input type="hidden" name="role" value="mahasiswa">
+
                 <div class="mb-3">
-                    <?php if (isset($_GET['error'])): ?>
-                        <div class="alert alert-danger text-center">
-                            <?php
-                            if ($_GET['error'] === '1') {
-                                echo "NIM atau Password salah!";
-                            } elseif ($_GET['error'] === 'role') {
-                                echo "Role tidak ditemukan!";
-                            }
-                            ?>
-                        </div>
+                    <input
+                        type="text"
+                        class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                        id="username"
+                        name="username"
+                        placeholder="NIM"
+                        value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
+                    <?php if ($error === 'empty'): ?>
+                        <small class="text-danger">NIM dan Kata Sandi harus diisi!</small>
+                    <?php elseif ($error === '1'): ?>
+                        <small class="text-danger">NIM atau Kata Sandi salah!</small>
                     <?php endif; ?>
-                    <input type="hidden" name="role" value="mahasiswa">
-                    <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIM" required>
                 </div>
+
                 <div class="mb-3">
-                    <input type="password" class="form-control form-control-lg border border-dark" id="password" name="password" placeholder="Kata Sandi" required>
-                    <a href="../lupaPassword.php" class="float-end"> Lupa kata sandi?</a>
+                    <input
+                        type="password"
+                        class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                        id="password"
+                        name="password"
+                        placeholder="Kata Sandi">
+                    <a href="#" class="float-end" onclick="toLupaPassword()"> Lupa kata sandi?</a>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mt-3">Masuk</button>
             </form>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script>
+        function toLupaPassword() {
+            window.location.href = '../../views/lupaPassword.php';
+        }
+    </script>
 </body>
 
 </html>

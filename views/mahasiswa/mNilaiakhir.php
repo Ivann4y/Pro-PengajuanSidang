@@ -23,6 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../css/style.css" />
     <link rel="stylesheet" href="../../extra/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <title>Mahasiswa - Nilai Akhir</title>
     <style>
        @media (max-width: 750px) {
@@ -390,15 +391,15 @@
             background-color: #4B68FB;
         }
 
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
+        .btn-kembali .icon-circle i.fa-solid.fa-arrow-left {
+            color: #4B68FB !important;
             font-size: 1rem; 
             transition: color 0.3s ease;
         }
 
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }        
+        .btn-kembali:hover .icon-circle i.fa-solid.fa-arrow-left {
+            color: white !important;
+        }
 
     </style>
   </head>
