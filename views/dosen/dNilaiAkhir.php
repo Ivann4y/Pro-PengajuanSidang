@@ -67,8 +67,9 @@
       }
 
       .btn-kembali:hover {
-        background-color: #3a56e8;
+        background-color: white;
         transform: translateY(-2px);
+        color:#4B68FB;
       }
 
       .btn-kembali .icon-circle {
@@ -172,6 +173,14 @@
         height: 18px;
         border-radius: 50%;
         font-size: 16px;
+      }
+      #iyamodal{
+        margin-top: 20px;
+        background-color: #4FD382;
+      }
+      #tidakmodal{
+        margin-top: 20px;
+        background-color: #FD7D7D;
       }
 
       .modal-content {
@@ -666,10 +675,10 @@ input.form-control:active {
         <p class="fs-5 fw-semibold text-black">Apakah nilai akhir sama dengan nilai sementara?</p>
         <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="TutupKonfirmasiModal()">Tidak</button>
+          <button type="button" class="btnKonfirmasi" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
           </div>
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="isiNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="isiNilaiAkhir()">Iya</button>
           </div>
         </div>
       </div>
@@ -683,10 +692,10 @@ input.form-control:active {
         <p class="fs-5 fw-bold text-black">Apakah yakin ingin mengirim nilai akhir?</p>
         <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
           </div>
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="kirimNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
           </div>
         </div>
       </div>
