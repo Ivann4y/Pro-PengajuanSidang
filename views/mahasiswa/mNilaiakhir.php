@@ -440,7 +440,7 @@
    <main class="NavSide__main-content">
     <div class="container-fluid ">
         <div class="row mb-5">
-            <h2 style="margin-left: 50px ;">
+            <h2 style="margin-left: 5px ;">
                 <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
             </h2>
         </div>
@@ -451,7 +451,7 @@
                         <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
                         <div>
                             <input type="text" class="form-control form-control-lg text-center mx-auto"
-                                id="nilaiMahasiswa" placeholder="" value="--" readonly />
+                                id="nilaiMahasiswa" placeholder="" value="A" readonly />
                         </div>
                     </div>
                 </div>
@@ -465,10 +465,10 @@
                 <div class="card-body">
                     <h3 class="card-title">Detail Penilaian :</h3>
                     <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-                        <span><strong>Nilai Laporan:</strong> --</span>
-                        <span><strong>Materi Presentasi:</strong> --</span>
-                        <span><strong>Penyampaian:</strong> --</span>
-                        <span><strong>Nilai Proyek:</strong> --</span>
+                        <span><strong>Nilai Laporan:</strong> 95</span>
+                        <span><strong>Materi Presentasi:</strong> 90</span>
+                        <span><strong>Penyampaian:</strong> 94</span>
+                        <span><strong>Nilai Proyek:</strong> 93</span>
                     </div>
                 </div>
             </div>
