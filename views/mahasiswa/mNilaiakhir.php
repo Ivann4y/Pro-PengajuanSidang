@@ -187,7 +187,6 @@
 
     
   }
-
   .NavSide__main-content #detailpenilaian {
     width: 15% !important;
   }
