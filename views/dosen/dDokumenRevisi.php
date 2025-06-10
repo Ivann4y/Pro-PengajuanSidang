@@ -583,7 +583,7 @@
             </div>
 
             <div class="button-group-bottom">
-                <button class="btn btn-kembali" onclick="pindahKeHalamanDaftarSidang()">
+                <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>

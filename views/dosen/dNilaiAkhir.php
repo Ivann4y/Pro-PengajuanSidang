@@ -184,7 +184,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 1.2cm;
         height: 45px;
       }
 
@@ -509,7 +508,7 @@
       <div class="container-fluid">
            <div class="row mb-3">
       <div class="col-12">
-        <h2 class="text-heading">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+        <h2 class="text-heading fw-semibold">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
       </div>
     </div>
     <br>
