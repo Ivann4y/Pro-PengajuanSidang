@@ -443,7 +443,7 @@
                 <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
             </h2>
         </div>
-        <div class="row mt-5 align-items-center justify-content-between">
+          <div class="row mt-5 align-items-center justify-content-between">
             <div class="col-md-6">
                 <div class="card" id="cardNilai">
                     <div class="card-body">
