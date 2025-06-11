@@ -30,339 +30,240 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-    /* --- General and Font Styles --- */
-    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      background-color: #f9fafb; /* Consistent background for the whole page */
-    }
-
-    /* --- Main Layout Container --- */
-    #NavSide {
-      display: flex;
-      min-height: 100vh;
-      position: relative;
-    }
-
-    /* --- Sidebar (Desktop View) --- */
-    .NavSide__sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: 280px;
-      background: #4b68fb;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.4s ease-in-out;
-      overflow-y: auto;
-    }
-
-    .NavSide__sidebar-brand {
-      padding: 20px 10px 50px 10px;
-      text-align: center;
-    }
-
+    /* Sidebar and Topbar adjustments for smaller screens if not already present/correct */
+    /* Ensure your NavSide__sidebar-brand img is horizontally centered */
     .NavSide__sidebar-brand img {
-      width: 90%;
-      max-width: 180px;
-      height: auto;
+        display: inline-block; /* Ensure logo is centered */
     }
 
-    .NavSide__sidebar-nav {
-      list-style: none;
-      padding-left: 0;
-      flex-grow: 1;
-    }
-
+    /* Add cursor pointer for all sidebar items */
     .NavSide__sidebar-item {
-      position: relative;
-      width: 100%;
-      border-top-left-radius: 20px;
-      border-bottom-left-radius: 20px;
-      margin-bottom: 15px;
-      cursor: pointer;
+        cursor: pointer;
     }
 
-    .NavSide__sidebar-item a {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: #ffffff;
-      padding: 15px 10px;
-      height: 60px;
-      box-sizing: border-box;
+    /* Ensure the NavSide__topbar handles spacing and alignment for mobile */
+
+    .NavSide__topbar i {
+        display: flex;
+        align-items: center;
+        font-size: 2.5rem;
+        color: #343a40;
+        background-color: white; /* Ensure no background from old styles */
+        width: auto;
+        height: auto;
+        border-radius: 0;
+        font-weight: normal;
     }
 
-    .NavSide__sidebar-item.NavSide__sidebar-item--active {
-      background: #ffffff;
-    }
-
-    .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-      color: #4b68fb;
-    }
-
-    /* Curved effect for active item */
-    .NavSide__sidebar-item b:nth-child(1), .NavSide__sidebar-item b:nth-child(2) {
-      position: absolute;
-      right: 0;
-      width: 100%;
-      height: 20px;
-      background: #ffffff;
-      display: none;
-    }
-    .NavSide__sidebar-item b:nth-child(1) { top: -20px; }
-    .NavSide__sidebar-item b:nth-child(2) { bottom: -20px; }
-    .NavSide__sidebar-item b:nth-child(1)::before, .NavSide__sidebar-item b:nth-child(2)::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #4b68fb;
-    }
-    .NavSide__sidebar-item b:nth-child(1)::before { border-bottom-right-radius: 20px; }
-    .NavSide__sidebar-item b:nth-child(2)::before { border-top-right-radius: 20px; }
-    .NavSide__sidebar-item.NavSide__sidebar-item--active b { display: block; }
-
-    /* --- Main Content --- */
-    .NavSide__main-content {
-      flex-grow: 1;
-      padding: 2rem;
-      margin-left: 280px;
-      transition: margin-left 0.4s ease-in-out;
-    }
-
-    /* --- Header within Main Content --- */
+    /* Header from aDaftarSidang.php */
     .main-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
     }
+
     .header-left-panel {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
     }
-    .main-title {
-        color: #4B68FB;
-        font-weight: 700;
-        font-size: 2.1rem;
-        margin-bottom: 1rem;
-    }
+
     .filter-container {
         display: flex;
         align-items: center;
         gap: 10px;
     }
+
     .filter-container .filter-label {
         font-weight: 600;
+        font-size: 1rem;
+        color: #333;
     }
+
+    .main-title {
+        color: #4B68FB;
+        font-weight: 700;
+        font-size: 2.1rem;
+        margin-bottom: 1rem;
+        padding-left:10px;
+        margin-top: -0.5vh;
+    }
+
     .header-right-panel {
         display: flex;
-        align-items: center;
-        gap: 1.5rem;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.75rem;
     }
+
+    /* Profile icon (merged from both, prioritizing aDaftarSidang's visual) */
     .profile-icon {
         font-size: 2.5rem;
         color: #343a40;
-        cursor: pointer;
+        background-color: transparent; /* Ensure no background from old styles */
+        width: auto;
+        height: auto;
+        border-radius: 0;
+        font-weight: normal;
+        margin-top: -0.5vh;
+        margin-right: 1vh;
     }
+
+    /* Search input group from aDaftarSidang.php */
     .search-input-group {
         background-color: #F3F4F6;
         border-radius: 0.5rem;
         overflow: hidden;
-        width: 250px;
+        width: 250px; /* Standardize width as seen in aDaftarSidang.php */
+        margin-top: 0.19vh -1px;
+        margin-right : 1vh;
     }
-    .search-input-group input.form-control, .search-input-group .input-group-text {
+
+    .search-input-group input.form-control {
         background-color: transparent;
         border: none;
         box-shadow: none;
+        padding-left: 1rem; /* Adjust padding as search icon is inside span */
     }
 
-    /* Filter Buttons & Dropdowns */
-    #ddAdminSidangTypeButton, #ddAdminSidangStatusButton {
-        background-color: #4538db;
+    .search-input-group .input-group-text {
+        background-color: transparent;
+        border: none;
+        padding-right: 0; /* No padding on right as input has left padding */
+    }
+
+    /* Filter Buttons (merged from aPenjadwalan's filter-btn and aDaftarSidang's ddAdminSidangTypeButton) */
+    #ddAdminSidangTypeButton, #ddAdminSidangStatusButton { /* Apply to both filter buttons */
+        background-color: #4B68FB; /* Specific blue from aPenjadwalan.php */
         color: white;
         border-radius: 20px;
         padding: 8px 20px;
         font-weight: 500;
+        font-size: 0.95rem;
         border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, color 0.2s;
     }
+    #ddAdminSidangTypeButton:hover, #ddAdminSidangStatusButton:hover {
+        background-color: #312a9e;
+    }
+
+    /* Dropdown Menu styling (merged from both) */
     .dropdown-menu {
         border-radius: 20px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         border: none;
-        background-color: #4538db;
         padding: 5px 0;
-    }
-    .dropdown-item {
-        color: rgb(180, 180, 180);
-        transition: color 0.2s;
         background-color: #4538db;
-        padding: 10px 20px;
-    }
-    .dropdown-item:hover, .dropdown-item:focus {
-        background-color: #4538db;
-        color: white;
     }
 
-    /* --- Table Styles --- */
-    .table-container {
-        overflow-x: auto;
+    .dropdown-item {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+        background-color: #4538db;
+        color: rgb(180, 180, 180);
+        transition: color 0.2s;
+        border-radius: 20px; /* Apply border-radius to items for consistency */
     }
+
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background-color: #4538db;
+        color: rgb(255, 255, 255);
+    }
+
+    .dropdown-toggle::after {
+        vertical-align: 0.15em;
+        margin-left: 0.5em;
+    }
+
+    /* Table styling (Prioritizing aDaftarSidang.php's table-admin-custom) */
     .table-admin-custom {
         border-spacing: 0 10px;
         border-collapse: separate;
         width: 100%;
-        min-width: 800px;
+        margin-top: 1rem; /* From aPenjadwalan.php's data-table */
+        min-width: 800px; /* From aPenjadwalan.php's data-table */
     }
+
     .table-admin-custom thead th {
         padding: 12px 15px;
-        border-bottom: 2px solid #dee2e6;
-        font-weight: 600;
-        color: #555;
         text-align: left;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600; /* From aPenjadwalan.php's data-table */
+        color: #555; /* From aPenjadwalan.php's data-table */
     }
+
     .table-admin-custom tbody tr.isiTabel {
         background-color: #F5F5F5;
         transition: background-color 0.3s ease, color 0.3s ease;
+        cursor: pointer; /* Ensure clickable rows show cursor */
     }
-    .table-admin-custom tbody tr.isiTabel:hover {
-        background-color: #4B68FB;
-        color: #FFFFFF;
-    }
+
     .table-admin-custom .isiTabel td {
         padding: 15px 18px;
         vertical-align: middle;
     }
-    .table-admin-custom .isiTabel td:first-child { border-radius: 10px 0 0 10px; }
-    .table-admin-custom .isiTabel td:last-child { border-radius: 0 10px 10px 0; }
+
+    .table-admin-custom .isiTabel td:first-child {
+        border-radius: 10px 0 0 10px;
+    }
+
+    .table-admin-custom .isiTabel td:last-child {
+        border-radius: 0 10px 10px 0;
+        text-align: center; /* For action column */
+    }
+
+    .table-admin-custom tbody tr.isiTabel:hover {
+        background-color: #4B68FB;
+        color: #FFFFFF;
+    }
+
+    /* No results row from aPenjadwalan.php */
     .no-results-row td {
         padding: 20px !important;
-        text-align: center;
         background-color: #f8f9fa !important;
         font-style: italic;
         color: #6c757d;
-        border-radius: 10px;
+        border-radius: 10px; /* Added for visual consistency with table rows */
     }
+
+    /* Detail button for actions from aDaftarSidang.php */
     .detail-btn {
         border: none !important;
         background-color: transparent !important;
         color: #4B68FB;
-    }
-    .table-admin-custom tbody tr.isiTabel:hover .detail-btn { color: #FFFFFF; }
-
-    /* --- Mobile Top Bar and Toggle --- */
-    .NavSide__topbar {
-        display: none; /* Hidden on desktop */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 60px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        z-index: 999;
-        align-items: center;
-        padding: 0 15px;
-        justify-content: space-between;
+        padding: 0.25rem 0.5rem;
     }
 
-    .NavSide__toggle {
-        cursor: pointer;
-        font-size: 28px;
-        color: #4b68fb;
-        position: relative;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    /* The JS will toggle the visibility of open/close icons */
-    .NavSide__toggle .bi.close { display: none; }
-    .NavSide__toggle.NavSide__toggle--active .bi.open { display: none; }
-    .NavSide__toggle.NavSide__toggle--active .bi.close { display: block; }
-    .NavSide__topbar .header-icons .profile-icon { font-size: 2.2rem; }
-
-
-    /* --- Responsive Styles --- */
-
-    /* Main breakpoint for switching to mobile layout */
-    @media (max-width: 940px) {
-        /* --- Hide Desktop Sidebar, Show Mobile Topbar --- */
-        .NavSide__sidebar {
-            transform: translateX(-100%);
-            width: 260px; /* Slightly narrower for mobile */
-            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
-        }
-        .NavSide__sidebar.NavSide__sidebar--active-mobile {
-            transform: translateX(0);
-        }
-        
-        .NavSide__topbar {
-            display: flex;
-        }
-
-        /* Adjust main content for mobile layout */
-        .NavSide__main-content {
-            margin-left: 0;
-            padding: 1rem;
-            padding-top: 75px; /* Space for fixed top bar */
-        }
-
-        /* Adjust Header for Mobile */
-        .main-header {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 1rem;
-        }
-
-        /* Desktop profile icon is hidden, we use the one in the topbar */
-        .header-right-panel .profile-icon {
-            display: none;
-        }
-        .header-right-panel {
-            width: 100%;
-            gap: 0;
-        }
-        .search-input-group {
-            width: 100%;
-        }
+    .detail-btn:hover {
+        opacity: 0.7;
     }
 
-    /* Finer adjustments for very small screens */
-    @media (max-width: 700px) {
-        .main-title {
-            font-size: 1.8rem;
-        }
-        .filter-container {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        .filter-container .dropdown .btn {
-            width: 100%;
-        }
+    .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+        color: #FFFFFF;
+        opacity: 1;
     }
 
-    /* --- All Modal Styles --- */
-    .modal-header-custom { background-color: #4B68FB; color: white; }
-    .modal-footer .btn-danger { background-color: #FD7D7D; border-color: #FD7D7D; }
-    .modal-footer .btn-success { background-color: #4FD382; border-color: #4FD382; }
+    /* Modal styling from aDaftarSidang.php */
+    .modal-header-custom {
+        background-color: #4B68FB;
+        color: white;
+    }
+
+    .modal-footer .btn-danger {
+        background-color: #FD7D7D;
+        border-color: #FD7D7D;
+    }
+
+    .modal-footer .btn-success {
+        background-color: #4FD382;
+        border-color: #4FD382;
+    }
+
+    /* Specific Modal Form styles from aPenjadwalan.php (keep these as they are unique to its modals) */
     .modal-content-custom-form { border-radius: 25px !important; }
     .modal-body .form-container { padding: 15px; background-color:rgb(255, 255, 255); border-radius: 20px; }
     .modal-body .form-group { display: flex; align-items: center; margin-bottom: 15px; }
@@ -389,29 +290,77 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .modal-body .form-toggle-buttons button:hover { background-color: #ddd; }
     .form-error-message { color: red; margin-bottom: 15px; text-align: left; font-weight: 500; padding-left: 175px;}
 
-    /* Modal responsiveness */
+    @media (max-width: 940px) {
+    /* 1. Allow the main header content to wrap to the next line */
+    .main-header {
+        position: relative; /* Needed for absolute positioning of the icon */
+        flex-wrap: wrap; /* Allows the right panel to drop below */
+    }
+
+    /* 2. Move the profile icon to the top right of the header */
+    .main-header .header-right-panel .profile-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 2.2rem; /* Optional: adjust size */
+    }
+    .profile-icon {
+        margin-top: -5px;
+    }
+    /* 3. Make the right panel (now just the search bar) take up the full width */
+    .header-right-panel {
+        width: 100%;
+        margin-top: 1rem; /* Add space between the filters and the search bar */
+        /* Override column layout as it's no longer needed */
+        flex-direction: row; 
+        align-items: flex-start;
+    }
+
+    /* 4. Make the search bar fill the available width */
+    .search-input-group {
+        width: 50% !important; /* Use !important to ensure it overrides inline styles if any */
+        }
+    }
+
+    /* Responsive adjustments for the new main header structure */
     @media (max-width: 700px) {
-        .modal-body .form-group {
+        .main-header {
+            padding-top: 0;
+        }
+        #NavSide .main-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 15px;
+        }
+        #NavSide .search-input-group { width: 100%; }
+
+        #NavSide .filter-container {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #NavSide .filter-container .dropdown { 
+            margin-right: 0 !important; 
+            color: #4B68FB;
+        } /* Overrides Bootstrap default margin */
+
+        /* Adjust main content padding when topbar is active */
+        #NavSide .NavSide__main-content {
+            padding-top: 75px; /* Increase this if needed to prevent content overlap with topbar */
+        }
+
+        #NavSide .modal-body .form-group {
             flex-direction: column;
             align-items: flex-start;
             gap: 5px;
         }
-        .modal-body .form-group label {
-            width: 100%;
-            margin-right: 0;
-            text-align: left;
-        }
-        .modal-body .form-actions {
-            flex-direction: column;
-            gap: 10px;
-        }
-        .modal-body .form-actions .btn {
-            width: 100%;
-            margin-right: 0;
-        }
-        .modal-body .form-error-message {
-            padding-left: 0;
-        }
+        #NavSide .modal-body .form-group label { width: 100%; margin-right: 0; }
+        #NavSide .modal-body .form-actions { flex-direction: column; gap: 10px; }
+        #NavSide .modal-body .form-actions .btn { width: 100%; margin-right: 0; }
+        #NavSide .form-error-message { padding-left: 0; }
+
+       #NavSide .main-header .header-right-panel .profile-icon {
+        display: none; /* Correct value is 'none', not 'hide' */
+    }
     }
   </style>
 </head>
