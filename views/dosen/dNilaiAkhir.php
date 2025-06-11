@@ -763,9 +763,9 @@ input.form-control:active {
   <div class="card flex-fill" id="carddataMahasiswa">
     <div class="card-body card-soft px-4 py-3">
       <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
-      <div class="info-card d-flex flex-wrap gap-4">
+      <div class="d-flex flex-wrap gap-1 px-4 py-3">
         <!-- Section 1 -->
-        <div class="section flex-fill" style="min-width:220px; margin-top:35px;">
+        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px;">
           <!-- NIM -->
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
@@ -784,7 +784,7 @@ input.form-control:active {
           </div>
         </div>
         <!-- Section 2 -->
-        <div class="section2 flex-fill" style="min-width:180px; margin-top:35px;">
+        <div class="section2" style="flex: 1 1 200px;; margin-top:25px;">
           <!-- Mata Kuliah -->
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
