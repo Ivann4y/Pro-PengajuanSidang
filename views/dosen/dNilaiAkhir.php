@@ -927,7 +927,6 @@ input.form-control:active {
         <div class="d-flex justify-content-between px-5">
           <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
           <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
-          
         </div>
       </div>
     </div>
