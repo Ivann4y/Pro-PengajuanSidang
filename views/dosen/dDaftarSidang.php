@@ -110,29 +110,20 @@ if ($_SESSION['role'] !== 'dosen') {
             color: white !important;
         }
 
-        .bodyHeading {
-        font-family: 'Poppins', sans-serif;
-        font-size: 28px;
-        font-weight: 600;
-        color: #2B2D42;
-        margin-bottom: 0;
-    }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            margin-bottom: 30px;
+        }
 
-    .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
-    margin-bottom: 30px;
-}
-
-.dashboard-header .bodyHeading {
-    font-weight: bold;
-    font-size: 40px;
-    margin: 0;
-    color: #1a1a1a; /* optional: sesuai tema */
-}
-
+        .dashboard-header .bodyHeading {
+            font-weight: bold;
+            font-size: 40px;
+            margin: 0;
+            color: #1a1a1a; /* optional: sesuai tema */
+        }
     </style>
 </head>
 
@@ -196,23 +187,14 @@ if ($_SESSION['role'] !== 'dosen') {
                     <div class="row">
                     </div><br><br>
                     <div class="row">
-                    <div class="d-flex align-items-center gap-2">
-                            <label for="ddMSidang" class="fw-semibold mb-0">Filter:</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
                             <div class="dropdown">
-                                <button class="btn dropdown-toggle px-4 py-2" 
-                                        type="button" 
-                                        data-bs-toggle="dropdown" 
-                                        aria-expanded="false" 
-                                        id="ddMSidang" 
-                                        style="background-color: #4B38EF; color: white; border-radius: 2rem; box-shadow: 0px 3px 10px rgba(0,0,0,0.1);">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
                                     Sidang TA
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">
-                                            Sidang Semester
-                                        </a>
-                                    </li>
+                                    <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">Sidang Semester</a></li>
                                 </ul>
                             </div>
                         </div>
