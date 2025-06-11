@@ -1,28 +1,53 @@
 <?php
 session_start();
-$success = '';
-$error = '';
-$errorType = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$success = '';
+$errorType = '';
+$judul = '';
+$role = $_GET['role'] ?? $_POST['role'] ?? '';
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $newPassword = $_POST['newPassword'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';
 
     if (empty($newPassword) || empty($confirmPassword)) {
-        $errorType = 'empty';
-        // $error = "Tidak boleh kosong.";
+        header("Location: inputPasswordBaru.php?error=empty&role=$role");
+        exit;
     } elseif (strlen($newPassword) < 2) {
-        $errorType = 'short';
-        // $error = "Kata sandi minimal 2 karakter.";
+        header("Location: inputPasswordBaru.php?error=short&role=$role");
+        exit;
     } elseif ($newPassword !== $confirmPassword) {
-        $errorType = 'mismatch';
-        // $error = "Kata sandi dan konfirmasi tidak cocok.";
+        header("Location: inputPasswordBaru.php?error=mismatch&role=$role");
+        exit;
     } else {
         $_SESSION['reset_user']['password'] = $newPassword;
-        $success = "Kata sandi berhasil diubah!";
+        header("Location: inputPasswordBaru.php?success=1&role=$role");
+        exit;
     }
 }
+
+if (isset($_GET['success'])) {
+    $success = "Kata sandi berhasil diubah!";
+}
+
+$errorType = $_GET['error'] ?? '';
+
+switch ($role) {
+    case 'mahasiswa':
+        $judul = 'Ubah Kata Sandi Mahasiswa';
+        break;
+    case 'dosen':
+        $judul = 'Ubah Kata Sandi Dosen';
+        break;
+    case 'admin':
+        $judul = 'Ubah Kata Sandi Admin';
+        break;
+    default:
+        $judul = 'Ubah Kata Sandi';
+        break;
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Mahasiswa - Sistem Pengajuan Sidang</title>
+    <title><?= $judul ?> - Sistem Pengajuan Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -246,13 +271,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="log">
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                     <div class="text-center pt-5 mb-4">
-                        <h2 class="fs-2 fw-bold">Ubah Kata Sandi</h2>
+                        <h2 class="fs-2 fw-bold"><?= $judul ?></h2>
                         <?php if (!empty($success)): ?>
                             <div class="alert alert-success mt-3">
                                 <?= $success ?>
                             </div>
                         <?php endif; ?>
                     </div>
+                    <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
+
                     <div class="mb-3">
                         <label for="">Masukkan Kata Sandi Baru</label>
                         <input type="password"
@@ -279,7 +306,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="button-container d-flex justify-content-between">
-                <button type="submit" class="btn btn-kembali" onclick="history.back()">
+                <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
@@ -300,7 +327,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }, 2000);
         </script>
     <?php endif; ?>
-
+    <script>
+        function kembaliKeLupaPassword() {
+            window.location.href = `lupaPassword.php?role=<?= htmlspecialchars($role) ?>`;
+        }
+    </script>
 </body>
 
 </html>

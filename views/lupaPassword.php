@@ -3,13 +3,13 @@ $role = $_GET['role'] ?? 'guest';
 
 switch ($role) {
     case 'mahasiswa':
-        $judul = 'Lupa Password Mahasiswa';
+        $judul = 'Lupa Kata Sandi Mahasiswa';
         break;
     case 'dosen':
-        $judul = 'Lupa Password Dosen';
+        $judul = 'Lupa Kata Sandi Dosen';
         break;
     case 'admin':
-        $judul = 'Lupa Password Admin';
+        $judul = 'Lupa Kata Sandi Admin';
         break;
     default:
         $judul = '#'; // Atau bisa diarahkan ke halaman error
@@ -263,7 +263,6 @@ switch ($role) {
                         Kirim
                     </button>
                 </form>
-
             </div>
 
             <div class="back-button-container">

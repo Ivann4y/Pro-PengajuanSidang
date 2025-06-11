@@ -1,37 +1,39 @@
 <?php
 session_start();
-require_once '../users.php';  // Asumsi ini berisi data user
+require_once '../users.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['emailAstra']);
-    $role = $_POST['role'] ?? 'guest';
+    $role = $_POST['role'] ?? 'guest';  // Ambil role dari POST
 
-    // Cek apakah email kosong
+    // Validasi input
     if (empty($email)) {
         header("Location: lupaPassword.php?error=empty&role=$role");
         exit();
     }
 
-    // Validasi format email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         header("Location: lupaPassword.php?error=invalid&role=$role");
         exit();
     }
 
-    $emailFound = false;
-    foreach ($users as $userRole => $userList) {
-        foreach ($userList as $user) {
-            if (isset($user['email']) && $user['email'] === $email) {
-                $_SESSION['reset_user'] = $user;
-                $_SESSION['reset_role'] = $userRole;
+    // Cek hanya di role saat ini
+    if (!isset($users[$role])) {
+        header("Location: lupaPassword.php?error=email&role=$role");
+        exit();
+    }
 
-                header("Location: inputPasswordBaru.php?email=" . urlencode($email) . "&role=$userRole");
-                exit();
-            }
+    $emailFound = false;
+    foreach ($users[$role] as $user) {
+        if (isset($user['email']) && $user['email'] === $email) {
+            $_SESSION['reset_user'] = $user;
+            $_SESSION['reset_role'] = $role;
+
+            header("Location: inputPasswordBaru.php?role=$role&email=" . urlencode($email));
+            exit();
         }
     }
 
-    // Kalau tidak ditemukan
     header("Location: lupaPassword.php?error=email&role=$role");
     exit();
 }
