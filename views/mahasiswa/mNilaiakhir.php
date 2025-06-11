@@ -78,7 +78,6 @@
     margin: 1rem auto;
     max-width: 95% !important;
   }
-
   .modal-content {
     border-radius: 20px !important;
     padding: 15px;
