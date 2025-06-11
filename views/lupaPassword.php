@@ -1,10 +1,29 @@
+<?php
+$role = $_GET['role'] ?? 'guest';
+
+switch ($role) {
+    case 'mahasiswa':
+        $judul = 'Lupa Password Mahasiswa';
+        break;
+    case 'dosen':
+        $judul = 'Lupa Password Dosen';
+        break;
+    case 'admin':
+        $judul = 'Lupa Password Admin';
+        break;
+    default:
+        $judul = '#'; // Atau bisa diarahkan ke halaman error
+        break;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Mahasiswa - Sistem Pengajuan Sidang</title>
+    <title><?= $judul ?> - Sistem Pengajuan Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -222,8 +241,9 @@
                 $error = $_GET['error'] ?? '';
                 ?>
                 <form action="authEmail.php" method="POST">
-                    <h2 class="fs-2 fw-bold text-center">Ubah Kata Sandi</h2>
+                    <h2 class="fs-2 fw-bold text-center"><?= $judul ?></h2>
                     <label for="emailAstra" class="mt-3">Masukkan Email Politeknik Astra</label>
+                    <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
 
                     <?php if ($error === 'empty'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
@@ -247,7 +267,7 @@
             </div>
 
             <div class="back-button-container">
-                <button type="submit" class="btn btn-kembali" onclick="history.back()">
+                <button type="submit" class="btn btn-kembali" onclick="kembaliKeLogin()">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
@@ -257,6 +277,28 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script>
+        function kembaliKeLogin() {
+            let role = "<?= htmlspecialchars($role) ?>";
+            let url = "";
+
+            switch (role) {
+                case 'mahasiswa':
+                    url = 'mahasiswa/mLogin.php';
+                    break;
+                case 'dosen':
+                    url = 'dosen/dLogin.php';
+                    break;
+                case 'admin':
+                    url = 'admin/aLogin.php';
+                    break;
+                default:
+                    url = '../index.php'; // Atau halaman error
+            }
+
+            window.location.href = url;
+        }
+    </script>
 </body>
 
 </html>

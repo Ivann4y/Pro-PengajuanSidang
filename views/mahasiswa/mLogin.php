@@ -4,6 +4,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     header('Location: ../../index.php');
     exit();
 }
+
+$role = "mahasiswa";
 ?>
 
 <!DOCTYPE html>
@@ -129,9 +131,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 
             <form action="../../auth.php" method="POST" novalidate>
                 <div class="text-center pt-5 mb-4">
-                    <h2><strong>Masuk Akun Mahasiswa</strong></h2>
+                    <h2><strong>Masuk Akun</strong></h2>
+                    <h2><strong>Mahasiswa</strong></h2>
                 </div>
-                <input type="hidden" name="role" value="mahasiswa">
+                <input type="hidden" name="role" value="<?= $role ?>">
 
                 <div class="mb-3">
                     <input
@@ -164,7 +167,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script>
         function toLupaPassword() {
-            window.location.href = '../../views/lupaPassword.php';
+            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';
         }
     </script>
 </body>
