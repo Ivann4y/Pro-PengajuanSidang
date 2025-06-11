@@ -59,6 +59,11 @@ if ($_SESSION['role'] !== 'dosen') {
             width: 20%;
         }
 
+        thead th:nth-child(6) {
+            text-align: center;
+            width: 20%;
+        }
+
         .isiTabel td {
             padding: 12px 15px;
             font-family: "Poppins";
@@ -71,9 +76,39 @@ if ($_SESSION['role'] !== 'dosen') {
             text-align: center;
         }
 
-        .isiTabel td:nth-child(5) {
+        .isiTabel td:nth-child(6) {
             border-radius: 0 20px 20px 0;
         }
+
+         /* CSS BARU untuk tombol tanpa border */
+        .detail-btn {
+            border: none !important;
+            background-color: transparent !important;
+            color: #4B68FB; /* Warna ikon */
+            padding: 0.25rem 0.5rem; /* Menyesuaikan padding agar tidak terlalu besar */
+        }
+
+        /* Efek saat hover pada tombol */
+        .detail-btn:hover {
+            opacity: 0.7;
+        }
+
+        /* Memastikan warna ikon menjadi putih saat baris di-hover */
+        .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+            color: #FFFFFF;
+            opacity: 1;
+        }
+
+        .modal-header-custom {
+            background-color: #4B68FB;
+            color: white;
+        }
+
+        /* Saat baris di-hover, ubah warna ikon di tombol aksi */
+        tr.jadiBiru:hover .detail-btn i {
+            color: white !important;
+        }
+
     </style>
 </head>
 
@@ -158,54 +193,85 @@ if ($_SESSION['role'] !== 'dosen') {
                                     <th scope="col">Nama</th>
                                     <th scope="col">Mata Kuliah</th>
                                     <th scope="col">Dosen Pembimbing</th>
+                                    <th scope="col">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="dPengajuanTA">
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>1</td>
                                     <td>0920240033</td>
                                     <td>M. Harris Nur S.</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </button>
+                                    </td>
+
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240053', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
                                     <td>Nayaka Ivanna</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240053', 'TA')">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>3</td>
                                     <td>0920240055</td>
                                     <td>Nur Widya Astuti</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                             <tbody id="dPengajuanSem" style="display: none;">
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'Semester')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>1</td>
                                     <td>0920240033</td>
                                     <td>M. Harris Nur S.</td>
                                     <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240053', 'Semester')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
                                     <td>Nayaka Ivanna</td>
                                     <td>Pemrograman 2</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240053', 'Semester')">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240055', 'Semester')">
+                                <tr class="isiTabel jadiBiru" >
                                     <td>3</td>
                                     <td>0920240055</td>
                                     <td>Nur Widya Astuti</td>
                                     <td>Pemrograman 2</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'Semester')">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-
                             </tbody>
                         </table>
                     </div>
@@ -224,7 +290,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="modal-body mx-auto">
                             Apakah anda yakin ingin keluar?
                         </div>
-                        <div class="modal-footer justify-content-center">
+                        <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                             <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                         </div>
