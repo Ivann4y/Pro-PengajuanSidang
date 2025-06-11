@@ -21,157 +21,348 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- <meta name="author" content="Dhonnan_aPenjadwaln_AliansiKelompok2"> -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+    /* --- General and Font Styles --- */
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
-    .no-results-row td {
-        padding: 20px !important;
-        background-color: #f8f9fa !important;
-        font-style: italic;
-        color: #6c757d;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
     }
-    .header-icon{
-        color: white !important;
+
+    body {
+      min-height: 100vh;
+      background-color: #f9fafb; /* Consistent background for the whole page */
     }
-    .search-input-container {
+
+    /* --- Main Layout Container --- */
+    #NavSide {
+      display: flex;
+      min-height: 100vh;
       position: relative;
-      width: 300px;
-      height: 45px;
     }
 
-    .search-input {
-      border-radius: 25px;
-      padding: 8px 15px 8px 45px;
-      border: 1px solid #ccc;
+    /* --- Sidebar (Desktop View) --- */
+    .NavSide__sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: #4b68fb;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.4s ease-in-out;
+      overflow-y: auto;
+    }
+
+    .NavSide__sidebar-brand {
+      padding: 20px 10px 50px 10px;
+      text-align: center;
+    }
+
+    .NavSide__sidebar-brand img {
+      width: 90%;
+      max-width: 180px;
+      height: auto;
+    }
+
+    .NavSide__sidebar-nav {
+      list-style: none;
+      padding-left: 0;
+      flex-grow: 1;
+    }
+
+    .NavSide__sidebar-item {
+      position: relative;
       width: 100%;
-      background-color: #e9e9e9;
-      height: 100%;
-      outline: none;
-      font-size: 1rem;
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+      margin-bottom: 15px;
+      cursor: pointer;
     }
 
-    .search-input::placeholder {
-      color: #888;
+    .NavSide__sidebar-item a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #ffffff;
+      padding: 15px 10px;
+      height: 60px;
+      box-sizing: border-box;
     }
 
-    .search-input:focus {
-      border-color: #4538db;
-      box-shadow: 0 0 0 0.25rem rgba(69, 56, 219, 0.25);
-      background-color: white;
+    .NavSide__sidebar-item.NavSide__sidebar-item--active {
+      background: #ffffff;
     }
 
-    .search-input-container .fa-search {
+    .NavSide__sidebar-item.NavSide__sidebar-item--active a {
+      color: #4b68fb;
+    }
+
+    /* Curved effect for active item */
+    .NavSide__sidebar-item b:nth-child(1), .NavSide__sidebar-item b:nth-child(2) {
       position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.1rem;
-      color: #777;
+      right: 0;
+      width: 100%;
+      height: 20px;
+      background: #ffffff;
+      display: none;
+    }
+    .NavSide__sidebar-item b:nth-child(1) { top: -20px; }
+    .NavSide__sidebar-item b:nth-child(2) { bottom: -20px; }
+    .NavSide__sidebar-item b:nth-child(1)::before, .NavSide__sidebar-item b:nth-child(2)::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #4b68fb;
+    }
+    .NavSide__sidebar-item b:nth-child(1)::before { border-bottom-right-radius: 20px; }
+    .NavSide__sidebar-item b:nth-child(2)::before { border-top-right-radius: 20px; }
+    .NavSide__sidebar-item.NavSide__sidebar-item--active b { display: block; }
+
+    /* --- Main Content --- */
+    .NavSide__main-content {
+      flex-grow: 1;
+      padding: 2rem;
+      margin-left: 280px;
+      transition: margin-left 0.4s ease-in-out;
     }
 
-
-    .dashboard-header .profile-icon{
+    /* --- Header within Main Content --- */
+    .main-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+    .header-left-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .main-title {
+        color: #4B68FB;
+        font-weight: 700;
+        font-size: 2.1rem;
+        margin-bottom: 1rem;
+    }
+    .filter-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .filter-container .filter-label {
+        font-weight: 600;
+    }
+    .header-right-panel {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .profile-icon {
         font-size: 2.5rem;
         color: #343a40;
+        cursor: pointer;
+    }
+    .search-input-group {
+        background-color: #F3F4F6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        width: 250px;
+    }
+    .search-input-group input.form-control, .search-input-group .input-group-text {
         background-color: transparent;
-        width: auto;
-        height: auto;
-        border-radius: 0; font-weight: normal;
+        border: none;
+        box-shadow: none;
     }
 
-    .filter-btn {
-      background-color: #4538db;
-      color: white;
-      border-radius: 20px;
-      padding: 8px 20px;
-      font-weight: 500;
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
-      margin-right: 15px;
-      transition: background-color 0.2s ease, color 0.2s;
+    /* Filter Buttons & Dropdowns */
+    #ddAdminSidangTypeButton, #ddAdminSidangStatusButton {
+        background-color: #4538db;
+        color: white;
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-weight: 500;
+        border: none;
     }
-    .filter-btn:hover {
-      background-color: #312a9e;
-    }
-
     .dropdown-menu {
         border-radius: 20px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         border: none;
+        background-color: #4538db;
         padding: 5px 0;
-        background-color: #4538db;
     }
-
     .dropdown-item {
-        padding: 10px 20px;
-        font-size: 0.95rem;
-        background-color: #4538db;
-        color:rgb(180, 180, 180);
+        color: rgb(180, 180, 180);
         transition: color 0.2s;
-        border-radius: 20px;
-    }
-
-    .dropdown-item:hover,
-    .dropdown-item:focus {
         background-color: #4538db;
-        color:rgb(255, 255, 255);
+        padding: 10px 20px;
     }
-    
-    .dropdown-toggle::after {
-        vertical-align: 0.15em;
-        margin-left: 0.5em;
+    .dropdown-item:hover, .dropdown-item:focus {
+        background-color: #4538db;
+        color: white;
     }
 
+    /* --- Table Styles --- */
     .table-container {
-      margin-top: 30px;
-      width: 100%;
-      overflow-x: auto;
+        overflow-x: auto;
+    }
+    .table-admin-custom {
+        border-spacing: 0 10px;
+        border-collapse: separate;
+        width: 100%;
+        min-width: 800px;
+    }
+    .table-admin-custom thead th {
+        padding: 12px 15px;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+        color: #555;
+        text-align: left;
+    }
+    .table-admin-custom tbody tr.isiTabel {
+        background-color: #F5F5F5;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .table-admin-custom tbody tr.isiTabel:hover {
+        background-color: #4B68FB;
+        color: #FFFFFF;
+    }
+    .table-admin-custom .isiTabel td {
+        padding: 15px 18px;
+        vertical-align: middle;
+    }
+    .table-admin-custom .isiTabel td:first-child { border-radius: 10px 0 0 10px; }
+    .table-admin-custom .isiTabel td:last-child { border-radius: 0 10px 10px 0; }
+    .no-results-row td {
+        padding: 20px !important;
+        text-align: center;
+        background-color: #f8f9fa !important;
+        font-style: italic;
+        color: #6c757d;
+        border-radius: 10px;
+    }
+    .detail-btn {
+        border: none !important;
+        background-color: transparent !important;
+        color: #4B68FB;
+    }
+    .table-admin-custom tbody tr.isiTabel:hover .detail-btn { color: #FFFFFF; }
+
+    /* --- Mobile Top Bar and Toggle --- */
+    .NavSide__topbar {
+        display: none; /* Hidden on desktop */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        align-items: center;
+        padding: 0 15px;
+        justify-content: space-between;
     }
 
-    .data-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 15px;
-      margin-top: 1rem;
-      min-width: 800px;
-    }
-
-    .data-table thead th {
-      padding: 0 20px 15px 20px;
-      border-bottom: 1px solid #ccc;
-      font-weight: 600;
-      color: #555;
-      text-align: left;
-    }
-
-    .data-table tbody td {
-      background-color: #f5f5f5;
-      padding: 15px 20px;
-      vertical-align: middle;
-      transition: all 0.3s ease;
-    }
-    
-    .data-table tbody tr:hover td {
-      background-color: #4538db;
-      color: white;
-    }
-
-    .data-table tbody tr.clickable:hover{
+    .NavSide__toggle {
         cursor: pointer;
+        font-size: 28px;
+        color: #4b68fb;
+        position: relative;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    /* The JS will toggle the visibility of open/close icons */
+    .NavSide__toggle .bi.close { display: none; }
+    .NavSide__toggle.NavSide__toggle--active .bi.open { display: none; }
+    .NavSide__toggle.NavSide__toggle--active .bi.close { display: block; }
+    .NavSide__topbar .header-icons .profile-icon { font-size: 2.2rem; }
+
+
+    /* --- Responsive Styles --- */
+
+    /* Main breakpoint for switching to mobile layout */
+    @media (max-width: 940px) {
+        /* --- Hide Desktop Sidebar, Show Mobile Topbar --- */
+        .NavSide__sidebar {
+            transform: translateX(-100%);
+            width: 260px; /* Slightly narrower for mobile */
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .NavSide__sidebar.NavSide__sidebar--active-mobile {
+            transform: translateX(0);
+        }
+        
+        .NavSide__topbar {
+            display: flex;
+        }
+
+        /* Adjust main content for mobile layout */
+        .NavSide__main-content {
+            margin-left: 0;
+            padding: 1rem;
+            padding-top: 75px; /* Space for fixed top bar */
+        }
+
+        /* Adjust Header for Mobile */
+        .main-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        /* Desktop profile icon is hidden, we use the one in the topbar */
+        .header-right-panel .profile-icon {
+            display: none;
+        }
+        .header-right-panel {
+            width: 100%;
+            gap: 0;
+        }
+        .search-input-group {
+            width: 100%;
+        }
     }
 
-    .data-table tbody tr td:first-child { border-radius: 15px 0 0 15px; }
-    .data-table tbody tr td:last-child { border-radius: 0 15px 15px 0; }
-    
-    
+    /* Finer adjustments for very small screens */
+    @media (max-width: 700px) {
+        .main-title {
+            font-size: 1.8rem;
+        }
+        .filter-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .filter-container .dropdown .btn {
+            width: 100%;
+        }
+    }
+
+    /* --- All Modal Styles --- */
+    .modal-header-custom { background-color: #4B68FB; color: white; }
+    .modal-footer .btn-danger { background-color: #FD7D7D; border-color: #FD7D7D; }
+    .modal-footer .btn-success { background-color: #4FD382; border-color: #4FD382; }
     .modal-content-custom-form { border-radius: 25px !important; }
     .modal-body .form-container { padding: 15px; background-color:rgb(255, 255, 255); border-radius: 20px; }
     .modal-body .form-group { display: flex; align-items: center; margin-bottom: 15px; }
@@ -197,138 +388,163 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     .modal-body .form-toggle-buttons button { width: 30px; height: 30px; font-size: 18px; border-radius: 35px; border: 1px solid #ccc; cursor: pointer; background-color: white; }
     .modal-body .form-toggle-buttons button:hover { background-color: #ddd; }
     .form-error-message { color: red; margin-bottom: 15px; text-align: left; font-weight: 500; padding-left: 175px;}
-    
-    @media (max-width: 768px) { 
-        .main-header-content {
-            flex-direction: column;
-            align-items: stretch !important;
-            gap: 15px;
-        }
-        .search-input-container { width: 100%; }
-        
-        #dropdownAdminPenjadwalan {
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        #dropdownAdminPenjadwalan .filter-btn { margin-right: 0; }
-        
+
+    /* Modal responsiveness */
+    @media (max-width: 700px) {
         .modal-body .form-group {
             flex-direction: column;
             align-items: flex-start;
             gap: 5px;
         }
-        .modal-body .form-group label { width: 100%; margin-right: 0; }
-        .modal-body .form-actions { flex-direction: column; gap: 10px; }
-        .modal-body .form-actions .btn { width: 100%; margin-right: 0; }
-        .form-error-message { padding-left: 0; }
+        .modal-body .form-group label {
+            width: 100%;
+            margin-right: 0;
+            text-align: left;
+        }
+        .modal-body .form-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+        .modal-body .form-actions .btn {
+            width: 100%;
+            margin-right: 0;
+        }
+        .modal-body .form-error-message {
+            padding-left: 0;
+        }
     }
   </style>
 </head>
 <body>
+<body>
+  <div id="NavSide">
 
-  <div class="NavSide__topbar">
+    <!-- Mobile Topbar with Toggle and Profile Icon -->
+    <div class="NavSide__topbar">
       <div class="NavSide__toggle" id="nav-toggle">
-          <i class="fas fa-bars"></i>
+          <i class="bi bi-list open"></i>  
+          <i class="bi bi-x-lg close"></i> 
       </div>
-  </div>
-  
-  <div id="main-sidebar" class="NavSide__sidebar">
-    <div class="NavSide__sidebar-brand">
-        <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+      <div class="header-icons">
+          <div class="profile-icon">
+              <i class="bi bi-person-circle"></i>
+          </div>
+      </div>
     </div>
-    <ul class="NavSide__sidebar-nav">
-        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aBeranda.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
-            <b></b><b></b><a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
-        </li>
-        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aPenjadwalan.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
-            <b></b><b></b><a href="aPenjadwalan.php"><span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span></a>
-        </li>
-        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aDaftarSidang.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
-            <b></b><b></b><a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
-        </li>
-        <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
-            <b></b><b></b>
-                <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-        </li>
-    </ul>
-  </div>
 
-  <main class="NavSide__main-content">
-        <header class="dashboard-header">
-        <h1 class="page-title">Penjadwalan Sidang</h1>
-        <div class="header-icons">
-             <div class="profile-icon">
-                <i class="bi bi-person-circle"></i>
+    <!-- Sidebar -->
+    <div id="main-sidebar" class="NavSide__sidebar">
+        <div class="NavSide__sidebar-brand">
+            <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+        </div>
+        <ul class="NavSide__sidebar-nav">
+            <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aBeranda.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
+                <b></b><b></b><a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+            </li>
+            <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aPenjadwalan.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
+                <b></b><b></b><a href="aPenjadwalan.php"><span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span></a>
+            </li>
+            <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'aDaftarSidang.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
+                <b></b><b></b><a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
+            </li>
+            <li class="NavSide__sidebar-item <?php echo (basename($_SERVER['PHP_SELF']) == 'logout.php' ? 'NavSide__sidebar-item--active' : ''); ?>">
+                <b></b><b></b>
+                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="NavSide__main-content">
+        <div class="main-header">
+            <div class="header-left-panel">
+                <h1 class="main-title">Penjadwalan Sidang</h1>
+                <div class="filter-container">
+                    <span class="filter-label fw-semibold">Filter:</span>
+                    <div class="dropdown me-2">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?= htmlspecialchars($selectedTipe == 'TA' ? 'Sidang TA' : 'Sidang Semester') ?>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="?tipe=TA&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
+                            <li><a class="dropdown-item" href="?tipe=Semester&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang Semester</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangStatusButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?= htmlspecialchars($selectedStatus == 'belum' ? 'Belum Disetujui' : 'Disetujui') ?>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=belum">Belum Disetujui</a></li>
+                            <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=disetujui">Disetujui</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right-panel">
+                <div class="profile-icon">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <div class="input-group search-input-group" style="width: 250px;">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari">
+                </div>
             </div>
         </div>
-    </header>
 
-     <div class="d-flex justify-content-between align-items-center mb-3 main-header-content">
-      <h2 class="section-title ">Pengajuan Sidang</h2>
-      <div class="search-input-container">
-        <i class="fas fa-search"></i>
-        <input type="text" class="form-control search-input" placeholder="Cari Nama Mahasiswa...">
-      </div>
-    </div>
-   
-    <div class="d-flex" id="dropdownAdminPenjadwalan">
-        <div class="dropdown me-2">
-            <button class="filter-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <?= htmlspecialchars($selectedTipe == 'TA' ? 'Sidang TA' : 'Sidang Semester') ?>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?tipe=TA&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
-                <li><a class="dropdown-item" href="?tipe=Semester&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang Semester</a></li>
-            </ul>
-        </div>
-        <div class="dropdown me-2">
-            <button class="filter-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <?= htmlspecialchars($selectedStatus == 'belum' ? 'Belum Disetujui' : 'Disetujui') ?>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=belum">Belum Disetujui</a></li>
-                <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=disetujui">Disetujui</a></li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>NIM</th>
-            <th>Nama</th>
-            <th><?= htmlspecialchars($selectedTipe == 'TA' ? 'Judul Sidang' : 'Mata Kuliah') ?></th>
-            <th><?= htmlspecialchars($selectedTipe == 'TA' ? 'Pembimbing' : 'Dosen Pengampu') ?></th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php if (empty($filteredData)): ?>
-            <tr><td colspan="5" class="text-center">Tidak ada data untuk ditampilkan.</td></tr>
-          <?php else: ?>
-            <?php foreach ($filteredData as $entry): ?>
-              <?php
-                $row_props = "";
-                if ($selectedStatus == 'disetujui') {
-                    $dosen_pengampu_json = isset($entry['dosenPengampu']) ? htmlspecialchars(json_encode($entry['dosenPengampu']), ENT_QUOTES, 'UTF-8') : '[]';
-                    $row_props = "class='clickable' onclick='openJadwalModal(this)' "
-                               . "data-id='".htmlspecialchars($entry['id'] ?? '')."'"
-                               . "data-nim='".htmlspecialchars($entry['nim'] ?? '')."'"
-                               . "data-nama='".htmlspecialchars($entry['nama'] ?? '')."'"
-                               . "data-judul='".htmlspecialchars($entry['judulSidang'] ?? '')."'"
-                               . "data-pembimbing='".htmlspecialchars($entry['pembimbing'] ?? '')."'"
-                               . "data-prodi='".htmlspecialchars($entry['prodi'] ?? 'Teknologi Rekayasa Perangkat Lunak')."'"
-                               . "data-tipe-sidang='".htmlspecialchars($entry['tipeSidang'] ?? '')."'"
-                               . "data-pengampu='".$dosen_pengampu_json."'";
-                }
-              ?>
-              <tr <?= $row_props ?>>
-                <td><?= htmlspecialchars($entry['id'] ?? 'N/A') ?></td>
-                <td><?= htmlspecialchars($entry['nim'] ?? 'N/A') ?></td>
-                <td><?= htmlspecialchars($entry['nama'] ?? 'N/A') ?></td>
-                <td><?= htmlspecialchars($entry['judulSidang'] ?? 'N/A') ?></td>
-                <td>
+        <div class="table-container">
+          <table class="table-admin-custom">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>NIM</th>
+                <th>Nama</th>
+                <th><?= htmlspecialchars($selectedTipe == 'TA' ? 'Judul Sidang' : 'Mata Kuliah') ?></th>
+                <th><?= htmlspecialchars($selectedTipe == 'TA' ? 'Pembimbing' : 'Dosen Pengampu') ?></th>
+                <th style="text-align: center;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="adminSidangContent">
+              <?php if (empty($filteredData)): ?>
+                <tr class="no-results-row"><td colspan="6" class="text-center">Tidak ada data untuk ditampilkan.</td></tr>
+              <?php else: ?>
+                <?php foreach ($filteredData as $entry): ?>
+                <?php
+                    $row_props_js = "";
+                    $action_button = "";
+                    if ($selectedStatus == 'disetujui') {
+                        $dosen_pengampu_json = isset($entry['dosenPengampu']) ? htmlspecialchars(json_encode($entry['dosenPengampu']), ENT_QUOTES, 'UTF-8') : '[]';
+                        $row_props_js = "data-id='".htmlspecialchars($entry['id'] ?? '')."'"
+                                    . "data-nim='".htmlspecialchars($entry['nim'] ?? '')."'"
+                                    . "data-nama='".htmlspecialchars($entry['nama'] ?? '')."'"
+                                    . "data-judul='".htmlspecialchars($entry['judulSidang'] ?? '')."'"
+                                    . "data-pembimbing='".htmlspecialchars($entry['pembimbing'] ?? '')."'"
+                                    . "data-prodi='".htmlspecialchars($entry['prodi'] ?? 'Teknologi Rekayasa Perangkat Lunak')."'"
+                                    . "data-tipe-sidang='".htmlspecialchars($entry['tipeSidang'] ?? '')."'"
+                                    . "data-pengampu='".$dosen_pengampu_json."'";
+                        $action_button = "<button type=\"button\" class=\"btn detail-btn\" onclick='event.stopPropagation(); openJadwalModal(this.closest(\"tr\"))'>"
+                                    . "<i class=\"bi bi-pencil-square fs-5\"></i>"
+                                    . "</button>";
+                    } else {
+                        $action_button = "Tidak Ada";
+                    }
+                ?>
+                <tr class="isiTabel" <?= $row_props_js ?>>
+                  <td><?= htmlspecialchars($entry['id'] ?? 'N/A') ?></td>
+                  <td><?= htmlspecialchars($entry['nim'] ?? 'N/A') ?></td>
+                  <td><?= htmlspecialchars($entry['nama'] ?? 'N/A') ?></td>
+                  <td>
+                    <?php 
+                        if ($selectedTipe == 'TA' && isset($entry['judulSidang'])) {
+                            echo htmlspecialchars($entry['judulSidang']);
+                        } elseif ($selectedTipe == 'Semester' && isset($entry['mataKuliah'])) {
+                            echo htmlspecialchars($entry['mataKuliah']);
+                        } else {
+                            echo 'N/A';
+                        }
+                    ?>
+                  </td>
+                  <td>
                     <?php 
                         if ($selectedTipe == 'TA') {
                             echo htmlspecialchars($entry['pembimbing'] ?? 'N/A');
@@ -336,32 +552,34 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                             echo isset($entry['dosenPengampu']) && is_array($entry['dosenPengampu']) ? htmlspecialchars(implode(', ', $entry['dosenPengampu'])) : htmlspecialchars($entry['pembimbing'] ?? 'N/A');
                         }
                     ?>
-                </td>
-              </tr>
-            <?php endforeach; ?>
-          <?php endif; ?>
-        </tbody>
-      </table>
-    </div>
-  </main>
-
-  <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+                  </td>
+                  <td style="text-align: center;"><?= $action_button ?></td>
+                </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
+    </main>
+  </div> <!-- This now correctly closes the #NavSide wrapper -->
+  
+  <!-- Modals are placed outside the #NavSide wrapper -->
+  <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-        <div class="modal-header mx-auto">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Perhatian!</h1>
+        <div class="modal-header modal-header-custom mx-auto">
+            <h1 class="modal-title fs-5" id="modalLogoutLabel">Perhatian!</h1>
         </div>
-        <div class="modal-body mx-auto">
-             Apakah anda yakin ingin keluar?
+        <div class="modal-body text-center py-3">
+            Apakah anda yakin ingin keluar?
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer justify-content-center border-0">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
             <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
         </div>
         </div>
     </div>
-  </div>
-  
+  </div> 
   <div class="modal fade" id="penjadwalanSidangTAModal" aria-labelledby="penjadwalanSidangTAModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content modal-content-custom-form">
@@ -379,7 +597,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                                       <input type="text" id="modal_penguji-ta-1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
                                       <div class="bobot-nilai-input-group">
                                           <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-1')">-</button>
-                                          <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="1" min="0" />
+                                          <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
                                           <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-1')">+</button>
                                       </div>
                                       <div class="form-toggle-buttons">
@@ -409,7 +627,6 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
           </div>
       </div>
   </div>
-
   <div class="modal fade" id="penjadwalanSidangSemModal" aria-labelledby="penjadwalanSidangSemModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content modal-content-custom-form">
@@ -464,27 +681,28 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
       </div>
   </div>
 
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script>
+<script>
     let taModalInstance, semModalInstance;
     let pengujiCount = 1;
 
     document.addEventListener("DOMContentLoaded", function() {
-        const searchInput = document.querySelector('.search-input');
+        // Updated search input selector to match the new structure
+        const searchInput = document.querySelector('.search-input-group .form-control');
         if (searchInput) {
             searchInput.addEventListener('input', function() {
                 const searchText = this.value.toLowerCase();
-                const tableRows = document.querySelectorAll('.data-table tbody tr');
+                // Updated table class for selection
+                const tableRows = document.querySelectorAll('.table-admin-custom tbody tr');
                 let anyVisible = false;
 
                 tableRows.forEach(row => {
-                    if (row.classList.contains('text-center')) {
-                        row.style.display = 'none';
+                    if (row.classList.contains('no-results-row')) {
+                        row.style.display = 'none'; // Initially hide the no results row
                         return;
                     }
 
-                    const namaCell = row.cells[2];
+                    const namaCell = row.cells[2]; // Assuming Name is in the 3rd column (index 2)
                     if (!namaCell) return;
 
                     const namaText = namaCell.textContent.toLowerCase();
@@ -496,17 +714,21 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                     }
                 });
 
-                const noDataRow = document.querySelector('.no-results-row');
+                const tbody = document.querySelector('.table-admin-custom tbody');
+                let noDataRow = document.querySelector('.no-results-row');
+
                 if (!anyVisible && searchText !== '') {
                     if (!noDataRow) {
-                        const tbody = document.querySelector('.data-table tbody');
-                        const tr = document.createElement('tr');
-                        tr.className = 'no-results-row text-center';
-                        tr.innerHTML = '<td colspan="5">Tidak ditemukan data yang sesuai</td>';
-                        tbody.appendChild(tr);
+                        // Create and append if not exists
+                        noDataRow = document.createElement('tr');
+                        noDataRow.className = 'no-results-row';
+                        noDataRow.innerHTML = '<td colspan="6" class="text-center">Tidak ditemukan data yang sesuai</td>';
+                        tbody.appendChild(noDataRow);
+                    } else {
+                         noDataRow.style.display = ''; // Show existing no results row
                     }
                 } else if (noDataRow) {
-                    noDataRow.remove();
+                    noDataRow.style.display = 'none'; // Hide if there are results or search is empty
                 }
             });
         }
@@ -518,16 +740,9 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 
         if (toggleButton && sidebar) {
             toggleButton.addEventListener('click', () => {
+                // Adopted the class toggling from aDaftarSidang.php for consistency
+                toggleButton.classList.toggle('NavSide__toggle--active');
                 sidebar.classList.toggle('NavSide__sidebar--active-mobile');
-                
-                const icon = toggleButton.querySelector('i');
-                if (sidebar.classList.contains('NavSide__sidebar--active-mobile')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
             });
         }
         
@@ -544,6 +759,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         if(formSem) formSem.addEventListener('submit', handleFormSubmit);
     });
 
+    // openJadwalModal now directly takes the table row element
     function openJadwalModal(element) {
         const tipeSidang = element.dataset.tipeSidang;
         if (tipeSidang === 'TA') {
@@ -555,7 +771,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         }
     }
 
-        function resetAndPopulateTAModal(el) {
+    function resetAndPopulateTAModal(el) {
         const wrapper = document.getElementById('penguji-wrapper-ta');
         wrapper.innerHTML = `
             <div class="form-group" id="penguji-form-ta-1">
@@ -574,21 +790,37 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 </div>
             </div>`;
         pengujiCount = 1;
+        updateToggleButtonsVisibility(); // Ensure buttons are correct after reset
 
+        // Populate modal fields
         document.getElementById('modal_nim-ta').value = el.dataset.nim || '';
+        document.getElementById('modal_nim-ta').dataset.id = el.dataset.id || ''; // Store original ID for submission
         document.getElementById('modal_judul_sidang-ta').value = el.dataset.judul || '';
         document.getElementById('modal_pembimbing-ta').value = el.dataset.pembimbing || '';
         document.getElementById('modal_prodi-ta').value = el.dataset.prodi || '';
+        // Clear dynamic inputs for new entry
+        document.getElementById('modal_ruangan-ta').value = '';
+        document.getElementById('modal_tanggal-ta').value = '';
+        document.getElementById('modal_jam_awal-ta').value = '';
+        document.getElementById('modal_jam_akhir-ta').value = '';
+        document.getElementById('form-error-ta').textContent = ''; // Clear error message
     }
 
     function populateSemModal(el) {
         document.getElementById('modal_nim-sem').value = el.dataset.nim || '';
-        document.getElementById('modal_matkul-sem').value = el.dataset.judul || '';
+        document.getElementById('modal_nim-sem').dataset.id = el.dataset.id || ''; // Store original ID for submission
+        document.getElementById('modal_matkul-sem').value = el.dataset.judul || ''; // In this context, 'judul' refers to mata kuliah for semester
         document.getElementById('modal_prodi-sem').value = el.dataset.prodi || '';
         
         const pengampu = JSON.parse(el.dataset.pengampu || '[]');
         document.getElementById('modal_pengampu-sem-1').value = pengampu[0] || '';
         document.getElementById('modal_pengampu-sem-2').value = pengampu[1] || '';
+        // Clear dynamic inputs for new entry
+        document.getElementById('modal_ruangan-sem').value = '';
+        document.getElementById('modal_tanggal-sem').value = '';
+        document.getElementById('modal_jam_awal-sem').value = '';
+        document.getElementById('modal_jam_akhir-sem').value = '';
+        document.getElementById('form-error-sem').textContent = ''; // Clear error message
     }
 
     function addPenguji() {
@@ -606,8 +838,13 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                     <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
                     <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-${pengujiCount}')">+</button>
                 </div>
-            </div>`;
+                <div class="form-toggle-buttons">
+                    <button type="button" onclick="addPenguji()">+</button>
+                    <button type="button" onclick="removePenguji()">-</button>
+                </div>
+            </div>`; // Ensure new rows have +/- buttons
         wrapper.appendChild(div);
+        updateToggleButtonsVisibility();
     }
 
     function removePenguji() {
@@ -618,6 +855,23 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 pengujiCount--;
             }
         }
+        updateToggleButtonsVisibility();
+    }
+
+    function updateToggleButtonsVisibility() {
+        const toggleButtons = document.querySelectorAll('#penguji-wrapper-ta .form-toggle-buttons');
+        toggleButtons.forEach((btnGroup, index) => {
+            if (index === toggleButtons.length - 1) { // Only the last added row has the buttons
+                btnGroup.style.display = 'inline-flex';
+                // Hide '-' button if only one penguji
+                const removeBtn = btnGroup.querySelector('button[onclick="removePenguji()"]');
+                if (removeBtn) {
+                    removeBtn.style.display = (pengujiCount <= 1) ? 'none' : 'block';
+                }
+            } else {
+                btnGroup.style.display = 'none'; // Hide buttons on previous rows
+            }
+        });
     }
     
     function incrementValue(inputId) {
@@ -642,8 +896,50 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         
         if (validateForm(modalType)) {
             const modalInstance = modalType === 'TA' ? taModalInstance : semModalInstance;
-            modalInstance.hide();
             
+            // Get original ID from hidden dataset
+            const originalId = modalType === 'TA' ? document.getElementById('modal_nim-ta').dataset.id : document.getElementById('modal_nim-sem').dataset.id;
+            
+            // Here you would gather form data and send to server
+            const formData = new FormData(form);
+            // Add originalId to formData if needed by server
+            formData.append('originalId', originalId);
+            formData.append('tipeSidang', modalType); // Indicate type of sidang being scheduled
+
+            // Example of how to send data (replace with your actual backend endpoint)
+            /*
+            fetch('your_schedule_api.php', {
+                method: 'POST',
+                body: formData // Use formData directly for multipart/form-data
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    modalInstance.hide();
+                    Swal.fire({
+                        title: 'Berhasil',
+                        text: 'Jadwal Berhasil Dibuat.',
+                        imageUrl: '../../assets/img/centang.svg',
+                        imageWidth: 120,
+                        imageHeight: 120,
+                        imageAlt: 'Success checkmark',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#4336F0'
+                    }).then(() => {
+                        location.reload(); 
+                    });
+                } else {
+                    Swal.fire('Gagal', data.message || 'Gagal membuat jadwal.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
+            });
+            */
+
+            // Simulating success for now
+            modalInstance.hide();
             Swal.fire({
                 title: 'Berhasil',
                 text: 'Jadwal Berhasil Dibuat.',
@@ -709,6 +1005,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 
         return true;
     }
-  </script>
+</script>
+
 </body>
 </html>
