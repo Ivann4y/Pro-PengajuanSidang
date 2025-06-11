@@ -299,17 +299,24 @@
 
     const btnOpenModalKonfirmasi = document.getElementById('btnOpenModalKonfirmasi');
     const modalKonfirmasiEl = document.getElementById('modalKonfirmasi');
-    const modalPeringatanEl = document.getElementById('modalPeringatan');
+    // const modalPeringatanEl = document.getElementById('modalPeringatan');
 
     const modalKonfirmasi = new bootstrap.Modal(modalKonfirmasiEl);
-    const modalPeringatan = new bootstrap.Modal(modalPeringatanEl);
+    // const modalPeringatan = new bootstrap.Modal(modalPeringatanEl);
 
     btnOpenModalKonfirmasi.addEventListener('click', function() {
       const laporan = document.getElementById('laporanSidang').files.length;
       const pendukung = document.getElementById('dokPendukung').files.length;
 
       if (laporan === 0 || pendukung === 0) {
-        modalPeringatan.show();
+        Swal.fire({
+        title: 'Dokumen Tidak Boleh Kosong!',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then(() => {
+        modal.hide();
+      });
       } else {
         modalKonfirmasi.show();
       }
@@ -322,7 +329,14 @@
       const pendukung = document.getElementById('dokPendukung').files.length;
 
       if (laporan === 0 || pendukung === 0) {
-        modalPeringatan.show();
+        Swal.fire({
+        title: 'Dokumen Tidak Boleh Kosong!',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then(() => {
+        modal.hide();
+      });
       } else {
         history.back();
       }
@@ -368,8 +382,7 @@
 
     submitBtn.addEventListener('click', function() {
       Swal.fire({
-        title: 'Berhasil',
-        text: 'Nilai akhir telah dikirim.',
+        title: 'Pengajuan Berhasil Dikirim!',
         icon: 'success',
         confirmButtonText: 'OK',
         confirmButtonColor: '#4B68FB'
