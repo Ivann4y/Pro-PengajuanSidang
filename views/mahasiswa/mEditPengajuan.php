@@ -1,8 +1,4 @@
-<?php
-$judul = $_GET['judul'] ?? '';
-$matkul = $_GET['matkul'] ?? '';
-?>
-
+//NAUFAL AF
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,8 +12,63 @@ $matkul = $_GET['matkul'] ?? '';
   <link rel="stylesheet" href="../../assets/css/style.css" />
   <link rel="stylesheet" href="../../extra/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <title>Edit Pengajuan Sidang</title>
 </head>
+
+<style>
+  body {
+    font-family: "Poppins", sans-serif;
+  }
+
+  label {
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .form-control,
+  .form-select {
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    padding: 12px 15px;
+    border-radius: 12px;
+
+  }
+
+  .upload-box {
+    background-color: #e9ecef;
+    border-radius: 16px;
+    padding: 40px 20px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .upload-box:hover {
+    background-color: #dee2e6;
+  }
+
+  .upload-box.file-selected {
+    background-color: #d1e7dd;
+    /* Hijau muda */
+    border: 2px solid #0f5132;
+    color: #0f5132;
+  }
+
+  .upload-content {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+
 
 <body>
   <div id="NavSide">
@@ -80,6 +131,10 @@ $matkul = $_GET['matkul'] ?? '';
             <hr>
           </div>
 
+          <?php
+          $judul = $_GET['judul'] ?? '';
+          $matkul = $_GET['matkul'] ?? '';
+          ?>
           <form action="#" method="post">
             <div class="mb-3">
               <label for="judul" class="form-label">Judul Sidang</label>
@@ -176,10 +231,10 @@ $matkul = $_GET['matkul'] ?? '';
                     <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
                   </div>
                   <div class="modal-body">
-                    <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda sudah yakin ingin mengajukan sidang?</p>
-                    <div class="d-flex justify-content-center gap-4">
-                      <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
-                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold" id="submitBtn">Lanjutkan</button>
+                    <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin mengajukan sidang?</p>
+                    <div class="d-flex justify-content-between px-5">
+                      <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn">Lanjutkan</button>
                     </div>
                   </div>
                 </div>
@@ -190,12 +245,13 @@ $matkul = $_GET['matkul'] ?? '';
             <div class="d-flex justify-content-end gap-2 mt-3">
               <button type="button" class="btn btn-secondary" id="btnSimpan">Simpan</button>
               <!-- Trigger -->
-              <button type="button" class="btn btn-primary" id="btnOpenModalKonfirmasi">
+              <button type="button" class="btn-setuju" id="btnOpenModalKonfirmasi">
                 Kirim
               </button>
 
 
               <!-- Modal Berhasil -->
+              <!-- modal bootstap gajadi kepake dah diganti JS, might remove later -->
               <div class="modal fade" id="modalBerhasil" tabindex="-1" aria-labelledby="modalBerhasilLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
@@ -216,58 +272,6 @@ $matkul = $_GET['matkul'] ?? '';
       </div>
     </main>
   </div>
-
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-    }
-
-    label {
-      font-weight: 500;
-      margin-bottom: 5px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .form-control,
-    .form-select {
-      font-family: "Poppins", sans-serif;
-      font-size: 16px;
-      padding: 12px 15px;
-      border-radius: 12px;
-
-    }
-
-    .upload-box {
-      background-color: #e9ecef;
-      border-radius: 16px;
-      padding: 40px 20px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .upload-box:hover {
-      background-color: #dee2e6;
-    }
-
-    .upload-box.file-selected {
-      background-color: #d1e7dd;
-      /* Hijau muda */
-      border: 2px solid #0f5132;
-      color: #0f5132;
-    }
-
-    .upload-content {
-      min-height: 100px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-  </style>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -297,17 +301,24 @@ $matkul = $_GET['matkul'] ?? '';
 
     const btnOpenModalKonfirmasi = document.getElementById('btnOpenModalKonfirmasi');
     const modalKonfirmasiEl = document.getElementById('modalKonfirmasi');
-    const modalPeringatanEl = document.getElementById('modalPeringatan');
+    // const modalPeringatanEl = document.getElementById('modalPeringatan');
 
     const modalKonfirmasi = new bootstrap.Modal(modalKonfirmasiEl);
-    const modalPeringatan = new bootstrap.Modal(modalPeringatanEl);
+    // const modalPeringatan = new bootstrap.Modal(modalPeringatanEl);
 
     btnOpenModalKonfirmasi.addEventListener('click', function() {
       const laporan = document.getElementById('laporanSidang').files.length;
       const pendukung = document.getElementById('dokPendukung').files.length;
 
       if (laporan === 0 || pendukung === 0) {
-        modalPeringatan.show();
+        Swal.fire({
+        title: 'Dokumen Tidak Boleh Kosong!',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then(() => {
+        modal.hide();
+      });
       } else {
         modalKonfirmasi.show();
       }
@@ -320,7 +331,14 @@ $matkul = $_GET['matkul'] ?? '';
       const pendukung = document.getElementById('dokPendukung').files.length;
 
       if (laporan === 0 || pendukung === 0) {
-        modalPeringatan.show();
+        Swal.fire({
+        title: 'Dokumen Tidak Boleh Kosong!',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then(() => {
+        modal.hide();
+      });
       } else {
         history.back();
       }
@@ -363,17 +381,18 @@ $matkul = $_GET['matkul'] ?? '';
     pendukungInput.addEventListener('change', () => updateUploadBox(pendukungInput, pendukungBox));
 
     const submitBtn = document.getElementById('submitBtn');
-    const modalBerhasilEl = document.getElementById('modalBerhasil');
-    const modalBerhasil = new bootstrap.Modal(modalBerhasilEl);
 
     submitBtn.addEventListener('click', function() {
-      modalKonfirmasi.hide();
-      modalBerhasil.show();
-
-      setTimeout(() => {
-        modalBerhasil.hide();
-        history.back();
-      }, 2000);
+      Swal.fire({
+        title: 'Pengajuan Berhasil Dikirim!',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          history.back();
+        }
+      });
     });
   </script>
 </body>

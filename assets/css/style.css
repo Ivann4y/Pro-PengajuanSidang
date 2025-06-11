@@ -577,3 +577,9 @@ button.btn-kembali .icon-circle i.fa-arrow-left {
 button.btn-kembali:hover .icon-circle i.fa-arrow-left {
   color: white !important;
 }
+
+/* Modal heading color warna biru*/
+.modal-heading-color {
+  background-color: #4b68fb;
+  color: white;
+}

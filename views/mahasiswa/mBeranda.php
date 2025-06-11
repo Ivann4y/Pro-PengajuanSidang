@@ -630,7 +630,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
     <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div style="background-color: rgb(67, 54, 240);">
+                <div style="background-color:#4B68FB;">
                     <div class="modal-header">
                         <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                     </div>

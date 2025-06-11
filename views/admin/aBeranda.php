@@ -1,41 +1,54 @@
-<?php   
+<?php
+// Mulai sesi dan cek apakah user adalah admin
 session_start();
 if ($_SESSION['role'] !== 'admin') {
+    // Jika bukan admin, redirect ke halaman login
     header("Location: ../../index.php");
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
+    <!-- Responsive viewport untuk mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Nama penulis halaman -->
+    <meta name="author" content="JaisyuNurM-AliansiSidang_Kelompok5" />
     <title>Dashboard Admin</title>
-     <link rel="stylesheet" href="../../assets/css/style.css"/>
-      <link rel="stylesheet" href="../../extra/style.css"> 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet"href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
-   
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../extra/style.css">
 
     <style>
-
-         .dashboardTitle {
+        /* =======================
+           Dashboard Card Styles
+        ======================== */
+        .dashboardTitle {
             color: #4B68FB;
             font-size: 1.5rem;
             font-weight: 500;
         }
-        
-          .penjadwalan-status-card {
+
+
+        .penjadwalan-status-card {
             background-color: #4B68FB;
             color: white;
             display: flex;
             align-items: center;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-            /* Added for hover effect */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+
         }
 
         .penjadwalan-status-card:hover {
@@ -74,10 +87,8 @@ if ($_SESSION['role'] !== 'admin') {
             background-color: rgb(239, 239, 239);
             display: flex;
             align-items: center;
-            /* Added for hover effect */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            /* Base shadow for consistency */
         }
 
         .pengajuan-status-card:hover {
@@ -115,8 +126,6 @@ if ($_SESSION['role'] !== 'admin') {
             color: #1F2937;
         }
 
-        /* ... (your .content-card and .notifikasi-card styles) ... */
-        /* Keep your existing .notifikasi-card and .tanggungan-card styles for scrolling and sticky headers */
         .content-card {
             background-color: #F3F4F6;
         }
@@ -140,25 +149,13 @@ if ($_SESSION['role'] !== 'admin') {
             position: sticky;
             top: 0;
             background-color: #F3F4F6;
-            /* Match card background */
             z-index: 10;
             padding-top: 0.3rem;
-            /* Adjust to match card's padding if link wraps it */
             padding-bottom: 0.5rem;
-            /* If .notifikasi-card has padding, section-title might need negative margins
-           to span full width if it's inside a padded linked container.
-           However, given the link will wrap the dashboard-card which itself has padding,
-           this should be okay. The title's background needs to be the same as the card's.
-        */
             border-bottom: 1px solid #DEE2E6;
-            /* Resetting margins that might be inherited if card padding is on the link */
             margin-top: 0;
-            /* If the card has padding, and title is inside */
             margin-bottom: 0;
         }
-
-        /* Make sure padding of notifikasi-card is applied if link wraps it,
-       or adjust title padding/margin if sticky element is inside a padded link */
 
 
         .notifikasi-card .notifikasi-item {
@@ -218,7 +215,6 @@ if ($_SESSION['role'] !== 'admin') {
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             min-height: 300px;
-            /* Ensures the card has a decent minimum height */
         }
 
         .calendar-card .section-title-container {
@@ -229,7 +225,6 @@ if ($_SESSION['role'] !== 'admin') {
         }
 
         .calendar-card .section-title {
-            /* This is the month/year text */
             color: white;
             margin-bottom: 0;
             font-size: 1.1rem;
@@ -248,16 +243,13 @@ if ($_SESSION['role'] !== 'admin') {
         }
 
         .calendar-card .calendar {
-            /* The <table> element */
             width: 100%;
             border-collapse: collapse;
             margin-top: 0.5rem;
             flex-grow: 1;
-            /* Allows table to take available vertical space in the flex card */
         }
 
         .calendar-card .calendar th {
-            /* Day headers: Min, Sen, etc. */
             padding: 0.3rem 0.25rem;
             text-align: center;
             font-weight: 500;
@@ -267,32 +259,25 @@ if ($_SESSION['role'] !== 'admin') {
         }
 
         .calendar-card .calendar td {
-            /* Cells for each day */
+
             padding: 0.1rem;
-            /* Small padding around the day bubble */
+
             text-align: center;
             vertical-align: middle;
-            /* Vertically aligns the day bubble in the cell */
-            /* REMOVED explicit height: calc(100% / 6); to let table rows auto-adjust height */
         }
 
-        /* REMOVED .calendar-card .calendar tbody, .calendar-card .calendar tr { height: 100%; } */
-        /* These rules were causing issues. Table rows will now naturally distribute height. */
 
         .calendar-card .calendar-day {
-            /* The <span> bubble for each day number */
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 32px;
             height: 32px;
             line-height: 32px;
-            /* Should match height for vertical centering of single-line text */
             border-radius: 50%;
             font-size: 0.8rem;
             font-weight: 500;
             margin: 0 auto;
-            /* Horizontal centering within the <td> */
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
@@ -311,25 +296,19 @@ if ($_SESSION['role'] !== 'admin') {
             background-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Ensure calendar table can take up space */
         .calendar-card .calendar tbody,
         .calendar-card .calendar tr {
             height: 100%;
-            /* if needed to help distribute space, test this */
         }
 
         .calendar-card .calendar td {
             height: calc(100% / 6);
-            /* Distribute height among rows, adjust divisor if max rows change */
         }
 
 
-        /* --- Sidang Mendatang Card (User's latest version) --- */
-        /* ... (Your existing .sidang-mendatang-card styles should be fine) ... */
         .sidang-mendatang-card {
             overflow-y: auto;
             max-height: 36vh;
-            /* As per your original style */
             padding-top: 0rem;
             padding-bottom: 1rem;
         }
@@ -338,15 +317,11 @@ if ($_SESSION['role'] !== 'admin') {
             position: sticky;
             top: 0;
             background-color: #F3F4F6;
-            /* Ensure this matches card background */
             z-index: 10;
             padding-top: 0.3rem;
-            /* Adjust if card has padding */
             padding-bottom: 0.5rem;
             margin-top: 0;
-            /* Reset margin */
             margin-bottom: 0;
-            /* Reset margin */
             border-bottom: 1px solid #DEE2E6;
         }
 
@@ -408,60 +383,61 @@ if ($_SESSION['role'] !== 'admin') {
 
 <body>
     <div id="NavSide">
+        <!-- Sidebar Navigasi -->
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                    <b></b>
-                    <b></b>
+                <!-- Menu aktif -->
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">       
                     <a href="aBeranda.php">
                         <span class="NavSide__sidebar-title fw-semibold">Beranda</span>
                     </a>
                 </li>
+                <!-- Menu lain -->
                 <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
                     <a href="aPenjadwalan.php">
                         <span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
                     <a href="aDaftarSidang.php">
                         <span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span>
-            </a>
-          </li>
+                    </a>
+                </li>
+                <!-- Tombol keluar, memunculkan modal konfirmasi -->
                 <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logABeranda">
+                        <span class="NavSide__sidebar-title fw-semibold">Keluar</span>
+                    </a>
                 </li>
             </ul>
         </div>
 
-         <div class="NavSide__topbar">
+        <!-- Topbar untuk mobile -->
+        <div class="NavSide__topbar">
             <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
+                <!-- Notifikasi -->
                 <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                     <i class="bi bi-bell-fill"></i>
                 </a>
-                 <div class="profile-icon">
+                <!-- Profil -->
+                <div class="profile-icon">
                     <a href="aProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-person-fill fs-5"></i>
                     </a>
                 </div>
             </div>
-
         </div>
 
+        <!-- Main Content -->
         <main class="NavSide__main-content">
-    
-        <div class="dashboard-header">
+            <div class="dashboard-header">
                 <h2 class="page-title">Dashboard Admin</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
@@ -471,13 +447,14 @@ if ($_SESSION['role'] !== 'admin') {
                 </div>
             </div>
 
-           
             <h2 class="welcomeText">Selamat Datang, Admin!</h2>
 
             <div class="row">
+                <!-- Statistik Penjadwalan & Pengajuan -->
                 <div class="col-lg-7">
                     <div class="row">
                         <div class="col-md-6">
+                            <!-- Kartu Penjadwalan -->
                             <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="dashboard-card penjadwalan-status-card">
                                     <div class="number">4</div>
@@ -487,7 +464,7 @@ if ($_SESSION['role'] !== 'admin') {
                                     </div>
                                 </div>
                             </a>
-
+                            <!-- Kartu Pengajuan -->
                             <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="dashboard-card pengajuan-status-card">
                                     <div class="number">2</div>
@@ -499,6 +476,7 @@ if ($_SESSION['role'] !== 'admin') {
                             </a>
                         </div>
                         <div class="col-md-6">
+                            <!-- Kartu Tanggungan -->
                             <div class="dashboard-card content-card tanggungan-card">
                                 <h3 class="section-title">Tanggungan</h3>
                                 <div class="tanggungan-item">Belum terjadwal Sidang PRG</div>
@@ -509,7 +487,7 @@ if ($_SESSION['role'] !== 'admin') {
                             </div>
                         </div>
                     </div>
-
+                    <!-- Kartu Notifikasi -->
                     <a href="aNotifikasi.php" style="text-decoration: none; color: inherit; display: block;">
                         <div class="dashboard-card content-card notifikasi-card">
                             <h3 class="section-title">Notifikasi</h3>
@@ -520,7 +498,9 @@ if ($_SESSION['role'] !== 'admin') {
                     </a>
                 </div>
 
+                <!-- Kalender dan Sidang Mendatang -->
                 <div class="col-lg-5">
+                    <!-- Kalender -->
                     <div class="dashboard-card calendar-card">
                         <div class="section-title-container">
                             <h3 class="section-title" id="currentMonthYear"></h3>
@@ -542,89 +522,34 @@ if ($_SESSION['role'] !== 'admin') {
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Kalender akan diisi oleh JavaScript -->
                             </tbody>
                         </table>
                     </div>
-
+                    <!-- Sidang Mendatang -->
                     <div class="dashboard-card content-card sidang-mendatang-card">
                         <h3 class="section-title">Sidang Mendatang</h3>
-                       
-                            <div class="item">
-                                <div class="date-bubble">
-                                    <span class="day">02</span>
-                                    <span class="month">Jun</span>
-                                </div>
-                                <span class="info">Sistem Pengajuan Skripsi</span>
-                                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                            </div>
-                        
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">05</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Revisi Proposal KP</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">10</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Sidang Akhir TA</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">15</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Presentasi Proyek</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">20</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Ujian Komprehensif</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">25</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Revisi Skripsi Bab 1-3</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">28</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Bimbingan Akhir</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
+                        <!-- Daftar sidang mendatang, setiap item berisi tanggal, bulan, info, dan ikon -->
                         <div class="item">
                             <div class="date-bubble">
                                 <span class="day">02</span>
-                                <span class="month">Jul</span>
+                                <span class="month">Jun</span>
                             </div>
-                            <span class="info">Pengumpulan Laporan</span>
+                            <span class="info">Sistem Pengajuan Skripsi</span>
                             <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
+                        <!-- ...item lain... -->
                     </div>
                 </div>
             </div>
         </main>
     </div>
-
-     <!-- Modal keluar-->
+  
+    <!-- Modal keluar (konfirmasi logout) -->
     <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div style="background-color: rgb(67, 54, 240);">
+                <div class="modal-heading-color">
                     <div class="modal-header">
                         <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                     </div>
@@ -640,45 +565,42 @@ if ($_SESSION['role'] !== 'admin') {
         </div>
     </div>
 
+    <!-- Bootstrap JS Bundle (termasuk Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Toggle sidebar visibility
-       // Sidebar Toggle Logic
+        // =========================
+        // Sidebar Toggle Logic
+        // =========================
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
 
+        // Toggle sidebar untuk mobile
         menuToggle.onclick = function() {
             menuToggle.classList.toggle("NavSide__toggle--active");
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
 
-        // Sidebar Active Item Logic
-        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        // for (let i = 0; i < listItems.length; i++) {
-        //     listItems[i].onclick = function() {
-        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-        //             for (let j = 0; j < listItems.length; j++) {
-        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-        //             }
-        //             this.classList.add("NavSide__sidebar-item--active");
-        //         }
-        //     };
-        // }
+        // =========================
+        // Kalender Interaktif
+        // =========================
 
-        
-        // Real-time Calendar Logic
+        // Ambil elemen kalender
         const calendarTableBody = document.querySelector("#calendarTable tbody");
         const currentMonthYearHeader = document.getElementById("currentMonthYear");
         const prevMonthBtn = document.getElementById("prevMonth");
         const nextMonthBtn = document.getElementById("nextMonth");
 
+        // Tanggal hari ini dan tanggal aktif
         let currentDate = new Date();
         let activeDate = new Date();
 
-        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        // Nama-nama bulan dalam bahasa Indonesia
+        const monthNames = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         ];
 
+        // Fungsi untuk merender kalender
         function renderCalendar() {
             calendarTableBody.innerHTML = "";
             currentMonthYearHeader.textContent = `${monthNames[activeDate.getMonth()]} ${activeDate.getFullYear()}`;
@@ -686,25 +608,37 @@ if ($_SESSION['role'] !== 'admin') {
             const year = activeDate.getFullYear();
             const month = activeDate.getMonth();
 
+            // Hari pertama dalam bulan (0 = Minggu)
             const firstDayOfMonth = new Date(year, month, 1).getDay();
+            // Jumlah hari dalam bulan
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             let date = 1;
+            // Render 6 baris (minggu)
             for (let i = 0; i < 6; i++) {
                 const row = document.createElement("tr");
 
+                // Render 7 kolom (hari)
                 for (let j = 0; j < 7; j++) {
                     const cell = document.createElement("td");
+                    // Kosongkan sel sebelum tanggal 1
                     if (i === 0 && j < firstDayOfMonth) {
                         cell.innerHTML = "";
                     } else if (date > daysInMonth) {
+                        // Kosongkan sel setelah akhir bulan
                         cell.innerHTML = "";
                     } else {
+                        // Isi tanggal
                         const daySpan = document.createElement("span");
                         daySpan.classList.add("calendar-day");
                         daySpan.textContent = date;
 
-                        if (date === currentDate.getDate() && month === currentDate.getMonth() && year === currentDate.getFullYear()) {
+                        // Tandai hari ini
+                        if (
+                            date === currentDate.getDate() &&
+                            month === currentDate.getMonth() &&
+                            year === currentDate.getFullYear()
+                        ) {
                             daySpan.classList.add("current-day");
                         }
                         cell.appendChild(daySpan);
@@ -716,18 +650,21 @@ if ($_SESSION['role'] !== 'admin') {
             }
         }
 
+        // Navigasi bulan sebelumnya
         prevMonthBtn.addEventListener("click", () => {
             activeDate.setMonth(activeDate.getMonth() - 1);
             activeDate.setDate(1);
             renderCalendar();
         });
 
+        // Navigasi bulan berikutnya
         nextMonthBtn.addEventListener("click", () => {
             activeDate.setMonth(activeDate.getMonth() + 1);
             activeDate.setDate(1);
             renderCalendar();
         });
 
+        // Render kalender saat halaman dimuat
         renderCalendar();
     </script>
 </body>
