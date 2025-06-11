@@ -51,6 +51,11 @@
             width: 20%;
         }
 
+        thead th:nth-child(6) {
+            text-align: center;
+            width: 20%;
+        }
+
         .isiTabel td {
             padding: 12px 15px;
             font-family: "Poppins";
@@ -63,23 +68,38 @@
             text-align: center;
         }
 
-        .isiTabel td:nth-child(5) {
+        .isiTabel td:nth-child(6) {
             border-radius: 0 20px 20px 0;
         }
 
-        .btnKonfirmasi {
-            background-color: #464869;
-            color: white;
-            border-radius: 15px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            height: 40px;
-            width: 100px;
+
+          /* CSS BARU untuk tombol tanpa border */
+        .detail-btn {
+            border: none !important;
+            background-color: transparent !important;
+            color: #4B68FB; /* Warna ikon */
+            padding: 0.25rem 0.5rem; /* Menyesuaikan padding agar tidak terlalu besar */
         }
 
-        .btnKonfirmasi:hover {
-            background-color: #3a3b54;
+        /* Efek saat hover pada tombol */
+        .detail-btn:hover {
+            opacity: 0.7;
+        }
+
+        /* Memastikan warna ikon menjadi putih saat baris di-hover */
+        .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+            color: #FFFFFF;
+            opacity: 1;
+        }
+
+        .modal-header-custom {
+            background-color: #4B68FB;
             color: white;
+        }
+
+        /* Saat baris di-hover, ubah warna ikon di tombol aksi */
+        tr.jadiBiru:hover .detail-btn i {
+            color: white !important;
         }
     </style>
 </head>
@@ -126,8 +146,11 @@
                 </div>
             </div>
         </div>
-        <main class="NavSide__main-content" id="mBeranda">
+        <main class="NavSide__main-content" id="dBeranda">
             <div class="dashboard-header">
+                 <h1 class="bodyHeading" style= "font-weight: bold">
+                            Pengajuan Sidang
+                        </h1>
                 <h2 class="page-title"> </h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
@@ -140,9 +163,6 @@
             <div class="container-fluid">
                 <div class="container-fluid">
                     <div class="row">
-                        <h2 class="bodyHeading">
-                            Pengajuan Sidang
-                        </h2>
                     </div><br><br>
                     <div class="row">
                         <div class="dropdown">
@@ -163,52 +183,83 @@
                                     <th scope="col">Nama</th>
                                     <th scope="col">Mata Kuliah</th>
                                     <th scope="col">Dosen Pembimbing</th>
+                                    <th scope="col">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="dPengajuanTA">
-                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240033', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>1</td>
                                     <td>0920240033</td>
                                     <td>M. Harris Nur S.</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240053', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
                                     <td>Nayaka Ivanna</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240053', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240055', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>3</td>
                                     <td>0920240055</td>
                                     <td>Nur Widya Astuti</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                             <tbody id="dPengajuanSem" style="display: none;">
-                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240033', 'Semester')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>1</td>
                                     <td>0920240033</td>
                                     <td>M. Harris Nur S.</td>
                                     <td>Pemrograman 2</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240053', 'Semester')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
                                     <td>Nayaka Ivanna</td>
                                     <td>Pemrograman 2</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240053', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToDetail('0920240055', 'Semester')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>3</td>
                                     <td>0920240055</td>
                                     <td>Nur Widya Astuti</td>
                                     <td>Pemrograman 2</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
