@@ -1,4 +1,5 @@
-<?php
+<?php //ZAFKI ADIPRATAMA PUTRA
+
     // Ambil parameter dari URL
     $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
     $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
@@ -641,8 +642,8 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a onclick="location.href='dNilaiAkhir.php'">
-                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    <a href="dNilaiAkhir.php">
+                        <span class="fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
             </ul>

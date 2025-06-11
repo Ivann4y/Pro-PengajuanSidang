@@ -128,6 +128,9 @@
       text-align: center;
       border-radius: 0px 20px 20px 0px;
     }
+    #BelumDibaca td span {
+  cursor: pointer;
+    }
   </style>
 </head>
 
@@ -238,24 +241,22 @@
     </div>
     </main>
     <!-- Modal Konfirmasi -->
-    <div class="modal fade" id="konfirmasiModalnotifikai" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-4" style="border-radius: 20px;">
-          <div class="modal-body text-center">
-            <h5 class="fw-bold mb-3" style="color: #3A3A3A;">Perhatian</h5>
-            <p class="mb-4" style="color: #3A3A3A;">Apakah anda sudah yakin ingin mengubah status Terbaca?</p>
-            <div class="d-flex justify-content-center row">
-              <div class="col-auto">
-                <button type="button" class="btn btn-danger fw-semibold" data-bs-dismiss="modal">Batalkan</button>
-              </div>
-              <div class="col-auto">
-                <button type="button" class="btn btn-success fw-semibold" onclick="lanjutkanAksi()">Lanjutkan</button>
-              </div>
-            </div>
-          </div>
+     <div class="modal fade" id="konfirmasiModalKirim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                  </div>
+      <div class="modal-body">
+        <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah yakin ingin mengirim nilai akhir?</p>
+        <div class="d-flex justify-content-between px-5">
+          <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="lanjutkanAksi()">Iya</button>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
   </div>
 

@@ -1,6 +1,6 @@
 <?php
 $selectedTipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'TA';
-$selectedStatus = issegitt($_GET['status']) ? $_GET['status'] : 'belum';
+$selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'belum';
 $statusFilter = ($selectedStatus == 'disetujui') ? true : false;
 
 $jsonPath = __DIR__ . '/data_sidang.json'; 
@@ -354,7 +354,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         <div class="modal-body mx-auto">
              Apakah anda yakin ingin keluar?
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer justify-content-center border-0">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
             <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
         </div>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!-- ZAFKI ADIPRATAMA PUTRA -->
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -166,7 +166,7 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         z-index: 999;
     }
-        }
+        
         .NavSide__topbar .NavSide__toggle { /* Styles for toggle INSIDE topbar */
             width: 40px;
             height: 40px;
