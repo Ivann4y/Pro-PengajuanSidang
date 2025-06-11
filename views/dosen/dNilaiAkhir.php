@@ -374,6 +374,10 @@
   flex: 0 0 49%;
   max-width: 49%;
 }
+#catatan::placeholder {
+  color: #888 !important;      
+  opacity: 60% !important;       
+}
       input.form-control:focus,
 input.form-control:active {
   background-color: #fff !important;
@@ -534,10 +538,11 @@ input.form-control:active {
           flex: 3;
         }
          .section{
+          margin-left:0px !important;
            margin-top: 0px !important;
         }
         .section2{
-          margin-top: -25px !important;
+          margin-top: 5px !important;
         }
       }
 
@@ -551,10 +556,11 @@ input.form-control:active {
           flex-wrap: nowrap !important;
         }
         .section{
+          margin-left:0px !important;
            margin-top: 0px !important;
         }
         .section2{
-          margin-top: -25px !important;
+          margin-top: 5px !important;
         }
         .col-lg-49{
           display: block;
@@ -753,6 +759,7 @@ input.form-control:active {
             id="nilaiMahasiswa"
             placeholder="--"
             maxlength="1"
+            style="cursor:pointer;"
             readonly
           />
         </div>
@@ -763,9 +770,9 @@ input.form-control:active {
   <div class="card flex-fill" id="carddataMahasiswa">
     <div class="card-body card-soft px-4 py-3">
       <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
-      <div class="info-card d-flex flex-wrap gap-4">
+      <div class="d-flex flex-wrap gap-1 px-4 py-3">
         <!-- Section 1 -->
-        <div class="section flex-fill" style="min-width:220px; margin-top:35px;">
+        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px;">
           <!-- NIM -->
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
@@ -784,7 +791,7 @@ input.form-control:active {
           </div>
         </div>
         <!-- Section 2 -->
-        <div class="section2 flex-fill" style="min-width:180px; margin-top:35px;">
+        <div class="section2" style="flex: 1 1 200px;; margin-top:25px;">
           <!-- Mata Kuliah -->
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
@@ -896,18 +903,18 @@ input.form-control:active {
     </main>
     
   </div>
+  
   <div class="modal fade" id="konfirmasiModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-3">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                  </div>
       <div class="modal-body">
-        <p class="fs-5 fw-semibold text-black">Apakah nilai akhir sama dengan nilai sementara?</p>
-        <div class="d-flex justify-content-center row kakimodal">
-          <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
-          </div>
-          <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="isiNilaiAkhir()">Iya</button>
-          </div>
+       <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah nilai akhir sama dengan nilai sementara?</p>
+        <div class="d-flex justify-content-between px-5">
+          <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
+          <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="isiNilaiAkhir()">Iya</button>
         </div>
       </div>
     </div>
@@ -915,16 +922,15 @@ input.form-control:active {
 </div>
  <div class="modal fade" id="konfirmasiModalKirim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-3">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                  </div>
       <div class="modal-body">
-        <p class="fs-5 fw-bold text-black">Apakah yakin ingin mengirim nilai akhir?</p>
-        <div class="d-flex justify-content-center row kakimodal">
-          <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
-          </div>
-          <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
-          </div>
+        <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah yakin ingin mengirim nilai akhir?</p>
+        <div class="d-flex justify-content-between px-5">
+          <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
         </div>
       </div>
     </div>
@@ -988,8 +994,7 @@ input.form-control:active {
     const nilaiProyek = document.getElementsByName("NilaiProyek")[0].value;
     if (nilaiMahasiswa === "" || nilaiLaporan === "" || materiPresentasi === "" || penyampaian === "" || nilaiProyek === "") {
       Swal.fire({
-        title: 'Error',
-        text: 'Semua nilai harus diisi sebelum mengirim.',
+        title: 'Semua nilai harus diisi sebelum mengirim!',
         icon: 'error',
         confirmButtonText: 'OK',
         confirmButtonColor: '#4B68FB'
@@ -999,8 +1004,7 @@ input.form-control:active {
     } else{
     modal.hide();
     Swal.fire({
-      title: 'Berhasil',
-      text: 'Nilai akhir telah dikirim.',
+      title: 'Nilai akhir telah dikirim.',
       icon: 'success',
       confirmButtonText: 'OK',
       confirmButtonColor: '#4B68FB'
