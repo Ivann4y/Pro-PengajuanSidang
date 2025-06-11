@@ -374,9 +374,9 @@
   flex: 0 0 49%;
   max-width: 49%;
 }
-::placeholder {
+#catatan::placeholder {
   color: #888 !important;      
-  opacity: 50% !important;       
+  opacity: 60% !important;       
 }
       input.form-control:focus,
 input.form-control:active {
