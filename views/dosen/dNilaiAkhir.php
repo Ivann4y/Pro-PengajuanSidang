@@ -253,14 +253,14 @@
       }
 
       #cardNilai {
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
         margin-left: 0;
       }
       #carddataMahasiswa{
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
@@ -274,14 +274,14 @@
         width: 100%;
         margin-left: 23px;
         height: 40px;
-        background-color: #f2f2f2 !important;
-        border-color: #f2f2f2 !important;
+        background-color: rgb(235, 238, 245) !important;
+        border-color: rgb(235, 238, 245) !important;
       }
 
       
 
       #cardPenilaian {
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
@@ -304,13 +304,13 @@
       #carddetailPenilaian {
         width: 100%;
         margin-left: 0;
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
       #cardcatatan {
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
@@ -772,14 +772,14 @@ input.form-control:active {
       <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
       <div class="d-flex flex-wrap gap-1 px-4 py-3">
         <!-- Section 1 -->
-        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px;">
+        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
           <!-- NIM -->
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-id-card"></i>
               <span class="fw-bold">NIM</span>
             </div>
-            <div class="value-row text-secondary">123456789</div>
+            <div class="value-row text-secondary">0920240033</div>
           </div>
           <!-- Nama -->
           <div class="info-group mb-3">
@@ -787,18 +787,18 @@ input.form-control:active {
               <i class="fa-solid fa-user"></i>
               <span class="fw-bold">Nama</span>
             </div>
-            <div class="value-row text-secondary">John Doe</div>
+            <div class="value-row text-secondary">M. Harris Nur S.</div>
           </div>
         </div>
         <!-- Section 2 -->
-        <div class="section2" style="flex: 1 1 200px;; margin-top:25px;">
+        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
           <!-- Mata Kuliah -->
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-book"></i>
               <span class="fw-bold">Mata Kuliah</span>
             </div>
-            <div class="value-row text-secondary">Struktur Data</div>
+            <div class="value-row text-secondary">Tugas Akhir</div>
           </div>
           <!-- Dosen Pembimbing -->
           <div class="info-group mb-3">
@@ -806,7 +806,7 @@ input.form-control:active {
               <i class="fa-solid fa-user-tie"></i>
               <span class="fw-bold">Dosen Pembimbing</span>
             </div>
-            <div class="value-row text-secondary">Dr. Rida Indah Fariani, S.Si, M.T.I</div>
+            <div class="value-row text-secondary">Timotius Victory</div>
           </div>
         </div>
       </div>

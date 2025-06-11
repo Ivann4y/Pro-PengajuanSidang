@@ -311,7 +311,7 @@
         </div>
       </div>
       
-
+      
       <!-- Fungsi Tombol Kembali -->
       <div class="row mt-5 align-items-center justify-content-between">
         <div class="col-auto">
@@ -326,7 +326,7 @@
     </div>
   </div>
   
-    
+
   <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   
@@ -342,7 +342,7 @@
       menuToggle.classList.toggle("NavSide__toggle--active");
       sidebar.classList.toggle("NavSide__sidebar--active-mobile");
     };
-
+    
 
     // Sidebar Active Item Logic
     let listItems = document.querySelectorAll(".NavSide__sidebar-item");
