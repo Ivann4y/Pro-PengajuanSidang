@@ -305,9 +305,9 @@
         }
 
         .btn-ubah {
-            background-color: #ff5f5f;
+            background-color: #4B68FB;
             color: white;
-            border: 2px solid #ff5f5f;
+            border: 2px solid #4B68FB;
             border-radius: 20px; 
             margin-bottom: 10px;
             padding: 12px 30px; 
@@ -320,8 +320,8 @@
 
         .btn-ubah:hover {
             background-color:rgb(255, 255, 255);
-            border: 2px solid #ff5f5f; 
-            color : #ff5f5f;
+            border: 2px solid #4B68FB; 
+            color : #4B68FB;
             position: relative;
         }
 
@@ -533,7 +533,13 @@
           -webkit-appearance: none;
           -moz-appearance: none;
        }
-
+        
+       .page-nama {
+           font-size: 1.3rem;
+           font-weight: 600;
+           margin-top: -35px;
+           margin-bottom: 20px;
+       }
 
 
 
@@ -568,14 +574,20 @@
             </ul>
         </div>
 
-        <div class="NavSide__toggle"> <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
-        </div>
+        
+        <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
+            <div class="NavSide__topbar">
+                <div class="NavSide__toggle">
+                    <i class="bi bi-list open"></i>
+                    <i class="bi bi-x-lg close"></i>
+                </div>
+            </div>
 
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Pemrograman 2</h2>
-            <div class="status-badge">Status Pengajuan : Disetujui</div>
+            <p class="page-nama">Nayaka Ivanna</p> 
 
+            <div class="status-badge">Status Pengajuan : Disetujui</div>
             <div class="info-card">
                 <div class="section">
                     <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br>Basis Data 1</p>

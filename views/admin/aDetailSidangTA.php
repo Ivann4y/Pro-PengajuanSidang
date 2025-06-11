@@ -1,3 +1,6 @@
+<!-- Zia Zahran Hadi-->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -175,8 +178,10 @@
         .NavSide__main-content h2 {
             margin-bottom: 1.2cm; /* Menyamakan margin-bottom */
             font-weight: 700;     /* Menyamakan ketebalan font */
-            /* Ukuran font (font-size) dihapus agar mengikuti default browser atau Bootstrap yg lebih responsif */
+           
         }
+
+        .
         
         .NavSide__toggle {
             width: 40px;
@@ -305,9 +310,9 @@
         }
 
         .btn-ubah {
-            background-color: #ff5f5f;
+            background-color: #4B68FB;
             color: white;
-            border: 2px solid #ff5f5f;
+            border: 2px solid #4B68FB;
             border-radius: 20px; 
             margin-bottom: 10px;
             padding: 12px 30px; 
@@ -320,8 +325,8 @@
 
         .btn-ubah:hover {
             background-color:rgb(255, 255, 255);
-            border: 2px solid #ff5f5f; 
-            color : #ff5f5f;
+            border: 2px solid #4B68FB; 
+            color : #4B68FB;
             position: relative;
         }
 
@@ -345,6 +350,7 @@
         .btn-kembali:hover {
             position: relative;
             background-color: rgb(59, 54, 136);
+            
         }
         
         /* Sisa CSS untuk modal dan lainnya dipertahankan seperti aslinya */
@@ -490,11 +496,7 @@
         .modal-body .form-actions .btn-submit:hover { 
             background-color: rgb(106, 95, 255); 
         }
-        .modal-body > h2 {
-            font-size: 20px; 
-            color: #374151;
-            font-weight: 600; /* Dibuat sedikit tebal */
-        }
+       
         #penjadwalanSidangModal .modal-dialog {
             max-width: 600px;
         }
@@ -514,6 +516,13 @@
         }
         .modal-body .form-toggle-buttons button:hover {
             background-color: #ddd;
+        }
+
+        .page-nama {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: -35px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -549,8 +558,9 @@
 
             <main class="NavSide__main-content">
                 <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-                <div class="status-badge">Status Pengajuan : Disetujui</div>
+                <p class="page-nama">Nayaka Ivanna</p>
 
+                <div class="status-badge">Status Pengajuan : Disetujui</div>
                 <div class="info-card">
                     <div class="section">
                         <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br>Sistem Pengajuan Sidang</p>
