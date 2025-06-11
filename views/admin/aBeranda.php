@@ -12,13 +12,14 @@ if ($_SESSION['role'] !== 'admin') {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta author="Jaisy-AliansiSidang_Kelompok5"/>
     <title>Dashboard Admin</title>
-     <link rel="stylesheet" href="../../assets/css/style.css"/>
-      <link rel="stylesheet" href="../../extra/style.css"> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet"href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <link rel="stylesheet" href="../../assets/css/style.css"/>
+    <link rel="stylesheet" href="../../extra/style.css"> 
    
 
     <style>
@@ -35,7 +36,6 @@ if ($_SESSION['role'] !== 'admin') {
             display: flex;
             align-items: center;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-            /* Added for hover effect */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             
         }
@@ -76,10 +76,8 @@ if ($_SESSION['role'] !== 'admin') {
             background-color: rgb(239, 239, 239);
             display: flex;
             align-items: center;
-            /* Added for hover effect */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            /* Base shadow for consistency */
         }
 
         .pengajuan-status-card:hover {
@@ -117,8 +115,6 @@ if ($_SESSION['role'] !== 'admin') {
             color: #1F2937;
         }
 
-        /* ... (your .content-card and .notifikasi-card styles) ... */
-        /* Keep your existing .notifikasi-card and .tanggungan-card styles for scrolling and sticky headers */
         .content-card {
             background-color: #F3F4F6;
         }
@@ -146,14 +142,9 @@ if ($_SESSION['role'] !== 'admin') {
             padding-top: 0.3rem;
             padding-bottom: 0.5rem;    
             border-bottom: 1px solid #DEE2E6;
-            /* Resetting margins that might be inherited if card padding is on the link */
             margin-top: 0;
-            /* If the card has padding, and title is inside */
             margin-bottom: 0;
         }
-
-        /* Make sure padding of notifikasi-card is applied if link wraps it,
-       or adjust title padding/margin if sticky element is inside a padded link */
 
 
         .notifikasi-card .notifikasi-item {
@@ -213,7 +204,6 @@ if ($_SESSION['role'] !== 'admin') {
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             min-height: 300px;
-            /* Ensures the card has a decent minimum height */
         }
 
         .calendar-card .section-title-container {
@@ -224,7 +214,6 @@ if ($_SESSION['role'] !== 'admin') {
         }
 
         .calendar-card .section-title {
-            /* This is the month/year text */
             color: white;
             margin-bottom: 0;
             font-size: 1.1rem;
@@ -243,16 +232,13 @@ if ($_SESSION['role'] !== 'admin') {
         }
 
         .calendar-card .calendar {
-            /* The <table> element */
             width: 100%;
             border-collapse: collapse;
             margin-top: 0.5rem;
             flex-grow: 1;
-            /* Allows table to take available vertical space in the flex card */
         }
 
         .calendar-card .calendar th {
-            /* Day headers: Min, Sen, etc. */
             padding: 0.3rem 0.25rem;
             text-align: center;
             font-weight: 500;
@@ -262,32 +248,25 @@ if ($_SESSION['role'] !== 'admin') {
         }
 
         .calendar-card .calendar td {
-            /* Cells for each day */
+         
             padding: 0.1rem;
-            /* Small padding around the day bubble */
+     
             text-align: center;
             vertical-align: middle;
-            /* Vertically aligns the day bubble in the cell */
-            /* REMOVED explicit height: calc(100% / 6); to let table rows auto-adjust height */
         }
 
-        /* REMOVED .calendar-card .calendar tbody, .calendar-card .calendar tr { height: 100%; } */
-        /* These rules were causing issues. Table rows will now naturally distribute height. */
 
         .calendar-card .calendar-day {
-            /* The <span> bubble for each day number */
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 32px;
             height: 32px;
             line-height: 32px;
-            /* Should match height for vertical centering of single-line text */
             border-radius: 50%;
             font-size: 0.8rem;
             font-weight: 500;
             margin: 0 auto;
-            /* Horizontal centering within the <td> */
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
@@ -306,25 +285,19 @@ if ($_SESSION['role'] !== 'admin') {
             background-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Ensure calendar table can take up space */
         .calendar-card .calendar tbody,
         .calendar-card .calendar tr {
             height: 100%;
-            /* if needed to help distribute space, test this */
         }
 
         .calendar-card .calendar td {
             height: calc(100% / 6);
-            /* Distribute height among rows, adjust divisor if max rows change */
         }
 
 
-        /* --- Sidang Mendatang Card (User's latest version) --- */
-        /* ... (Your existing .sidang-mendatang-card styles should be fine) ... */
         .sidang-mendatang-card {
             overflow-y: auto;
             max-height: 36vh;
-            /* As per your original style */
             padding-top: 0rem;
             padding-bottom: 1rem;
         }
@@ -333,15 +306,11 @@ if ($_SESSION['role'] !== 'admin') {
             position: sticky;
             top: 0;
             background-color: #F3F4F6;
-            /* Ensure this matches card background */
             z-index: 10;
             padding-top: 0.3rem;
-            /* Adjust if card has padding */
             padding-bottom: 0.5rem;
             margin-top: 0;
-            /* Reset margin */
             margin-bottom: 0;
-            /* Reset margin */
             border-bottom: 1px solid #DEE2E6;
         }
 
@@ -398,6 +367,24 @@ if ($_SESSION['role'] !== 'admin') {
             font-size: 1.2rem;
             color: #4B68FB;
         }
+
+        /* .btn {
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            text-decoration: none;
+            font-family: "Poppins", sans-serif;
+            color: white;
+        } */
     </style>
 </head>
 
@@ -431,7 +418,7 @@ if ($_SESSION['role'] !== 'admin') {
           </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -619,7 +606,7 @@ if ($_SESSION['role'] !== 'admin') {
     <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div style="background-color: rgb(67, 54, 240);">
+                <div style="background-color:#4B68FB;">
                     <div class="modal-header">
                         <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                     </div>
@@ -646,20 +633,6 @@ if ($_SESSION['role'] !== 'admin') {
             menuToggle.classList.toggle("NavSide__toggle--active");
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
-
-        // Sidebar Active Item Logic
-        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        // for (let i = 0; i < listItems.length; i++) {
-        //     listItems[i].onclick = function() {
-        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-        //             for (let j = 0; j < listItems.length; j++) {
-        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-        //             }
-        //             this.classList.add("NavSide__sidebar-item--active");
-        //         }
-        //     };
-        // }
-
         
         // Real-time Calendar Logic
         const calendarTableBody = document.querySelector("#calendarTable tbody");

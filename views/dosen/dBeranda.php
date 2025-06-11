@@ -16,7 +16,9 @@ if ($_SESSION['role'] !== 'dosen') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../../assets/css/style.css"/>
     <link rel="stylesheet" href="../../extra/style.css">
+ 
     <style>
         
 
@@ -470,11 +472,11 @@ if ($_SESSION['role'] !== 'dosen') {
             </div>
             </div>
     </div>
-
+    
      <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div style="background-color: rgb(67, 54, 240);">
+                        <div style="background-color:#4B68FB;">
                             <div class="modal-header">
                                 <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                             </div>
