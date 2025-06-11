@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mahasiswa - Pengajuan</title>
+    <title>Mahasiswaa - Pengajuan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../extra/style.css">
@@ -15,7 +15,7 @@
         
 
         .text-heading { 
-            font-size: 1.75rem;
+            font-size: 2rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 1.5rem; 
@@ -136,24 +136,67 @@
             text-align: center;
         }
 
+        /* Add jadiBiru class styling */
+        .jadiBiru {
+            background-color: rgb(235, 238, 245);
+            transition: all 0.3s ease;
+        }
+
+        .jadiBiru:hover {
+            background-color: #4B68FB;
+            color: white;
+            cursor: pointer;
+        }
+
+        .action-column {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            padding-right: 15px;
+        }
+
         .tambah-sidang-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            transition: all 0.2s ease;
-            padding: 10px 20px;
-            /* font-family: "Poppins", sans-serif; Inherited */
-            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 25px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-radius: 20px;
             background-color: rgb(67, 54, 240); 
             color: white;
             border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .tambah-sidang-btn:hover {
-            background-color: rgb(57, 44, 210); 
-            padding-top: 12px; 
-            padding-bottom: 12px;
+            background-color: rgb(57, 44, 210);
+            color: white;
         }
+
+        @media (max-width: 768px) {
+            .action-column {
+                position: fixed;
+                top: 15px;
+                right: 60px;
+                margin: 0;
+                padding: 0;
+                z-index: 1046;
+            }
+
+            .tambah-sidang-btn {
+                padding: 6px 16px;
+                font-size: 0.85rem;
+                background-color: rgb(67, 54, 240);
+                border-radius: 15px;
+            }
+
+            .NavSide__topbar {
+                padding-right: 140px;
+            }
+        }
+
         .btn-primary { 
             /* font-family: "Poppins", sans-serif; Inherited */
             background-color: rgb(67, 54, 240);
@@ -167,13 +210,56 @@
             font-family: "Poppins", sans-serif; 
         }
 
-        /* Edit icon hover effect */
-        tr.isiTabel:hover .bi-pencil-square {
-            color: white !important;
+        /* Edit icon styling */
+        .bi-pencil-square {
+            color: rgb(67, 54, 240);
+            transition: color 0.3s ease;
+        }
+
+        tr.jadiBiru:hover .bi-pencil-square {
+            color: white;
         }
 
         /* Original mPengajuan table structural styles - END */
 
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icons a {
+            color: #333;
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+
+        .header-icons a:hover {
+            color: rgb(67, 54, 240);
+        }
+
+        .header-icons .tambah-sidang-btn {
+            padding: 6px 15px;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header-icons {
+                position: fixed;
+                top: 15px;
+                right: 60px;
+                z-index: 1046;
+            }
+
+            .header-icons a {
+                color: rgb(67, 54, 240);
+            }
+
+            .action-column {
+                display: none;
+            }
+        }
 
     </style>
 </head>
@@ -214,6 +300,7 @@
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i>
                 </div>
+                <button class="tambah-sidang-btn d-md-none" onclick="tambahData()">+ Tambah Sidang</button>
             </div>
         </div>
 
@@ -221,7 +308,7 @@
             <div class="container-fluid"> 
                 <div class="row">
                     <div class="col-12">
-                        <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                        <h2 class="text-heading" style="color:black">Nayaka Ivana Putra (Mahasiswa)</h2>
                     </div>
                 </div><br>
 
@@ -241,6 +328,9 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="table-responsive">
+                            <div class="action-column">
+                                <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
+                            </div>
                             <table>
                                 <thead>
                                     <tr>
@@ -258,29 +348,27 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
-            </div>
-        </main>
-    </div>
-
-     <!-- Modal keluar-->
-    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div style="background-color: rgb(67, 54, 240);">
-                    <div class="modal-header">
-                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                <!-- Modal keluar-->
+                <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div style="background-color: rgb(67, 54, 240);">
+                                <div class="modal-header">
+                                    <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                                </div>
+                            </div>
+                            <div class="modal-body mx-auto">
+                                Apakah anda yakin ingin keluar?
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-body mx-auto">
-                    Apakah anda yakin ingin keluar?
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-                </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -295,20 +383,6 @@
                 sidebar.classList.toggle("NavSide__sidebar--active-mobile");
             };
         }
-
-
-        // Sidebar Active Item Logic
-        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        // for (let i = 0; i < listItems.length; i++) {
-        //     listItems[i].onclick = function(event) { 
-        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-        //             for (let j = 0; j < listItems.length; j++) {
-        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-        //             }
-        //             this.classList.add("NavSide__sidebar-item--active");
-        //         }
-        //     };
-        // }
 
         // Original mPengajuan.php script
         const dataTA = [{
@@ -331,17 +405,14 @@
             const tbody = document.getElementById(id);
             tbody.innerHTML = "";
             data.forEach((item, index) => {
-                // Restoring .jadiBiru class to the row
                 tbody.innerHTML += `
                   <tr class="isiTabel jadiBiru"> 
                     <td>${index + 1}</td>
                     <td>${item.judul}</td>
                     <td>${item.matkul}</td>
                     <td>${item.dosen}</td>
-                    <td class="text-center">
-                      <button class="btn btn-link p-0" type="button" title="Edit" onclick="editData(${index}, '${id.substring(1)}', '${encodeURIComponent(item.judul)}', '${encodeURIComponent(item.matkul)}')">
-                        <i class="bi bi-pencil-square" style="color: rgb(67, 54, 240);"></i>
-                      </button>
+                    <td>
+                      <i class="bi bi-pencil-square" style="cursor: pointer;" onclick="editData(${index}, '${id.substring(1)}', '${encodeURIComponent(item.judul)}', '${encodeURIComponent(item.matkul)}')"></i>
                     </td>
                   </tr>
                 `;
