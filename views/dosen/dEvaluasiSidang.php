@@ -641,8 +641,8 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a onclick="location.href='dNilaiAkhir.php'">
-                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    <a href="dNilaiAkhir.php">
+                        <span class="fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
             </ul>

@@ -321,7 +321,7 @@
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="https://i.ibb.co/c8Qp2Gv/White-Astra.png" alt="AstraTech Logo Admin">
+                <img src="../../assets/img/WhiteAstra.png"alt="AstraTech Logo Admin">
             </div>
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">

@@ -67,8 +67,9 @@
       }
 
       .btn-kembali:hover {
-        background-color: #3a56e8;
+        background-color: white;
         transform: translateY(-2px);
+        color:#4B68FB;
       }
 
       .btn-kembali .icon-circle {
@@ -111,12 +112,11 @@
         width: 90%;
         margin-left: 23px;
         height: 40px;
+        background-color: #f2f2f2;
+        border-color: #f2f2f2;
       }
 
-      input.form-control:not(:placeholder-shown) {
-        background: #f2f2f2 !important;
-        border-color: #f2f2f2 !important;
-      }
+      
 
       #cardPenilaian {
         background-color: #f2f2f2;
@@ -174,6 +174,14 @@
         border-radius: 50%;
         font-size: 16px;
       }
+      #iyamodal{
+        margin-top: 20px;
+        background-color: #4FD382;
+      }
+      #tidakmodal{
+        margin-top: 20px;
+        background-color: #FD7D7D;
+      }
 
       .modal-content {
         border-radius: 30px !important;
@@ -200,6 +208,14 @@
         background-color: #3a56e8;
         transform: translateY(-2px);
       }
+
+      input.form-control:focus,
+input.form-control:active {
+  background-color: #fff !important;
+  border-color: #ced4da !important;
+  box-shadow: none !important;
+  color:rgb(0, 0, 0) !important;
+}
 
       @media (max-width: 750px) {
         h2{
@@ -547,6 +563,7 @@
                   id="nilaiMahasiswa"
                   placeholder=""
                   maxlength="1"
+                  readonly
                 />
                 </div>
               </div>
@@ -572,7 +589,7 @@
                 <label for=":" class="colon1">:</label>
                 <input
                   type="type"
-                  class="form-control form-control-lg text-center"
+                  class="form-control form-control-lg text-center input-nilai"
                   name="nilaiLaporan"
                   id="detailpenilaian"
                   placeholder=""
@@ -583,7 +600,7 @@
                   <label for=":" class="colon2">:</label>
                 <input
                   type="type"
-                  class="form-control form-control-lg text-center"
+                  class="form-control form-control-lg text-center input-nilai"
                   name="MateriPresentasi"
                   id="detailpenilaian"
                   placeholder=""
@@ -594,7 +611,7 @@
                   <label for=":" class="colon3">:</label>
                 <input
                   type="type"
-                  class="form-control form-control-lg text-center"
+                  class="form-control form-control-lg text-center input-nilai"
                   name="Penyampaian"
                   id="detailpenilaian"
                   placeholder=""
@@ -605,7 +622,7 @@
                   <label for=":" class="colon4">:</label>
                 <input
                   type="type"
-                  class="form-control form-control-lg text-center"
+                  class="form-control form-control-lg text-center input-nilai"
                   name="NilaiProyek"
                   id="detailpenilaian"
                   placeholder=""
@@ -658,10 +675,10 @@
         <p class="fs-5 fw-semibold text-black">Apakah nilai akhir sama dengan nilai sementara?</p>
         <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="TutupKonfirmasiModal()">Tidak</button>
+          <button type="button" class="btnKonfirmasi" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
           </div>
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="isiNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="isiNilaiAkhir()">Iya</button>
           </div>
         </div>
       </div>
@@ -675,10 +692,10 @@
         <p class="fs-5 fw-bold text-black">Apakah yakin ingin mengirim nilai akhir?</p>
         <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
           </div>
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="kirimNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
           </div>
         </div>
       </div>
@@ -708,12 +725,17 @@
             };
         }
 
-   document.getElementById('detailpenilaian').addEventListener('input', function() {
+   document.querySelectorAll('.input-nilai').forEach(function(input){
+  input.addEventListener('input', function() {
   this.value = this.value.replace(/[^0-9]/g, '');
-  if (this.value > 100) {
+  if (this.value.length > 1 && this.value.startsWith('0')) {
+      this.value = this.value.replace(/^0+/, '');
+    }
+  if (this.value > 100 ) {
     this.value = '';
   }
-});
+    });
+   });
   document.getElementById('nilaiMahasiswa').addEventListener('input', function() {
   this.value = this.value.replace(/[^A-Ea-e]/g, '').toUpperCase();
   if (!this.value || this.value.length > 1) {
@@ -781,6 +803,38 @@
     const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
     modal.hide(); 
   }
+
+  function hitungRataRataDanSetNilai() {
+  // Ambil semua nilai input detail penilaian
+  const nilaiLaporan = parseFloat(document.getElementsByName("nilaiLaporan")[0].value) || 0;
+  const materiPresentasi = parseFloat(document.getElementsByName("MateriPresentasi")[0].value) || 0;
+  const penyampaian = parseFloat(document.getElementsByName("Penyampaian")[0].value) || 0;
+  const nilaiProyek = parseFloat(document.getElementsByName("NilaiProyek")[0].value) || 0;
+
+  // Hitung rata-rata
+  const arr = [nilaiLaporan, materiPresentasi, penyampaian, nilaiProyek];
+  // Jika ada yang kosong, jangan proses
+  if (arr.some(v => v === 0)) return;
+
+  const rataRata = (nilaiLaporan + materiPresentasi + penyampaian + nilaiProyek) / 4;
+
+  // Set nilai mahasiswa otomatis jika rata-rata 85-100
+  if (rataRata >= 85 && rataRata <= 100) {
+    document.getElementById("nilaiMahasiswa").value = "A";
+  } else if (rataRata >= 70 && rataRata < 85) {
+    document.getElementById("nilaiMahasiswa").value = "B";
+  } else if (rataRata >= 60 && rataRata < 70) {
+    document.getElementById("nilaiMahasiswa").value = "C";
+  } else if (rataRata >= 40 && rataRata < 60) { 
+    document.getElementById("nilaiMahasiswa").value = "D";
+  } else if (rataRata < 40) {
+    document.getElementById("nilaiMahasiswa").value = "E";
+  }
+  }
+  document.getElementsByName("nilaiLaporan")[0].addEventListener('input', hitungRataRataDanSetNilai);
+document.getElementsByName("MateriPresentasi")[0].addEventListener('input', hitungRataRataDanSetNilai);
+document.getElementsByName("Penyampaian")[0].addEventListener('input', hitungRataRataDanSetNilai);
+document.getElementsByName("NilaiProyek")[0].addEventListener('input', hitungRataRataDanSetNilai);
 
 </script>
   </body>

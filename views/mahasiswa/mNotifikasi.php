@@ -128,6 +128,9 @@
       text-align: center;
       border-radius: 0px 20px 20px 0px;
     }
+    #BelumDibaca td span {
+  cursor: pointer;
+    }
   </style>
 </head>
 
