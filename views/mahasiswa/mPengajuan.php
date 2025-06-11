@@ -97,7 +97,6 @@
             text-align: left;
             /* font-family will be inherited from * or body */
         }
-
         thead th:nth-child(1) {
             text-align: center;
             width: 5%;
