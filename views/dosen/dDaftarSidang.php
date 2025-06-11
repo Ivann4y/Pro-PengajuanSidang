@@ -85,8 +85,8 @@ if ($_SESSION['role'] !== 'dosen') {
         .detail-btn {
             border: none !important;
             background-color: transparent !important;
-            color: #4B68FB; /* Warna ikon */
-            padding: 0.25rem 0.5rem; /* Menyesuaikan padding agar tidak terlalu besar */
+            color: #4B68FB; 
+            padding: 0.25rem 0.5rem; 
         }
 
         /* Efek saat hover pada tombol */
@@ -109,6 +109,29 @@ if ($_SESSION['role'] !== 'dosen') {
         tr.jadiBiru:hover .detail-btn i {
             color: white !important;
         }
+
+        .bodyHeading {
+        font-family: 'Poppins', sans-serif;
+        font-size: 28px;
+        font-weight: 600;
+        color: #2B2D42;
+        margin-bottom: 0;
+    }
+
+    .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    margin-bottom: 30px;
+}
+
+.dashboard-header .bodyHeading {
+    font-weight: bold;
+    font-size: 40px;
+    margin: 0;
+    color: #1a1a1a; /* optional: sesuai tema */
+}
 
     </style>
 </head>
@@ -159,7 +182,7 @@ if ($_SESSION['role'] !== 'dosen') {
 
         <main class="NavSide__main-content">
             <div class="dashboard-header">
-                <h2 class="page-title"></h2>
+                <h2 class="bodyHeading">Daftar Sidang</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
@@ -171,18 +194,27 @@ if ($_SESSION['role'] !== 'dosen') {
             <div class="container-fluid">
                 <div class="container-fluid">
                     <div class="row">
-                        <h2 class="bodyHeading">
-                            Daftar Sidang
-                        </h2>
                     </div><br><br>
                     <div class="row">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                Sidang TA
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">Sidang Semester</a></li>
-                            </ul>
+                    <div class="d-flex align-items-center gap-2">
+                            <label for="ddMSidang" class="fw-semibold mb-0">Filter:</label>
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle px-4 py-2" 
+                                        type="button" 
+                                        data-bs-toggle="dropdown" 
+                                        aria-expanded="false" 
+                                        id="ddMSidang" 
+                                        style="background-color: #4B38EF; color: white; border-radius: 2rem; box-shadow: 0px 3px 10px rgba(0,0,0,0.1);">
+                                    Sidang TA
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">
+                                            Sidang Semester
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div><br><br>
                     <div class="row">
