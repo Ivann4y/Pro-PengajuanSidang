@@ -241,8 +241,8 @@
         
         /* Gaya lain yang sudah ada dipertahankan */
         .status-badge {
-            background-color: #4BFBAF;
-            color: rgb(48, 48, 110);
+            background-color: #4fd382;
+            color: #f3f4f6;
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block;
