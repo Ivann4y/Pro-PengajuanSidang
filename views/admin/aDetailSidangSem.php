@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Zia Zahran Hadi-AliansiSidang_Kelompok5">
     <title>DetailSidang-Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -175,6 +176,7 @@
         .NavSide__main-content h2 {
             margin-bottom: 1.2cm; /* Menyamakan margin-bottom */
             font-weight: 700;     /* Menyamakan ketebalan font */
+            margin-left: 30px;
             /* Ukuran font (font-size) dihapus agar mengikuti default browser atau Bootstrap yg lebih responsif */
         }
         
@@ -235,8 +237,8 @@
         
         /* Gaya lain yang sudah ada dipertahankan */
         .status-badge {
-            background-color: #4BFBAF;
-            color: rgb(48, 48, 110);
+            background-color: #4fd382;
+            color: #f3f4f6;
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block;
@@ -244,6 +246,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
             font-weight: 500;
+            margin-left: 30px;
         }
 
         .info-card {
@@ -259,6 +262,7 @@
             overflow: hidden;
             transition: background-color 0.4s ease;
             margin-right: 30px;
+            margin-left: 30px;
         }
 
         .info-card::after { 
@@ -316,6 +320,7 @@
             font-weight: 500;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+            margin-left: 30px;
         }
 
         .btn-ubah:hover {
@@ -339,6 +344,7 @@
             display: inline-flex; 
             align-items: center; 
             margin-top: 3.5cm;
+            margin-left: 30px;
         }
         .btn-kembali:hover {
             position: relative;
@@ -372,7 +378,7 @@
             color: white;
         }
 
-⬆⬆⬆ CSS
+
         
         /* Sisa CSS untuk modal dan lainnya dipertahankan seperti aslinya */
         .modal-content-custom-form {
@@ -566,6 +572,11 @@
            font-weight: 600;
            margin-top: -35px;
            margin-bottom: 20px;
+           margin-left: 30px;
+       }
+
+       .mt-4 {
+           margin-left: 30px;
        }
 
 
