@@ -66,6 +66,21 @@
         .isiTabel td:nth-child(5) {
             border-radius: 0 20px 20px 0;
         }
+
+        .btnKonfirmasi {
+            background-color: #464869;
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            height: 40px;
+            width: 100px;
+        }
+
+        .btnKonfirmasi:hover {
+            background-color: #3a3b54;
+            color: white;
+        }
     </style>
 </head>
 
@@ -213,7 +228,7 @@
                         <div class="modal-body mx-auto">
                             Apakah anda yakin ingin keluar?
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                             <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                         </div>
@@ -231,17 +246,17 @@
                 };
 
                 // Sidebar Active Item Logic
-                let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-                for (let i = 0; i < listItems.length; i++) {
-                    listItems[i].onclick = function() {
-                        if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                            for (let j = 0; j < listItems.length; j++) {
-                                listItems[j].classList.remove("NavSide__sidebar-item--active");
-                            }
-                            this.classList.add("NavSide__sidebar-item--active");
-                        }
-                    };
-                }
+                // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+                // for (let i = 0; i < listItems.length; i++) {
+                //     listItems[i].onclick = function() {
+                //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                //             for (let j = 0; j < listItems.length; j++) {
+                //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+                //             }
+                //             this.classList.add("NavSide__sidebar-item--active");
+                //         }
+                //     };
+                // }
                 let isTA = true;
 
                 function switchDPengajuan() {

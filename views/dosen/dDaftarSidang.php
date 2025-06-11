@@ -224,7 +224,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="modal-body mx-auto">
                             Apakah anda yakin ingin keluar?
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer justify-content-center">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                             <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                         </div>
@@ -242,23 +242,18 @@ if ($_SESSION['role'] !== 'dosen') {
         };
 
                 // Sidebar Active Item Logic
-                let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-                for (let i = 0; i < listItems.length; i++) {
-                    listItems[i].onclick = function() {
-                        if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                            for (let j = 0; j < listItems.length; j++) {
-                                listItems[j].classList.remove("NavSide__sidebar-item--active");
-                            }
-                            this.classList.add("NavSide__sidebar-item--active");
-                        }
-                    };
-                }
+                // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+                // for (let i = 0; i < listItems.length; i++) {
+                //     listItems[i].onclick = function() {
+                //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                //             for (let j = 0; j < listItems.length; j++) {
+                //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+                //             }
+                //             this.classList.add("NavSide__sidebar-item--active");
+                //         }
+                //     };
+                // }
                 let isTA = true;
-
-                function goToEvaluasi(nim, tipe) {
-                    // Fungsi ini sekarang mengirimkan nim DAN tipe ke URL
-                    window.location.href = `dEvaluasiSidang.php?nim=${nim}&tipe=${tipe}`;
-                }
 
                 function switchDdaftarSidang() {
                     const taTable = document.getElementById('dPengajuanTA');

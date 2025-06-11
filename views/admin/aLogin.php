@@ -19,11 +19,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             min-width: 100vw;
+            overflow: hidden;
         }
 
         .fullscreen {
@@ -122,30 +123,41 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         </div>
 
         <div class="log d-flex justify-content-center align-items-center pb-5">
-            <form action="../../auth.php" method="POST">
+            <?php
+            $error = $_GET['error'] ?? '';
+            ?>
+
+            <form action="../../auth.php" method="POST" novalidate>
                 <div class="text-center pt-5 mb-4">
                     <h2><strong>Masuk Akun Admin</strong></h2>
                 </div>
+                <input type="hidden" name="role" value="admin">
+
                 <div class="mb-3">
-                    <?php if (isset($_GET['error'])): ?>
-                        <div class="alert alert-danger text-center">
-                            <?php
-                            if ($_GET['error'] === '1') {
-                                echo "NIP atau Password salah!";
-                            } elseif ($_GET['error'] === 'role') {
-                                echo "Role tidak ditemukan!";
-                            }
-                            ?>
-                        </div>
+                    <input
+                        type="text"
+                        class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                        id="username"
+                        name="username"
+                        placeholder="NIP"
+                        value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
+                    <?php if ($error === 'empty'): ?>
+                        <small class="text-danger">NIP dan Kata Sandi harus diisi!</small>
+                    <?php elseif ($error === '1'): ?>
+                        <small class="text-danger">NIP atau Kata Sandi salah!</small>
                     <?php endif; ?>
-                    <input type="hidden" name="role" value="admin">
-                    <input type="text" class="form-control form-control-lg border border-dark" id="username" name="username" placeholder="NIP" required>
                 </div>
+
                 <div class="mb-3">
-                    <input type="password" class="form-control form-control-lg border border-dark" id="password" name="password" placeholder="Password" required>
-                    <a href="../lupaPassword.php" class="float-end"> Lupa kata sandi?</a>
+                    <input
+                        type="password"
+                        class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                        id="password"
+                        name="password"
+                        placeholder="Kata Sandi">
+                    <a href="#" class="float-end" onclick="toLupaPassword()"> Lupa kata sandi?</a>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Masuk</button>
             </form>
         </div>
     </div>

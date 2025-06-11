@@ -40,6 +40,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/button-styles.css">
 
     <style>
         /* --- General and Body Styles --- */
@@ -233,6 +234,7 @@
             overflow: hidden;
             transition: background-color 0.4s ease;
             margin-bottom: 1.2cm;
+            margin-right: 30px;
         }
 
         .info-card::after {
@@ -247,6 +249,7 @@
             border-bottom-right-radius: 20px;
             transition: width 0.4s ease;
             z-index: 0;
+            
         }
 
         .info-card:hover::after {
@@ -322,7 +325,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 1.2cm;
             height: 45px;
         }
 
@@ -362,6 +364,7 @@
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 25px;
             margin-bottom: 1.2cm;
+            margin-right: 30px;
         }
 
         .form-card h4 {
@@ -605,6 +608,15 @@
             .btn-kembali, .btn-kirim {
                 width: 100%;
             }
+
+            .form-group-custom label {
+                flex: 0 0 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-group-custom .form-control-custom {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -629,8 +641,8 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a onclick="location.href='dNilaiAkhir.php'">
-                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    <a href="dNilaiAkhir.php">
+                        <span class="fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
             </ul>
@@ -744,15 +756,13 @@
             </div>
             
             <div class="button-group-bottom">
-                <!-- Corrected HTML for the "Kembali" button -->
-                <button class="btn-kembali" onclick="location.href='dDaftarSidang.php'">
+                <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
                 </button>
-                <!-- Tombol Kirim: data-bs-toggle dan data-bs-target dihapus -->
-                <button class="btn-kirim" id="btnKirim">
+                <button class="btn btn-setujui" id="btnKirim">
                     Kirim
                 </button>
             </div>

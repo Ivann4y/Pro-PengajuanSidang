@@ -124,29 +124,39 @@ if ($_SESSION['role'] !== 'dosen') {
             height: 100%; /* Agar kartu di kolom yang sama punya tinggi sama jika di dalam row */
         }
         .calendar-card {
-            background-color: #4F46E5;
+            background-color: #4B68FB;
             color: white;
-            /* height: 38.5vh; */
             display: flex;
             flex-direction: column;
+            padding: 1rem;
+            border-radius: 5vh;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            min-height: 300px;
+            margin-bottom: 2vh;
         }
         .calendar-card .section-title-container {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding-bottom: 0.5rem; /* Jarak judul dan navigasi ke tabel */
+            padding-bottom: 0.5rem;
+            flex-shrink: 0;
         }
-        .calendar-card .section-title { /* Nama bulan dan tahun */
+        .calendar-card .calendar-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .calendar-card .section-title {
             color: white;
             margin-bottom: 0;
             font-size: 1.1rem;
             font-weight: 600;
         }
         .calendar-card .calendar-nav i {
-            font-size: 1.2rem; /* Icon navigasi lebih besar */
+            font-size: 1.2rem;
             cursor: pointer;
-            padding: 0 0.5rem; /* Padding icon navigasi */
-            color: #C7D2FE; /* Warna icon navigasi lebih terang */
+            padding: 0 0.5rem;
+            color: #C7D2FE;
         }
         .calendar-card .calendar-nav i:hover {
             color: white;
@@ -154,32 +164,50 @@ if ($_SESSION['role'] !== 'dosen') {
         .calendar-card .calendar {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 0.5rem; /* Jarak dari navigasi ke tabel */
+            margin-top: 0.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .calendar-card .calendar thead,
+        .calendar-card .calendar tbody {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .calendar-card .calendar tbody {
             flex-grow: 1;
         }
-        .calendar-card .calendar th {
-            /* padding: -0.2rem 0.25rem; -> padding negatif tidak valid */
-            padding: 0.3rem 0.25rem;
-            text-align: center;
-            font-weight: 500;
-            font-size: 0.75rem; /* Ukuran font header hari lebih kecil */
-            color: #C7D2FE; /* Warna header hari */
-            text-transform: uppercase;
+        .calendar-card .calendar tr {
+            display: flex;
+            flex-grow: 1;
+            width: 100%;
         }
+        .calendar-card .calendar th,
         .calendar-card .calendar td {
-            padding: 0.1rem; /* Padding sel tanggal lebih kecil */
-            text-align: center;
-            vertical-align: middle;
-        }
-        .calendar-card .calendar-day {
-            display: inline-flex; /* Agar bisa align item center */
+            flex: 1;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 32px; /* Ukuran bubble tanggal */
+            padding: 0.1rem;
+            text-align: center;
+        }
+        .calendar-card .calendar th {
+            font-weight: 500;
+            font-size: 0.75rem;
+            color: #C7D2FE;
+            text-transform: uppercase;
+            padding: 0.3rem 0.25rem;
+        }
+        .calendar-card .calendar-day {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
             height: 32px;
             line-height: 32px;
             border-radius: 50%;
-            font-size: 0.8rem; /* Ukuran font tanggal */
+            font-size: 0.8rem;
             font-weight: 500;
             margin: 0 auto;
             cursor: pointer;
@@ -187,11 +215,11 @@ if ($_SESSION['role'] !== 'dosen') {
         }
         .calendar-card .calendar-day.current-day {
             background-color: white;
-            color: #4F46E5;
+            color: #4B68FB;
             font-weight: 700;
         }
         .calendar-card .calendar-day:hover:not(.current-day) {
-            background-color: rgba(255,255,255,0.2);
+            background-color: rgba(255, 255, 255, 0.2);
         }
         .calendar-card .calendar-day.other-month { /* Untuk tanggal dari bulan lain */
             color: #A5B4FC; /* Warna lebih redup */
@@ -284,15 +312,15 @@ if ($_SESSION['role'] !== 'dosen') {
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="dBeranda.php"><span class="NavSide__sidebar-title">Beranda</span></a>
+                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title">Pengajuan</span></a>
+                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title">Daftar Sidang</span></a>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -335,7 +363,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         </div>
                     </div>
                     <div>
-                        <div class="statusCard card-perbaikan" onclick="location.href='aPenjadwalan.php'">
+                        <div class="statusCard card-perbaikan" onclick="location.href='dDaftarSidang.php'">
                             <div class="statusTitle">Perbaikan</div>
                             <div class="statusNumberAndText">
                                 <div class="statusNumber">2</div>
@@ -347,7 +375,7 @@ if ($_SESSION['role'] !== 'dosen') {
 
                 <div class="col-lg-4">
                     <div class="mb-4">
-                        <div class="statusCard card-penilaian" onclick="location.href='aPenjadwalan.php'">
+                        <div class="statusCard card-penilaian" onclick="location.href='dDaftarSidang.php'">
                             <div class="statusTitle">Penilaian</div>
                             <div class="statusNumberAndText">
                                 <div class="statusNumber">2</div>
@@ -367,16 +395,22 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="col-12 mb-4">
                             <div class="dashboard-card calendar-card">
                                 <div class="section-title-container">
-                                    <h3 class="section-title" id="currentMonthYear"></h3>
                                     <div class="calendar-nav">
                                         <i class="bi bi-chevron-left" id="prevMonth"></i>
+                                        <h3 class="section-title" id="currentMonthYear"></h3>
                                         <i class="bi bi-chevron-right" id="nextMonth"></i>
                                     </div>
                                 </div>
                                 <table class="calendar" id="calendarTable">
                                     <thead>
                                         <tr>
-                                            <th>Min</th><th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th><th>Sab</th>
+                                            <th>Min</th>
+                                            <th>Sen</th>
+                                            <th>Sel</th>
+                                            <th>Rab</th>
+                                            <th>Kam</th>
+                                            <th>Jum</th>
+                                            <th>Sab</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -448,7 +482,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="modal-body mx-auto">
                             Apakah anda yakin ingin keluar?
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer justify-content-center">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                             <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                         </div>
@@ -481,56 +515,39 @@ if ($_SESSION['role'] !== 'dosen') {
             let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
 
             function renderCalendar() {
-                if (!calendarTableBody || !currentMonthYearEl) return; // Guard clause
+                calendarTableBody.innerHTML = "";
+                currentMonthYearEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
 
-                calendarTableBody.innerHTML = ''; // Clear previous calendar
                 const year = currentDate.getFullYear();
-                const month = currentDate.getMonth(); // 0-indexed (Januari = 0)
+                const month = currentDate.getMonth();
 
-                currentMonthYearEl.textContent = `${monthNames[month]} ${year}`;
-
-                // Day of the week for the first day of the month (0=Sunday, 1=Monday, ..., 6=Saturday)
                 const firstDayOfMonth = new Date(year, month, 1).getDay();
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-                // For days from the previous month
-                const daysInPrevMonth = new Date(year, month, 0).getDate();
-                
-                let dateCounter = 1; // Counter for days of the current month
-                let nextMonthDateCounter = 1; // Counter for days of the next month
+                let date = 1;
+                for (let i = 0; i < 6; i++) {
+                    const row = document.createElement("tr");
 
-                for (let i = 0; i < 6; i++) { // Maximum 6 rows for a calendar month
-                    let row = document.createElement('tr');
-                    for (let j = 0; j < 7; j++) { // 7 days a week (Sunday - Saturday)
-                        let cell = document.createElement('td');
-                        let daySpan = document.createElement('span');
-                        daySpan.classList.add('calendar-day');
-
+                    for (let j = 0; j < 7; j++) {
+                        const cell = document.createElement("td");
                         if (i === 0 && j < firstDayOfMonth) {
-                            // Days from the previous month
-                            let prevMonthDay = daysInPrevMonth - firstDayOfMonth + 1 + j;
-                            daySpan.textContent = prevMonthDay;
-                            daySpan.classList.add('other-month');
-                        } else if (dateCounter > daysInMonth) {
-                            // Days from the next month
-                            daySpan.textContent = nextMonthDateCounter;
-                            daySpan.classList.add('other-month');
-                            nextMonthDateCounter++;
+                            cell.innerHTML = "";
+                        } else if (date > daysInMonth) {
+                            cell.innerHTML = "";
                         } else {
-                            // Days from the current month
-                            daySpan.textContent = dateCounter;
-                            // Highlight today's date
-                            if (dateCounter === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                                daySpan.classList.add('current-day');
+                            const daySpan = document.createElement("span");
+                            daySpan.classList.add("calendar-day");
+                            daySpan.textContent = date;
+
+                            if (date === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                                daySpan.classList.add("current-day");
                             }
-                            dateCounter++;
+                            cell.appendChild(daySpan);
+                            date++;
                         }
-                        cell.appendChild(daySpan);
                         row.appendChild(cell);
                     }
                     calendarTableBody.appendChild(row);
-                    // Optimization: if we've filled all days of current month and part of next, and we're past necessary rows, break.
-                    if (dateCounter > daysInMonth && i >= Math.floor((firstDayOfMonth + daysInMonth -1) / 7) ) break; 
                 }
             }
 

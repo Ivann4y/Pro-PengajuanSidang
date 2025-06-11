@@ -187,23 +187,27 @@
             display: block;
         }
 
-        /* NEW: NavSide__topbar CSS (global, from your provided code) */
-        .NavSide__topbar {
-            display: flex;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            margin-left: 280px; /* Pushed by sidebar on desktop */
-            height: 60px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-            padding: 0 15px;
-            justify-content: flex-start;
-            transition: margin-left 0.5s ease-in-out;
+    .NavSide__topbar {
+        display: none;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin-left: 280px;
+        height: 60px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+    }
+
+        @media (max-width: 700px) {
+            .NavSide__topbar {
+                display: flex; /* Show only on mobile */
+                margin-left: 0; /* Reset margin on mobile */
+            }
         }
+
         .NavSide__topbar .NavSide__toggle { /* Styles for toggle INSIDE topbar */
             width: 40px;
             height: 40px;
@@ -251,7 +255,7 @@
         .status-badge {
             margin-bottom: 1.2cm; 
             background-color: #FFA3A3;
-            color: black;
+            color: #464869;
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block; 
@@ -634,7 +638,7 @@
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-book"></i>
-                                <span class="fw-bold">Judang</span>
+                                <span class="fw-bold">Judul Mata Kuliah</span>
                             </div>
                             <div class="value-row">Pemrograman 2</div>
                         </div>
