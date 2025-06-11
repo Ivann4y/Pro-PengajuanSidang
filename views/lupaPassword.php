@@ -222,7 +222,8 @@
                 $error = $_GET['error'] ?? '';
                 ?>
                 <form action="authEmail.php" method="POST">
-                    <label for="emailAstra">Masukkan Email Politeknik Astra</label>
+                    <h2 class="fs-2 fw-bold text-center">Ubah Kata Sandi</h2>
+                    <label for="emailAstra" class="mt-3">Masukkan Email Politeknik Astra</label>
 
                     <?php if ($error === 'empty'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
