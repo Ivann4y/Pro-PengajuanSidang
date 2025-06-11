@@ -4,10 +4,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header('Location: ../../index.php');
     exit();
 }
+
+$role = "admin";
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -129,9 +132,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
             <form action="../../auth.php" method="POST" novalidate>
                 <div class="text-center pt-5 mb-4">
-                    <h2><strong>Masuk Akun Admin</strong></h2>
+                    <h2><strong>Masuk Akun</strong></h2>
+                    <h2><strong>Admin</strong></h2>
                 </div>
-                <input type="hidden" name="role" value="admin">
+                <input type="hidden" name="role" value="<?= $role ?>">
 
                 <div class="mb-3">
                     <input
@@ -164,7 +168,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script>
         function toLupaPassword() {
-            window.location.href = '../../views/lupaPassword.php';
+            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';
         }
     </script>
 </body>

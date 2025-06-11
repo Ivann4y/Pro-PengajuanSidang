@@ -176,6 +176,7 @@
         .NavSide__main-content h2 {
             margin-bottom: 1.2cm; /* Menyamakan margin-bottom */
             font-weight: 700;     /* Menyamakan ketebalan font */
+            margin-left: 30px;
             /* Ukuran font (font-size) dihapus agar mengikuti default browser atau Bootstrap yg lebih responsif */
         }
         
@@ -245,6 +246,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
             font-weight: 500;
+            margin-left: 30px;
         }
 
         .info-card {
@@ -260,6 +262,7 @@
             overflow: hidden;
             transition: background-color 0.4s ease;
             margin-right: 30px;
+            margin-left: 30px;
         }
 
         .info-card::after { 
@@ -317,6 +320,7 @@
             font-weight: 500;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+            margin-left: 30px;
         }
 
         .btn-ubah:hover {
@@ -340,6 +344,7 @@
             display: inline-flex; 
             align-items: center; 
             margin-top: 3.5cm;
+            margin-left: 30px;
         }
         .btn-kembali:hover {
             position: relative;
@@ -567,6 +572,11 @@
            font-weight: 600;
            margin-top: -35px;
            margin-bottom: 20px;
+           margin-left: 30px;
+       }
+
+       .mt-4 {
+           margin-left: 30px;
        }
 
 
