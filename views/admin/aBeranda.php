@@ -4,6 +4,7 @@ if ($_SESSION['role'] !== 'admin') {
     header("Location: ../../index.php");
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,6 +37,7 @@ if ($_SESSION['role'] !== 'admin') {
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
             /* Added for hover effect */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            
         }
 
         .penjadwalan-status-card:hover {
@@ -139,17 +141,10 @@ if ($_SESSION['role'] !== 'admin') {
         .notifikasi-card .section-title {
             position: sticky;
             top: 0;
-            background-color: #F3F4F6;
-            /* Match card background */
+            background-color: #F3F4F6;        
             z-index: 10;
             padding-top: 0.3rem;
-            /* Adjust to match card's padding if link wraps it */
-            padding-bottom: 0.5rem;
-            /* If .notifikasi-card has padding, section-title might need negative margins
-           to span full width if it's inside a padded linked container.
-           However, given the link will wrap the dashboard-card which itself has padding,
-           this should be okay. The title's background needs to be the same as the card's.
-        */
+            padding-bottom: 0.5rem;    
             border-bottom: 1px solid #DEE2E6;
             /* Resetting margins that might be inherited if card padding is on the link */
             margin-top: 0;
@@ -469,7 +464,7 @@ if ($_SESSION['role'] !== 'admin') {
                         <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
                 </div>
-            </div>
+        </div>
 
            
             <h2 class="welcomeText">Selamat Datang, Admin!</h2>
