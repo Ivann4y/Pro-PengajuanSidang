@@ -1,4 +1,5 @@
-<?php
+<?php //ZAFKI ADIPRATAMA PUTRA 
+
     // Mengambil parameter dari URL
     $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
     $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
