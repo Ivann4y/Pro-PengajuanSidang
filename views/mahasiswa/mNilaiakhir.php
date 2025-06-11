@@ -423,7 +423,18 @@
             </ul>
         </div>
 
-       
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+        </div>
    <main class="NavSide__main-content">
     <div class="container-fluid ">
         <div class="row mb-5">
