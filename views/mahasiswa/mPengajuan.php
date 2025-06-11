@@ -199,7 +199,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                     <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -275,7 +275,7 @@
                 <div class="modal-body mx-auto">
                     Apakah anda yakin ingin keluar?
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                     <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                 </div>

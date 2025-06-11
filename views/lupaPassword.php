@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <style>
-        body {
+        body {  
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
@@ -136,21 +136,28 @@
 
         <div class="right-column-wrapper">
             <div class="log">
+                <?php
+                $error = $_GET['error'] ?? '';
+                ?>
                 <form action="authEmail.php" method="POST">
-                    <div class="text-center pt-5 mb-4">
-                        <h2 class="fs-2 fw-bold">Lupa Kata Sandi?</h2>
-                    </div>
-                    <div class="mb-3">
-                        <label for="">Masukkan Email Politeknik Astra</label>
-                        <?php if (isset($_GET['error']) && $_GET['error'] === 'email'): ?>
-                            <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra" required>
-                            <div class="text-danger">Email tidak ditemukan!</div>
-                        <?php else: ?>
-                            <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra" required>
-                        <?php endif; ?>
-                        <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5">Kirim</button>
-                    </div>
+                    <label for="emailAstra">Masukkan Email Politeknik Astra</label>
+
+                    <?php if ($error === 'empty'): ?>
+                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
+                        <div class="text-danger">Email harus diisi!</div>
+                    <?php elseif ($error === 'invalid'): ?>
+                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
+                        <div class="text-danger">Format email tidak valid!</div>
+                    <?php elseif ($error === 'email'): ?>
+                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
+                        <div class="text-danger">Email tidak ditemukan!</div>
+                    <?php else: ?>
+                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra">
+                    <?php endif; ?>
+
+                    <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5">Kirim</button>
                 </form>
+
             </div>
 
             <div class="back-button-container">

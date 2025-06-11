@@ -47,7 +47,7 @@
     }
 
     #tidakbacabutton {
-      background-color: #D9D9D9;
+      background-color: #FD7D7D;
       /* Red */
       border-color: #FD7D7D;
       color: white;
@@ -128,6 +128,9 @@
       text-align: center;
       border-radius: 0px 20px 20px 0px;
     }
+    #BelumDibaca td span {
+  cursor: pointer;
+    }
   </style>
 </head>
 
@@ -173,7 +176,7 @@
       <main class="NavSide__main-content">
         <div class="container-fluid">
           <div class="row">
-            <h2 class="text-heading">
+            <h2 class="text-heading text-black">
               Nayaka Ivana Putra (Mahasiswa)
             </h2>
           </div><br>
@@ -244,12 +247,12 @@
           <div class="modal-body text-center">
             <h5 class="fw-bold mb-3" style="color: #3A3A3A;">Perhatian</h5>
             <p class="mb-4" style="color: #3A3A3A;">Apakah anda sudah yakin ingin mengubah status Terbaca?</p>
-            <div class="d-flex justify-content-center row-mb-3">
-              <div class="col-md-8">
-                <button type="button" class="btn btn-outline-danger px-4 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+            <div class="d-flex justify-content-center row">
+              <div class="col-auto">
+                <button type="button" class="btn btn-danger fw-semibold" data-bs-dismiss="modal">Batalkan</button>
               </div>
-              <div class="col-md-8">
-                <button type="button" class="btn btn-success px-4 fw-semibold" onclick="lanjutkanAksi()">Lanjutkan</button>
+              <div class="col-auto">
+                <button type="button" class="btn btn-success fw-semibold" onclick="lanjutkanAksi()">Lanjutkan</button>
               </div>
             </div>
           </div>

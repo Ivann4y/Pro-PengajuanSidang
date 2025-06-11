@@ -1,0 +1,163 @@
+/* Base Button Styles */
+.btn {
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+  color: white; /* Default text color for all buttons */
+}
+
+/* Button Colors */
+.btn-setujui {
+  background-color: #4fd382;
+  color: white; /* Changed from black to white */
+}
+
+.btn-tolak {
+  background-color: #fd7d7d;
+}
+
+.btn-kembali {
+  background-color: #4b68fb;
+}
+
+/* Hover States */
+.btn-setujui:hover {
+  background-color: #3ab070;
+  color: white; /* Already white, no change needed */
+  transform: translateY(-2px);
+}
+
+.btn-tolak:hover {
+  background-color: #e56b6b;
+  transform: translateY(-2px);
+}
+
+.btn-kembali:hover {
+  background-color: #3a4fb8;
+  transform: translateY(-2px);
+}
+
+/* Icon Circle for Buttons */
+.btn .icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover .icon-circle {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn .icon-circle i {
+  color: #4b68fb !important;
+}
+
+.btn:hover .icon-circle i {
+  color: white !important;
+}
+
+/* Button Groups */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.2cm;
+}
+
+.button-group-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.2cm;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .button-group,
+  .button-group-bottom {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
+
+/* Modal Buttons */
+.btnKonfirmasi {
+  background-color: #4b68fb;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  height: 40px;
+  min-width: 100px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btnKonfirmasi:hover {
+  background-color: #3a4fb8;
+  transform: translateY(-2px);
+}
+
+/* Disabled State */
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading State */
+.btn.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: button-loading-spinner 0.8s linear infinite;
+}
+
+@keyframes button-loading-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+button.btn-kembali .icon-circle i.fa-arrow-left {
+  color: #4b68fb !important;
+}
+button.btn-kembali:hover .icon-circle i.fa-arrow-left {
+  color: white !important;
+}

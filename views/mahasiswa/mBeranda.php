@@ -429,7 +429,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -452,7 +452,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
         </div>
         <main class="NavSide__main-content" id="mBeranda">
             <div class="dashboard-header">
-                <h2 class="page-title">Beranda</h2>
+                <h2 class="page-title" style="color:#1F2937">Beranda</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
@@ -630,7 +630,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
     <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div style="background-color: rgb(67, 54, 240);">
+                <div style="background-color:#4B68FB;">
                     <div class="modal-header">
                         <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                     </div>
@@ -638,7 +638,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                 <div class="modal-body mx-auto">
                     Apakah anda yakin ingin keluar?
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                     <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                 </div>

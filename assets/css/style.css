@@ -5,7 +5,7 @@
   left: 0;
   width: 15vw;
   height: 100%;
-  background-color: #4B68FB;
+  background-color: #4b68fb;
   padding: 2%;
 }
 * {
@@ -27,7 +27,7 @@ body {
 }
 
 .text-heading {
-  color: #4B68FB;
+  color: #4b68fb;
   font-weight: 550;
 }
 
@@ -42,7 +42,7 @@ body {
 }
 
 .jadiBiru:hover {
-  background-color: #4B68FB;
+  background-color: #4b68fb;
   color: white !important;
 }
 
@@ -108,8 +108,8 @@ body {
   width: 280px;
   border-radius: 1px;
   box-sizing: border-box;
-  border-left: 5px solid #4B68FB;
-  background: #4B68FB;
+  border-left: 5px solid #4b68fb;
+  background: #4b68fb;
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 1000;
@@ -132,7 +132,7 @@ body {
   width: 100%;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .NavSide__sidebar-item a {
@@ -159,7 +159,7 @@ body {
 }
 
 .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-  color: #4B68FB;
+  color: #4b68fb;
 }
 
 .NavSide__sidebar-item b:nth-child(1) {
@@ -180,7 +180,7 @@ body {
   width: 100%;
   height: 100%;
   border-bottom-right-radius: 20px;
-  background: #4B68FB;
+  background: #4b68fb;
   display: block;
 }
 
@@ -202,7 +202,7 @@ body {
   width: 100%;
   height: 100%;
   border-top-right-radius: 20px;
-  background: #4B68FB;
+  background: #4b68fb;
   display: block;
 }
 
@@ -246,11 +246,11 @@ body {
 }
 
 .NavSide__toggle i.bi.open {
-  color: #4B68FB;
+  color: #4b68fb;
 }
 
 .NavSide__toggle i.bi.close {
-  color: #4B68FB;
+  color: #4b68fb;
 }
 
 .NavSide__toggle.NavSide__toggle--active i.bi.open {
@@ -361,7 +361,7 @@ body {
 
   .NavSide__toggle.NavSide__toggle--active {
     left: calc(50% + 10px);
-    color: #4B68FB;
+    color: #4b68fb;
     background-color: aliceblue;
   }
 
@@ -389,7 +389,7 @@ body {
 .dashboard-header .page-title {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #4B68FB;
+  color: #000000;
 }
 
 .dashboard-header .header-icons {
@@ -428,4 +428,158 @@ body {
   padding: 1.5rem;
   margin: 2vh 2vh;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Base Button Styles */
+.btn {
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+
+/* Button Colors */
+.btn-setujui {
+  background-color: #4fd382;
+  color: white;
+}
+
+.btn-tolak {
+  background-color: #fd7d7d;
+}
+
+.btn-kembali {
+  background-color: #4b68fb;
+}
+
+/* Hover States */
+.btn-setujui:hover {
+  background-color: #3ab070;
+  transform: translateY(-2px);
+}
+
+.btn-tolak:hover {
+  background-color: #e56b6b;
+  transform: translateY(-2px);
+}
+
+.btn-kembali:hover {
+  background-color: #3a4fb8;
+  transform: translateY(-2px);
+}
+
+/* Icon Circle for Buttons */
+.btn .icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover .icon-circle {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn .icon-circle i {
+  color: #4b68fb !important;
+}
+
+.btn:hover .icon-circle i {
+  color: white !important;
+}
+
+/* Button Groups */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.2cm;
+}
+
+.button-group-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.2cm;
+}
+
+/* Modal Buttons */
+.btnKonfirmasi {
+  background-color: #4b68fb;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  height: 40px;
+  min-width: 100px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btnKonfirmasi:hover {
+  background-color: #3a4fb8;
+  transform: translateY(-2px);
+}
+
+/* Disabled State */
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading State */
+.btn.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: button-loading-spinner 0.8s linear infinite;
+}
+
+@keyframes button-loading-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+button.btn-kembali .icon-circle i.fa-arrow-left {
+  color: #4b68fb !important;
+}
+button.btn-kembali:hover .icon-circle i.fa-arrow-left {
+  color: white !important;
+}
+
+/* Modal heading color warna biru*/
+.modal-heading-color {
+  background-color: #4b68fb;
+  color: white;
 }

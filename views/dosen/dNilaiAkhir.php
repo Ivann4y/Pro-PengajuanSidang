@@ -12,6 +12,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
       rel="stylesheet"
@@ -22,283 +23,19 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/button-styles.css" />
     <link rel="stylesheet" href="../../extra/style.css" />
     <title>Dosen - Nilai Akhir</title>
     <style>
-       @media (max-width: 750px) {
-              .row.mt-5.justify-content-between {
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .row.mt-5.justify-content-between .col-auto {
-    flex: auto;
-    text-align: center;
-    margin-bottom: 0 !important;
-    padding: 10px;
-  }
-
-  .btn-kirim {
-    width: 100% !important;
-    max-width: 150px;
-    margin: auto;
-  }
-
-  .btn-kembali {
-    width: 100% !important;
-    max-width: 150px;
-    margin: auto;
-  }
-  #carddetailPenilaian,
-  #cardcatatan {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-  #cardNilai {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-  #nilaiMahasiswa {
-    font-size: 5rem !important;
-
-    
-  }
-
-  #detailpenilaian {
-    width: 15% !important;
-  }
-
-  img.img-fluid {
-    display: none !important;
-  }
-
-  .row.mt-5 .col-auto {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  .btn-kirim {
-    margin-right: 0 !important;
-  }
-  .modal-dialog {
-    margin: 1rem auto;
-    max-width: 95% !important;
-  }
-
-  .modal-content {
-    border-radius: 20px !important;
-    padding: 15px;
-  }
-
-  .modal-body {
-    text-align: center;
-    padding: 20px;
-  }
-  .kakimodal {
-    
-     flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: 150px !important;
-  }
-  
-
-
-  .kakimodal .col-md-6,
-  .mb5 .col-md-6 {
-    margin-left: 0 !important;
-    width: auto !important;
-    padding: 0 !important;
-  }
-
-  .kakimodal .btnKonfirmasi,
-  .mb5 .btnKonfirmasi {
-    min-width: 90px;
-    flex:1 1 auto;
-  }
-  .penilaian-row {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .label-penilaian {
-      display: flex;
-      text-align: center;
-    }
-
-    .colon1 {
-
-      flex: 1;
-      display: flex;
-      margin-left: 81px;
-    }
-    .colon2{
-      flex: 1;
-      display: flex;
-      margin-left: 42px;
-    }
-    .colon3{
-      flex: 1;
-      display: flex;
-      margin-left: 69px;
-    }
-    .colon4{
-      flex: 1;
-      display: flex;
-      margin-left: 88px;
-    }
-
-    .input-penilaian {
-      width: 100%;
-      flex: 3;
-    }
+      .NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 300px;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  background-color: #f9fafb;
+  padding-top: 3vh;
 }
-@media (max-width: 1000px) {
-    .NavSide__main-content .row.mt-5.justify-content-between {
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .NavSide__main-content .row.mt-5.justify-content-between .col-auto {
-    flex: auto;
-    text-align: center;
-    margin-bottom: 0 !important;
-    padding: 10px;
-  }
-
-  .NavSide__main-content .btn-kirim {
-    width: 100% !important;
-    max-width: 150px;
-    margin: auto;
-  }
-
-  .NavSide__main-content .btn-kembali {
-    width: 100% !important;
-    max-width: 150px;
-    margin: auto;
-  }
- .NavSide__main-content  #carddetailPenilaian,
-  .NavSide__main-content #cardcatatan {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-  .NavSide__main-content #cardNilai {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-  .NavSide__main-content #nilaiMahasiswa {
-    font-size: 5rem !important;
-
-    
-  }
-
-  .NavSide__main-content #detailpenilaian {
-    width: 15% !important;
-  }
-
-  .NavSide__main-content img.img-fluid {
-    display: none !important;
-  }
-
-  .NavSide__main-content .row.mt-5 .col-auto {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  .NavSide__main-content .btn-kirim {
-    margin-right: 0 !important;
-  }
-  .modal-dialog {
-    margin: 1rem auto;
-    max-width: 95% !important;
-  }
-
-  .modal-content {
-    border-radius: 20px !important;
-    padding: 15px;
-  }
-
-  .modal-body {
-    text-align: center;
-    padding: 20px;
-  }
-  .kakimodal {
-    
-     flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: 150px !important;
-  }
-  
-
-
-  .kakimodal .col-md-6,
-  .mb5 .col-md-6 {
-    margin-left: 0 !important;
-    width: auto !important;
-    padding: 0 !important;
-  }
-
-  .kakimodal .btnKonfirmasi,
-  .mb5 .btnKonfirmasi {
-    min-width: 90px;
-    flex:1 1 auto;
-  }
-  .NavSide__main-content .penilaian-row {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .NavSide__main-content .label-penilaian {
-      display: flex;
-      text-align: center;
-    }
-
-    .NavSide__main-content .colon1 {
-
-      flex: 1;
-      display: flex;
-      margin-left: 81px;
-    }
-    .NavSide__main-content .colon2{
-      flex: 1;
-      display: flex;
-      margin-left: 42px;
-    }
-    .NavSide__main-content .colon3{
-      flex: 1;
-      display: flex;
-      margin-left: 69px;
-    }
-    .NavSide__main-content .colon4{
-      flex: 1;
-      display: flex;
-      margin-left: 88px;
-    }
-
-    .NavSide__main-content .input-penilaian {
-      width: 100%;
-      flex: 3;
-    }
-}
-
-
-
-
-
-        
       body,
       .card,
       .form-control,
@@ -311,12 +48,62 @@
         font-family: "Poppins", sans-serif !important;
         color: #464869;
       }
+
+      .btn-kembali {
+        background-color: #4B68FB;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0 25px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 45px;
+      }
+
+      .btn-kembali:hover {
+        background-color: white;
+        transform: translateY(-2px);
+        color:#4B68FB;
+      }
+
+      .btn-kembali .icon-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background-color: white;
+        border-radius: 50%;
+        margin-right: 10px;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-kembali:hover .icon-circle {
+        background-color: #4B68FB;
+      }
+
+      .btn-kembali .icon-circle i {
+        color: #4B68FB;
+      }
+
+      .btn-kembali:hover .icon-circle i {
+        color: white;
+      }
+
       #cardNilai {
         background-color: #f2f2f2;
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
-        margin-left: 0;}
+        margin-left: 0;
+      }
+
       #nilaiMahasiswa {
         font-size: 9.5rem !important;
         font-weight: bold;
@@ -325,12 +112,12 @@
         width: 90%;
         margin-left: 23px;
         height: 40px;
+        background-color: #f2f2f2;
+        border-color: #f2f2f2;
       }
-      input.form-control:not(:placeholder-shown) {
-      background: #f2f2f2 !important;
-      border-color: #f2f2f2 !important;
-      }
+
       
+
       #cardPenilaian {
         background-color: #f2f2f2;
         border-radius: 50px;
@@ -338,27 +125,28 @@
         width: 100%;
         margin-left: 50px;
       }
+
       label
-        {
-            margin-top: 20px;
-            margin-right: 15px;
-            font-weight: bold;
-        }
-        #detailpenilaian {
-           width: 75px; ;
-           font-size: 1rem; 
-          
-           margin-top: 20px;
-           
-        }
-        #carddetailPenilaian {
-            width: 100%;
-            margin-left: 0;
-            background-color: #f2f2f2;
-            border-radius: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
+      {
+        margin-top: 20px;
+        margin-right: 15px;
+        font-weight: 550;
+      }
+
+      #detailpenilaian {
+        width: 75px; ;
+        font-size: 1rem; 
+        margin-top: 20px;
+      }
+
+      #carddetailPenilaian {
+        width: 100%;
+        margin-left: 0;
+        background-color: #f2f2f2;
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
       #cardcatatan {
         background-color: #f2f2f2;
         border-radius: 20px;
@@ -366,64 +154,353 @@
         width: 100%;
         margin-left: 0;
       }
+
       #catatan {
         width: 100%;
         height: 150px;
         border-radius: 30px;
         font-size: 1rem;
         margin-top: 20px;
-        
       }
-          .btn-kembali {
-      background-color: #4B68FB;
-      color: white;
-      border-radius: 50px;
-    }
 
-    .btn-kembali:hover {
-      border-color: #4B68FB;
-      background-color: #ffffff;
-      color: #4B68FB;
-    }
+      .icon-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        color: #4B68FB;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 16px;
+      }
+      #iyamodal{
+        margin-top: 20px;
+        background-color: #4FD382;
+      }
+      #tidakmodal{
+        margin-top: 20px;
+        background-color: #FD7D7D;
+      }
 
-    .btn-kirim {
-      background-color: #4CD964;
-      color: white;
-      border-radius: 50px;
-    }
+      .modal-content {
+        border-radius: 30px !important;
+      }
 
-    .btn-kirim:hover {
-      border-color: #4CD964;
-      background-color: #ffffff;
-      color: #4CD964;
-    }
-    .icon-circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content:center;
-  background-color: white;
-  color: #4B68FB;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  font-size: 16px;
+      .btn-kirim {
+        background-color: #4B68FB;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0 25px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 45px;
+      }
+
+      .btn-kirim:hover {
+        background-color: #3a56e8;
+        transform: translateY(-2px);
+      }
+
+      input.form-control:focus,
+input.form-control:active {
+  background-color: #fff !important;
+  border-color: #ced4da !important;
+  box-shadow: none !important;
+  color:rgb(0, 0, 0) !important;
 }
 
-
-    .modal-content {
-  border-radius: 30px !important;
+      @media (max-width: 750px) {
+        h2{
+          margin-left: 10px;
+        }
+             .NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 0;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  background-color: #f9fafb;
+  padding-top: 3vh;
 }
-    .btnKonfirmasi {
-      background-color: #464869;
-      color: white;
-      border-radius: 15px;
-      padding: 10px 20px;
-      font-size: 0.9rem;
-      height: 40px;
-      width: 100px;
-    }
+        .row.mt-5.justify-content-between {
+          flex-direction: row !important;
+          justify-content: center !important;
+          align-items: center !important;
+          display: flex !important;
+          gap: 20px !important;
+        }
 
+        .row.mt-5.justify-content-between .col-auto {
+          flex: auto;
+          text-align: center;
+          margin-bottom: 0 !important;
+          padding: 10px;
+        }
 
+        .btn-kirim {
+          width: 100% !important;
+          max-width: 150px;
+          margin: auto;
+        }
+
+        #carddetailPenilaian,
+        #cardcatatan {
+          width: 100% !important;
+          margin-left: 0 !important;
+        }
+
+        #cardNilai {
+          width: 100% !important;
+          margin-left: 0 !important;
+        }
+
+        #nilaiMahasiswa {
+          font-size: 5rem !important;
+        }
+
+        #detailpenilaian {
+          width: 15% !important;
+        }
+
+        img.img-fluid {
+          display: none !important;
+        }
+
+        .row.mt-5 .col-auto {
+          width: 100%;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+
+        .btn-kirim {
+          margin-right: 0 !important;
+        }
+
+        .modal-dialog {
+          margin: 1rem auto;
+          max-width: 95% !important;
+        }
+
+        .modal-content {
+          border-radius: 20px !important;
+          padding: 15px;
+        }
+
+        .modal-body {
+          text-align: center;
+          padding: 20px;
+        }
+
+        .kakimodal {
+          flex-direction: row !important;
+          justify-content: center !important;
+          align-items: center !important;
+          display: flex !important;
+          flex-wrap: nowrap !important;
+          gap: 150px !important;
+        }
+
+        .kakimodal .col-md-6,
+        .mb5 .col-md-6 {
+          margin-left: 0 !important;
+          width: auto !important;
+          padding: 0 !important;
+        }
+
+        .kakimodal .btnKonfirmasi,
+        .mb5 .btnKonfirmasi {
+          min-width: 90px;
+          flex:1 1 auto;
+        }
+
+        .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 81px;
+        }
+
+        .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 69px;
+        }
+
+        .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+      }
+
+      @media (max-width: 1000px) {
+       
+        .NavSide__main-content .row.mt-5.justify-content-between {
+          flex-direction: row !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          display: flex !important;
+          flex-wrap: nowrap !important;
+        }
+
+        .NavSide__main-content .row.mt-5.justify-content-between .col-auto {
+          flex: auto;
+          text-align: center;
+          margin-bottom: 0 !important;
+          padding: 10px;
+        }
+
+        .NavSide__main-content .btn-kirim {
+          width: 100% !important;
+          max-width: 150px;
+          margin: auto;
+        }
+
+        .NavSide__main-content .btn-kembali {
+          width: 100% !important;
+          max-width: 150px;
+          margin: auto;
+        }
+
+        .NavSide__main-content #carddetailPenilaian,
+        .NavSide__main-content #cardcatatan {
+          width: 100% !important;
+          margin-left: 0 !important;
+        }
+
+        .NavSide__main-content #cardNilai {
+          width: 100% !important;
+          margin-left: 0 !important;
+        }
+
+        .NavSide__main-content #nilaiMahasiswa {
+          font-size: 5rem !important;
+        }
+
+        .NavSide__main-content #detailpenilaian {
+          width: 15% !important;
+        }
+
+        .NavSide__main-content img.img-fluid {
+          display: none !important;
+        }
+
+        .NavSide__main-content .row.mt-5 .col-auto {
+          width: 100%;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+
+        .NavSide__main-content .btn-kirim {
+          margin-right: 0 !important;
+        }
+
+        .modal-dialog {
+          margin: 1rem auto;
+          max-width: 95% !important;
+        }
+
+        .modal-content {
+          border-radius: 20px !important;
+          padding: 15px;
+        }
+
+        .modal-body {
+          text-align: center;
+          padding: 20px;
+        }
+
+        .kakimodal {
+          flex-direction: row !important;
+          justify-content: center !important;
+          align-items: center !important;
+          display: flex !important;
+          flex-wrap: nowrap !important;
+          gap: 150px !important;
+        }
+
+        .kakimodal .col-md-6,
+        .mb5 .col-md-6 {
+          margin-left: 0 !important;
+          width: auto !important;
+          padding: 0 !important;
+        }
+
+        .kakimodal .btnKonfirmasi,
+        .mb5 .btnKonfirmasi {
+          min-width: 90px;
+          flex:1 1 auto;
+        }
+
+        .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 81px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 69px;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+      }
     </style>
   </head>
   <body>
@@ -444,7 +521,7 @@
           <li class="NavSide__sidebar-item">
             <b></b>
             <b></b>
-            <a href="#">
+            <a href="dDokumenRevisi.php">
               <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
             </a>
           </li>
@@ -469,7 +546,7 @@
       <div class="container-fluid">
            <div class="row mb-3">
       <div class="col-12">
-        <h2 class="text-heading">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+        <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
       </div>
     </div>
     <br>
@@ -477,7 +554,7 @@
           <div class="col-lg-6 col-md-12 mb-3">
             <div class="card" id="cardNilai">
               <div class="card-body card-soft px-4 py-3 text-center">
-                <h3 class="card-title mb-3" style="padding:10px ;">Nilai Mahasiswa:</h3>
+                <h3 class="card-title mb-3 text-black" style="padding:10px ;">Nilai Mahasiswa:</h3>
                 <div>
                 <input
                   onclick="bukaKonfirmasiModal()"
@@ -486,6 +563,7 @@
                   id="nilaiMahasiswa"
                   placeholder=""
                   maxlength="1"
+                  readonly
                 />
                 </div>
               </div>
@@ -504,47 +582,47 @@
           <div class="">
             <div class="card" id="carddetailPenilaian">
         <div class="card-body">
-            <h3 class="card-title">Detail Penilaian :</h3>
+            <h3 class="card-title text-black">Detail Penilaian :</h3>
             <div class="row justify-content-center align-items-center">
               <div class="col d-flex align-items-center">
-                <label for="nilaiLaporan" id="labelpenilaian">Nilai laporan</label>
+                <label for="nilaiLaporan" id="labelpenilaian" class="text-black">Nilai laporan</label>
                 <label for=":" class="colon1">:</label>
                 <input
                   type="type"
-                  class="form-control form-control-lg text-center"
+                  class="form-control form-control-lg text-center input-nilai"
                   name="nilaiLaporan"
                   id="detailpenilaian"
                   placeholder=""
                   maxlength="3"/>
               </div>
               <div class="col d-flex align-items-center">
-                  <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi</label>
+                  <label for="MateriPresentasi" id="labelpenilaian" class="text-black">Materi Presentasi</label>
                   <label for=":" class="colon2">:</label>
                 <input
                   type="type"
-                  class="form-control form-control-lg text-center"
+                  class="form-control form-control-lg text-center input-nilai"
                   name="MateriPresentasi"
                   id="detailpenilaian"
                   placeholder=""
                   maxlength="3"/>
               </div>
               <div class="col d-flex align-items-center ">
-                  <label for="Penyampaian" id="labelpenilaian">Penyampaian</label>
+                  <label for="Penyampaian" id="labelpenilaian" class="text-black">Penyampaian</label>
                   <label for=":" class="colon3">:</label>
                 <input
                   type="type"
-                  class="form-control form-control-lg text-center"
+                  class="form-control form-control-lg text-center input-nilai"
                   name="Penyampaian"
                   id="detailpenilaian"
                   placeholder=""
                   maxlength="3"/>
               </div>
               <div class="col d-flex align-items-center ">
-                  <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek</label>
+                  <label for="NilaiProyek" id="labelpenilaian" class="text-black">Nilai Proyek</label>
                   <label for=":" class="colon4">:</label>
                 <input
                   type="type"
-                  class="form-control form-control-lg text-center"
+                  class="form-control form-control-lg text-center input-nilai"
                   name="NilaiProyek"
                   id="detailpenilaian"
                   placeholder=""
@@ -560,7 +638,7 @@
         <div class="col-12">
           <div class="card" id="cardcatatan">
             <div class="card-body">
-              <h3 class="card-title">Catatan:</h3>
+              <h3 class="card-title text-black">Catatan:</h3>
               <textarea
                 class="form-control form-control-lg"
                 id="catatan"
@@ -573,15 +651,15 @@
       </div>
        <div class="row mt-5 justify-content-between">
         <div class="col-auto">
-           <button class="btn btn-kembali">
+           <button class="btn btn-kembali" onclick="pindahKeHalamanDaftarSidang()">
     <span class="icon-circle">
-      <i class="bi bi-arrow-left"></i>
+      <i class="fa-solid fa-arrow-left"></i>
     </span>
     Kembali
   </button>
         </div>
         <div class="col-auto">
-          <button class="btn btn-kirim" onclick="bukaKonfirmasiModalKirim()" style="width: 120px;">
+          <button class="btn btn-setujui" onclick="bukaKonfirmasiModalKirim()">
             Kirim
           </button>
         </div>
@@ -594,13 +672,13 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center p-3">
       <div class="modal-body">
-        <p class="fs-5 fw-semibold">Apakah nilai akhir sama dengan nilai sementara?</p>
-        <div class="d-flex flex-row justify-content-center row mb-5 kakimodal">
+        <p class="fs-5 fw-semibold text-black">Apakah nilai akhir sama dengan nilai sementara?</p>
+        <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="TutupKonfirmasiModal()">Tidak</button>
+          <button type="button" class="btnKonfirmasi" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
           </div>
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="isiNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="isiNilaiAkhir()">Iya</button>
           </div>
         </div>
       </div>
@@ -611,13 +689,13 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center p-3">
       <div class="modal-body">
-        <p class="fs-5 fw-semibold">Apakah yakin ingin mengirim nilai akhir?</p>
-        <div class="d-flex justify-content-center row mb5 kakimodal">
+        <p class="fs-5 fw-bold text-black">Apakah yakin ingin mengirim nilai akhir?</p>
+        <div class="d-flex justify-content-center row kakimodal">
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
           </div>
           <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" onclick="kirimNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
           </div>
         </div>
       </div>
@@ -647,12 +725,17 @@
             };
         }
 
-   document.getElementById('detailpenilaian').addEventListener('input', function() {
+   document.querySelectorAll('.input-nilai').forEach(function(input){
+  input.addEventListener('input', function() {
   this.value = this.value.replace(/[^0-9]/g, '');
-  if (this.value > 100) {
+  if (this.value.length > 1 && this.value.startsWith('0')) {
+      this.value = this.value.replace(/^0+/, '');
+    }
+  if (this.value > 100 ) {
     this.value = '';
   }
-});
+    });
+   });
   document.getElementById('nilaiMahasiswa').addEventListener('input', function() {
   this.value = this.value.replace(/[^A-Ea-e]/g, '').toUpperCase();
   if (!this.value || this.value.length > 1) {
@@ -720,6 +803,38 @@
     const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
     modal.hide(); 
   }
+
+  function hitungRataRataDanSetNilai() {
+  // Ambil semua nilai input detail penilaian
+  const nilaiLaporan = parseFloat(document.getElementsByName("nilaiLaporan")[0].value) || 0;
+  const materiPresentasi = parseFloat(document.getElementsByName("MateriPresentasi")[0].value) || 0;
+  const penyampaian = parseFloat(document.getElementsByName("Penyampaian")[0].value) || 0;
+  const nilaiProyek = parseFloat(document.getElementsByName("NilaiProyek")[0].value) || 0;
+
+  // Hitung rata-rata
+  const arr = [nilaiLaporan, materiPresentasi, penyampaian, nilaiProyek];
+  // Jika ada yang kosong, jangan proses
+  if (arr.some(v => v === 0)) return;
+
+  const rataRata = (nilaiLaporan + materiPresentasi + penyampaian + nilaiProyek) / 4;
+
+  // Set nilai mahasiswa otomatis jika rata-rata 85-100
+  if (rataRata >= 85 && rataRata <= 100) {
+    document.getElementById("nilaiMahasiswa").value = "A";
+  } else if (rataRata >= 70 && rataRata < 85) {
+    document.getElementById("nilaiMahasiswa").value = "B";
+  } else if (rataRata >= 60 && rataRata < 70) {
+    document.getElementById("nilaiMahasiswa").value = "C";
+  } else if (rataRata >= 40 && rataRata < 60) { 
+    document.getElementById("nilaiMahasiswa").value = "D";
+  } else if (rataRata < 40) {
+    document.getElementById("nilaiMahasiswa").value = "E";
+  }
+  }
+  document.getElementsByName("nilaiLaporan")[0].addEventListener('input', hitungRataRataDanSetNilai);
+document.getElementsByName("MateriPresentasi")[0].addEventListener('input', hitungRataRataDanSetNilai);
+document.getElementsByName("Penyampaian")[0].addEventListener('input', hitungRataRataDanSetNilai);
+document.getElementsByName("NilaiProyek")[0].addEventListener('input', hitungRataRataDanSetNilai);
 
 </script>
   </body>

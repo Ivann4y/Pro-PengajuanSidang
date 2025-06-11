@@ -25,7 +25,7 @@ $users = [
 <?php
 $users = [
     'admin' => [
-        ['username' => 'a1', 'password' => 'ap']
+        ['username' => 'a1', 'password' => 'ap', 'email' => 'a@gmail.com']
     ],
     'dosen' => [
         ['username' => 'dosen1', 'password' => 'dosenpass'],
@@ -33,7 +33,6 @@ $users = [
     ],
     'mahasiswa' => [
         ['username' => 'mahasiswa1', 'password' => 'mahasiswapass'],
-        ['username' => 'a1', 'password' => 'ap', 'email' => 'a@gmail.com'],
         ['username' => 'm1', 'password' => 'mp', 'email' => 'm@gmail.com']
     ]
-];
+];  

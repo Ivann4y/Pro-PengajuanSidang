@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../css/button-styles.css">
 
 
     <style>
@@ -268,7 +269,6 @@
             cursor: pointer;
             border-radius: 5px;
             display: none;
-            /* Hidden by default for larger screens */
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -298,7 +298,6 @@
 
         .NavSide__topbar {
             display: none;
-            /* Hidden by default */
             position: fixed;
             top: 0;
             left: 0;
@@ -362,58 +361,48 @@
             }
         }
 
-        /* Button Styles */
-        .button-group-bottom {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 1.2cm;
-        }
-
-        .btn-tolak {
-            background-color: #dc3545;
-            color: white;
-            border: none;
+        /* File Button Styles */
+        .file-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgb(235, 238, 245);
             border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
+            padding: 12px 20px;
+            margin-right: 15px;
+            margin-bottom: 15px;
+            text-decoration: none;
+            color: #4B68FB;
             font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            height: 45px;
+            font-size: 1rem;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
-        .btn-tolak:hover {
-            background-color: #bb2d3b;
-        }
-
-        .btn-setujui {
-            background-color: #198754;
+        .file-button:hover {
+            background-color: #4B68FB;
             color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            height: 45px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-setujui:hover {
-            background-color: #157347;
+        .file-button i {
+            font-size: 1.25rem;
+            margin-right: 10px;
+            color: #4B68FB;
+            transition: color 0.2s ease;
         }
 
-        @media (max-width: 700px) {
-            .button-group-bottom {
-                flex-direction: column;
-                gap: 1rem;
-            }
+        .file-button:hover i {
+            color: white;
+        }
 
-            .btn-tolak, .btn-setujui {
+        /* Penyesuaian responsif untuk tombol berkas */
+        @media (max-width: 576px) {
+            .file-button {
+                flex-basis: 100;
                 width: 100%;
+                display: flex;
+                margin-right: 0;
             }
         }
 
@@ -442,6 +431,54 @@
 
         .modal-buttons button {
             min-width: 100px;
+        }
+
+        .btn-kembali {
+            background-color: #4B68FB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1.2cm;
+            height: 45px;
+        }
+
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white;
+            color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white;
         }
     </style>
 </head>
@@ -537,9 +574,25 @@
                 </div>
             </div>
 
+            <h5>Dokumen Sidang</h5>
+            <div class="file-buttons-container d-flex flex-wrap">
+                <a href="#" class="file-button">
+                    <i class="fa-solid fa-file-zipper"></i>
+                    dokumen_revisi_kel-1.zip
+                </a>
+            </div>
+
             <div class="button-group-bottom">
-                <button class="btn-tolak" onclick="showModal('Ditolak')">Tolak</button>
-                <button class="btn-setujui" onclick="showModal('Disetujui')">Setujui</button>
+                <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
+                    Kembali
+                </button>
+                <div class="button-group">
+                    <button class="btn btn-tolak" onclick="showModal('Ditolak')">Tolak</button>
+                    <button class="btn btn-setujui" onclick="showModal('Disetujui')">Setujui</button>
+                </div>
             </div>
         </main>
     </div>
