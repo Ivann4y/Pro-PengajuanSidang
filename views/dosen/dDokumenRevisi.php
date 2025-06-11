@@ -505,7 +505,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a onclick="location.href='dNilaiAkhir.php'">
+                    <a href='dNilaiAkhir.php'">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
@@ -583,7 +583,7 @@
             </div>
 
             <div class="button-group-bottom">
-                <button class="btn btn-kembali" onclick="pindahKeHalamanDaftarSidang()">
+                <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>

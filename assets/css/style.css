@@ -389,7 +389,7 @@ body {
 .dashboard-header .page-title {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #4b68fb;
+  color: #000000;
 }
 
 .dashboard-header .header-icons {
@@ -576,4 +576,10 @@ button.btn-kembali .icon-circle i.fa-arrow-left {
 }
 button.btn-kembali:hover .icon-circle i.fa-arrow-left {
   color: white !important;
+}
+
+/* Modal heading color warna biru*/
+.modal-heading-color {
+  background-color: #4b68fb;
+  color: white;
 }
