@@ -305,9 +305,9 @@
         }
 
         .btn-ubah {
-            background-color: #ff5f5f;
+            background-color: #4B68FB;
             color: white;
-            border: 2px solid #ff5f5f;
+            border: 2px solid #4B68FB;
             border-radius: 20px; 
             margin-bottom: 10px;
             padding: 12px 30px; 
@@ -320,8 +320,8 @@
 
         .btn-ubah:hover {
             background-color:rgb(255, 255, 255);
-            border: 2px solid #ff5f5f; 
-            color : #ff5f5f;
+            border: 2px solid #4B68FB; 
+            color : #4B68FB;
             position: relative;
         }
 
@@ -335,17 +335,44 @@
             font-size: 0.95rem;
             font-weight: 500;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            margin-top: 4cm;
-            width: auto;
-            gap: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: inline-flex; 
+            align-items: center; 
+            margin-top: 3.5cm;
         }
         .btn-kembali:hover {
             position: relative;
-            background-color: rgb(59, 54, 136);
+            background-color: white;
+            color: #4B68FB;
         }
+        
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 25px; 
+            height: 25px; 
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px; 
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+            font-size: 1rem; 
+            transition: color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white;
+        }
+
+⬆⬆⬆ CSS
         
         /* Sisa CSS untuk modal dan lainnya dipertahankan seperti aslinya */
         .modal-content-custom-form {
@@ -533,7 +560,13 @@
           -webkit-appearance: none;
           -moz-appearance: none;
        }
-
+        
+       .page-nama {
+           font-size: 1.3rem;
+           font-weight: 600;
+           margin-top: -35px;
+           margin-bottom: 20px;
+       }
 
 
 
@@ -568,14 +601,20 @@
             </ul>
         </div>
 
-        <div class="NavSide__toggle"> <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
-        </div>
+        
+        <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
+            <div class="NavSide__topbar">
+                <div class="NavSide__toggle">
+                    <i class="bi bi-list open"></i>
+                    <i class="bi bi-x-lg close"></i>
+                </div>
+            </div>
 
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Pemrograman 2</h2>
-            <div class="status-badge">Status Pengajuan : Disetujui</div>
+            <p class="page-nama">Nayaka Ivanna</p> 
 
+            <div class="status-badge">Status Pengajuan : Disetujui</div>
             <div class="info-card">
                 <div class="section">
                     <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br>Basis Data 1</p>
@@ -592,7 +631,13 @@
             <h5 class="mt-4">Aksi</h5>
             <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
             <br><br>
-            <a href="aDaftarSidang.php"><button class="btn-kembali"><i class="fa-solid fa-circle-arrow-left"></i> Kembali</button></a>
+            <button class="btn-kembali" onclick="location.href='mSidang.php'">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
+                    Kembali
+                </button>
+
 
             <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">

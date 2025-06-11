@@ -255,11 +255,6 @@ if ($_SESSION['role'] !== 'dosen') {
                 // }
                 let isTA = true;
 
-                function goToEvaluasi(nim, tipe) {
-                    // Fungsi ini sekarang mengirimkan nim DAN tipe ke URL
-                    window.location.href = `dEvaluasiSidang.php?nim=${nim}&tipe=${tipe}`;
-                }
-
                 function switchDdaftarSidang() {
                     const taTable = document.getElementById('dPengajuanTA');
                     const semTable = document.getElementById('dPengajuanSem');

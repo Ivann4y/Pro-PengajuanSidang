@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Daftar Sidang</title>
+    <title>Admin - Daftar Pengajuan Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -203,7 +203,6 @@
             }
         }
 
-
         .main-header {
             display: flex;
             justify-content: space-between;
@@ -216,16 +215,22 @@
             flex-direction: column;
             align-items: flex-start;
         }
+        
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 10px; 
+        }
+        
+        .filter-container .filter-label {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #333;
+        }
 
         .main-title {
             color: #4B68FB;
             font-weight: 700;
-            font-size: 1.8rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .sub-title {
-            font-weight: 600;
             font-size: 2.1rem;
             margin-bottom: 1rem;
         }
@@ -286,18 +291,38 @@
             padding: 15px 18px;
             vertical-align: middle;
         }
-
+        
         .table-admin-custom .isiTabel td:first-child {
             border-radius: 10px 0 0 10px;
         }
 
         .table-admin-custom .isiTabel td:last-child {
             border-radius: 0 10px 10px 0;
+            text-align: center;
         }
 
         .table-admin-custom tbody tr.isiTabel:hover {
             background-color: #4B68FB;
             color: #FFFFFF;
+        }
+
+        /* CSS BARU untuk tombol tanpa border */
+        .detail-btn {
+            border: none !important;
+            background-color: transparent !important;
+            color: #4B68FB; /* Warna ikon */
+            padding: 0.25rem 0.5rem; /* Menyesuaikan padding agar tidak terlalu besar */
+        }
+
+        /* Efek saat hover pada tombol */
+        .detail-btn:hover {
+            opacity: 0.7;
+        }
+
+        /* Memastikan warna ikon menjadi putih saat baris di-hover */
+        .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+            color: #FFFFFF;
+            opacity: 1;
         }
 
         .modal-header-custom {
@@ -350,20 +375,19 @@
             </div>
         </div>
 
-
         <main class="NavSide__main-content" id="adminDaftarSidangContent">
-
             <div class="main-header">
                 <div class="header-left-panel">
-                    <h1 class="main-title">Daftar Sidang</h1>
-                    <p class="sub-title">Pengajuan sidang</p>
-                    <div class="dropdown" id="switcherDropdownContainer">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            Sidang TA
-                        </button>
-                        <ul class="dropdown-menu" id="dynamicDropdownMenu">
-                            <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('Semester');">Sidang Semester</a></li>
-                        </ul>
+                    <h1 class="main-title">Daftar Pengajuan Sidang</h1>
+                    <div class="filter-container">
+                        <span class="filter-label fw-semibold">Filter:</span>
+                        <div class="dropdown" id="switcherDropdownContainer">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Semua
+                            </button>
+                            <ul class="dropdown-menu" id="dynamicDropdownMenu">
+                                </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="header-right-panel">
@@ -381,57 +405,62 @@
                 <table class="table-admin-custom">
                     <thead>
                         <tr>
-                            <th scope="col">ID</th>
+                            <th scope="col">Nomor</th>
                             <th scope="col">NIM</th>
                             <th scope="col">Nama</th>
-                            <th scope="col" id="thDynamicHeader">Judul Sidang</th>
+                            <th scope="col" id="thDynamicHeader">Judul/Mata Kuliah</th>
                             <th scope="col">Pembimbing</th>
+                            <th scope="col" style="text-align: center;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="adminSidangTA">
+                    <tbody id="adminSidangContent"> 
                         <tr class="isiTabel" data-id="TA001" data-type="ta">
-                            <td>001</td>
+                            <td>TA001</td>
                             <td>0920240053</td>
                             <td>Nayaka Ivanna</td>
                             <td>Sistem Pengajuan Sidang</td>
                             <td>Dr. Rida Indah F.</td>
+                            <td>
+                                <button type="button" class="btn detail-btn">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </button>
+                            </td>
                         </tr>
                         <tr class="isiTabel" data-id="TA002" data-type="ta">
-                            <td>002</td>
+                            <td>TA002</td>
                             <td>0920240054</td>
                             <td>Zahrah Imelda</td>
                             <td>Pengembangan Aplikasi Mobile Edukasi</td>
                             <td>Dr. Rida Indah F.</td>
+                            <td>
+                                <button type="button" class="btn detail-btn">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </button>
+                            </td>
                         </tr>
-                        <tr class="isiTabel" data-id="TA003" data-type="ta">
-                            <td>003</td>
-                            <td>0920240055</td>
-                            <td>Nur Widya Astuti</td>
-                            <td>Analisis Keamanan Jaringan Komputer</td>
-                            <td>Dr. Rida Indah F.</td>
-                        </tr>
-                    </tbody>
-                    <tbody id="adminSidangSem" style="display: none;">
                         <tr class="isiTabel" data-id="SEM001" data-type="semester">
-                            <td>S01</td>
+                            <td>SEM001</td>
                             <td>0920230053</td>
                             <td>Nayaka Ivanna</td>
                             <td>Basis Data 1</td>
                             <td>Dr. Rida Indah F</td>
+                            <td>
+                                <button type="button" class="btn detail-btn">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </button>
+                            </td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM002" data-type="semester">
-                            <td>S02</td>
+                            <td>SEM002</td>
                             <td>0920230054</td>
                             <td>Zahrah Imelda</td>
                             <td>Pemrograman 2</td>
                             <td>Dr. Rida Indah F</td>
-                        </tr>
-                        <tr class="isiTabel" data-id="SEM003" data-type="semester">
-                            <td>S03</td>
-                            <td>0920240055</td>
-                            <td>Nur Widya Astuti</td>
-                            <td>Sistem Operasi</td>
-                            <td>Dr. Rida Indah F.</td>
+                            <td>
+                                <button type="button" class="btn detail-btn">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -459,33 +488,46 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function switchAdminSidangView(viewType) {
-            const taTable = document.getElementById("adminSidangTA");
-            const semTable = document.getElementById("adminSidangSem");
+            const allRows = document.querySelectorAll("#adminSidangContent tr.isiTabel");
             const dynamicHeader = document.getElementById("thDynamicHeader");
             const dropdownMenu = document.getElementById("dynamicDropdownMenu");
             const ddButton = document.getElementById("ddAdminSidangTypeButton");
 
-            dropdownMenu.innerHTML = '';
+            allRows.forEach(row => {
+                const rowType = row.dataset.type;
+                if (viewType === 'All' || viewType === rowType) {
+                    row.style.display = ""; 
+                } else {
+                    row.style.display = "none";
+                }
+            });
 
-            if (viewType === 'TA') {
-                taTable.style.display = "";
-                semTable.style.display = "none";
-                dynamicHeader.textContent = "Judul Sidang";
+            dropdownMenu.innerHTML = '';
+            let options = '';
+
+            if (viewType === 'All') {
+                ddButton.textContent = "Semua";
+                dynamicHeader.textContent = "Judul/Mata Kuliah";
+                options = `
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('ta');">Sidang TA</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('semester');">Sidang Semester</a></li>`;
+            } else if (viewType === 'ta') {
                 ddButton.textContent = "Sidang TA";
-                const semesterOption = `<li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('Semester');">Sidang Semester</a></li>`;
-                dropdownMenu.insertAdjacentHTML('beforeend', semesterOption);
-            } else if (viewType === 'Semester') {
-                taTable.style.display = "none";
-                semTable.style.display = "";
-                dynamicHeader.textContent = "Mata Kuliah";
+                dynamicHeader.textContent = "Judul Sidang";
+                options = `
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('All');">Semua</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('semester');">Sidang Semester</a></li>`;
+            } else if (viewType === 'semester') {
                 ddButton.textContent = "Sidang Semester";
-                const taOption = `<li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('TA');">Sidang TA</a></li>`;
-                dropdownMenu.insertAdjacentHTML('beforeend', taOption);
+                dynamicHeader.textContent = "Mata Kuliah";
+                options = `
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('All');">Semua</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('ta');">Sidang TA</a></li>`;
             }
+            dropdownMenu.insertAdjacentHTML('beforeend', options);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Logika untuk Toggle Sidebar (Mobile View) ---
             const menuToggle = document.querySelector(".NavSide__toggle");
             const sidebar = document.getElementById("main-sidebar");
 
@@ -496,7 +538,6 @@
                 };
             }
 
-            // --- Logika untuk Item Sidebar yang Aktif ---
             const listItems = document.querySelectorAll(".NavSide__sidebar-item");
             
             listItems.forEach(item => {
@@ -513,11 +554,9 @@
                 });
             });
 
+            switchAdminSidangView('All');
 
-            // --- Logika Asli Halaman Anda ---
-            switchAdminSidangView('TA');
-
-            const allTableRows = document.querySelectorAll('.table-admin-custom tbody tr');
+            const allTableRows = document.querySelectorAll('.table-admin-custom tbody tr.isiTabel');
             allTableRows.forEach(row => {
                 row.addEventListener('click', function() {
                     const sidangId = this.dataset.id;
@@ -530,6 +569,22 @@
                         }
                     }
                 });
+
+                const detailButton = row.querySelector('.detail-btn');
+                if (detailButton) {
+                    detailButton.addEventListener('click', function(event) {
+                        event.stopPropagation(); 
+
+                        const sidangId = row.dataset.id;
+                        const sidangType = row.dataset.type;
+
+                        if (sidangType === 'ta') {
+                            window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
+                        } else if (sidangType === 'semester') {
+                            window.location.href = `aDetailSidangSem.php?type=${sidangType}&id=${sidangId}`;
+                        }
+                    });
+                }
             });
         });
     </script>
