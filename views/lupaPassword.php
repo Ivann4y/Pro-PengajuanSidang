@@ -92,11 +92,11 @@
             pointer-events: auto;
         }
 
-        .btnKirim:hover {
+        /* .btnKirim:hover {
             background-color: white;
             color: green;
             stroke: green;
-        }
+        } */
 
         .btn-kembali {
             background-color: #4B68FB;
@@ -143,6 +143,38 @@
 
         .btn-kembali:hover .icon-circle i {
             color: white;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            text-decoration: none;
+            font-family: "Poppins", sans-serif;
+            color: white;
+            /* Default text color for all buttons */
+        }
+
+        .btn-setujui {
+            background-color: #4fd382;
+            color: white;
+            /* Changed from black to white */
+        }
+
+        .btn-setujui:hover {
+            background-color: #3ab070;
+            color: white;
+            /* Already white, no change needed */
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -205,10 +237,10 @@
                         <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra">
                     <?php endif; ?>
 
-                    <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5">Kirim</button>
-                    <!-- <button class="btn btn-setujui" id="btnKirim">
+                    <!-- <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5">Kirim</button> -->
+                    <button class="btn btn-setujui float-end mt-2" id="btnKirim">
                         Kirim
-                    </button> -->
+                    </button>
                 </form>
 
             </div>
