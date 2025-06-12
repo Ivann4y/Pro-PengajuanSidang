@@ -396,9 +396,9 @@ if ($_SESSION['role'] !== 'dosen') {
                         </div>
                     </div>
                     <div>
-                        <div class="img-slot">
+                        <!-- <div class="img-slot">
                             <img src="../../assets/img/img8.png" alt="Dashboard Illustration">
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 

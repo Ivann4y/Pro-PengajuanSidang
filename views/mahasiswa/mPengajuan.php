@@ -11,13 +11,10 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-
-        
-
         .text-heading { 
-            font-size: 2rem;
+            font-size: 2.0rem;
             font-weight: 600;
-            color: #333;
+            color: #4B68FB;
             margin-bottom: 1.5rem; 
         }
 
@@ -177,35 +174,35 @@
 
         @media (max-width: 768px) {
             .action-column {
+                display: none;
+            }
+
+            .header-icons {
                 position: fixed;
                 top: 15px;
                 right: 60px;
-                margin: 0;
-                padding: 0;
                 z-index: 1046;
             }
 
-            .tambah-sidang-btn {
-                padding: 6px 16px;
-                font-size: 0.85rem;
-                background-color: rgb(67, 54, 240);
-                border-radius: 15px;
+            .header-icons .tambah-sidang-btn {
+                display: none; /* Hide the button in header for mobile */
             }
 
-            .NavSide__topbar {
-                padding-right: 140px;
+            .mobile-add-button-container {
+                margin-top: 15px;
             }
         }
 
         .btn-primary { 
-            /* font-family: "Poppins", sans-serif; Inherited */
             background-color: rgb(67, 54, 240);
             border-color: rgb(67, 54, 240);
         }
+
         .btn-primary:hover {
             background-color: rgb(57, 44, 210);
             border-color: rgb(57, 44, 210);
         }
+
         .dropdown-menu .dropdown-item {
             font-family: "Poppins", sans-serif; 
         }
@@ -219,8 +216,6 @@
         tr.jadiBiru:hover .bi-pencil-square {
             color: white;
         }
-
-        /* Original mPengajuan table structural styles - END */
 
         .header-icons {
             display: flex;
@@ -244,22 +239,6 @@
             margin-left: 10px;
         }
 
-        @media (max-width: 768px) {
-            .header-icons {
-                position: fixed;
-                top: 15px;
-                right: 60px;
-                z-index: 1046;
-            }
-
-            .header-icons a {
-                color: rgb(67, 54, 240);
-            }
-
-            .action-column {
-                display: none;
-            }      
-        }
         .modal-footer .btn-danger {
             background-color: #FD7D7D;
             border-color: #FD7D7D;
@@ -270,15 +249,24 @@
             border-color: #4FD382;
         }
 
+        h1.page-title {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: black;
+        }
+
     </style>
 </head>
 
 <body>
     <div id="NavSide">
+
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
-            </div>
+        </div>
+
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -297,42 +285,57 @@
                     <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
-        </div>
+    </div>
 
         <div class="NavSide__topbar">
             <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
-            </div>
+        </div>
+
             <div class="header-icons">
+                <button class="tambah-sidang-btn d-md-none" onclick="tambahData()">+ Tambah Sidang</button>
                 <i class="bi bi-bell-fill"></i>
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i>
-                </div>
-                <button class="tambah-sidang-btn d-md-none" onclick="tambahData()">+ Tambah Sidang</button>
+                </div>  
             </div>
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-            <div class="container-fluid"> 
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="text-heading" style="color:black">Nayaka Ivana Putra (Mahasiswa)</h2>
+            <!-- Top bar desktop -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="dashboard-header">
+                <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon">
+                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
-                </div><br>
+                </div>
+            </div>
+        </div>
+    </div>
 
                 <div class="row">
-                    <div class="col-12 col-md-6">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                Sidang TA
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
-                            </ul>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                    Sidang TA
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mobile-add-button-container d-md-none">
+                            <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
                         </div>
                     </div>
-                </div><br>
+                </div>
 
                 <div class="row">
                     <div class="col-12">
@@ -381,6 +384,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         // Sidebar Toggle Logic 
         let menuToggle = document.querySelector(".NavSide__toggle");
