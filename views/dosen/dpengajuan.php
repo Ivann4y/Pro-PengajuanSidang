@@ -200,7 +200,6 @@
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semester')">Sidang Semester</a></li>
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
                     </div><br><br>
