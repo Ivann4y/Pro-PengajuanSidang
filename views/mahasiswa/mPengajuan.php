@@ -336,7 +336,8 @@
     </div>
 
                 <div class="row">
-                    <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center gap-2">
+                    <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
                                 Sidang TA
