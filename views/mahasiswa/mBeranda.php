@@ -476,9 +476,9 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             <div class="row">
                 <div class="col-lg-7">
                     <div class="row">
-                        <div class="col-md-6">
-                            <a href="mSidang.php" style="text-decoration: none; color: inherit; display: block;">
-                                <div class="dashboard-card sidang-status-card">
+                        <div class="col-12 col-md-6">
+                            <a href="mSidang.php" style="text-decoration: none; color: inherit;">
+                                <div class="dashboard-card sidang-status-card w-100">
                                     <div class="number">3</div>
                                     <div class="text">
                                         <span class="title">Sidang</span>
@@ -486,8 +486,9 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                                     </div>
                                 </div>
                             </a>
-
-                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit; display: block;">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit;">
                                 <div class="dashboard-card penilaian-status-card">
                                     <div class="number">2</div>
                                     <div class="text">
@@ -497,29 +498,16 @@ if ($_SESSION['role'] !== 'mahasiswa') {
                                 </div>
                             </a>
                         </div>
-                        <div class="col-md-6">
-                            <div class="dashboard-card content-card tanggungan-card">
-                                <h3 class="section-title">Tanggungan</h3>
-                                <div class="tanggungan-item">Revisi Sidang PRG</div>
-                                <div class="tanggungan-item">Revisi Sidang Basdat</div>
-                                <div class="tanggungan-item">Revisi Sidang TA</div>
-                                <div class="tanggungan-item">Revisi Sidang Orkom</div>
-                                <div class="tanggungan-item">Revisi Sidang </div>
-                            </div>
-                        </div>
                     </div>
 
-                    <a href="mNotifikasi.php" style="text-decoration: none; color: inherit; display: block;">
-                        <div class="dashboard-card content-card notifikasi-card">
-                            <h3 class="section-title">Notifikasi</h3>
-                            <div class="notifikasi-item">Pengajuan Sidang PRG Telah Disetujui</div>
-                            <div class="notifikasi-item">Revisi Sidang BasDat Telah Disetujui</div>
-                            <div class="notifikasi-item">Pengajuan Sidang SO Telah Ditolak</div>
-                            <div class="notifikasi-item">Notifikasi Item 4</div>
-                            <div class="notifikasi-item">Notifikasi Item 5</div>
-                            <div class="notifikasi-item">Notifikasi Item 6</div>
-                        </div>
-                    </a>
+                    <div class="dashboard-card content-card tanggungan-card">
+                        <h3 class="section-title">Tugas</h3>
+                        <div class="tanggungan-item">Revisi Sidang PRG</div>
+                        <div class="tanggungan-item">Revisi Sidang Basdat</div>
+                        <div class="tanggungan-item">Revisi Sidang TA</div>
+                        <div class="tanggungan-item">Revisi Sidang Orkom</div>
+                        <div class="tanggungan-item">Revisi Sidang </div>
+                    </div>
                 </div>
 
                 <div class="col-lg-5">
