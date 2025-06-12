@@ -1,10 +1,10 @@
 <?php
-    // Placeholder data untuk mahasiswa
-    // Anda bisa menggantinya dengan data dinamis jika diperlukan
+    // Placeholder data untuk mahasiswa (disesuaikan dengan gambar)
     $mahasiswa = [
-        'nama'  => 'M. Haaris Nur S.',
-        'nim'   => '0920240033',
-        'prodi' => 'Teknik Informatika' 
+        'nama'   => 'M. Haaris Nur S.',
+        'nim'    => '0920240033',
+        'matkul' => 'Tugas Akhir', // Data untuk Mata Kuliah
+        'dosen'  => 'Timotius Victory'
     ];
 ?>
 
@@ -58,22 +58,25 @@
     
     /* Aturan untuk card agar konsisten */
     #carddetailPenilaian, #cardcatatan {
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin-left: 15px;
     }
 
     #cardNilai {
+        background-color: rgb(235, 238, 245);
         border-radius: 50px;
-        background-color: #f2f2f2;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin-left: 0;
     }
     
     #carddataMahasiswa {
         background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
     }
 
     #carddetailPenilaian, #cardcatatan {
@@ -205,53 +208,49 @@
             </div>
         </div>
         
-        <!-- ======================================================= -->
-        <!-- AWAL BAGIAN YANG DISESUAIKAN -->
-        <!-- ======================================================= -->
-        <div class="row mt-4 g-4">
+        <div class="row mt-4 g-4 row align-items-stretch mb-5 p-3">
             <!-- KARTU DATA MAHASISWA (SEKARANG DI KIRI) -->
             <div class="col-lg-6 d-flex">
               <div class="card flex-fill" id="carddataMahasiswa">
                 <div class="card-body card-soft p-4">
                   <h3 class="card-title text-dark mb-4 text-center">Data Mahasiswa</h3>
-                  <div class="row">
-                      <div class="col-sm-6">
-                           <!-- NIM -->
-                          <div class="info-group mb-5">
-                            <div class="label-row d-flex align-items-center gap-2 mb-1">
-                              <i class="fa-solid fa-id-card"></i>
-                              <span class="fw-bold">NIM</span>
-                            </div>
-                            <div class="value-row text-secondary fw-bold">0920240033</div>
-                          </div>
-                          <!-- Nama -->
-                          <div class="info-group mb-3">
-                            <div class="label-row d-flex align-items-center gap-2 mb-1">
-                              <i class="fa-solid fa-user"></i>
-                              <span class="fw-bold">Nama</span>
-                            </div>
-                            <div class="value-row text-secondary fw-bold">M. Harris Nur S.</div>
-                          </div>
-                      </div>
-                      <div class="col-sm-6">
-                           <!-- Mata Kuliah -->
-                          <div class="info-group mb-5">
-                            <div class="label-row d-flex align-items-center gap-2 mb-1">
-                              <i class="fa-solid fa-book"></i>
-                              <span class="fw-bold">Mata Kuliah</span>
-                            </div>
-                            <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
-                          </div>
-                          <!-- Dosen Pembimbing -->
-                          <div class="info-group mb-3">
-                            <div class="label-row d-flex align-items-center gap-2 mb-1">
-                              <i class="fa-solid fa-user-tie"></i>
-                              <span class="fw-bold">Dosen Pembimbing</span>
-                            </div>
-                            <div class="value-row text-secondary fw-bold">Timotius Victory</div>
-                          </div>
-                      </div>
+                  
+                  <!-- NIM (Ikon: fa-id-card) -->
+                  <div class="info-group mb-3  ps-5">
+                    <div class="label-row d-flex align-items-center gap-2 mb-1">
+                      <i class="fa-solid fa-id-card"></i>
+                      <span class="fw-bold">NIM</span>
+                    </div>
+                    <div class="value-row text-secondary fw-bold"><?php echo htmlspecialchars($mahasiswa['nim']); ?></div>
                   </div>
+
+                  <!-- Nama (Ikon: fa-user) -->
+                  <div class="info-group mb-3  ps-5">
+                    <div class="label-row d-flex align-items-center gap-2 mb-1">
+                      <i class="fa-solid fa-user"></i>
+                      <span class="fw-bold">Nama</span>
+                    </div>
+                    <div class="value-row text-secondary fw-bold"><?php echo htmlspecialchars($mahasiswa['nama']); ?></div>
+                  </div>
+
+                  <!-- Mata Kuliah (Ikon: fa-book) - SESUAI GAMBAR -->
+                  <div class="info-group mb-3  ps-5">
+                    <div class="label-row d-flex align-items-center gap-2 mb-1">
+                      <i class="fa-solid fa-book"></i>
+                      <span class="fw-bold">Mata Kuliah</span>
+                    </div>
+                    <div class="value-row text-secondary fw-bold"><?php echo htmlspecialchars($mahasiswa['matkul']); ?></div>
+                  </div>
+
+                  <!-- Dosen Pembimbing (Ikon: fa-user-tie) -->
+                  <div class="info-group mb-3  ps-5">
+                    <div class="label-row d-flex align-items-center gap-2 mb-1">
+                      <i class="fa-solid fa-user-tie"></i>
+                      <span class="fw-bold">Dosen Pembimbing</span>
+                    </div>
+                    <div class="value-row text-secondary fw-bold"><?php echo htmlspecialchars($mahasiswa['dosen']); ?></div>
+                  </div>
+                  
                 </div>
               </div>
             </div>
@@ -260,7 +259,7 @@
             <div class="col-lg-6 d-flex">
                 <div class="card flex-fill" id="cardNilai">
                     <div class="card-body d-flex flex-column justify-content-center">
-                        <h3 class="card-title text-dark text-center">Nilai Mahasiswa:</h3>
+                        <h3 class="card-title text-dark text-center">Nilai Mahasiswa :</h3>
                         <div class="d-flex justify-content-center align-items-center flex-grow-1">
                             <input type="text" class="form-control text-dark"
                                 id="nilaiMahasiswa" value="A" readonly />
@@ -269,25 +268,7 @@
                 </div>
             </div>
         </div>
-        <!-- ======================================================= -->
-        <!-- AKHIR BAGIAN YANG DISESUAIKAN -->
-        <!-- ======================================================= -->
-        
-        <div class="row mt-5">
-          <div class="col-12">
-            <div class="card" id="carddetailPenilaian">
-                <div class="card-body">
-                    <h3 class="card-title text-dark" >Detail Penilaian :</h3>
-                    <div class="d-flex align-items-center gap-4 flex-wrap mt-3 text-dark">
-                        <span><strong>Nilai Laporan :</strong> 95</span>
-                        <span><strong>Materi Presentasi :</strong> 90</span>
-                        <span><strong>Penyampaian :</strong> 94</span>
-                        <span><strong>Nilai Proyek :</strong> 93</span>
-                    </div>
-                </div>
-            </div>
-          </div>
-        </div>
+
 
         <div class="row mt-5">
             <div class="col-12">
