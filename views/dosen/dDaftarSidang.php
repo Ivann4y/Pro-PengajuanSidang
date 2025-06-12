@@ -124,6 +124,16 @@ if ($_SESSION['role'] !== 'dosen') {
             margin: 0;
             color: #1a1a1a; /* optional: sesuai tema */
         }
+
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
+        }
     </style>
 </head>
 

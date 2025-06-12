@@ -1,3 +1,13 @@
+<?php
+    // Placeholder data untuk mahasiswa
+    // Anda bisa menggantinya dengan data dinamis jika diperlukan
+    $mahasiswa = [
+        'nama'  => 'M. Haaris Nur S.',
+        'nim'   => '0920240033',
+        'prodi' => 'Teknik Informatika' 
+    ];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,6 +36,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <title>Mahasiswa - Nilai Akhir</title>
     <style>
+       /* ... (CSS Anda yang lain tetap sama) ... */
+       
+        /* === MODIFIED AND NEW CSS RULES START HERE === */
+
+        body,
+        .card,
+        .form-control,
+        h1, h3, h4, h5, h6 { /* Hapus h2 dari grup ini */
+            font-family: "Poppins", sans-serif !important;
+            color: #464869;
+        }
+
+        /* Aturan khusus untuk judul utama agar lebih gelap & tebal */
+        .main-title {
+            font-weight: 700 !important; /* Mirip font-weight: bold; */
+            color: #343a40; /* Warna abu-abu yang sangat gelap, hampir hitam */
+            margin-bottom: 0.5rem; /* Mengurangi jarak bawah agar info mahasiswa lebih dekat */
+        }
+        
+        /* Aturan untuk info mahasiswa */
+        .student-info {
+            font-size: 1rem;
+            color: #6c757d; /* Warna abu-abu sekunder, tidak terlalu menonjol */
+            font-weight: 500;
+        }
+
+        /* === END OF MODIFIED AND NEW CSS RULES === */
+
        @media (max-width: 750px) {
               .row.mt-5.justify-content-between {
     flex-direction: row !important;
@@ -202,6 +240,9 @@
   .NavSide__main-content .btn-kirim {
     margin-right: 0 !important;
   }
+  .btn-kembali {
+     margin-top: 0.5cm; 
+  }
   .modal-dialog {
     margin: 1rem auto;
     max-width: 95% !important;
@@ -276,32 +317,22 @@
       flex: 3;
     }
 }
-      body,
-      .card,
-      .form-control,
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        font-family: "Poppins", sans-serif !important;
-        color: #464869;
-      }
+      
       #cardNilai {
         background-color: #f2f2f2;
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
         margin-left: 0;}
+        
       #nilaiMahasiswa {
         font-size: 9.5rem !important;
         font-weight: bold;
         text-align: center;
         border-radius: 30px;
         width: 90%;
-        margin-left: 23px;
-        height: 40px;
+        /* height: 40px; <-- Removed */
+        /* margin-left: 23px; <-- Removed */
       }
       input.form-control:not(:placeholder-shown) {
       background: #f2f2f2 !important;
@@ -351,8 +382,7 @@
         margin-top: 20px;
         
       }
-
-        .btn-kembali {
+      .btn-kembali {
             background-color: #4B68FB;
             color: white;
             border: none;
@@ -365,7 +395,7 @@
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
             display: inline-flex; 
             align-items: center; 
-            margin-top:50px; 
+            margin-top: 1.2cm;
         }
         .btn-kembali:hover {
             position: relative;
@@ -389,14 +419,14 @@
             background-color: #4B68FB;
         }
 
-        .btn-kembali .icon-circle i.fa-solid.fa-arrow-left {
-            color: #4B68FB !important;
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
             font-size: 1rem; 
             transition: color 0.3s ease;
         }
 
-        .btn-kembali:hover .icon-circle i.fa-solid.fa-arrow-left {
-            color: white !important;
+        .btn-kembali:hover .icon-circle i {
+            color: white;
         }
 
     </style>
@@ -437,25 +467,32 @@
         </div>
    <main class="NavSide__main-content">
     <div class="container-fluid ">
-        <div class="row mb-5">
-            <h2 style="margin-left: 5px ;">
-                <b>Detail Evaluasi - Sistem Pengajuan Sidang</b>
-            </h2>
+        <!-- === MODIFIED HEADER SECTION === -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="main-title">
+                    Mahasiswa / Detail Evaluasi - Sistem Pengajuan Sidang
+                </h2>
+                <p class="student-info">
+                    <?php echo htmlspecialchars($mahasiswa['nama']); ?> - 
+                    <?php echo htmlspecialchars($mahasiswa['nim']); ?> - 
+                    <?php echo htmlspecialchars($mahasiswa['prodi']); ?>
+                </p>
+            </div>
         </div>
-          <div class="row mt-5 align-items-center justify-content-between">
-            <div class="col-md-6">
+        <!-- === END OF MODIFIED HEADER SECTION === -->
+
+          <div class="row mt-5">
+            <div class="col-12">
                 <div class="card" id="cardNilai">
                     <div class="card-body">
                         <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
-                        <div>
-                            <input type="text" class="form-control form-control-lg text-center mx-auto"
+                        <div class="d-flex justify-content-center">
+                            <input type="text" class="form-control form-control-lg text-center"
                                 id="nilaiMahasiswa" placeholder="" value="A" readonly />
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-6 col-md-12 mb-3">
-                <img src="../../assets/img/img5.png" alt="Mahasiswa" class="img-fluid rounded" />
             </div>
         </div>
 
@@ -485,7 +522,7 @@
                       </div>
                   </div>
               </div>
-               <button class="btn-kembali" onclick="location.href='mSidang.php'">
+              <button class="btn-kembali" onclick="location.href='mSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>

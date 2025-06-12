@@ -101,6 +101,16 @@
         tr.jadiBiru:hover .detail-btn i {
             color: white !important;
         }
+
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
+        }
     </style>
 </head>
 
