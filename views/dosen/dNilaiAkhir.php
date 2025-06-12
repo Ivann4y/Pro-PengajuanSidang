@@ -394,9 +394,42 @@ input.form-control:active {
   border-color: #ced4da !important;
   box-shadow: none !important;
   color:rgb(0, 0, 0) !important;
+} 
+@media(max-width:360px){
+  .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 53px !important;
+        }
+        .btn-tolak{
+          margin-left:-25px;
+          margin-right:20px;
+        }
+}
+@media (min-width:390px)and(max-width:400px){
+  .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 68px !important;
+        }
+        .btn-tolak{
+          margin-left:-25px;
+          margin-right:20px;
+        }
+}
+@media (min-width:1280px){
+  .section{
+    margin-left:0px !important;
+  }
+  .section-bawah{
+    margin-top:0px !important;
+  }
 }
 
-      @media (max-width: 750px) {
+      @media (max-width: 768px) {
+        .section-bawah{
+          margin-top:0px !important;
+        }
         .page-nama{
           margin-left:10px;
         }
@@ -535,7 +568,7 @@ input.form-control:active {
         .colon3{
           flex: 1;
           display: flex;
-          margin-left: 69px;
+          margin-left: 69px !important;
         }
 
         .colon4{
@@ -558,9 +591,190 @@ input.form-control:active {
     
            
       }
-     
+      @media (min-width: 412px) and (max-width:540px){
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 69px !important;
+        }
+      }
+
+      @media (max-width: 1024px){
+         .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .section{
+          margin-left:0px !important;
+        }
+        .section-bawah{
+          margin-top:0px !important;
+        }
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 121px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 69px;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+
+      }
+      @media (min-width:820px) and (max-width:870px){
+           .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 121px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 68px!important;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+      }
+      @media (min-width:900px) and (max-width:990px){
+           .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 121px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 49px !important;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+      }
+      @media (max-width:344px) {
+
+            .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 121px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 39px !important;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+      }
 
       @media (max-width: 1000px) {
+         .section-bawah{
+          margin-top:0px !important;
+        }
        
         .NavSide__main-content .row.mt-5.justify-content-between {
           flex-direction: row !important;
@@ -697,7 +911,7 @@ input.form-control:active {
         .NavSide__main-content .colon3{
           flex: 1;
           display: flex;
-          margin-left: 69px;
+          margin-left: 0px;
         }
 
         .NavSide__main-content .colon4{
@@ -804,7 +1018,7 @@ input.form-control:active {
             <div class="value-row text-secondary fw-bold">0920240033</div>
           </div>
           
-          <div class="info-group mb-3" style="margin-top:45px;">
+          <div class="info-group mb-3 section-bawah" style="margin-top:45px;">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-user"></i>
               <span class="fw-bold">Nama</span>
@@ -823,7 +1037,7 @@ input.form-control:active {
             <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
           </div>
          
-          <div class="info-group mb-3" style="margin-top:45px;">
+          <div class="info-group mb-3 section-bawah" style="margin-top:45px;">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-user-tie"></i>
               <span class="fw-bold">Dosen Pembimbing</span>

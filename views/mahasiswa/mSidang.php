@@ -14,6 +14,12 @@
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
         /* Original mSidang table structural styles - START */
+        .text-heading { 
+            font-size: 2.0rem;
+            font-weight: 600;
+            color: #4B68FB;
+            margin-bottom: 1.5rem; 
+        }
         table {
             border-spacing: 0 10px;
             border-collapse: separate;
@@ -157,7 +163,7 @@
             <div class="container-fluid"> 
                 <div class="row">
                     <div class="dashboard-header">
-                    <h2 class="page-title">Nayaka Ivana Putra (Mahasiswa)</h2>
+                    <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
                     <div class="header-icons d-none d-md-flex">
                         <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
                         <div class="profile-icon">
@@ -168,8 +174,9 @@
             </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 col-md-6"> 
-                        <div class="dropdown">
+                    <div class="col-12 col-md-6 d-flex align-items-center"> 
+                        <label for="ddMsidang" class="fw-semibold mb-0">Filter: </label>
+                        <div class="dropdown ms-2">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
                                 Sidang TA
                             </button>
