@@ -321,7 +321,8 @@
 
         <main class="NavSide__main-content" id="mPengajuan">
             <!-- Top bar desktop -->
-      
+    <div class="container-fluid">
+        <div class="row">
             <div class="dashboard-header">
                 <h2 class="text-heading" style="color:black">Nayaka Ivana Putra (Mahasiswa)</h2>
                 <div class="header-icons d-none d-md-flex">
@@ -331,6 +332,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
                 <div class="row">
                     <div class="col-12 col-md-6">
