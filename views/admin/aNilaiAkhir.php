@@ -43,8 +43,9 @@
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
+        height:100%;
         margin-left: 0; 
-        margin-bottom: 40px;
+
     }
 
     #carddetailPenilaian {
@@ -207,67 +208,67 @@
            <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
         </div>
 
-        <div class="row mt-5 align-items-center justify-content-between">
-          <div class="col-md-6">
-            <div class="card" id="cardNilai">
-              <div class="card-body">
-                <h3 class="card-title" style="padding:10px;">Nilai Mahasiswa:</h3>
-                <div>
-                  <input
-                    type="text"
-                    class="form-control form-control-lg text-center text"
-                    id="nilaiMahasiswa"
-                    placeholder="A"
-                    maxlength="1"
-                    readonly/>
-                </div>
+<div class="row mt-5 align-items-stretch">
+  <div class="col-md-6 d-flex">
+    <div class="card flex-fill h-100" id="cardNilai">
+      <div class="card-body card-soft px-4 py-2 d-flex flex-column">
+        <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Nilai Mahasiswa</h3>
+<div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+  <input
+    type="text"
+    class="form-control form-control-lg text-center mt-n2"
+    id="nilaiMahasiswa"
+    placeholder="A"
+    maxlength="1"
+    readonly/>
+</div>
+
+
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 d-flex">
+    <div class="card flex-fill h-100" id="carddataMahasiswa">
+      <div class="card-body card-soft px-4 py-2 d-flex flex-column">
+        <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
+        <div class="d-flex flex-wrap gap-1 px-4 py-3 flex-grow-1">
+          <!-- Section 1 -->
+          <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
+            <!-- NIM -->
+            <div class="info-group mb-3">
+              <div class="label-row d-flex align-items-center gap-2 mb-1">
+                <i class="fa-solid fa-id-card"></i>
+                <span class="fw-bold">NIM</span>
               </div>
+              <div class="value-row text-secondary">0920240033</div>
+            </div>
+            <!-- Nama -->
+            <div class="info-group mb-3">
+              <div class="label-row d-flex align-items-center gap-2 mb-1">
+                <i class="fa-solid fa-user"></i>
+                <span class="fw-bold">Nama</span>
+              </div>
+              <div class="value-row text-secondary">Nayaka Ivanna</div>
             </div>
           </div>
-
-          
-
-         <div class="col-md-6">
-  <div class="card flex-fill" id="carddataMahasiswa">
-    <div class="card-body card-soft px-4 py-3">
-      <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
-      <div class="d-flex flex-wrap gap-1 px-4 py-3">
-        <!-- Section 1 -->
-        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
-          <!-- NIM -->
-          <div class="info-group mb-3">
-            <div class="label-row d-flex align-items-center gap-2 mb-1">
-              <i class="fa-solid fa-id-card"></i>
-              <span class="fw-bold">NIM</span>
+          <!-- Section 2 -->
+          <div class="section2" style="flex: 1 1 200px; margin-top:25px; color: #333;">
+            <!-- Mata Kuliah -->
+            <div class="info-group mb-3">
+              <div class="label-row d-flex align-items-center gap-2 mb-1">
+                <i class="fa-solid fa-book"></i>
+                <span class="fw-bold">Mata Kuliah</span>
+              </div>
+              <div class="value-row text-secondary">Tugas Akhir</div>
             </div>
-            <div class="value-row text-secondary">0920240033</div>
-          </div>
-          <!-- Nama -->
-          <div class="info-group mb-3">
-            <div class="label-row d-flex align-items-center gap-2 mb-1">
-              <i class="fa-solid fa-user"></i>
-              <span class="fw-bold">Nama</span>
+            <!-- Dosen Pembimbing -->
+            <div class="info-group mb-3">
+              <div class="label-row d-flex align-items-center gap-2 mb-1">
+                <i class="fa-solid fa-user-tie"></i>
+                <span class="fw-bold">Dosen Pembimbing</span>
+              </div>
+              <div class="value-row text-secondary">Timotius Victory</div>
             </div>
-            <div class="value-row text-secondary">Nayaka Ivanna</div>
-          </div>
-        </div>
-        <!-- Section 2 -->
-        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
-          <!-- Mata Kuliah -->
-          <div class="info-group mb-3">
-            <div class="label-row d-flex align-items-center gap-2 mb-1">
-              <i class="fa-solid fa-book"></i>
-              <span class="fw-bold">Mata Kuliah</span>
-            </div>
-            <div class="value-row text-secondary">Tugas Akhir</div>
-          </div>
-          <!-- Dosen Pembimbing -->
-          <div class="info-group mb-3">
-            <div class="label-row d-flex align-items-center gap-2 mb-1">
-              <i class="fa-solid fa-user-tie"></i>
-              <span class="fw-bold">Dosen Pembimbing</span>
-            </div>
-            <div class="value-row text-secondary">Timotius Victory</div>
           </div>
         </div>
       </div>
@@ -275,17 +276,16 @@
   </div>
 </div>
 
-
-
+</div>
         <div class="row mt-5 align-items-center justify-content-between">
           <div class="card" id="carddetailPenilaian">
             <div class="card-body">
               <h3 class="card-title">Detail Penilaian :</h3>
               <div class="col-auto d-flex align-items-center">
                 <label for="nilaiLaporan">Nilai laporan:</label>
-                <input type="type" class="form-control form-control-lg text-center" name="nilaiLaporan" id="detailpenilaian" placeholder="90" maxlength="3" readonly>
+                <input type="type" class="form-control form-control-lg text-center" name="nilaiLaporan" id="detailpenilaian" placeholder="90" maxlength="4" readonly>
                 <label for="MateriPresentasi" id="labelpenilaian">Materi Presentasi:</label>
-                <input type="type" class="form-control form-control-lg text-center" name="MateriPresentasi" id="detailpenilaian" placeholder="85" maxlength="3" readonly>
+                <input type="type" class="form-control form-control-lg text-center" name="MateriPresentasi" id="detailpenilaian" placeholder="85" maxlength="4" readonly>
                 <label for="Penyampaian" id="labelpenilaian">Penyampaian:</label>
                 <input type="type" class="form-control form-control-lg text-center" name="Penyampaian" id="detailpenilaian" placeholder="95" maxlength="3" readonly>
                 <label for="NilaiProyek" id="labelpenilaian">Nilai Proyek:</label>
@@ -295,6 +295,7 @@
           </div>
         </div>
 
+        
         <div class="row mt-5 align-items-center justify-content-between">
           <div class="col-md-12">
             <div class="card" id="cardcatatan">
@@ -306,7 +307,7 @@
           </div>
         </div>
 
-        <!-- TOMBOL KEMBALI YANG SUDAH DIGANTI -->
+       
         <div class="row mt-5 align-items-center justify-content-between">
           <div class="col-auto">
             <button class="btn-kembali" onclick="location.href='mSidang.php'">
