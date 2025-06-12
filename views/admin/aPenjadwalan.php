@@ -516,9 +516,11 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-        <div class="modal-header modal-header-custom mx-auto">
-            <h1 class="modal-title fs-5" id="modalLogoutLabel">Perhatian!</h1>
-        </div>
+            <div style="background-color:#4B68FB;">
+                <div class="modal-header">
+                    <h1 class="modal-title mx-auto fs-5 text-light" id="modalLogoutLabel">Perhatian!</h1>
+                </div>
+            </div>
         <div class="modal-body text-center py-3">
             Apakah anda yakin ingin keluar?
         </div>

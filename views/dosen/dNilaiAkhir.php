@@ -370,6 +370,7 @@
         background-color: #3a56e8;
         transform: translateY(-2px);
       }
+   
       .col-lg-49 {
   flex: 0 0 49%;
   max-width: 49%;
@@ -495,11 +496,18 @@ input.form-control:active {
           padding: 0 !important;
         }
 
-        .kakimodal .btnKonfirmasi,
-        .mb5 .btnKonfirmasi {
-          min-width: 90px;
-          flex:1 1 auto;
-        }
+       
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    max-width: 48%;
+    flex: 1 1 48%;
+  }
+  .kakimodal {
+    gap: 10px !important;
+    justify-content: center !important;
+  }
+
 
         .penilaian-row {
           flex-direction: row;
@@ -547,6 +555,8 @@ input.form-control:active {
         .section2{
           margin-top: 5px !important;
         }
+    
+           
       }
 
       @media (max-width: 1000px) {
@@ -654,11 +664,18 @@ input.form-control:active {
           padding: 0 !important;
         }
 
-        .kakimodal .btnKonfirmasi,
-        .mb5 .btnKonfirmasi {
-          min-width: 90px;
-          flex:1 1 auto;
-        }
+       
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    max-width: 48%;
+    flex: 1 1 48%;
+  }
+  .kakimodal {
+    gap: 10px !important;
+    justify-content: center !important;
+  }
+
 
         .NavSide__main-content .penilaian-row {
           flex-direction: row;
@@ -699,6 +716,10 @@ input.form-control:active {
           width: 100%;
           flex: 3;
         }
+        .bi-pencil-fill{
+          margin-right:17px !important;
+        }
+   
       }
       .page-nama {
             font-size: 1.3rem;
@@ -847,12 +868,12 @@ input.form-control:active {
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
             <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
-            <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Pencet ini jika nilai ingin sama dengan nilai Akhir" data-bs-boundary="window" data-bs-fallback-placements="[]">
+            <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tekan ini jika ingin menggunakan nilai sementara" data-bs-boundary="window" data-bs-fallback-placements="[]">
   <i class="bi bi-pencil-fill" style="margin-right: 25px;"></i>
 </a>
             </div>
             <div class="row justify-content-center align-items-center">
-              <div class="col-3 d-flex align-items-center">
+              <div class="col d-flex align-items-center">
                 <label for="nilaiLaporan" id="labelpenilaian" class="text-black">Nilai laporan</label>
                 <label for=":" class="colon1">:</label>
                 <input
@@ -863,7 +884,7 @@ input.form-control:active {
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-3 d-flex align-items-center">
+              <div class="col d-flex align-items-center">
                   <label for="MateriPresentasi" id="labelpenilaian" class="text-black">Materi Presentasi</label>
                   <label for=":" class="colon2">:</label>
                 <input
@@ -874,7 +895,7 @@ input.form-control:active {
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-3 d-flex align-items-center ">
+              <div class="col d-flex align-items-center ">
                   <label for="Penyampaian" id="labelpenilaian" class="text-black">Penyampaian</label>
                   <label for=":" class="colon3">:</label>
                 <input
@@ -885,7 +906,7 @@ input.form-control:active {
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-3 d-flex align-items-center ">
+              <div class="col d-flex align-items-center ">
                   <label for="NilaiProyek" id="labelpenilaian" class="text-black">Nilai Proyek</label>
                   <label for=":" class="colon4">:</label>
                 <input
@@ -962,14 +983,19 @@ input.form-control:active {
       <div class="modal-body">
         <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah yakin ingin mengirim nilai akhir?</p>
         <div class="d-flex justify-content-between px-5">
-          <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
-          <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi  btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi  btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+  // Tampilkan modal konfirmasi saat halaman dibuka
+  const modal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
+  modal.show();
+});
 
   document.addEventListener('DOMContentLoaded', function () {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -977,18 +1003,14 @@ input.form-control:active {
       new bootstrap.Tooltip(tooltipTriggerEl);
     });
   });
-  document.addEventListener('DOMContentLoaded', function () {
+ function showTooltipPensil() {
   var tooltipTrigger = document.querySelector('[data-bs-toggle="tooltip"]');
-  var tooltipInstance = new bootstrap.Tooltip(tooltipTrigger);
-
-  // Tampilkan tooltip secara manual
+  var tooltipInstance = bootstrap.Tooltip.getInstance(tooltipTrigger) || new bootstrap.Tooltip(tooltipTrigger);
   tooltipInstance.show();
-
-  // Sembunyikan tooltip setelah 2 detik (2000 ms)
   setTimeout(function () {
     tooltipInstance.hide();
   }, 5000);
-});
+}
 
 
     let menuToggle = document.querySelector(".NavSide__toggle");
@@ -1071,23 +1093,25 @@ input.form-control:active {
     modal.show();
   }
   function TutupKonfirmasiModal() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide();
-    setTimeout(() => {
-  const input = document.getElementById("nilaiMahasiswa");
-  input.focus();
-}, 300);
-  }
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  setTimeout(() => {
+    const input = document.getElementById("nilaiMahasiswa");
+    input.focus();
+    showTooltipPensil();
+  }, 300);
+}
   
   function isiNilaiAkhir() {
-    document.getElementById("nilaiMahasiswa").value = "A";
-    document.getElementsByName("nilaiLaporan")[0].value = "90";
-    document.getElementsByName("MateriPresentasi")[0].value = "85";
-    document.getElementsByName("Penyampaian")[0].value = "88";
-    document.getElementsByName("NilaiProyek")[0].value = "92";
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide(); 
-  }
+  document.getElementById("nilaiMahasiswa").value = "A";
+  document.getElementsByName("nilaiLaporan")[0].value = "90";
+  document.getElementsByName("MateriPresentasi")[0].value = "85";
+  document.getElementsByName("Penyampaian")[0].value = "88";
+  document.getElementsByName("NilaiProyek")[0].value = "92";
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  showTooltipPensil();
+}
 
   function hitungRataRataDanSetNilai() {
   // Ambil semua nilai input detail penilaian
