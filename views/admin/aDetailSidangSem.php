@@ -526,9 +526,11 @@
             background-color: rgb(106, 95, 255); 
         }
         .modal-body > h2 {
-            font-size: 20px; 
+            font-size: 30px; 
             color: #374151;
-            font-weight: 600; /* Dibuat sedikit tebal */
+            font-weight: 600; 
+            margin-bottom: 10px;
+            margin-left: 10px;
         }
         #penjadwalanSidangModal .modal-dialog {
             max-width: 600px;
@@ -642,7 +644,7 @@
             <h5 class="mt-4">Aksi</h5>
             <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
             <br><br>
-            <button class="btn-kembali" onclick="location.href='mSidang.php'">
+            <button class="btn-kembali" onclick="location.href='aDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
@@ -659,11 +661,11 @@
                     <div class="form-container"> 
                      <div class="form-group">
                           <label for="modal_nim">NIM</label>
-                          <input type="text" id="modal_nim" value="0920240033" readonly />
+                          <p>0920240033</p>
                         </div>
                         <div class="form-group">
                           <label for="modal_judul_sidang">Mata Kuliah</label>
-                          <input type="text" id="modal_judul_sidang" name="judul_sidang" value="Pemrograman 2" readonly />
+                          <p>Pemrograman 2</p>
                            </div>
                 
                         
