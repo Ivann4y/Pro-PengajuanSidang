@@ -121,6 +121,7 @@
     label {
       margin-right: 15px;
       font-weight: 550;
+      
     }
 
     #detailpenilaian {
