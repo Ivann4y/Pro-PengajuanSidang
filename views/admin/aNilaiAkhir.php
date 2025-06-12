@@ -43,12 +43,14 @@
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
+        margin-left: 0; 
+        margin-bottom: 40px;
     }
 
     #carddetailPenilaian {
       width: 1000px;
       margin-left: 60px;
-      background-color: #f2f2f2;
+      background-color: rgb(235, 238, 245);
       border-radius: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
@@ -62,7 +64,7 @@
       }
 
     #cardcatatan {
-      background-color: #f2f2f2;
+      background-color: rgb(235, 238, 245);
       border-radius: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       width: 1000px;
@@ -91,17 +93,18 @@
       font-size: 1rem;
       margin-right: auto;
       margin-top: 20px;
-      background-color: #f2f2f2;
-      border-color: #f2f2f2; 
+      background-color: rgb(235, 238, 245);
+      border-color: #f2f2f2;
     }
 
+    
     #catatan {
       width: 100%;
       height: 150px;
       border-radius: 30px;
       font-size: 1rem;
       margin-top: 20px;
-      background-color: #f2f2f2;
+      background-color: rgb(235, 238, 245);
       border-color: #f2f2f2;
     }
 
@@ -201,7 +204,7 @@
     <main class="NavSide__main-content">
       <div class="container-fluid bodyContainer">
         <div class="row mb-5">
-          <h2 style="margin-left: 50px;"><b>Detail Evaluasi - Sistem Evaluasi Sidang</b></h2>
+           <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
         </div>
 
         <div class="row mt-5 align-items-center justify-content-between">
@@ -245,7 +248,7 @@
               <i class="fa-solid fa-user"></i>
               <span class="fw-bold">Nama</span>
             </div>
-            <div class="value-row text-secondary">M. Harris Nur S.</div>
+            <div class="value-row text-secondary">Nayaka Ivanna</div>
           </div>
         </div>
         <!-- Section 2 -->
