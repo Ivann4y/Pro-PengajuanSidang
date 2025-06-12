@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
 
-            if (empty($pesan) && $_FILES["fileInput"]["size"] > 5242880) { // 5 MB
+            if (empty($pesan) && $_FILES["fileInput"]["size"] > 5242880) { 
                 $pesan = "Error: Ukuran file terlalu besar. Maksimal 5 MB.";
             }
 
@@ -381,6 +381,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: #3FA970;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(75, 254, 159, 0.87);
+            color: white;
         }
 
         .btn-custom-primary:disabled {
@@ -442,66 +443,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-size: 2rem;
 }
 
-/* 1. Mengatur Kontainer Modal Utama */
+
 #modalKonfirmasi .modal-content {
     background-color: #ffffff;
-    border-radius: 24px; /* Membuat sudut sangat bulat */
+    border-radius: 24px; 
     border: none;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     text-align: center; 
 }
 
-/* 2. Menghilangkan Garis Bawah pada Header */
+
 #modalKonfirmasi .modal-header {
     border-bottom: none;
     padding-bottom: 0;
-    justify-content: center; /* Memastikan judul benar-benar di tengah */
+    justify-content: center; 
 }
 
-/* 3. Mengatur Judul "Perhatian" */
+
 #modalKonfirmasi .modal-title {
-    font-weight: 700; /* Bold */
-    font-size: 1.75rem; /* Sedikit lebih besar */
+    font-weight: 700; 
+    font-size: 1.75rem; 
     color: #333;
     width: 100%;
 }
 
-/* 4. Mengatur Teks Pertanyaan di Body */
+
 #modalKonfirmasi .modal-body p {
     font-size: 1rem;
     color: #555;
     margin-top: 0.5rem;
-    margin-bottom: 2rem; /* Memberi jarak lebih besar ke tombol */
+    margin-bottom: 2rem; 
     font-weight: 500;
 }
 
-/* 5. Mengatur Kontainer Tombol */
+
 #modalKonfirmasi .modal-body .d-flex {
-    justify-content: center !important; /* Mengubah dari space-between menjadi center */
-    gap: 5rem; /* Memberi jarak antar tombol */
-    padding: 0 !important; /* Menghapus padding agar bisa rata tengah sempurna */
+    justify-content: center !important; 
+    gap: 5rem; 
+    padding: 0 !important; 
     height: 45px;
 }
 
-/* 6. Gaya Umum untuk Kedua Tombol */
 #modalKonfirmasi .modal-body button {
-    border-radius: 50px; /* Membuat bentuk pil */
+    border-radius: 50px; 
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border: none;
     color: white;
-    min-width: 140px; /* Memberi lebar minimal agar seimbang */
+    min-width: 140px; 
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 #modalKonfirmasi .modal-body button:hover {
-    transform: translateY(-3px); /* Efek terangkat saat disentuh */
+    transform: translateY(-3px); 
 }
 
-/* 7. Gaya Spesifik untuk Tombol "Batalkan" */
 #modalKonfirmasi .btn-tolak {
-    background-color: #FF7171; /* Warna merah muda salmon */
+    background-color: #FF7171; 
 }
 
 #modalKonfirmasi .btn-tolak:hover {
@@ -509,9 +508,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 
-/* 8. Gaya Spesifik untuk Tombol "Lanjutkan" */
+
 #modalKonfirmasi #confirmSubmitBtn {
-    background-color: #4FD382; /* Warna hijau mint */
+    background-color: #4FD382; 
 }
 
 #modalKonfirmasi #confirmSubmitBtn:hover {
