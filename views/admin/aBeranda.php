@@ -17,7 +17,7 @@ if ($_SESSION['role'] !== 'admin') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Nama penulis halaman -->
     <meta name="author" content="JaisyuNurM-AliansiSidang_Kelompok5" />
-    <title>Dashboard Admin</title>
+    <title>Beranda Admin</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Google Fonts: Poppins -->
@@ -172,6 +172,8 @@ if ($_SESSION['role'] !== 'admin') {
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
             </div>
+            <!-- Judul Halaman -->
+              <h2 class="text-heading-mobile flex-fill">Beranda Admin</h2>
             <div class="header-icons">
                 <!-- tugas -->
                 <a href="aNotifikasi.php" title="tugas" style="text-decoration: none; color: inherit;">
@@ -189,7 +191,7 @@ if ($_SESSION['role'] !== 'admin') {
         <!-- Main Content -->
         <main class="NavSide__main-content">
             <div class="dashboard-header">
-                <h2 class="page-title">Dashboard Admin</h2>
+                <h2 class="text-heading">Beranda Admin</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
