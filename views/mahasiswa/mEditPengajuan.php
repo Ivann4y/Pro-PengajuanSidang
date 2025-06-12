@@ -285,7 +285,7 @@
                   </div>
                   <div class="modal-body">
                     <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin mengajukan sidang?</p>
-                    <div class="d-flex justify-content-between px-5">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 px-sm-5">
                       <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
                       <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn">Lanjutkan</button>
                     </div>
