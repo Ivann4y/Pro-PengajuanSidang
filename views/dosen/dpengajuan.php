@@ -114,7 +114,7 @@
     </style>
 </head>
 
-<body>
+<body onload="switchDdaftarPengajuan('Semua')">
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
@@ -175,13 +175,21 @@
                     <div class="row">
                     </div><br><br>
                     <div class="row">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddDPengajuan">
-                                Sidang TA
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" id="ddDSidangMenu" onclick="switchDPengajuan();">Sidang Semester</a></li>
-                            </ul>
+                       <div class="d-flex align-items-center gap-2">
+                            <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
+                            <div class="dropdown">
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                        Semua
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semua')">Semua</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('TA')">Sidang TA</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semester')">Sidang Semester</a></li>
+                                    </ul>
+                                </div>
+
+                            </div>
                         </div>
                     </div><br><br>
                     <div class="row">
@@ -320,25 +328,24 @@
                 // }
                 let isTA = true;
 
-                function switchDPengajuan() {
+               function switchDdaftarPengajuan(mode) {
                     const taTable = document.getElementById('dPengajuanTA');
                     const semTable = document.getElementById('dPengajuanSem');
-                    const dropdownButton = document.getElementById('ddDPengajuan');
-                    const dropdownMenuItem = document.getElementById('ddDSidangMenu');
+                    const dropdownButton = document.getElementById('ddMSidang');
 
-                    if (isTA) {
-                        taTable.style.display = 'none';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Sidang Semester';
-                        dropdownMenuItem.textContent = 'Sidang TA';
-                    } else {
+                    if (mode === 'TA') {
                         taTable.style.display = 'table-row-group';
                         semTable.style.display = 'none';
                         dropdownButton.textContent = 'Sidang TA';
-                        dropdownMenuItem.textContent = 'Sidang Semester';
+                    } else if (mode === 'Semester') {
+                        taTable.style.display = 'none';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Sidang Semester';
+                    } else {
+                        taTable.style.display = 'table-row-group';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Semua';
                     }
-
-                    isTA = !isTA;
                 }
             </script>
             <script src="../../assets/js/main.js"></script>
