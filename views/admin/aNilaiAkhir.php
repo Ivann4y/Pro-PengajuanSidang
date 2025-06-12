@@ -89,7 +89,7 @@
     }
 
     #detailpenilaian {
-      width: 75px;
+      width: 75px ;
       font-size: 1rem;
       margin-right: auto;
       margin-top: 20px;
