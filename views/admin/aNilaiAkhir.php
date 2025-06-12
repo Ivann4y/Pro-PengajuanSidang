@@ -121,7 +121,7 @@
     label {
       margin-right: 15px;
       font-weight: 550;
-      
+
     }
 
     #detailpenilaian {
@@ -351,8 +351,8 @@
         <!-- Baris Detail Penilaian tanpa modal -->
         <div class="row mt-5">
             <div class="card flex-fill h-100" id="carddetailPenilaian">
-              <div class="card-body px-4 py-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="card-body px-4 py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                   <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
                 </div>
                 <div class="row justify-content-center align-items-center">
