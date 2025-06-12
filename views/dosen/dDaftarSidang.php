@@ -127,7 +127,7 @@ if ($_SESSION['role'] !== 'dosen') {
     </style>
 </head>
 
-<body>
+<body onload="switchDdaftarSidang('Semua')">
 
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -190,12 +190,16 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="d-flex align-items-center gap-2">
                             <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                    Sidang TA
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">Sidang Semester</a></li>
-                                </ul>
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                        Semua
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semua')">Semua</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('TA')">Sidang TA</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semester')">Sidang Semester</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div><br><br>
@@ -336,26 +340,26 @@ if ($_SESSION['role'] !== 'dosen') {
                 // }
                 let isTA = true;
 
-                function switchDdaftarSidang() {
+                function switchDdaftarSidang(mode) {
                     const taTable = document.getElementById('dPengajuanTA');
                     const semTable = document.getElementById('dPengajuanSem');
                     const dropdownButton = document.getElementById('ddMSidang');
-                    const dropdownMenuItem = document.getElementById('ddMSidangMenu');
 
-                    if (isTA) {
-                        taTable.style.display = 'none';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Sidang Semester';
-                        dropdownMenuItem.textContent = 'Sidang TA';
-                    } else {
+                    if (mode === 'TA') {
                         taTable.style.display = 'table-row-group';
                         semTable.style.display = 'none';
                         dropdownButton.textContent = 'Sidang TA';
-                        dropdownMenuItem.textContent = 'Sidang Semester';
+                    } else if (mode === 'Semester') {
+                        taTable.style.display = 'none';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Sidang Semester';
+                    } else {
+                        taTable.style.display = 'table-row-group';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Semua';
                     }
-
-                    isTA = !isTA;
                 }
+
             </script>
             <script src="../../assets/js/main.js"></script>
 </body>
