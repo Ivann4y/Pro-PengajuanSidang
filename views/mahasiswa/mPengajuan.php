@@ -12,7 +12,7 @@
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
         .text-heading { 
-            font-size: 2rem;
+            font-size: 2.0rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 1.5rem; 
@@ -266,6 +266,13 @@
             border-color: #4FD382;
         }
 
+        h1.page-title {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: black;
+        }
+
     </style>
 </head>
 
@@ -316,11 +323,11 @@
             <!-- Top bar desktop -->
       
             <div class="dashboard-header">
-                <h2 class="page-title">Nayaka Ivana Putra (Mahasiswa)</h2>
+                <h2 class="text-heading" style="color:black">Nayaka Ivana Putra (Mahasiswa)</h2>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                    <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
-                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
                 </div>
             </div>
