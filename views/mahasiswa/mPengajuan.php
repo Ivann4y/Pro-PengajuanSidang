@@ -320,17 +320,18 @@
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-            <!-- Top bar desktop -->
-      
-            <div class="dashboard-header">
-                <h2 class="text-heading" style="color:black">Nayaka Ivana Putra (Mahasiswa)</h2>
-                <div class="header-icons d-none d-md-flex">
-                    <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
-                    <div class="profile-icon">
-                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+
+        <div class="container-fluid"> 
+                <div class="row">
+                    <div class="dashboard-header">
+                    <h2 class="text-header">Nayaka Ivana Putra (Mahasiswa)</h2>
+                    <div class="header-icons d-none d-md-flex">
+                        <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                        <div class="profile-icon">
+                            <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        </div>
                     </div>
                 </div>
-            </div>
 
                 <div class="row">
                     <div class="col-12 col-md-6">
