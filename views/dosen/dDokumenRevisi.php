@@ -437,7 +437,7 @@
             background-color: #4B68FB;
             color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 25px;
             padding: 0 25px;
             cursor: pointer;
             font-size: 0.95rem;
@@ -480,6 +480,15 @@
         .btn-kembali:hover .icon-circle i {
             color: white;
         }
+
+        .button-group-bottom {
+            margin-top: 0px; 
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
     </style>
 </head>
 
@@ -505,7 +514,7 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href='dNilaiAkhir.php'">
+                    <a href='dNilaiAkhir.php'>
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
