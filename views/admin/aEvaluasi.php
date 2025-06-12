@@ -130,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div> -->
  
     <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
-      <h6>Dr. Rida Indah Fariani, S.Kom, M.Kom – Pembimbing</h6>
+      <h6 class= "card-h">Dr. Rida Indah Fariani, S.Kom, M.Kom – Pembimbing</h6>
       <p class="mt-2 mb-0 text-truncate-2">
         Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
       </p>
@@ -139,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-      <strong>Yosep Setiawan, S.Kom, M.Kom - Penguji</strong>
+      <h6 class= "card-h">Yosep Setiawan, S.Kom, M.Kom - Penguji</h6>
       <p class="mt-2 mb-0 text-truncate-2">
         Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
       </p>
@@ -147,7 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
         <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-      <strong>Yosep Setiawan, S.Kom, M.Kom - Penguji</strong>
+      <h6 class= "card-h">Yosep Setiawan, S.Kom, M.Kom - Penguji</h6>
       <p class="mt-2 mb-0 text-truncate-2">
         Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
       </p>
@@ -172,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
  <br/>
       <div class="d-flex justify-content-end mt-4">
-          <a href="aEvaluasi.php" class="btn-kirim" download>
+          <a href="aEvaluasi.php" class="btn-custom-primaryUnd" download>
               Unduh
           </a>
       </div>
@@ -194,7 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </button>
     </div> -->
           <div class="button-group-bottom mt-4">
-                <button  id= "btnKembali"class="btn-custom-primary" onclick="location.href='dDaftarSidang.php'">
+                <button  id= "btnKembali"class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>

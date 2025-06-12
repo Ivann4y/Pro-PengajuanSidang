@@ -81,7 +81,6 @@
     transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
     display: inline-flex;
     align-items: center;
-    margin-top: 1rem;
     max-width: 200px;
   }
 
@@ -221,7 +220,7 @@
             <div class="row">
               <div class="col-md-6 mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">Dokumen Laporan Sidang</h6>
+                  <h6 class="fw-bold text-dark">*Dokumen Laporan Sidang</h6>
                   <form id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="laporanSidang" name="laporanSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
@@ -240,7 +239,7 @@
               <!-- Upload Dokumen Pendukung Sidang -->
               <div class="col-md-6 mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">Dokumen Pendukung Sidang</h6>
+                  <h6 class="fw-bold text-dark">*Dokumen Pendukung Sidang</h6>
                   <form id="dokPendukungForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="dokPendukung" name="pendukungSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
@@ -255,6 +254,7 @@
                   </form>
                 </div>
               </div>
+              <p>* : wajib diisi</p>
             </div>
 
 
@@ -287,7 +287,7 @@
                     <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin mengajukan sidang?</p>
                     <div class="d-flex justify-content-between px-5">
                       <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
-                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setuju" id="submitBtn">Lanjutkan</button>
+                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn">Lanjutkan</button>
                     </div>
                   </div>
                 </div>
@@ -455,7 +455,7 @@
         confirmButtonColor: '#4B68FB'
       }).then((result) => {
         if (result.isConfirmed) {
-          onclick = "location.href='mPengajuan.php'"
+          history.back();
         }
       });
     });
