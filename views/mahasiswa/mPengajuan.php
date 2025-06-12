@@ -174,23 +174,22 @@
 
         @media (max-width: 768px) {
             .action-column {
+                display: none;
+            }
+
+            .header-icons {
                 position: fixed;
                 top: 15px;
                 right: 60px;
-                margin: 0;
-                padding: 0;
                 z-index: 1046;
             }
 
-            .tambah-sidang-btn {
-                padding: 6px 16px;
-                font-size: 0.85rem;
-                background-color: rgb(67, 54, 240);
-                border-radius: 15px;
+            .header-icons .tambah-sidang-btn {
+                display: none; /* Hide the button in header for mobile */
             }
 
-            .NavSide__topbar {
-                padding-right: 140px;
+            .mobile-add-button-container {
+                margin-top: 15px;
             }
         }
 
@@ -240,22 +239,6 @@
             margin-left: 10px;
         }
 
-        @media (max-width: 768px) {
-            .header-icons {
-                position: fixed;
-                top: 15px;
-                right: 60px;
-                z-index: 1046;
-            }
-
-            .header-icons a {
-                color: rgb(67, 54, 240);
-            }
-
-            .action-column {
-                display: none;
-            }      
-        }
         .modal-footer .btn-danger {
             background-color: #FD7D7D;
             border-color: #FD7D7D;
@@ -336,15 +319,20 @@
     </div>
 
                 <div class="row">
-                    <div class="d-flex align-items-center gap-2">
-                    <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                Sidang TA
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
-                            </ul>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                    Sidang TA
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mobile-add-button-container d-md-none">
+                            <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
                         </div>
                     </div>
                 </div>
