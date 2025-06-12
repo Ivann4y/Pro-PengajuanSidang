@@ -208,7 +208,7 @@
             </div>
         </div>
         
-        <div class="row mt-4 g-4">
+        <div class="row align-items-stretch mb-5 p-3">
             <!-- KARTU DATA MAHASISWA (SEKARANG DI KIRI) -->
             <div class="col-lg-6 d-flex">
               <div class="card flex-fill" id="carddataMahasiswa">
