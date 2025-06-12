@@ -134,6 +134,28 @@ if ($_SESSION['role'] !== 'dosen') {
             background-color: #4FD382;
             border-color: #4FD382;
         }
+
+         .search-input-group {
+        background-color: #F3F4F6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        width: 250px; /* Standardize width as seen in aDaftarSidang.php */
+        margin-top: 0.19vh -1px;
+        margin-right : 1vh;
+    }
+
+        .search-input-group input.form-control {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            padding-left: 1rem; /* Adjust padding as search icon is inside span */
+        }
+
+        .search-input-group .input-group-text {
+            background-color: transparent;
+            border: none;
+            padding-right: 0; /* No padding on right as input has left padding */
+        }
     </style>
 </head>
 
@@ -210,6 +232,10 @@ if ($_SESSION['role'] !== 'dosen') {
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semester')">Sidang Semester</a></li>
                                     </ul>
                                 </div>
+                            </div>
+                            <div class="search-input-group ms-auto d-flex align-items-center">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari">
                             </div>
                         </div>
                     </div><br><br>
@@ -328,13 +354,41 @@ if ($_SESSION['role'] !== 'dosen') {
             </div>
 
             <script>
+
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const searchInput = document.querySelector('.search-input-group input');
+                    const tbodyTA = document.getElementById("dPengajuanTA");
+                    const tbodySem = document.getElementById("dPengajuanSem");
+
+                    searchInput.addEventListener("keyup", function () {
+                        const query = searchInput.value.toLowerCase();
+
+                        filterTableRows(tbodyTA, query);
+                        filterTableRows(tbodySem, query);
+                    });
+
+                    function filterTableRows(tbody, query) {
+                        const rows = tbody.querySelectorAll("tr");
+
+                        rows.forEach(row => {
+                            const namaCell = row.children[2]; // Kolom Nama
+                            const namaText = namaCell.textContent.toLowerCase();
+
+                            if (namaText.includes(query)) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    }
+                });
                 let menuToggle = document.querySelector(".NavSide__toggle");
                 let sidebar = document.getElementById("main-sidebar");
 
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
+                    menuToggle.onclick = function() {
+                        menuToggle.classList.toggle("NavSide__toggle--active");
+                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                    };
 
                 // Sidebar Active Item Logic
                 // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
