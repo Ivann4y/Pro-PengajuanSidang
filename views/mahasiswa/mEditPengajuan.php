@@ -155,28 +155,12 @@
         <i class="bi bi-list open"></i>
         <i class="bi bi-x-lg close"></i>
       </div>
-      <div class="header-icons">
-        <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
-          <i class="bi bi-bell-fill"></i>
-        </a>
-        <div class="profile-icon">
-          <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
-            <i class="bi bi-person-fill fs-5"></i>
-          </a>
-        </div>
-      </div>
     </div>
 
     <main class="NavSide__main-content" id="mPengajuan">
       <div class="container-fluid">
         <div class="dashboard-header">
           <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
-          <div class="header-icons d-none d-md-flex">
-            <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
-            <div class="profile-icon">
-              <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
-            </div>
-          </div>
         </div>
         <div class="row">
           <div class="col-12">
