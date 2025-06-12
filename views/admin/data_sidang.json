@@ -1,0 +1,92 @@
+[
+  {
+    "id": "001",
+    "nim": "0614554128",
+    "nama": "Citra Putra",
+    "judulSidang": "Sistem Implementasi TA",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "TA",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "002",
+    "nim": "0943436566",
+    "nama": "Maya Saputra",
+    "judulSidang": "Sistem Perancangan Website",
+    "pembimbing": "Dian Prasetyo",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "003",
+    "nim": "0629611290",
+    "nama": "Hadi Putra",
+    "judulSidang": "Sistem Manajemen Database",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "TA",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "004",
+    "nim": "0659761745",
+    "nama": "Indra Nugroho",
+    "judulSidang": "Sistem Manajemen TA",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "TA",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "005",
+    "nim": "0633124045",
+    "nama": "Hadi Wijaya",
+    "judulSidang": "Sistem Analisis Kuliah",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "TA",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "006",
+    "nim": "0314895079",
+    "nama": "Citra Hadi",
+    "judulSidang": "Proyek Sistem TA",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": false
+  },
+  {
+    "id": "007",
+    "nim": "0527919135",
+    "nama": "Nina Putra",
+    "judulSidang": "Proyek Pengembangan TA",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "008",
+    "nim": "0220758000",
+    "nama": "Citra Nugroho",
+    "judulSidang": "Proyek Analisis Mobile",
+    "pembimbing": "Citra Dewi",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "009",
+    "nim": "0569953002",
+    "nama": "Toni Kusuma",
+    "judulSidang": "Proyek Manajemen Skripsi",
+    "pembimbing": "Yosep Setiawan",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  },
+  {
+    "id": "010",
+    "nim": "0654422605",
+    "nama": "Maya Kusuma",
+    "judulSidang": "Proyek Aplikasi Kuliah",
+    "pembimbing": "Budi Santoso",
+    "tipeSidang": "Semester",
+    "statusPersetujuan": true
+  }
+]

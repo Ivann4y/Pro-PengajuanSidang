@@ -294,6 +294,13 @@
         margin-right: 15px;
         font-weight: 550;
       }
+      .label-row i {
+  font-size: 1.5rem;    /* Perbesar icon */
+}
+
+.label-row .fw-bold {
+  font-size: 1.2rem;    /* Perbesar tulisan label */
+}
 
       #detailpenilaian {
         width: 75px; ;
@@ -370,12 +377,11 @@
         background-color: #3a56e8;
         transform: translateY(-2px);
       }
+   
       .col-lg-49 {
   flex: 0 0 49%;
   max-width: 49%;
 }
-
-
 #catatan::placeholder {
   color: #888 !important;      
   opacity: 60% !important;       
@@ -389,7 +395,9 @@ input.form-control:active {
 }
 
       @media (max-width: 750px) {
-        
+        .page-nama{
+          margin-left:10px;
+        }
         h2{
           margin-left: 10px;
           margin-top: 50px;
@@ -399,7 +407,6 @@ input.form-control:active {
           flex: 0 0 95.5% ;
           max-width: 95.5% ;
         }
-        
              .NavSide__main-content {
   flex-grow: 1;
   padding: 20px;
@@ -495,11 +502,21 @@ input.form-control:active {
           padding: 0 !important;
         }
 
-        .kakimodal .btnKonfirmasi,
-        .mb5 .btnKonfirmasi {
-          min-width: 90px;
-          flex:1 1 auto;
-        }
+       
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    max-width: 48%;
+    flex: 1 1 48%;
+  }
+  .modal-body .btnKonfirmasi {
+  width: 10% !important;
+}
+  .kakimodal {
+    gap: 10px !important;
+    justify-content: center !important;
+  }
+
 
         .penilaian-row {
           flex-direction: row;
@@ -547,7 +564,10 @@ input.form-control:active {
         .section2{
           margin-top: 5px !important;
         }
+    
+           
       }
+     
 
       @media (max-width: 1000px) {
        
@@ -565,6 +585,7 @@ input.form-control:active {
         .section2{
           margin-top: 5px !important;
         }
+       
         .col-lg-49{
           display: block;
           flex: 0 0 94.5% ;
@@ -598,7 +619,8 @@ input.form-control:active {
         .NavSide__main-content #cardNilai {
           width: 100% !important;
           margin-left: 0 !important;
-          margin-bottom: 40px;
+          margin-bottom: 0px;
+          margin-top: 30px;
         }
 
         .NavSide__main-content #nilaiMahasiswa {
@@ -654,11 +676,21 @@ input.form-control:active {
           padding: 0 !important;
         }
 
-        .kakimodal .btnKonfirmasi,
-        .mb5 .btnKonfirmasi {
-          min-width: 90px;
-          flex:1 1 auto;
-        }
+       
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    max-width: 48%;
+    flex: 1 1 48%;
+  }
+  .modal-body .btnKonfirmasi {
+  width: 10% !important;
+}
+  .kakimodal {
+    gap: 10px !important;
+    justify-content: center !important;
+  }
+
 
         .NavSide__main-content .penilaian-row {
           flex-direction: row;
@@ -699,6 +731,10 @@ input.form-control:active {
           width: 100%;
           flex: 3;
         }
+        .bi-pencil-fill{
+          margin-right:17px !important;
+        }
+   
       }
       .page-nama {
             font-size: 1.3rem;
@@ -768,64 +804,71 @@ input.form-control:active {
            <div class="row mb-3">
       <div class="col-12">
         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-        <p class="page-nama">M. Harris Nur S</p>
+<<<<<<< HEAD
+        <!--<p class="page-nama">M. Harris Nur S</p>-->
+=======
+>>>>>>> 616d0497ac56dc0d7cd1d84e484ca92c862fb93f
       </div>
     </div>
     <br>
         <div class="row align-items-stretch mb-4">
+<<<<<<< HEAD
           <div class="col-lg-49 mb-3 d-flex">
   <div class="card flex-fill" id="carddataMahasiswa">
     <div class="card-body card-soft px-4 py-3">
       <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
       <div class="d-flex flex-wrap gap-1 px-4 py-3">
         
-        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
+        <div class="section" style="flex: 1 1 200px; margin-left:30px;  color: #333;">
          
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-id-card"></i>
               <span class="fw-bold">NIM</span>
             </div>
-            <div class="value-row text-secondary">0920240033</div>
+            <div class="value-row text-secondary fw-bold">0920240033</div>
           </div>
           
-          <div class="info-group mb-3">
+          <div class="info-group mb-3" style="margin-top:45px;">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-user"></i>
               <span class="fw-bold">Nama</span>
             </div>
-            <div class="value-row text-secondary">M. Harris Nur S.</div>
+            <div class="value-row text-secondary fw-bold">M. Harris Nur S.</div>
           </div>
         </div>
         
-        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
+        <div class="section2" style="flex: 1 1 200px; color: #333;">
          
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-book"></i>
               <span class="fw-bold">Mata Kuliah</span>
             </div>
-            <div class="value-row text-secondary">Tugas Akhir</div>
+            <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
           </div>
          
-          <div class="info-group mb-3">
+          <div class="info-group mb-3" style="margin-top:45px;">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-user-tie"></i>
               <span class="fw-bold">Dosen Pembimbing</span>
             </div>
-            <div class="value-row text-secondary">Timotius Victory</div>
+            <div class="value-row text-secondary fw-bold">Timotius Victory</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+=======
+>>>>>>> 616d0497ac56dc0d7cd1d84e484ca92c862fb93f
   <div class="col-lg-49 mb-3 d-flex">
     <div class="card flex-fill" id="cardNilai">
       <div class="card-body card-soft px-4 py-3 text-center">
         <h3 class="card-title mb-3 text-black" style="padding:10px ;">Nilai Mahasiswa:</h3>
         <div>
           <input
+            onclick="bukaKonfirmasiModal()"
             type="text"
             class="form-control form-control-lg text-center mx-auto"
             id="nilaiMahasiswa"
@@ -838,9 +881,53 @@ input.form-control:active {
       </div>
     </div>
   </div>
-  
- 
-    
+ <div class="col-lg-49 mb-3 d-flex">
+  <div class="card flex-fill" id="carddataMahasiswa">
+    <div class="card-body card-soft px-4 py-3">
+      <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
+      <div class="d-flex flex-wrap gap-1 px-4 py-3">
+        <!-- Section 1 -->
+        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
+          <!-- NIM -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-id-card"></i>
+              <span class="fw-bold">NIM</span>
+            </div>
+            <div class="value-row text-secondary">0920240033</div>
+          </div>
+          <!-- Nama -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user"></i>
+              <span class="fw-bold">Nama</span>
+            </div>
+            <div class="value-row text-secondary">M. Harris Nur S.</div>
+          </div>
+        </div>
+        <!-- Section 2 -->
+        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
+          <!-- Mata Kuliah -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-book"></i>
+              <span class="fw-bold">Mata Kuliah</span>
+            </div>
+            <div class="value-row text-secondary">Tugas Akhir</div>
+          </div>
+          <!-- Dosen Pembimbing -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user-tie"></i>
+              <span class="fw-bold">Dosen Pembimbing</span>
+            </div>
+            <div class="value-row text-secondary">Timotius Victory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
         <div class="row mt-5">
           <div class="">
             <div class="card" id="carddetailPenilaian">
@@ -852,7 +939,7 @@ input.form-control:active {
 </a>
             </div>
             <div class="row justify-content-center align-items-center">
-              <div class="col-3 d-flex align-items-center">
+              <div class="col d-flex align-items-center">
                 <label for="nilaiLaporan" id="labelpenilaian" class="text-black">Nilai laporan</label>
                 <label for=":" class="colon1">:</label>
                 <input
@@ -863,7 +950,7 @@ input.form-control:active {
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-3 d-flex align-items-center">
+              <div class="col d-flex align-items-center">
                   <label for="MateriPresentasi" id="labelpenilaian" class="text-black">Materi Presentasi</label>
                   <label for=":" class="colon2">:</label>
                 <input
@@ -874,7 +961,7 @@ input.form-control:active {
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-3 d-flex align-items-center ">
+              <div class="col d-flex align-items-center ">
                   <label for="Penyampaian" id="labelpenilaian" class="text-black">Penyampaian</label>
                   <label for=":" class="colon3">:</label>
                 <input
@@ -885,7 +972,7 @@ input.form-control:active {
                   placeholder=""
                   maxlength="3"/>
               </div>
-              <div class="col-3 d-flex align-items-center ">
+              <div class="col d-flex align-items-center ">
                   <label for="NilaiProyek" id="labelpenilaian" class="text-black">Nilai Proyek</label>
                   <label for=":" class="colon4">:</label>
                 <input
@@ -962,8 +1049,8 @@ input.form-control:active {
       <div class="modal-body">
         <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah yakin ingin mengirim nilai akhir?</p>
         <div class="d-flex justify-content-between px-5">
-          <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
-          <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi  btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi  btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
         </div>
       </div>
     </div>
@@ -1071,23 +1158,25 @@ input.form-control:active {
     modal.show();
   }
   function TutupKonfirmasiModal() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide();
-    setTimeout(() => {
-  const input = document.getElementById("nilaiMahasiswa");
-  input.focus();
-}, 300);
-  }
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  setTimeout(() => {
+    const input = document.getElementById("nilaiMahasiswa");
+    input.focus();
+    showTooltipPensil();
+  }, 300);
+}
   
   function isiNilaiAkhir() {
-    document.getElementById("nilaiMahasiswa").value = "A";
-    document.getElementsByName("nilaiLaporan")[0].value = "90";
-    document.getElementsByName("MateriPresentasi")[0].value = "85";
-    document.getElementsByName("Penyampaian")[0].value = "88";
-    document.getElementsByName("NilaiProyek")[0].value = "92";
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide(); 
-  }
+  document.getElementById("nilaiMahasiswa").value = "A";
+  document.getElementsByName("nilaiLaporan")[0].value = "90";
+  document.getElementsByName("MateriPresentasi")[0].value = "85";
+  document.getElementsByName("Penyampaian")[0].value = "88";
+  document.getElementsByName("NilaiProyek")[0].value = "92";
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  showTooltipPensil();
+}
 
   function hitungRataRataDanSetNilai() {
   // Ambil semua nilai input detail penilaian

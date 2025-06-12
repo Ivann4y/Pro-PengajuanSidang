@@ -1,21 +1,47 @@
 <?php
-$selectedTipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'TA';
-$selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'belum';
-$statusFilter = ($selectedStatus == 'disetujui') ? true : false;
+// 1. --- PHP LOGIC UPDATED ---
+// Default to 'semua' if not set
+$selectedTipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'semua';
+$selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'semua';
 
+// Load data
 $jsonPath = __DIR__ . '/data_sidang.json'; 
 $jsonData = file_exists($jsonPath) ? file_get_contents($jsonPath) : '[]';
 $data = json_decode($jsonData, true);
-
 if (!is_array($data)) {
     $data = [];
 }
 
-$filteredData = array_filter($data, function($entry) use ($selectedTipe, $statusFilter) {
-    $tipeMatch = isset($entry['tipeSidang']) && $entry['tipeSidang'] == $selectedTipe;
-    $statusMatch = isset($entry['statusPersetujuan']) && $entry['statusPersetujuan'] === $statusFilter;
+// New flexible filtering logic
+$filteredData = array_filter($data, function($entry) use ($selectedTipe, $selectedStatus) {
+    // Check Tipe: if 'semua', it's always a match. Otherwise, check the type.
+    $tipeMatch = ($selectedTipe == 'semua') ? true : (isset($entry['tipeSidang']) && $entry['tipeSidang'] == $selectedTipe);
+
+    // Check Status: if 'semua', it's always a match. Otherwise, check the boolean status.
+    $statusMatch = true;
+    if ($selectedStatus == 'disetujui') {
+        $statusMatch = (isset($entry['statusPersetujuan']) && $entry['statusPersetujuan'] === true);
+    } elseif ($selectedStatus == 'belum') {
+        $statusMatch = (isset($entry['statusPersetujuan']) && $entry['statusPersetujuan'] === false);
+    }
+
     return $tipeMatch && $statusMatch;
 });
+
+// 2. --- VARIABLES FOR BUTTON TEXT ---
+$tipeButtonText = 'Semua Tipe';
+if ($selectedTipe == 'TA') {
+    $tipeButtonText = 'Sidang TA';
+} elseif ($selectedTipe == 'Semester') {
+    $tipeButtonText = 'Sidang Semester';
+}
+
+$statusButtonText = 'Semua Status';
+if ($selectedStatus == 'disetujui') {
+    $statusButtonText = 'Disetujui';
+} elseif ($selectedStatus == 'belum') {
+    $statusButtonText = 'Belum Disetujui';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,6 +56,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <link rel="stylesheet" href="../../assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+
 
     /* Sidebar and Topbar adjustments for smaller screens if not already present/correct */
     /* Ensure your NavSide__sidebar-brand img is horizontally centered */
@@ -74,6 +101,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         display: flex;
         align-items: center;
         gap: 10px;
+        margin-left: 1vh;
     }
 
     .filter-container .filter-label {
@@ -134,20 +162,22 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         padding-right: 0; /* No padding on right as input has left padding */
     }
 
-    /* Filter Buttons (merged from aPenjadwalan's filter-btn and aDaftarSidang's ddAdminSidangTypeButton) */
-    #ddAdminSidangTypeButton, #ddAdminSidangStatusButton { /* Apply to both filter buttons */
-        background-color: #4B68FB; /* Specific blue from aPenjadwalan.php */
-        color: white;
-        border-radius: 20px;
-        padding: 8px 20px;
-        font-weight: 500;
-        font-size: 0.95rem;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.2s ease, color 0.2s;
+    /* --- CORRECTED & ALIGNED FILTER BUTTONS --- */
+    #ddAdminSidangTypeButton,
+    #ddAdminSidangStatusButton {
+        height: auto !important; /* Override the fixed 45px height */
+        min-height: 38px; /* Optional: ensure a minimum height */
+        padding-top: 0.375rem !important; /* Restore vertical padding */
+        padding-bottom: 0.375rem !important; /* Restore vertical padding */
+        border-radius: 10px !important;
+
     }
-    #ddAdminSidangTypeButton:hover, #ddAdminSidangStatusButton:hover {
-        background-color: #312a9e;
+
+    /* Fix for the hover state selector */
+    #ddAdminSidangTypeButton:hover,
+    #ddAdminSidangStatusButton:hover {
+        background-color: #3a4fb8 !important; 
+        border-color: #3a4fb8 !important;
     }
 
     /* Dropdown Menu styling (merged from both) */
@@ -180,31 +210,34 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
     }
 
     /* Table styling (Prioritizing aDaftarSidang.php's table-admin-custom) */
-    .table-admin-custom {
-        border-spacing: 0 10px;
-        border-collapse: separate;
-        width: 100%;
-        margin-top: 1rem; /* From aPenjadwalan.php's data-table */
-        min-width: 800px; /* From aPenjadwalan.php's data-table */
-    }
+    /* Table styling (Prioritizing aDaftarSidang.php's table-admin-custom) */
+.table-admin-custom {
+    border-spacing: 0 10px;
+    border-collapse: separate;
+    width: 100%;
+    margin-top: 1rem;
+    min-width: 800px;
+}
 
     .table-admin-custom thead th {
         padding: 12px 15px;
         text-align: left;
         border-bottom: 2px solid #dee2e6;
-        font-weight: 600; /* From aPenjadwalan.php's data-table */
-        color: #555; /* From aPenjadwalan.php's data-table */
+        font-weight: 600;
+        color: #555;
     }
 
     .table-admin-custom tbody tr.isiTabel {
-        background-color: #F5F5F5;
-        transition: background-color 0.3s ease, color 0.3s ease;
-        cursor: pointer; /* Ensure clickable rows show cursor */
+        /* Background properties are removed from here */
+        cursor: pointer;
     }
 
     .table-admin-custom .isiTabel td {
         padding: 15px 18px;
         vertical-align: middle;
+        /* Background and transition are ADDED here */
+        background-color: #F5F5F5;
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .table-admin-custom .isiTabel td:first-child {
@@ -213,12 +246,19 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
 
     .table-admin-custom .isiTabel td:last-child {
         border-radius: 0 10px 10px 0;
-        text-align: center; /* For action column */
+        text-align: center;
     }
 
-    .table-admin-custom tbody tr.isiTabel:hover {
+    /* CORRECTED HOVER RULE - Targets the TD elements within the hovered TR */
+    .table-admin-custom tbody tr.isiTabel:hover td {
         background-color: #4B68FB;
         color: #FFFFFF;
+    }
+
+    /* This hover rule also needs its color updated for the icon inside */
+    .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+        color: #FFFFFF;
+        opacity: 1;
     }
 
     /* No results row from aPenjadwalan.php */
@@ -411,19 +451,23 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 <div class="filter-container">
                     <span class="filter-label fw-semibold">Filter:</span>
                     <div class="dropdown me-2">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?= htmlspecialchars($selectedTipe == 'TA' ? 'Sidang TA' : 'Sidang Semester') ?>
+                       <button class="btn btn-primary dropdown-toggle ddAdminSidangTypeButton" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?= htmlspecialchars($tipeButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
+                            <!-- 4. --- LINKS ARE UPDATED --- -->
+                            <li><a class="dropdown-item" href="?tipe=semua&status=<?= htmlspecialchars($selectedStatus) ?>">Semua Tipe</a></li>
                             <li><a class="dropdown-item" href="?tipe=TA&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
                             <li><a class="dropdown-item" href="?tipe=Semester&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang Semester</a></li>
                         </ul>
                     </div>
                     <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangStatusButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?= htmlspecialchars($selectedStatus == 'belum' ? 'Belum Disetujui' : 'Disetujui') ?>
+                        <button class="btn btn-primary dropdown-toggle ddAdminSidangStatusButton" type="button" id="ddAdminSidangStatusButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <?= htmlspecialchars($statusButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
+                             <!-- 4. --- LINKS ARE UPDATED --- -->
+                            <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=semua">Semua Status</a></li>
                             <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=belum">Belum Disetujui</a></li>
                             <li><a class="dropdown-item" href="?tipe=<?= htmlspecialchars($selectedTipe) ?>&status=disetujui">Disetujui</a></li>
                         </ul>
@@ -516,9 +560,11 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-        <div class="modal-header modal-header-custom mx-auto">
-            <h1 class="modal-title fs-5" id="modalLogoutLabel">Perhatian!</h1>
-        </div>
+            <div style="background-color:#4B68FB;">
+                <div class="modal-header">
+                    <h1 class="modal-title mx-auto fs-5 text-light" id="modalLogoutLabel">Perhatian!</h1>
+                </div>
+            </div>
         <div class="modal-body text-center py-3">
             Apakah anda yakin ingin keluar?
         </div>

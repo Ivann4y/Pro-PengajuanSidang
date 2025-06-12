@@ -11,9 +11,6 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-
-        
-
         .text-heading { 
             font-size: 2rem;
             font-weight: 600;
@@ -198,14 +195,15 @@
         }
 
         .btn-primary { 
-            /* font-family: "Poppins", sans-serif; Inherited */
             background-color: rgb(67, 54, 240);
             border-color: rgb(67, 54, 240);
         }
+
         .btn-primary:hover {
             background-color: rgb(57, 44, 210);
             border-color: rgb(57, 44, 210);
         }
+
         .dropdown-menu .dropdown-item {
             font-family: "Poppins", sans-serif; 
         }
@@ -219,8 +217,6 @@
         tr.jadiBiru:hover .bi-pencil-square {
             color: white;
         }
-
-        /* Original mPengajuan table structural styles - END */
 
         .header-icons {
             display: flex;
@@ -258,7 +254,16 @@
 
             .action-column {
                 display: none;
-            }
+            }      
+        }
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
         }
 
     </style>
@@ -266,10 +271,12 @@
 
 <body>
     <div id="NavSide">
+
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
-            </div>
+        </div>
+
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -288,19 +295,20 @@
                     <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
-        </div>
+    </div>
 
         <div class="NavSide__topbar">
             <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
-            </div>
+        </div>
+
             <div class="header-icons">
+                <button class="tambah-sidang-btn d-md-none" onclick="tambahData()">+ Tambah Sidang</button>
                 <i class="bi bi-bell-fill"></i>
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i>
-                </div>
-                <button class="tambah-sidang-btn d-md-none" onclick="tambahData()">+ Tambah Sidang</button>
+                </div>  
             </div>
         </div>
 
@@ -372,6 +380,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         // Sidebar Toggle Logic 
         let menuToggle = document.querySelector(".NavSide__toggle");
