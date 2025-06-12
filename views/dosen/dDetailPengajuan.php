@@ -44,6 +44,7 @@
       padding: 6px 24px;
       font-weight: 500;
       transition: all 0.3s ease;
+      margin-top: 1cm;
     }
 
     .btn-danger.btn-circle {
@@ -172,7 +173,7 @@
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
             display: inline-flex; 
             align-items: center; 
-            /* margin-top: 1.2cm; */
+            margin-top: 1cm;
         }
         .btn-kembali:hover {
             position: relative;
