@@ -61,25 +61,55 @@
         background-color: #f2f2f2;
         border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-left: 50px;
+        margin-left: 15px;
+        
     }
 
     #cardNilai {
         border-radius: 50px;
         width: 500px;
-        height: 350px;
+        height: 480px;
     }
 
     #carddetailPenilaian, #cardcatatan {
         width: 1000px;
     }
 
-    .student-image {
-        width: 500px;
-        height: 350px;
-        margin-left: 20px;
-        mix-blend-mode: multiply;
+
+    /* Custom column class untuk layout 2 kolom berdampingan */
+    .col-lg-49 {
+        flex: 0 0 49%;
+        max-width: 49%;
     }
+
+    /* Style khusus untuk card Data Mahasiswa */
+    #carddataMahasiswa {
+        background-color: rgb(235, 238, 245);
+        border-radius: 50px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 500px;
+        height: 477px;
+    }
+
+    /* Style untuk grup info (NIM, Nama, dll) */
+    .info-group, .value-row {
+        font-size: 1rem;
+    }
+
+    /* Class untuk mengatur layout internal di dalam card data mahasiswa */
+    .section, .section2 {
+        flex: 1 1 200px; /* Membuat layout flexbox yang responsif */
+        color: #333;
+    }
+    .section {
+        margin-left: 30px;
+        margin-top: 25px;
+    }
+    .section2 {
+        margin-top: 25px;
+    }
+    /* === AKHIR DARI STYLES BARU === */
+
 
     @media (max-width: 1200px) {
         #carddetailPenilaian,
@@ -101,10 +131,6 @@
             align-items: center !important;
         }
 
-        /* PERBAIKAN UTAMA: 
-           Aturan ini sekarang hanya menargetkan kolom konten utama.
-           .col-auto untuk button TIDAK LAGI IKUT menjadi 100% width.
-        */
         .row.mt-5 .col-md-6,
         .row.mt-5 .col-12 {
             width: 100% !important;
@@ -115,7 +141,8 @@
 
         #cardNilai,
         #carddetailPenilaian,
-        #cardcatatan {
+        #cardcatatan,
+        #carddataMahasiswa { /* Menambahkan #carddataMahasiswa agar konsisten */
             width: 100% !important;
             margin-left: auto !important;
             margin-right: auto !important;
@@ -141,15 +168,26 @@
             gap: 0.5rem !important;
         }
         
-        /* Memastikan kolom button punya padding yang benar di mobile */
         .row.mt-5 .col-auto.ps-0 {
             padding-left: 1rem !important;
         }
 
-        /* Menghapus margin kiri pada button agar lurus dengan padding kolom */
         .btn-kembali {
             margin-left: 0 !important;
         }
+
+        /* --- Penyesuaian untuk Card Data Mahasiswa di Mobile --- */
+        .col-lg-49 {
+            flex: 0 0 100%; /* Membuat card mengisi penuh di mobile */
+            max-width: 100%;
+        }
+        .section, .section2 {
+            margin: 0 !important; /* Menghapus margin agar rata kiri */
+        }
+        .section2 {
+            margin-top: 1rem !important; /* Memberi sedikit jarak antar section di mobile */
+        }
+        /* --- Akhir Penyesuaian --- */
     }
     
     #nilaiMahasiswa {
@@ -183,7 +221,7 @@
         display: inline-flex; 
         align-items: center; 
         margin-top: 1.2cm;
-        margin-left: 50px;
+        margin-left: 60px;
     }
     .btn-kembali:hover {
         position: relative;
@@ -254,16 +292,11 @@
         </div>
    <main class="NavSide__main-content">
     <div class="container-fluid p-0">
-        <div class="row mb-4 title-container" style="margin-left: 50px;">
+        <div class="row mb-4 title-container" style="margin-left: 40px;">
             <div class="col-12">
                 <h2 class="main-title">
                     Mahasiswa / Detail Evaluasi - Sistem Pengajuan Sidang
                 </h2>
-                <p class="student-info">
-                    <?php echo htmlspecialchars($mahasiswa['nama']); ?> - 
-                    <?php echo htmlspecialchars($mahasiswa['nim']); ?> - 
-                    <?php echo htmlspecialchars($mahasiswa['prodi']); ?>
-                </p>
             </div>
         </div>
         
@@ -271,25 +304,69 @@
             <div class="col-md-6">
                 <div class="card" id="cardNilai">
                     <div class="card-body d-flex flex-column">
-                        <h3 class="card-title" style="padding:10px;">Nilai Mahasiswa:</h3>
+                        <h3 class="card-title text-dark" style="padding:10px;">Nilai Mahasiswa:</h3>
                         <div class="d-flex justify-content-center align-items-center flex-grow-1">
-                            <input type="text" class="form-control"
+                            <input type="text" class="form-control text-dark"
                                 id="nilaiMahasiswa" value="A" readonly />
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <img src="../../assets/img/img5.png" alt="Mahasiswa Illustration" class="img-fluid student-image"/>
+            
+<div class="col-lg-49 mb-3 d-flex">
+  <div class="card flex-fill" id="carddataMahasiswa">
+    <div class="card-body card-soft px-4 py-3">
+      <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
+      <div class="d-flex flex-wrap gap-1 px-4 py-3">
+        <!-- Section 1 -->
+        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
+          <!-- NIM -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-id-card"></i>
+              <span class="fw-bold">NIM</span>
             </div>
+            <div class="value-row text-secondary">0920240033</div>
+          </div>
+          <!-- Nama -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user"></i>
+              <span class="fw-bold">Nama</span>
+            </div>
+            <div class="value-row text-secondary">M. Harris Nur S.</div>
+          </div>
         </div>
+        <!-- Section 2 -->
+        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
+          <!-- Mata Kuliah -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-book"></i>
+              <span class="fw-bold">Mata Kuliah</span>
+            </div>
+            <div class="value-row text-secondary">Tugas Akhir</div>
+          </div>
+          <!-- Dosen Pembimbing -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user-tie"></i>
+              <span class="fw-bold">Dosen Pembimbing</span>
+            </div>
+            <div class="value-row text-secondary">Timotius Victory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
         
         <div class="row mt-5">
           <div class="col-12">
             <div class="card" id="carddetailPenilaian">
                 <div class="card-body">
-                    <h3 class="card-title">Detail Penilaian :</h3>
-                    <div class="d-flex align-items-center gap-4 flex-wrap mt-3">
+                    <h3 class="card-title text-dark" >Detail Penilaian :</h3>
+                    <div class="d-flex align-items-center gap-4 flex-wrap mt-3 text-dark">
                         <span><strong>Nilai Laporan :</strong> 95</span>
                         <span><strong>Materi Presentasi :</strong> 90</span>
                         <span><strong>Penyampaian :</strong> 94</span>
@@ -305,8 +382,8 @@
             <div class="col-12">
                 <div class="card" id="cardcatatan">
                     <div class="card-body">
-                        <h3 class="card-title">Catatan:</h3>
-                        <div id="catatan-content">
+                        <h3 class="card-title text-dark" >Catatan:</h3>
+                        <div class="text-dark" id="catatan-content">
                             Tidak ada catatan.
                         </div>
                     </div>
@@ -314,7 +391,6 @@
             </div>
         </div>
         
-              <!-- STRUKTUR HTML UNTUK BUTTON (Sudah bagus, tidak perlu diubah) -->
         <div class="row mt-5">
             <!-- Kolom ini akan kita biarkan tidak 100% width di mobile -->
             <div class="col-auto ps-0"> 

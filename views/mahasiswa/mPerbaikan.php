@@ -7,7 +7,6 @@ if (isset($_SESSION['pesan'])) {
     unset($_SESSION['pesan']);
 }
 
-// ... (Sisa logika PHP Anda tetap sama) ...
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
@@ -60,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
 
-            if (empty($pesan) && $_FILES["fileInput"]["size"] > 5242880) { // 5 MB
+            if (empty($pesan) && $_FILES["fileInput"]["size"] > 5242880) { 
                 $pesan = "Error: Ukuran file terlalu besar. Maksimal 5 MB.";
             }
 
@@ -101,6 +100,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    
 
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
@@ -257,6 +258,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .NavSide__main-content {
             padding: 2rem;
+            margin-left: 30px;
+            margin-right: 40px;
         }
 
         @media (max-width: 992px) {
@@ -324,24 +327,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             overflow: hidden;
         }
 
-        /* =============================================================== */
-        /* =================== STYLE CSS YANG DIMODIFIKASI =============== */
-        /* =============================================================== */
         .text-selengkapnya {
             font-weight: 600;
             color: #4B68FB;
             font-size: 0.85rem;
             text-decoration: none;
             transition: color 0.3s ease;
-            margin-left: 4px; /* Memberi sedikit spasi dari teks sebelumnya */
+            margin-left: 4px;
         }
 
         .card-comment:hover .text-selengkapnya {
             color: #ffffff;
         }
-        /* =============================================================== */
-        /* ================= AKHIR STYLE CSS YANG DIMODIFIKASI =========== */
-        /* =============================================================== */
 
         .revision-card {
             background-color: white;
@@ -370,20 +367,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .btn-custom-primary {
-            background-color: #4B68FB;
+            background-color: #4FD382;
             color: white;
             font-weight: 600;
             border: none;
             border-radius: 50px;
             padding: 0.75rem 1.5rem;
-            box-shadow: 0 4px 15px rgba(75, 104, 251, 0.3);
+            box-shadow: 0 4px 15px rgba(75, 254, 159, 0.87);
             transition: all 0.2s ease-in-out;
         }
 
         .btn-custom-primary:hover {
-            background-color: #3A58DB;
+            background-color: #3FA970;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(75, 104, 251, 0.4);
+            box-shadow: 0 6px 20px rgba(75, 254, 159, 0.87);
+            color: white;
         }
 
         .btn-custom-primary:disabled {
@@ -441,94 +439,83 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .btn-kembali:hover .icon-circle i {
             color: white;
         }
+        .page-content-header-wrapper h1 {
+    font-size: 2rem;
+}
 
-        .custom-swal-popup {
-            background-color: #F8F9FA !important;
-            border-radius: 18px !important;
-            padding: 30px 35px !important;
-            width: auto !important;
-            max-width: 480px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
-        }
 
-        .custom-swal-html-container {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
+#modalKonfirmasi .modal-content {
+    background-color: #ffffff;
+    border-radius: 24px; 
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center; 
+}
 
-        .custom-swal-title {
-            font-size: 1.8rem !important;
-            font-weight: 600 !important;
-            color: rgb(177, 180, 183) !important;
-            margin-top: 0 !important;
-            margin-bottom: 12px !important;
-            padding: 0 !important;
-            text-align: center;
-        }
 
-        .custom-swal-text {
-            font-size: 1.05rem !important;
-            color: #495057 !important;
-            margin-bottom: 25px !important;
-            padding: 0 !important;
-            line-height: 1.65;
-            text-align: center;
-        }
+#modalKonfirmasi .modal-header {
+    border-bottom: none;
+    padding-bottom: 0;
+    justify-content: center; 
+}
 
-        .custom-swal-actions {
-            margin-top: 20px !important;
-            gap: 15px !important;
-            display: flex !important;
-            justify-content: center !important;
-        }
 
-        .swal2-styled.swal2-confirm,
-        .swal2-styled.swal2-cancel {
-            font-size: 0.95rem !important;
-            padding: 12px 28px !important;
-            border-radius: 10px !important;
-            font-weight: 600 !important;
-            transition: all 0.2s ease-in-out;
-            flex-grow: 0;
-            min-width: 130px;
-            border: none !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-            text-transform: capitalize;
-        }
+#modalKonfirmasi .modal-title {
+    font-weight: 700; 
+    font-size: 1.75rem; 
+    color: #333;
+    width: 100%;
+}
 
-        .swal2-styled.swal2-confirm:hover,
-        .swal2-styled.swal2-cancel:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-        }
 
-        .custom-swal-confirm-button {
-            background-color: #4FD382 !important;
-            color: white !important;
-            border-radius: 35px;
-            width: 95px;
-            height: 30px;
-        }
+#modalKonfirmasi .modal-body p {
+    font-size: 1rem;
+    color: #555;
+    margin-top: 0.5rem;
+    margin-bottom: 2rem; 
+    font-weight: 500;
+}
 
-        .custom-swal-confirm-button:hover {
-            background-color: #3FA970 !important;
-        }
 
-        .custom-swal-cancel-button {
-            background-color: #FD7D7D !important;
-            color: white !important;
-            border-radius: 35px;
-            width: 95px;
-            height: 30px;
-        }
+#modalKonfirmasi .modal-body .d-flex {
+    justify-content: center !important; 
+    gap: 5rem; 
+    padding: 0 !important; 
+    height: 45px;
+}
 
-        .custom-swal-cancel-button:hover {
-            background-color: #FA6868 !important;
-        }
+#modalKonfirmasi .modal-body button {
+    border-radius: 50px; 
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    color: white;
+    min-width: 140px; 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-        .custom-swal-popup .swal2-icon {
-            display: none !important;
-        }
+#modalKonfirmasi .modal-body button:hover {
+    transform: translateY(-3px); 
+}
+
+#modalKonfirmasi .btn-tolak {
+    background-color: #FF7171; 
+}
+
+#modalKonfirmasi .btn-tolak:hover {
+    box-shadow: 0 6px 25px rgba(255, 113, 113, 0.6);
+}
+
+
+
+#modalKonfirmasi #confirmSubmitBtn {
+    background-color: #4FD382; 
+}
+
+#modalKonfirmasi #confirmSubmitBtn:hover {
+    box-shadow: 0 6px 25px rgba(79, 211, 130, 0.6);
+}
     </style>
 </head>
 
@@ -552,9 +539,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div id="page-content-wrapper">
             <main class="NavSide__main-content">
                 <div class="page-content-header-wrapper">
-                    <h1 class="fs-3 fw-bold">Detail Sidang - Sistem Pengajuan Sidang</h1>
+                    <h1 class="fs-2 fw-bold">Detail Sidang - Sistem Pengajuan Sidang</h1>
                     <div class="d-flex justify-content-between align-items-center mt-3">
-                        <h2 class="fs-5 fw-semibold mb-0">Catatan Perbaikan</h2><span
+                        <h2 class="fs-5 fw-semibold mb-0">Catatan Perbaikan - Nayaka Ivanna</h2><span
                             class="badge-custom status-belum-disetujui">Status Revisi : Belum Disetujui</span>
                     </div>
                 </div>
@@ -576,25 +563,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="revision-card">
                     <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
                     <form id="revisionForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST"
-                        enctype="multipart/form-data"><label for="fileInput" class="upload-area-v2 mt-3"
-                            id="uploadArea">
+                        enctype="multipart/form-data">
+                        <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
                             <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i>
                             </div>
                             <div id="selected-state" class="d-none"><i
                                     class="bi bi-file-earmark-text-fill fs-1 text-primary"></i></div>
                             <p id="upload-prompt-text" class="text-muted mt-2">Unggah berkas revisi (.pdf, .docx, .pptx,
                                 .zip)</p>
-                        </label><input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip"
-                            hidden />
+                        </label>
+                        <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
                         <div class="text-center mt-2">
                             <p id="fileNameDisplay" class="fw-bold mb-0"></p>
                         </div>
-                        <div class="d-flex justify-content-end mt-4"><button type="submit"
-                                class="btn btn-custom-primary" id="submitBtn" >Kirim</button></div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-custom-primary" id="openConfirmModalBtn" data-bs-toggle="modal" data-bs-target="#modalKonfirmasi">Kirim</button>
+                        </div>
                     </form>
                 </div>
                 <div class="mt-4"><button class="btn-kembali" onclick="location.href='mSidang.php'"><span
                             class="icon-circle"><i class="fa-solid fa-arrow-left"></i></span> Kembali</button></div>
+                
                 <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
@@ -616,7 +605,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     penggunaan bahasa.
                                     Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa
                                     ilmiah yang baku dan konsisten.
-</p>
+                                </p>
                             </div>
                             <div class="modal-footer"><button type="button" class="btn btn-secondary"
                                     data-bs-dismiss="modal">Tutup</button></div>
@@ -631,27 +620,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php
     if (!empty($pesan)):
-        // Cek apakah pesan mengandung kata 'sukses' untuk menentukan jenis notifikasi
         $isSuccess = strpos(strtolower($pesan), 'sukses') !== false;
-        // Membersihkan prefiks "Sukses: " atau "Error: " dari pesan untuk ditampilkan
         $cleanPesan = preg_replace('/^(Sukses|Error): /i', '', $pesan);
         ?>
         <script>
-            // Gunakan if-else PHP untuk memilih template modal yang sesuai
             <?php if ($isSuccess): ?>
-                // Tampilkan modal BERHASIL sesuai permintaan Anda
                 Swal.fire({
                     title: 'Berhasil',
-                    text: '<?php echo addslashes($cleanPesan); ?>', // Menggunakan pesan dinamis
+                    text: '<?php echo addslashes($cleanPesan); ?>',
                     icon: 'success',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#4B68FB'
                 });
             <?php else: ?>
-                // Tampilkan modal ERROR sesuai permintaan Anda
                 Swal.fire({
                     title: 'Error',
-                    text: '<?php echo addslashes($cleanPesan); ?>', // Menggunakan pesan dinamis
+                    text: '<?php echo addslashes($cleanPesan); ?>',
                     icon: 'error',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#4B68FB'
@@ -659,6 +643,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php endif; ?>
         </script>
     <?php endif; ?>
+
+    <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+                <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah Anda sudah yakin ingin mengupload dokumen revisi ini?</p>
+                    <div class="d-flex justify-content-between px-5">
+                        <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+                        <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="confirmSubmitBtn">Lanjutkan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -687,59 +688,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             });
 
             const fileInput = document.getElementById('fileInput');
-            const submitBtn = document.getElementById('submitBtn');
-            const revisionForm = document.getElementById('revisionForm');
+            const openConfirmModalBtn = document.getElementById('openConfirmModalBtn');
             const initialState = document.getElementById('initial-state');
             const selectedState = document.getElementById('selected-state');
             const fileNameDisplay = document.getElementById('fileNameDisplay');
             const uploadPromptText = document.getElementById('upload-prompt-text');
 
-            if (fileInput && submitBtn) {
+            if (fileInput && openConfirmModalBtn) {
+                openConfirmModalBtn.disabled = true;
+
                 fileInput.addEventListener('change', function () {
                     if (this.files.length > 0) {
                         if (initialState) initialState.classList.add('d-none');
                         if (selectedState) selectedState.classList.remove('d-none');
                         if (fileNameDisplay) fileNameDisplay.textContent = this.files[0].name;
                         if (uploadPromptText) uploadPromptText.classList.add('d-none');
-                        submitBtn.disabled = false;
+                        openConfirmModalBtn.disabled = false;
                     } else {
                         if (initialState) initialState.classList.remove('d-none');
                         if (selectedState) selectedState.classList.add('d-none');
                         if (fileNameDisplay) fileNameDisplay.textContent = '';
                         if (uploadPromptText) uploadPromptText.classList.remove('d-none');
-                        submitBtn.disabled = true;
+                        openConfirmModalBtn.disabled = true;
                     }
                 });
             }
 
-            // Logika form submit dengan modal kustom
-            if (revisionForm) {
-                revisionForm.addEventListener('submit', function (event) {
-                    event.preventDefault();
-                    Swal.fire({
-                        html: `
-                        <div class="custom-swal-title">Perhatian</div>
-                        <div class="custom-swal-text">Apakah anda sudah yakin ingin mengupload dokumen?</div>
-                    `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Lanjutkan',
-                        cancelButtonText: 'Batalkan',
-                        showConfirmButton: true,
-                        showCloseButton: false,
-                        buttonsStyling: false,
-                        customClass: {
-                            popup: 'custom-swal-popup',
-                            htmlContainer: 'custom-swal-html-container',
-                            actions: 'custom-swal-actions',
-                            confirmButton: 'custom-swal-confirm-button',
-                            cancelButton: 'custom-swal-cancel-button'
-                        },
-                        reverseButtons: true
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            revisionForm.submit();
-                        }
-                    });
+            const revisionForm = document.getElementById('revisionForm');
+            const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+
+            if (revisionForm && confirmSubmitBtn) {
+                confirmSubmitBtn.addEventListener('click', function() {
+                    revisionForm.submit();
                 });
             }
         });
