@@ -15,7 +15,7 @@ if ($_SESSION['role'] !== 'dosen') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -122,7 +122,7 @@ if ($_SESSION['role'] !== 'dosen') {
             font-weight: bold;
             font-size: 40px;
             margin: 0;
-            color: #1a1a1a; /* optional: sesuai tema */
+            color: #1a1a1a;
         }
 
         .modal-footer .btn-danger {
@@ -137,7 +137,7 @@ if ($_SESSION['role'] !== 'dosen') {
     </style>
 </head>
 
-<body>
+<body onload="switchDdaftarSidang('Semua')">
 
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -200,12 +200,16 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="d-flex align-items-center gap-2">
                             <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                    Sidang TA
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">Sidang Semester</a></li>
-                                </ul>
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                        Semua
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semua')">Semua</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('TA')">Sidang TA</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semester')">Sidang Semester</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div><br><br>
@@ -346,26 +350,26 @@ if ($_SESSION['role'] !== 'dosen') {
                 // }
                 let isTA = true;
 
-                function switchDdaftarSidang() {
+                function switchDdaftarSidang(mode) {
                     const taTable = document.getElementById('dPengajuanTA');
                     const semTable = document.getElementById('dPengajuanSem');
                     const dropdownButton = document.getElementById('ddMSidang');
-                    const dropdownMenuItem = document.getElementById('ddMSidangMenu');
 
-                    if (isTA) {
-                        taTable.style.display = 'none';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Sidang Semester';
-                        dropdownMenuItem.textContent = 'Sidang TA';
-                    } else {
+                    if (mode === 'TA') {
                         taTable.style.display = 'table-row-group';
                         semTable.style.display = 'none';
                         dropdownButton.textContent = 'Sidang TA';
-                        dropdownMenuItem.textContent = 'Sidang Semester';
+                    } else if (mode === 'Semester') {
+                        taTable.style.display = 'none';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Sidang Semester';
+                    } else {
+                        taTable.style.display = 'table-row-group';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Semua';
                     }
-
-                    isTA = !isTA;
                 }
+
             </script>
             <script src="../../assets/js/main.js"></script>
 </body>

@@ -35,401 +35,226 @@
     <link rel="stylesheet" href="../../extra/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <title>Mahasiswa - Nilai Akhir</title>
-    <style>
-       /* ... (CSS Anda yang lain tetap sama) ... */
-       
-        /* === MODIFIED AND NEW CSS RULES START HERE === */
+<style>
+    body,
+    .card,
+    .form-control,
+    h1, h2, h3, h4, h5, h6 {
+        font-family: "Poppins", sans-serif !important;
+        color: #464869;
+    }
 
-        body,
-        .card,
-        .form-control,
-        h1, h3, h4, h5, h6 { /* Hapus h2 dari grup ini */
-            font-family: "Poppins", sans-serif !important;
-            color: #464869;
-        }
-
-        /* Aturan khusus untuk judul utama agar lebih gelap & tebal */
-        .main-title {
-            font-weight: 700 !important; /* Mirip font-weight: bold; */
-            color: #343a40; /* Warna abu-abu yang sangat gelap, hampir hitam */
-            margin-bottom: 0.5rem; /* Mengurangi jarak bawah agar info mahasiswa lebih dekat */
-        }
-        
-        /* Aturan untuk info mahasiswa */
-        .student-info {
-            font-size: 1rem;
-            color: #6c757d; /* Warna abu-abu sekunder, tidak terlalu menonjol */
-            font-weight: 500;
-        }
-
-        /* === END OF MODIFIED AND NEW CSS RULES === */
-
-       @media (max-width: 750px) {
-              .row.mt-5.justify-content-between {
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .row.mt-5.justify-content-between .col-auto {
-    flex: auto;
-    text-align: center;
-    margin-bottom: 0 !important;
-    padding: 10px;
-  }
-
-  #carddetailPenilaian,
-  #cardcatatan {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-  #cardNilai {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-  
-  #nilaiMahasiswa {
-    font-size: 5rem !important;
-
-
-  }
-
-  #detailpenilaian {
-    width: 15% !important;
-  }
-
-  img.img-fluid {
-    display: none !important;
-  }
-
-  .row.mt-5 .col-auto {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 10px;
-  }
-  .btn-kirim {
-    margin-right: 0 !important;
-  }
-  .modal-dialog {
-    margin: 1rem auto;
-    max-width: 95% !important;
-  }
-  .modal-content {
-    border-radius: 20px !important;
-    padding: 15px;
-  }
-
-  .modal-body {
-    text-align: center;
-    padding: 20px;
-  }
-  .kakimodal {
+    .main-title {
+        font-weight: 700 !important;
+        color: #343a40; 
+        margin-bottom: 0.5rem; 
+    }
     
-     flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: 150px !important;
-  }
-  
-
-
-  .kakimodal .col-md-6,
-  .mb5 .col-md-6 {
-    margin-left: 0 !important;
-    width: auto !important;
-    padding: 0 !important;
-  }
-
-  .kakimodal .btnKonfirmasi,
-  .mb5 .btnKonfirmasi {
-    min-width: 90px;
-    flex:1 1 auto;
-  }
-  .penilaian-row {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+    .student-info {
+        font-size: 1rem;
+        color: #6c757d; 
+        font-weight: 500;
     }
-
-    .label-penilaian {
-      display: flex;
-      text-align: center;
-    }
-
-    .colon1 {
-
-      flex: 1;
-      display: flex;
-      margin-left: 81px;
-    }
-    .colon2{
-      flex: 1;
-      display: flex;
-      margin-left: 42px;
-    }
-    .colon3{
-      flex: 1;
-      display: flex;
-      margin-left: 69px;
-    }
-    .colon4{
-      flex: 1;
-      display: flex;
-      margin-left: 88px;
-    }
-
-    .input-penilaian {
-      width: 100%;
-      flex: 3;
-    }
-}
-@media (max-width: 1000px) {
-    .NavSide__main-content .row.mt-5.justify-content-between {
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .NavSide__main-content .row.mt-5.justify-content-between .col-auto {
-    flex: auto;
-    text-align: center;
-    margin-bottom: 0 !important;
-    padding: 10px;
-  }
-
-
-.NavSide__main-content .btn-kembali {
-    width: 100% !important;
-    max-width: 150px;
-    margin: 40px auto 0; 
-}
-
- .NavSide__main-content  #carddetailPenilaian,
-  .NavSide__main-content #cardcatatan {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-  .NavSide__main-content #cardNilai {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-  .NavSide__main-content #nilaiMahasiswa {
-    font-size: 5rem !important;
-
     
-  }
-  .NavSide__main-content #detailpenilaian {
-    width: 15% !important;
-  }
-
-  .NavSide__main-content img.img-fluid {
-    display: none !important;
-  }
-
-  .NavSide__main-content .row.mt-5 .col-auto {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 10px;
-  }
-  .NavSide__main-content .btn-kirim {
-    margin-right: 0 !important;
-  }
-  .btn-kembali {
-     margin-top: 0.5cm; 
-  }
-  .modal-dialog {
-    margin: 1rem auto;
-    max-width: 95% !important;
-  }
-
-  .modal-content {
-    border-radius: 20px !important;
-    padding: 15px;
-  }
-
-  .modal-body {
-    text-align: center;
-    padding: 20px;
-  }
-  .kakimodal {
-    
-     flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: 150px !important;
-  }
-
-  .kakimodal .col-md-6,
-  .mb5 .col-md-6 {
-    margin-left: 0 !important;
-    width: auto !important;
-    padding: 0 !important;
-  }
-
-  .kakimodal .btnKonfirmasi,
-  .mb5 .btnKonfirmasi {
-    min-width: 90px;
-    flex:1 1 auto;
-  }
-  .NavSide__main-content .penilaian-row {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .NavSide__main-content .label-penilaian {
-      display: flex;
-      text-align: center;
-    }
-
-    .NavSide__main-content .colon1 {
-
-      flex: 1;
-      display: flex;
-      margin-left: 81px;
-    }
-    .NavSide__main-content .colon2{
-      flex: 1;
-      display: flex;
-      margin-left: 42px;
-    }
-    .NavSide__main-content .colon3{
-      flex: 1;
-      display: flex;
-      margin-left: 69px;
-    }
-    .NavSide__main-content .colon4{
-      flex: 1;
-      display: flex;
-      margin-left: 88px;
-    }
-
-    .NavSide__main-content .input-penilaian {
-      width: 100%;
-      flex: 3;
-    }
-}
-      
-      #cardNilai {
+    /* Aturan untuk card agar konsisten */
+    #cardNilai, #carddetailPenilaian, #cardcatatan {
         background-color: #f2f2f2;
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-left: 15px;
+        
+    }
+
+    #cardNilai {
+        border-radius: 50px;
+        width: 500px;
+        height: 480px;
+    }
+
+    #carddetailPenilaian, #cardcatatan {
+        width: 1000px;
+    }
+
+
+    /* Custom column class untuk layout 2 kolom berdampingan */
+    .col-lg-49 {
+        flex: 0 0 49%;
+        max-width: 49%;
+    }
+
+    /* Style khusus untuk card Data Mahasiswa */
+    #carddataMahasiswa {
+        background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        margin-left: 0;}
+        width: 500px;
+        height: 477px;
+    }
+
+    /* Style untuk grup info (NIM, Nama, dll) */
+    .info-group, .value-row {
+        font-size: 1rem;
+    }
+
+    /* Class untuk mengatur layout internal di dalam card data mahasiswa */
+    .section, .section2 {
+        flex: 1 1 200px; /* Membuat layout flexbox yang responsif */
+        color: #333;
+    }
+    .section {
+        margin-left: 30px;
+        margin-top: 25px;
+    }
+    .section2 {
+        margin-top: 25px;
+    }
+    /* === AKHIR DARI STYLES BARU === */
+
+
+    @media (max-width: 1200px) {
+        #carddetailPenilaian,
+        #cardcatatan {
+            width: calc(100% - 40px);
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        .student-image {
+            width: 100%;
+            height: auto;
+            margin-left: 0;
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .row.mt-5.align-items-center.justify-content-between {
+            flex-direction: column !important;
+            align-items: center !important;
+        }
+
+        .row.mt-5 .col-md-6,
+        .row.mt-5 .col-12 {
+            width: 100% !important;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        #cardNilai,
+        #carddetailPenilaian,
+        #cardcatatan,
+        #carddataMahasiswa { /* Menambahkan #carddataMahasiswa agar konsisten */
+            width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            height: auto !important;
+        }
+
+        .student-image {
+            display: none !important;
+        }
+
+        #nilaiMahasiswa {
+            font-size: 7rem !important;
+        }
         
-      #nilaiMahasiswa {
+        .title-container {
+            margin-left: 0 !important;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        #carddetailPenilaian .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 0.5rem !important;
+        }
+        
+        .row.mt-5 .col-auto.ps-0 {
+            padding-left: 1rem !important;
+        }
+
+        .btn-kembali {
+            margin-left: 0 !important;
+        }
+
+        /* --- Penyesuaian untuk Card Data Mahasiswa di Mobile --- */
+        .col-lg-49 {
+            flex: 0 0 100%; /* Membuat card mengisi penuh di mobile */
+            max-width: 100%;
+        }
+        .section, .section2 {
+            margin: 0 !important; /* Menghapus margin agar rata kiri */
+        }
+        .section2 {
+            margin-top: 1rem !important; /* Memberi sedikit jarak antar section di mobile */
+        }
+        /* --- Akhir Penyesuaian --- */
+    }
+    
+    #nilaiMahasiswa {
         font-size: 9.5rem !important;
         font-weight: bold;
         text-align: center;
         border-radius: 30px;
         width: 90%;
-        /* height: 40px; <-- Removed */
-        /* margin-left: 23px; <-- Removed */
-      }
-      input.form-control:not(:placeholder-shown) {
-      background: #f2f2f2 !important;
-      border-color: #f2f2f2 !important;
-      }
-      
-      #cardPenilaian {
-        background-color: #f2f2f2;
-        border-radius: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        margin-left: 0;
-      }
-      label
-        {
-            margin-top: 20px;
-            margin-right: 15px;
-            font-weight: bold;
-        }
-        #detailpenilaian {
-           width: 75px; ;
-           font-size: 1rem; 
-          
-           margin-top: 20px;
-           
-        }
-        #carddetailPenilaian {
-            width: 100%;
-            margin-left: 0;
-            background-color: #f2f2f2;
-            border-radius: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-      #cardcatatan {
-        background-color: #f2f2f2;
-        border-radius: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        margin-left: 0;
-      }
-      #catatan {
-        width: 100%;
-        height: 150px;
-        border-radius: 20px;
+        background: #f2f2f2 !important;
+        border-color: #f2f2f2 !important;
+        border: none;
+        padding: 0;
+    }
+    
+    #catatan-content {
+        padding: 1rem;
         font-size: 1rem;
-        margin-top: 20px;
-        
-      }
-      .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: inline-flex; 
-            align-items: center; 
-            margin-top: 1.2cm;
-        }
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-        
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px; 
-            height: 30px; 
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px; 
-            transition: background-color 0.3s ease;
-        }
+    }
 
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
+    .btn-kembali {
+        background-color: #4B68FB;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 25px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+        display: inline-flex; 
+        align-items: center; 
+        margin-top: 1.2cm;
+        margin-left: 60px;
+    }
+    .btn-kembali:hover {
+        position: relative;
+        background-color: white;
+        color: #4B68FB;
+    }
+    
+    .btn-kembali .icon-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px; 
+        height: 30px; 
+        background-color: white;
+        border-radius: 50%;
+        margin-right: 10px; 
+        transition: background-color 0.3s ease;
+    }
 
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-            font-size: 1rem; 
-            transition: color 0.3s ease;
-        }
+    .btn-kembali:hover .icon-circle {
+        background-color: #4B68FB;
+    }
 
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
+    .btn-kembali .icon-circle i {
+        color: #4B68FB;
+        font-size: 1rem; 
+        transition: color 0.3s ease;
+    }
 
-    </style>
+    .btn-kembali:hover .icon-circle i {
+        color: white;
+    }
+</style>
   </head>
   <body>
     <div id="NavSide">
@@ -466,96 +291,143 @@
             </div>
         </div>
    <main class="NavSide__main-content">
-    <div class="container-fluid ">
-        <!-- === MODIFIED HEADER SECTION === -->
-        <div class="row mb-4">
+    <div class="container-fluid p-0">
+        <div class="row mb-4 title-container" style="margin-left: 40px;">
             <div class="col-12">
                 <h2 class="main-title">
                     Mahasiswa / Detail Evaluasi - Sistem Pengajuan Sidang
                 </h2>
-                <p class="student-info">
-                    <?php echo htmlspecialchars($mahasiswa['nama']); ?> - 
-                    <?php echo htmlspecialchars($mahasiswa['nim']); ?> - 
-                    <?php echo htmlspecialchars($mahasiswa['prodi']); ?>
-                </p>
             </div>
         </div>
-        <!-- === END OF MODIFIED HEADER SECTION === -->
-
-          <div class="row mt-5">
-            <div class="col-12">
+        
+        <div class="row mt-5 align-items-center justify-content-between">
+            <div class="col-md-6">
                 <div class="card" id="cardNilai">
-                    <div class="card-body">
-                        <h3 class="card-title" style="padding:10px ;">Nilai Mahasiswa:</h3>
-                        <div class="d-flex justify-content-center">
-                            <input type="text" class="form-control form-control-lg text-center"
-                                id="nilaiMahasiswa" placeholder="" value="A" readonly />
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title text-dark" style="padding:10px;">Nilai Mahasiswa:</h3>
+                        <div class="d-flex justify-content-center align-items-center flex-grow-1">
+                            <input type="text" class="form-control text-dark"
+                                id="nilaiMahasiswa" value="A" readonly />
                         </div>
                     </div>
                 </div>
             </div>
+            
+<div class="col-lg-49 mb-3 d-flex">
+  <div class="card flex-fill" id="carddataMahasiswa">
+    <div class="card-body card-soft px-4 py-3">
+      <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
+      <div class="d-flex flex-wrap gap-1 px-4 py-3">
+        <!-- Section 1 -->
+        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
+          <!-- NIM -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-id-card"></i>
+              <span class="fw-bold">NIM</span>
+            </div>
+            <div class="value-row text-secondary">0920240033</div>
+          </div>
+          <!-- Nama -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user"></i>
+              <span class="fw-bold">Nama</span>
+            </div>
+            <div class="value-row text-secondary">M. Harris Nur S.</div>
+          </div>
+        </div>
+        <!-- Section 2 -->
+        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
+          <!-- Mata Kuliah -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-book"></i>
+              <span class="fw-bold">Mata Kuliah</span>
+            </div>
+            <div class="value-row text-secondary">Tugas Akhir</div>
+          </div>
+          <!-- Dosen Pembimbing -->
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user-tie"></i>
+              <span class="fw-bold">Dosen Pembimbing</span>
+            </div>
+            <div class="value-row text-secondary">Timotius Victory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+        <div class="row mt-5">
+          <div class="col-12">
+            <div class="card" id="carddetailPenilaian">
+                <div class="card-body">
+                    <h3 class="card-title text-dark" >Detail Penilaian :</h3>
+                    <div class="d-flex align-items-center gap-4 flex-wrap mt-3 text-dark">
+                        <span><strong>Nilai Laporan :</strong> 95</span>
+                        <span><strong>Materi Presentasi :</strong> 90</span>
+                        <span><strong>Penyampaian :</strong> 94</span>
+                        <span><strong>Nilai Proyek :</strong> 93</span>
+                    </div>
+                </div>
+            </div>
+          </div>
         </div>
 
+        <!-- STRUKTUR BARU (YANG BENAR) -->
         <div class="row mt-5">
             <div class="col-12">
-                <div class="card" id="carddetailPenilaian">
+                <div class="card" id="cardcatatan">
                     <div class="card-body">
-                        <h3 class="card-title">Detail Penilaian :</h3>
-                        <div class="col-auto d-flex align-items-center gap-4 flex-wrap">
-                            <span><strong>Nilai Laporan :</strong> 95</span>
-                            <span><strong>Materi Presentasi :</strong> 90</span>
-                            <span><strong>Penyampaian :</strong> 94</span>
-                            <span><strong>Nilai Proyek :</strong> 93</span>
+                        <h3 class="card-title text-dark" >Catatan:</h3>
+                        <div class="text-dark" id="catatan-content">
+                            Tidak ada catatan.
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-              <div class="row mt-5">
-                  <div class="col-12">
-                      <div class="card" id="cardcatatan">
-                          <div class="card-body">
-                              <h3 class="card-title">Catatan:</h3>
-                              tidak  catatan
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              <button class="btn-kembali" onclick="location.href='mSidang.php'">
+        
+        <div class="row mt-5">
+            <!-- Kolom ini akan kita biarkan tidak 100% width di mobile -->
+            <div class="col-auto ps-0"> 
+                <button class="btn-kembali" onclick="location.href='mSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
                 </button>
+            </div>
+        </div>
+        <!-- === END OF FINAL STRUCTURE === -->
+    </div>
 </main>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-    function pindahKeHalamanDaftarSidang() {
-      window.location.href = "mSidang.php";
-    }
-        // Sidebar Toggle Logic
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
+    // ... (Your existing JavaScript remains unchanged) ...
+    let menuToggle = document.querySelector(".NavSide__toggle");
+    let sidebar = document.getElementById("main-sidebar");
 
-        menuToggle.onclick = function () {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
+    menuToggle.onclick = function () {
+        menuToggle.classList.toggle("NavSide__toggle--active");
+        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+    };
 
-        // Sidebar Active Item Logic
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function () {
-                if(!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
+    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+    for (let i = 0; i < listItems.length; i++) {
+        listItems[i].onclick = function () {
+            if(!this.classList.contains("NavSide__sidebar-item--active")) {
+                for (let j = 0; j < listItems.length; j++) {
+                    listItems[j].classList.remove("NavSide__sidebar-item--active");
                 }
-            };
-        }
+                this.classList.add("NavSide__sidebar-item--active");
+            }
+        };
+    }
     </script>
   </body>
 </html>
