@@ -282,7 +282,7 @@
             <!-- Button Simpan & Kirim, Verifikasi Modal -->
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <button class="btn btn-kembali" onclick="location.href='mPengajuan.php'">
+                <button class="btn btn-kembali" onclick=location.href="mPengajuan.php">
                   <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                   </span>
@@ -341,7 +341,7 @@
 
       if (laporan === 0 || pendukung === 0) {
         Swal.fire({
-          title: 'Dokumen Tidak Boleh Kosong!',
+          title: 'Mohon Lengkapi Seluruh Form!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
