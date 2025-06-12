@@ -7,12 +7,19 @@
     <title>Mahasiswa - Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
         /* Original mSidang table structural styles - START */
+        .text-heading { 
+            font-size: 2.0rem;
+            font-weight: 600;
+            color: #4B68FB;
+            margin-bottom: 1.5rem; 
+        }
         table {
             border-spacing: 0 10px;
             border-collapse: separate;
@@ -35,15 +42,20 @@
         }
 
         thead th:nth-child(2) {
-            width: 30%;
+            width: 35%;
         }
 
         thead th:nth-child(3) {
-            width: 20%;
+            width: 25%;
         }
 
         thead th:nth-child(4) {
-            width: 20%; 
+            width: 25%; 
+        }
+
+        thead th:nth-child(5) {
+            width: 10%;
+            text-align: center;
         }
 
         .isiTabel td { /* My explicit background-color and border are removed */
@@ -58,7 +70,7 @@
             text-align: center;
         }
 
-        .isiTabel td:nth-child(4) { 
+        .isiTabel td:nth-child(5) { 
             border-radius: 0 20px 20px 0;
         }
         .btn-primary { 
@@ -82,6 +94,27 @@
         .modal-footer .btn-success {
             background-color: #4FD382;
             border-color: #4FD382;
+        }
+        .detail-btn {
+            border: none !important;
+            background-color: transparent !important;
+            color: #4B68FB; 
+            padding: 0.25rem 0.5rem; 
+        }
+        
+
+        /* Efek saat hover pada tombol */
+        .detail-btn:hover {
+            opacity: 0.7;
+        }
+
+        .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+            color: #FFFFFF;
+            opacity: 1;
+        }
+
+        tr.jadiBiru:hover .detail-btn i {
+            color: white !important;
         }
         /* Original mSidang table structural styles - END */
     </style>
@@ -129,13 +162,21 @@
         <main class="NavSide__main-content" id="mSidang">
             <div class="container-fluid"> 
                 <div class="row">
-                    <h2 class="text-heading" style="color:black">
-                        Nayaka Ivana Putra (Mahasiswa)
-                    </h2>
-                </div><br>
+                    <div class="dashboard-header">
+                    <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                    <div class="header-icons d-none d-md-flex">
+                        <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                        <div class="profile-icon">
+                            <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </div>
                 <div class="row">
-                    <div class="col-12 col-md-6"> 
-                        <div class="dropdown">
+                    <div class="col-12 col-md-6 d-flex align-items-center"> 
+                        <label for="ddMsidang" class="fw-semibold mb-0">Filter: </label>
+                        <div class="dropdown ms-2">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
                                 Sidang TA
                             </button>
@@ -144,7 +185,7 @@
                             </ul>
                         </div>
                     </div>
-                </div><br>
+                </div><br><br>
                 <div class="row table-responsive">
                     <table>
                         <thead>
@@ -153,28 +194,44 @@
                                 <th scope="col">Judul</th>
                                 <th scope="col">Mata Kuliah</th>
                                 <th scope="col">Dosen Pembimbing</th>
+                                <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="mSidangTA">
-                            <tr class="isiTabel jadiBiru" onclick="location.href='mdetailsidangta.php';">
+                            <tr class="isiTabel jadiBiru">
                                 <td>1</td>
                                 <td>Sistem Pengajuan Sidang</td>
                                 <td>Tugas Akhir</td>
                                 <td>Rida Indah Fariani</td>
+                                <td style="text-align: center;">
+                                    <button class="detail-btn"  onclick="location.href='mdetailsidangta.php';">
+                                        <i class="fa-solid fa-file-signature"></i>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                         <tbody id="mSidangSem" style="display: none;">
-                            <tr class="isiTabel jadiBiru" onclick="location.href='mdetailsidang.php';">
+                            <tr class="isiTabel jadiBiru">
                                 <td>1</td>
                                 <td>Implementasi Sistem Sidang</td>
                                 <td>Pemrograman 2</td>
                                 <td>Timotius Victory</td>
+                                <td style="text-align: center;">
+                                    <button class="detail-btn"  onclick="location.href='mdetailsidang.php';">
+                                        <i class="fa-solid fa-file-signature"></i>
+                                    </button>
+                                </td>
                             </tr>
                             <tr class="isiTabel jadiBiru">
                                 <td>2</td>
                                 <td>Deployment Sistem Sidang</td>
                                 <td>Sistem Operasi</td>
                                 <td>Suhendra</td>
+                                <td style="text-align: center;">
+                                    <button class="detail-btn"  onclick="location.href='mdetailsidang.php';">
+                                        <i class="fa-solid fa-file-signature"></i>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

@@ -180,6 +180,7 @@
             margin-bottom: 1.2cm; /* Menyamakan margin-bottom */
             font-weight: 700;     /* Menyamakan ketebalan font */
             margin-left: 30px; 
+            
            
         }
 
@@ -538,12 +539,12 @@
         }
        
         #penjadwalanSidangModal .modal-dialog {
-            max-width: 600px;
+            max-width: 850px;
         }
         .modal-body .form-toggle-buttons {
             display: inline-flex;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .modal-body .form-toggle-buttons button {
             width: 30px;
@@ -570,6 +571,21 @@
         .mt-4 {
             margin-left: 30px;
         }
+
+        
+        /* .bobot-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        .bobot-label {
+            font-size: 14px;
+            color: #333;
+            margin: 0;
+        } */
 
         
 
@@ -662,12 +678,18 @@
                                                 <label for="modal_penguji1">Penguji 1</label>
                                                 <div class="input-with-buttons">
                                                     <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
-                                                    <div class="bobot-nilai-input-group">
+
+                                                    
+                                                    <div class="bobot-container">
+                                                        <label class="bobot-title">Bobot</label>
+                                                        <div class="bobot-nilai-input-group">
                                                         <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji1')">-</button>
                                                         <input type="number" id="modal_qty_penguji1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 1" />
                                                         <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji1')">+</button>
-                                                    </div>
-                                                      <div class="form-toggle-buttons">
+                                                     </div>
+                                                      
+                                                   
+                                                    <div class="form-toggle-buttons">
                                                        <button type="button" onclick="addPenguji()">+</button>
                                                        <button type="button" onclick="removePenguji()">-</button>
                                                    </div>
@@ -690,7 +712,7 @@
                                                 <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
                                             </div>
                                         </div>
-                                        <div id="form-error" style="color: red; margin-bottom: 10px; text-align: right;"></div>
+                                        <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
                                         <div class="form-actions"> 
                                             <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
                                             <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>

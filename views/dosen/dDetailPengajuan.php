@@ -48,15 +48,15 @@
     }
 
     .btn-danger.btn-circle {
-      background-color: #dc3545;
+      background-color: #FD7D7D;
       color: white;
-      border: 2px solid #dc3545;
+      border: 2px solid #FD7D7D;
     }
 
     .btn-danger.btn-circle:hover {
       background-color: transparent;
-      color: #dc3545;
-      border: 2px solid #dc3545;
+      color: #FD7D7D;
+      border: 2px solid #FD7D7D;
     }
 
     .btn-success.btn-circle {
@@ -82,39 +82,29 @@
       font-weight: 500;
     }
 
-    .file-pill {
-      background: #f4f6fa;
-      border: 2px solid #2f3a8f;
-      border-radius: 30px;
-      padding: 6px 12px;
-      margin-right: 10px;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .file-pill i {
-      margin-right: 6px;
-    }
-
-    .info-pengajuan {
-      background-color: #f8f9fa; /* default card bg */
+    
+    .info-p {
+      background-color: #efefef; /* default card bg */
       color: #212529;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
-
-    .info-pengajuan:hover {
-      background-color: #0d6efd; /* biru Bootstrap */
+    
+    .info-p:hover {
+      background-color: #4B68FB; /* biru Bootstrap */
+      color: #fff;
+    }
+    
+    .info-p:hover p,
+    .info-p:hover h5 {
       color: #fff;
     }
 
-    .info-pengajuan:hover p,
-    .info-pengajuan:hover h5 {
-      color: #fff;
-    }
-
+    
     .dokumen-sidang {
-      background-color: #f8f9fa; /* default */
-      color: #212529;        transition: background-color 0.3s ease, color 0.3s ease;
+      background-color: #ebeef5; /* default */
+      color: #212529;        
+      transition: background-color 0.3s ease, color 0.3s ease;
+      
     }
 
     .dokumen-sidang:hover {
@@ -124,14 +114,15 @@
 
     .dokumen-sidang:hover h5,
     .dokumen-sidang:hover .file-link { 
-      color: #fff;
+      border-color: #fff;
+      color: #fff
     }
 
     .file-link {
       display: inline-block;
       align-items: center;
       gap: 8px;
-      padding: 6px 12px;
+      padding:12px 12px;
       border: 1px solid #212529;  /* border hitam default */
       border-radius: 8px;
       background-color: transparent;
@@ -139,7 +130,9 @@
       transition: all 0.3s ease;
       text-decoration: none;
       cursor: pointer;
+      margin-right: 30px
     }
+
     .file-link i {
       transition: color 0.3s ease;
       color: inherit;
@@ -207,6 +200,70 @@
             color: white;
         }
 
+        .info-pengajuan {
+            position: relative;
+            background: rgb(235, 238, 245); 
+            border-radius: 30px; 
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: background-color 0.4s ease;
+            /* margin-right: 8px;
+            margin-left: 8px; */
+        }
+
+        .info-pengajuan::after { 
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px; 
+            height: 100%;
+            background-color: #4B68FB;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: width 0.4s ease;
+            z-index: 0;
+        }
+
+        .info-pengajuan:hover::after {
+            width: 100%;
+            border-radius: 20px;
+        }
+
+        .info-pengajuan .section {
+            z-index: 1;
+            color: #333;
+            transition: color 0.4s ease;
+        }
+
+        .info-pengajuan:hover .section {
+            color: white;
+        }
+
+        .info-pengajuan .section i {
+            margin-right: 10px; 
+            color: rgb(70, 70, 70);
+            transition: color 0.4s ease;
+            width: 20px; 
+            text-align: center;
+        }
+
+        .info-pengajuan:hover .section i{
+            color: white;
+        }
+
+        /* .info-pengajuan .section p,
+        .info-pengajuan .section h5 {
+           transition: color 0.4s ease;
+        } */
+
+
+
   </style>
 </head>
 
@@ -260,23 +317,24 @@
   <h3 class="mb-4">Detail Pengajuan</h3>
 
 <div class="card mb-3 info-pengajuan">
-    <h5 class="fw-semibold">Informasi Pengajuan</h5>
+    <h5 class="fw-semibold section">Informasi Pengajuan</h5>
     <div class="row mt-2">
-        <div class="col-md-6">
+        <div class="col-md-6 section">
             <p class="mb-1">Nama Mahasiswa</p>
             <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['nama']); ?></p>
 
             <p class="mb-1">Nomor Induk Mahasiswa</p>
             <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['nim']); ?></p>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 section">
             <p class="mb-1">Mata Kuliah</p>
             <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['mata_kuliah']); ?></p>
 
             <?php
             if (isset($mahasiswa['judul_sidang'])) {
             ?>
-                <p class="mb-1 mt-3">Judul Sidang</p> <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['judul_sidang']); ?></p>
+                <p class="mb-1 mt-3">Judul Sidang</p> 
+                <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['judul_sidang']); ?></p>
             <?php
             }
             ?>
@@ -284,7 +342,7 @@
     </div>
 </div>
 
-<div class="card mb-3 dokumen-sidang">
+<div class="card mb-3 dokumen-sidang position-relative">
   <h5 class="fw-semibold">Dokumen Sidang</h5>
   <div class="mt-2">
     <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
@@ -294,7 +352,19 @@
       <i class="fa-solid fa-file-zipper"></i> dokumen_pendukung_kel-1.zip
     </a>
   </div>
-</div>
+</div> 
+
+<!-- <div class="card mb-3 dokumen-sidang">
+  <h5 class="fw-semibold">Dokumen Sidang</h5>
+  <div class="mt-2">
+    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
+      <i class="fa-solid fa-file-lines"></i> berkas_laporan_kel-1.pdf
+    </a>
+    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
+      <i class="fa-solid fa-file-zipper"></i> dokumen_pendukung_kel-1.zip
+    </a>
+  </div>
+</div> -->
 
 
   <div class="d-flex justify-content-between">
@@ -388,6 +458,7 @@
         }
       });
     });
+    
 
   </script>
 </body>
