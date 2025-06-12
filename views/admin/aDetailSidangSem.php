@@ -533,7 +533,7 @@
             margin-left: 10px;
         }
         #penjadwalanSidangModal .modal-dialog {
-            max-width: 600px;
+            max-width: 850px;
         }
         .modal-body .form-toggle-buttons {
             display: inline-flex;
@@ -745,15 +745,14 @@
                     </div>
                   </div>
                 </div>
-              
-                    </div>
-                </div>
-
+              </div>
             </div>
-            </main>
-      </div>     
-    
-    
+          </div>
+        </div>
+      </main>
+    </div>
+
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
