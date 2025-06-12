@@ -294,6 +294,13 @@
         margin-right: 15px;
         font-weight: 550;
       }
+      .label-row i {
+  font-size: 1.5rem;    /* Perbesar icon */
+}
+
+.label-row .fw-bold {
+  font-size: 1.2rem;    /* Perbesar tulisan label */
+}
 
       #detailpenilaian {
         width: 75px; ;
@@ -390,7 +397,9 @@ input.form-control:active {
 }
 
       @media (max-width: 750px) {
-        
+        .page-nama{
+          margin-left:10px;
+        }
         h2{
           margin-left: 10px;
           margin-top: 50px;
@@ -503,6 +512,9 @@ input.form-control:active {
     max-width: 48%;
     flex: 1 1 48%;
   }
+  .modal-body .btnKonfirmasi {
+  width: 10% !important;
+}
   .kakimodal {
     gap: 10px !important;
     justify-content: center !important;
@@ -558,6 +570,7 @@ input.form-control:active {
     
            
       }
+     
 
       @media (max-width: 1000px) {
        
@@ -575,6 +588,7 @@ input.form-control:active {
         .section2{
           margin-top: 5px !important;
         }
+       
         .col-lg-49{
           display: block;
           flex: 0 0 94.5% ;
@@ -608,7 +622,8 @@ input.form-control:active {
         .NavSide__main-content #cardNilai {
           width: 100% !important;
           margin-left: 0 !important;
-          margin-bottom: 40px;
+          margin-bottom: 0px;
+          margin-top: 30px;
         }
 
         .NavSide__main-content #nilaiMahasiswa {
@@ -671,6 +686,9 @@ input.form-control:active {
     max-width: 48%;
     flex: 1 1 48%;
   }
+  .modal-body .btnKonfirmasi {
+  width: 10% !important;
+}
   .kakimodal {
     gap: 10px !important;
     justify-content: center !important;
@@ -789,7 +807,7 @@ input.form-control:active {
            <div class="row mb-3">
       <div class="col-12">
         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-        <p class="page-nama">M. Harris Nur S</p>
+        <!--<p class="page-nama">M. Harris Nur S</p>-->
       </div>
     </div>
     <br>
@@ -800,41 +818,41 @@ input.form-control:active {
       <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
       <div class="d-flex flex-wrap gap-1 px-4 py-3">
         
-        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
+        <div class="section" style="flex: 1 1 200px; margin-left:30px;  color: #333;">
          
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-id-card"></i>
               <span class="fw-bold">NIM</span>
             </div>
-            <div class="value-row text-secondary">0920240033</div>
+            <div class="value-row text-secondary fw-bold">0920240033</div>
           </div>
           
-          <div class="info-group mb-3">
+          <div class="info-group mb-3" style="margin-top:45px;">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-user"></i>
               <span class="fw-bold">Nama</span>
             </div>
-            <div class="value-row text-secondary">M. Harris Nur S.</div>
+            <div class="value-row text-secondary fw-bold">M. Harris Nur S.</div>
           </div>
         </div>
         
-        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
+        <div class="section2" style="flex: 1 1 200px; color: #333;">
          
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-book"></i>
               <span class="fw-bold">Mata Kuliah</span>
             </div>
-            <div class="value-row text-secondary">Tugas Akhir</div>
+            <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
           </div>
          
-          <div class="info-group mb-3">
+          <div class="info-group mb-3" style="margin-top:45px;">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-user-tie"></i>
               <span class="fw-bold">Dosen Pembimbing</span>
             </div>
-            <div class="value-row text-secondary">Timotius Victory</div>
+            <div class="value-row text-secondary fw-bold">Timotius Victory</div>
           </div>
         </div>
       </div>
