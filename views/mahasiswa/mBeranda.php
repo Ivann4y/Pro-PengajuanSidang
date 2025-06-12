@@ -405,6 +405,16 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             font-size: 1.2rem;
             color: #4B68FB;
         }
+
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
+        }
     </style>
 </head>
 

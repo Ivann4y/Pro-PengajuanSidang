@@ -370,6 +370,7 @@
         background-color: #3a56e8;
         transform: translateY(-2px);
       }
+   
       .col-lg-49 {
   flex: 0 0 49%;
   max-width: 49%;
@@ -492,11 +493,18 @@ input.form-control:active {
           padding: 0 !important;
         }
 
-        .kakimodal .btnKonfirmasi,
-        .mb5 .btnKonfirmasi {
-          min-width: 90px;
-          flex:1 1 auto;
-        }
+       
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    max-width: 48%;
+    flex: 1 1 48%;
+  }
+  .kakimodal {
+    gap: 10px !important;
+    justify-content: center !important;
+  }
+
 
         .penilaian-row {
           flex-direction: row;
@@ -544,6 +552,8 @@ input.form-control:active {
         .section2{
           margin-top: 5px !important;
         }
+    
+           
       }
 
       @media (max-width: 1000px) {
@@ -651,11 +661,18 @@ input.form-control:active {
           padding: 0 !important;
         }
 
-        .kakimodal .btnKonfirmasi,
-        .mb5 .btnKonfirmasi {
-          min-width: 90px;
-          flex:1 1 auto;
-        }
+       
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    max-width: 48%;
+    flex: 1 1 48%;
+  }
+  .kakimodal {
+    gap: 10px !important;
+    justify-content: center !important;
+  }
+
 
         .NavSide__main-content .penilaian-row {
           flex-direction: row;
@@ -696,7 +713,33 @@ input.form-control:active {
           width: 100%;
           flex: 3;
         }
+        .bi-pencil-fill{
+          margin-right:17px !important;
+        }
+   
       }
+      .page-nama {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: -35px;
+            margin-bottom: 20px;
+        }
+        .tooltip .tooltip-inner {
+  background-color: rgb(235, 238, 245) !important;
+  color:black !important;      /* Ganti warna teks sesuai kebutuhan */
+  border: 1px solid black;      /* Opsional: tambahkan border agar lebih jelas */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before,
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before,
+.tooltip.bs-tooltip-start .tooltip-arrow::before,
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-top-color: rgb(235, 238, 245) !important;
+  border-bottom-color: rgb(235, 238, 245) !important;
+  border-left-color: rgb(235, 238, 245) !important;
+  border-right-color: rgb(235, 238, 245) !important;
+}
     </style>
   </head>
   <body>
@@ -817,7 +860,12 @@ input.form-control:active {
           <div class="">
             <div class="card" id="carddetailPenilaian">
         <div class="card-body">
-            <h3 class="card-title text-black">Detail Penilaian :</h3>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
+            <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Pencet ini jika nilai ingin sama dengan nilai Akhir" data-bs-boundary="window" data-bs-fallback-placements="[]">
+  <i class="bi bi-pencil-fill" style="margin-right: 25px;"></i>
+</a>
+            </div>
             <div class="row justify-content-center align-items-center">
               <div class="col d-flex align-items-center">
                 <label for="nilaiLaporan" id="labelpenilaian" class="text-black">Nilai laporan</label>
@@ -929,14 +977,34 @@ input.form-control:active {
       <div class="modal-body">
         <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah yakin ingin mengirim nilai akhir?</p>
         <div class="d-flex justify-content-between px-5">
-          <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
-          <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
+          <button type="button" class="btnKonfirmasi  btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi  btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 <script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+  document.addEventListener('DOMContentLoaded', function () {
+  var tooltipTrigger = document.querySelector('[data-bs-toggle="tooltip"]');
+  var tooltipInstance = new bootstrap.Tooltip(tooltipTrigger);
+
+  // Tampilkan tooltip secara manual
+  tooltipInstance.show();
+
+  // Sembunyikan tooltip setelah 2 detik (2000 ms)
+  setTimeout(function () {
+    tooltipInstance.hide();
+  }, 5000);
+});
+
 
     let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
@@ -1018,23 +1086,25 @@ input.form-control:active {
     modal.show();
   }
   function TutupKonfirmasiModal() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide();
-    setTimeout(() => {
-  const input = document.getElementById("nilaiMahasiswa");
-  input.focus();
-}, 300);
-  }
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  setTimeout(() => {
+    const input = document.getElementById("nilaiMahasiswa");
+    input.focus();
+    showTooltipPensil();
+  }, 300);
+}
   
   function isiNilaiAkhir() {
-    document.getElementById("nilaiMahasiswa").value = "A";
-    document.getElementsByName("nilaiLaporan")[0].value = "90";
-    document.getElementsByName("MateriPresentasi")[0].value = "85";
-    document.getElementsByName("Penyampaian")[0].value = "88";
-    document.getElementsByName("NilaiProyek")[0].value = "92";
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide(); 
-  }
+  document.getElementById("nilaiMahasiswa").value = "A";
+  document.getElementsByName("nilaiLaporan")[0].value = "90";
+  document.getElementsByName("MateriPresentasi")[0].value = "85";
+  document.getElementsByName("Penyampaian")[0].value = "88";
+  document.getElementsByName("NilaiProyek")[0].value = "92";
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  showTooltipPensil();
+}
 
   function hitungRataRataDanSetNilai() {
   // Ambil semua nilai input detail penilaian
