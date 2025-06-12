@@ -313,12 +313,17 @@
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-            <div class="container-fluid"> 
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="text-heading" style="color:black">Nayaka Ivana Putra (Mahasiswa)</h2>
+            <!-- Top bar desktop -->
+      
+            <div class="dashboard-header">
+                <h2 class="page-title">Nayaka Ivana Putra (Mahasiswa)</h2>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon">
+                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
-                </div><br>
+                </div>
+            </div>
 
                 <div class="row">
                     <div class="col-12 col-md-6">
@@ -331,7 +336,7 @@
                             </ul>
                         </div>
                     </div>
-                </div><br>
+                </div>
 
                 <div class="row">
                     <div class="col-12">
@@ -380,7 +385,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Sidebar Toggle Logic 
         let menuToggle = document.querySelector(".NavSide__toggle");
