@@ -206,22 +206,34 @@ if ($_SESSION['role'] !== 'admin') {
             margin-bottom: 0;
         }
 
-        .calendar-card {
+         .calendar-card {
             background-color: #4B68FB;
             color: white;
             display: flex;
+            /* This is correct, it makes the card a flex container */
             flex-direction: column;
+            /* This is correct, it stacks children vertically */
             padding: 1rem;
-            border-radius: 12px;
+            border-radius: 5vh;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             min-height: 300px;
+            margin-bottom: 2vh;
         }
 
         .calendar-card .section-title-container {
+            /* No changes needed here, this is fine */
             display: flex;
-            justify-content: space-between;
             align-items: center;
             padding-bottom: 0.5rem;
+            flex-shrink: 0;
+            /* Prevents this header from shrinking */
+        }
+
+        .calendar-card .calendar-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
         }
 
         .calendar-card .section-title {
@@ -247,27 +259,58 @@ if ($_SESSION['role'] !== 'admin') {
             border-collapse: collapse;
             margin-top: 0.5rem;
             flex-grow: 1;
+            /* This is key: it makes the <table> fill available space */
+            display: flex;
+            /* IMPORTANT: Treat the table itself as a flex container */
+            flex-direction: column;
+            /* Stack its children (thead, tbody) vertically */
+        }
+
+        .calendar-card .calendar thead,
+        .calendar-card .calendar tbody {
+            display: flex;
+            /* Treat thead and tbody as flex containers */
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .calendar-card .calendar tbody {
+            flex-grow: 1;
+            /* Make the body grow to fill the table's space */
+        }
+
+        .calendar-card .calendar tr {
+            display: flex;
+            /* Treat each row as a flex container */
+            flex-grow: 1;
+            /* Make each row take up equal vertical space in tbody */
+            width: 100%;
+        }
+
+        .calendar-card .calendar th,
+        .calendar-card .calendar td {
+            flex: 1;
+            /* This is the magic! Makes each cell take up equal horizontal space */
+            display: flex;
+            /* Use flex to center the content inside the cell */
+            align-items: center;
+            justify-content: center;
+            padding: 0.1rem;
+            /* Keep your padding for the cell */
+            text-align: center;
         }
 
         .calendar-card .calendar th {
-            padding: 0.3rem 0.25rem;
-            text-align: center;
+            /* Styles specific to header cells */
             font-weight: 500;
             font-size: 0.75rem;
             color: #C7D2FE;
             text-transform: uppercase;
+            padding: 0.3rem 0.25rem;
         }
-
-        .calendar-card .calendar td {
-
-            padding: 0.1rem;
-
-            text-align: center;
-            vertical-align: middle;
-        }
-
 
         .calendar-card .calendar-day {
+            /* No changes needed here, this styling is for the bubble inside the cell */
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -291,20 +334,6 @@ if ($_SESSION['role'] !== 'admin') {
         .calendar-card .calendar-day:hover:not(.current-day) {
             background-color: rgba(255, 255, 255, 0.2);
         }
-
-        .calendar-card .calendar-day:hover:not(.current-day) {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .calendar-card .calendar tbody,
-        .calendar-card .calendar tr {
-            height: 100%;
-        }
-
-        .calendar-card .calendar td {
-            height: calc(100% / 6);
-        }
-
 
         .sidang-mendatang-card {
             overflow-y: auto;
@@ -499,13 +528,12 @@ if ($_SESSION['role'] !== 'admin') {
                 </div>
 
                 <!-- Kalender dan Sidang Mendatang -->
-                <div class="col-lg-5">
-                    <!-- Kalender -->
+                      <div class="col-lg-5">
                     <div class="dashboard-card calendar-card">
                         <div class="section-title-container">
-                            <h3 class="section-title" id="currentMonthYear"></h3>
                             <div class="calendar-nav">
                                 <i class="bi bi-chevron-left" id="prevMonth"></i>
+                                <h3 class="section-title" id="currentMonthYear"></h3>
                                 <i class="bi bi-chevron-right" id="nextMonth"></i>
                             </div>
                         </div>
@@ -522,10 +550,11 @@ if ($_SESSION['role'] !== 'admin') {
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Kalender akan diisi oleh JavaScript -->
+                                  <!-- Kalender akan diisi oleh JavaScript -->
                             </tbody>
                         </table>
                     </div>
+
                     <!-- Sidang Mendatang -->
                     <div class="dashboard-card content-card sidang-mendatang-card">
                         <h3 class="section-title">Sidang Mendatang</h3>
@@ -566,7 +595,8 @@ if ($_SESSION['role'] !== 'admin') {
     </div>
 
     <!-- Bootstrap JS Bundle (termasuk Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         // =========================
         // Sidebar Toggle Logic
