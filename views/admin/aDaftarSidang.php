@@ -151,13 +151,19 @@
             right: 0;
             height: 60px;
             z-index: 900;
-            background: transparent; 
+            background: #FFFFFF;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            /* PERUBAHAN CSS: Menjadikan topbar flex container */
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
         }
 
         .NavSide__toggle {
             font-size: 2rem;
             cursor: pointer;
             color: #4B68FB;
+            z-index: 1002; /* Pastikan toggle di atas ikon */
         }
 
         .NavSide__toggle .close {
@@ -170,37 +176,6 @@
 
         .NavSide__toggle.NavSide__toggle--active .close {
             display: block;
-        }
-
-        @media (max-width: 992px) {
-            .NavSide__sidebar {
-                transform: translateX(-280px);
-            }
-
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-            }
-
-            .NavSide__main-content {
-                margin-left: 0;
-                padding-top: 80px;
-            }
-
-            .NavSide__topbar {
-                display: block;
-            }
-
-            .NavSide__toggle {
-                position: fixed;
-                top: 15px;
-                left: 20px;
-                z-index: 1001;
-                transition: transform 0.4s ease-in-out;
-            }
-
-            .NavSide__toggle.NavSide__toggle--active {
-                transform: translateX(280px); 
-            }
         }
 
         .main-header {
@@ -229,7 +204,7 @@
         }
 
         .main-title {
-            color: #4B68FB;
+            color:rgb(0, 0, 0);
             font-weight: 700;
             font-size: 2.1rem;
             margin-bottom: 1rem;
@@ -241,16 +216,13 @@
             align-items: flex-end;
             gap: 0.75rem;
         }
-
-        .profile-icon {
-            font-size: 2.5rem;
-            color: #343a40;
-        }
-
+        
         .search-input-group {
             background-color: #F3F4F6;
             border-radius: 0.5rem;
             overflow: hidden;
+            max-width: 250px;
+            width: 100%;
         }
 
         .search-input-group input.form-control {
@@ -262,6 +234,45 @@
         .search-input-group .input-group-text {
             background-color: transparent;
             border: none;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-icons > a {
+            font-size: 1.4rem;
+            color: #5a5a5a;
+            transition: color 0.2s ease;
+        }
+
+        .header-icons > a:hover {
+            color: #4B68FB;
+        }
+
+        .header-right-panel .profile-icon, .NavSide__topbar .profile-icon {
+            background-color: #333;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .header-right-panel .profile-icon:hover, .NavSide__topbar .profile-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .header-right-panel .profile-icon a, .NavSide__topbar .profile-icon a {
+            color: white;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #ddAdminSidangTypeButton {
@@ -284,7 +295,6 @@
         .table-admin-custom tbody tr.isiTabel {
             background-color: #F5F5F5;
             transition: background-color 0.3s ease, color 0.3s ease;
-            cursor: pointer;
         }
 
         .table-admin-custom .isiTabel td {
@@ -298,7 +308,9 @@
 
         .table-admin-custom .isiTabel td:last-child {
             border-radius: 0 10px 10px 0;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .table-admin-custom tbody tr.isiTabel:hover {
@@ -306,20 +318,17 @@
             color: #FFFFFF;
         }
 
-        /* CSS BARU untuk tombol tanpa border */
         .detail-btn {
             border: none !important;
             background-color: transparent !important;
-            color: #4B68FB; /* Warna ikon */
-            padding: 0.25rem 0.5rem; /* Menyesuaikan padding agar tidak terlalu besar */
+            color: #4B68FB;
+            padding: 0.25rem 0.5rem;
         }
 
-        /* Efek saat hover pada tombol */
         .detail-btn:hover {
             opacity: 0.7;
         }
 
-        /* Memastikan warna ikon menjadi putih saat baris di-hover */
         .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
             color: #FFFFFF;
             opacity: 1;
@@ -339,6 +348,114 @@
             background-color: #4FD382;
             border-color: #4FD382;
         }
+
+        @media (max-width: 992px) {
+            .NavSide__sidebar {
+                transform: translateX(-280px);
+            }
+
+            .NavSide__sidebar.NavSide__sidebar--active-mobile {
+                transform: translateX(0);
+            }
+
+            .NavSide__main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+
+            .NavSide__topbar {
+                display: flex; /* Mengganti dari block ke flex */
+            }
+
+            .NavSide__toggle {
+                position: relative; /* Mengubah dari fixed */
+                top: auto;
+                left: auto;
+            }
+
+            .NavSide__toggle.NavSide__toggle--active {
+                transform: translateX(280px); 
+            }
+            
+            /* Sembunyikan search bar di mobile untuk memberi ruang */
+            .search-input-group {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1.5rem;
+            }
+
+            .header-right-panel {
+                /* Tidak perlu diubah lagi karena ikon sudah pindah */
+            }
+            
+            .main-title {
+                font-size: 1.8rem;
+            }
+
+            .table-responsive {
+                overflow-x: hidden;
+            }
+
+            .table-admin-custom thead {
+                display: none;
+            }
+
+            .table-admin-custom tbody,
+            .table-admin-custom tr,
+            .table-admin-custom td {
+                display: block;
+                width: 100%;
+            }
+
+            .table-admin-custom tr.isiTabel {
+                margin-bottom: 20px;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            }
+            
+            .table-admin-custom td {
+                display: flex;
+                justify-content: space-between;
+                padding: 12px 15px;
+                text-align: right;
+                border-bottom: 1px solid #e9e9e9;
+            }
+            
+            .table-admin-custom tr.isiTabel:hover,
+            .table-admin-custom tr.isiTabel:hover .detail-btn {
+                background-color: #F5F5F5;
+                color: #000;
+            }
+            
+            .table-admin-custom tr.isiTabel:hover .detail-btn {
+                color: #4B68FB;
+            }
+
+            .table-admin-custom td:first-child,
+            .table-admin-custom td:last-child {
+                border-radius: 0;
+            }
+            
+            .table-admin-custom td:last-child {
+                border-bottom: none;
+                justify-content: center;
+            }
+
+            .table-admin-custom td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                text-align: left;
+                margin-right: 10px;
+                color: #333;
+            }
+        }
     </style>
 </head>
 
@@ -346,7 +463,7 @@
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png"alt="AstraTech Logo Admin">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo Admin">
             </div>
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
@@ -373,6 +490,7 @@
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
             </div>
+            <div id="mobile-icons-container"></div>
         </div>
 
         <main class="NavSide__main-content" id="adminDaftarSidangContent">
@@ -386,15 +504,24 @@
                                 Semua
                             </button>
                             <ul class="dropdown-menu" id="dynamicDropdownMenu">
-                                </ul>
+                            </ul>
                         </div>
                     </div>
                 </div>
                 <div class="header-right-panel">
-                    <div class="profile-icon">
-                        <i class="bi bi-person-circle"></i>
+                    <div id="desktop-icons-container">
+                         <div class="header-icons">
+                            <a href="aNotifikasi.php" title="Notifikasi">
+                                <i class="bi bi-bell-fill"></i>
+                            </a>
+                            <div class="profile-icon">
+                                <a href="aProfil.php" title="Profil">
+                                    <i class="bi bi-person-fill"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-group search-input-group" style="width: 250px;">
+                    <div class="input-group search-input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control" placeholder="Cari..." aria-label="Cari">
                     </div>
@@ -415,48 +542,48 @@
                     </thead>
                     <tbody id="adminSidangContent"> 
                         <tr class="isiTabel" data-id="TA001" data-type="ta">
-                            <td>TA001</td>
-                            <td>0920240053</td>
-                            <td>Nayaka Ivanna</td>
-                            <td>Sistem Pengajuan Sidang</td>
-                            <td>Dr. Rida Indah F.</td>
-                            <td>
+                            <td data-label="Nomor">TA001</td>
+                            <td data-label="NIM">0920240053</td>
+                            <td data-label="Nama">Nayaka Ivanna</td>
+                            <td data-label="Judul/MK">Sistem Pengajuan Sidang</td>
+                            <td data-label="Pembimbing">Dr. Rida Indah F.</td>
+                            <td data-label="Aksi">
                                 <button type="button" class="btn detail-btn">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </button>
                             </td>
                         </tr>
                         <tr class="isiTabel" data-id="TA002" data-type="ta">
-                            <td>TA002</td>
-                            <td>0920240054</td>
-                            <td>Zahrah Imelda</td>
-                            <td>Pengembangan Aplikasi Mobile Edukasi</td>
-                            <td>Dr. Rida Indah F.</td>
-                            <td>
+                            <td data-label="Nomor">TA002</td>
+                            <td data-label="NIM">0920240054</td>
+                            <td data-label="Nama">Zahrah Imelda</td>
+                            <td data-label="Judul/MK">Pengembangan Aplikasi Mobile Edukasi</td>
+                            <td data-label="Pembimbing">Dr. Rida Indah F.</td>
+                            <td data-label="Aksi">
                                 <button type="button" class="btn detail-btn">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </button>
                             </td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM001" data-type="semester">
-                            <td>SEM001</td>
-                            <td>0920230053</td>
-                            <td>Nayaka Ivanna</td>
-                            <td>Basis Data 1</td>
-                            <td>Dr. Rida Indah F</td>
-                            <td>
+                            <td data-label="Nomor">SEM001</td>
+                            <td data-label="NIM">0920230053</td>
+                            <td data-label="Nama">Nayaka Ivanna</td>
+                            <td data-label="Judul/MK">Basis Data 1</td>
+                            <td data-label="Pembimbing">Dr. Rida Indah F</td>
+                            <td data-label="Aksi">
                                 <button type="button" class="btn detail-btn">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </button>
                             </td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM002" data-type="semester">
-                            <td>SEM002</td>
-                            <td>0920230054</td>
-                            <td>Zahrah Imelda</td>
-                            <td>Pemrograman 2</td>
-                            <td>Dr. Rida Indah F</td>
-                            <td>
+                            <td data-label="Nomor">SEM002</td>
+                            <td data-label="NIM">0920230054</td>
+                            <td data-label="Nama">Zahrah Imelda</td>
+                            <td data-label="Judul/MK">Pemrograman 2</td>
+                            <td data-label="Pembimbing">Dr. Rida Indah F</td>
+                            <td data-label="Aksi">
                                 <button type="button" class="btn detail-btn">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </button>
@@ -492,6 +619,7 @@
             const dynamicHeader = document.getElementById("thDynamicHeader");
             const dropdownMenu = document.getElementById("dynamicDropdownMenu");
             const ddButton = document.getElementById("ddAdminSidangTypeButton");
+            const dynamicMKHeader = document.querySelectorAll('[data-label="Judul/MK"], [data-label="Judul Sidang"], [data-label="Mata Kuliah"]');
 
             allRows.forEach(row => {
                 const rowType = row.dataset.type;
@@ -504,6 +632,7 @@
 
             dropdownMenu.innerHTML = '';
             let options = '';
+            let mobileLabel = "Judul/Mata Kuliah";
 
             if (viewType === 'All') {
                 ddButton.textContent = "Semua";
@@ -514,16 +643,23 @@
             } else if (viewType === 'ta') {
                 ddButton.textContent = "Sidang TA";
                 dynamicHeader.textContent = "Judul Sidang";
+                mobileLabel = "Judul Sidang";
                 options = `
                     <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('All');">Semua</a></li>
                     <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('semester');">Sidang Semester</a></li>`;
             } else if (viewType === 'semester') {
                 ddButton.textContent = "Sidang Semester";
                 dynamicHeader.textContent = "Mata Kuliah";
+                mobileLabel = "Mata Kuliah";
                 options = `
                     <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('All');">Semua</a></li>
                     <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); switchAdminSidangView('ta');">Sidang TA</a></li>`;
             }
+            
+            dynamicMKHeader.forEach(th => {
+                th.setAttribute('data-label', mobileLabel);
+            });
+            
             dropdownMenu.insertAdjacentHTML('beforeend', options);
         }
 
@@ -544,12 +680,7 @@
                 item.addEventListener('click', function(event) {
                     const link = this.querySelector('a');
                     if (link && !link.hasAttribute('data-bs-toggle')) {
-                        listItems.forEach(li => li.classList.remove("NavSide__sidebar-item--active"));
-                        this.classList.add("NavSide__sidebar-item--active");
-
-                        if (link.getAttribute('href') && link.getAttribute('href') !== '#') {
-                            window.location.href = link.href;
-                        }
+                        window.location.href = link.href;
                     }
                 });
             });
@@ -558,35 +689,50 @@
 
             const allTableRows = document.querySelectorAll('.table-admin-custom tbody tr.isiTabel');
             allTableRows.forEach(row => {
-                row.addEventListener('click', function() {
-                    const sidangId = this.dataset.id;
-                    const sidangType = this.dataset.type;
-                    if (sidangId && sidangType) {
-                        if (sidangType === 'ta') {
-                            window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
-                        } else if (sidangType === 'semester') {
-                            window.location.href = `aDetailSidangSem.php?type=${sidangType}&id=${sidangId}`;
+                row.addEventListener('click', function(event) {
+                    const detailButton = event.target.closest('.detail-btn');
+
+                    if (detailButton) {
+                        const sidangId = this.dataset.id;
+                        const sidangType = this.dataset.type;
+
+                        if (sidangId && sidangType) {
+                            if (sidangType === 'ta') {
+                                window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
+                            } else if (sidangType === 'semester') {
+                                window.location.href = `aDetailSidangSem.php?type=${sidangType}&id=${sidangId}`;
+                            }
                         }
                     }
                 });
-
-                const detailButton = row.querySelector('.detail-btn');
-                if (detailButton) {
-                    detailButton.addEventListener('click', function(event) {
-                        event.stopPropagation(); 
-
-                        const sidangId = row.dataset.id;
-                        const sidangType = row.dataset.type;
-
-                        if (sidangType === 'ta') {
-                            window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
-                        } else if (sidangType === 'semester') {
-                            window.location.href = `aDetailSidangSem.php?type=${sidangType}&id=${sidangId}`;
-                        }
-                    });
-                }
             });
+            
+            // --- PERUBAHAN JAVASCRIPT: Logika untuk memindahkan ikon ---
+            const desktopIconsContainer = document.getElementById('desktop-icons-container');
+            const mobileIconsContainer = document.getElementById('mobile-icons-container');
+            const headerIcons = desktopIconsContainer.querySelector('.header-icons');
+
+            function handleIconPlacement() {
+                if (window.innerWidth <= 992) {
+                    // Jika layar mobile, pindahkan ikon ke wadah mobile (di topbar)
+                    if (!mobileIconsContainer.contains(headerIcons)) {
+                        mobileIconsContainer.appendChild(headerIcons);
+                    }
+                } else {
+                    // Jika layar desktop, kembalikan ikon ke wadah desktop
+                    if (!desktopIconsContainer.contains(headerIcons)) {
+                        desktopIconsContainer.appendChild(headerIcons);
+                    }
+                }
+            }
+
+            // Jalankan fungsi saat halaman pertama kali dimuat
+            handleIconPlacement();
+
+            // Jalankan fungsi setiap kali ukuran jendela diubah
+            window.addEventListener('resize', handleIconPlacement);
         });
     </script>
 </body>
+
 </html>
