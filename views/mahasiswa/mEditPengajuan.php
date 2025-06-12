@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="../../extra/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <title>Edit Pengajuan Sidang</title>
 </head>
 
@@ -65,6 +66,59 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+
+  .btn-kembali {
+    background-color: #4B68FB;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    max-width: 200px;
+  }
+
+  .btn-kembali:hover {
+    position: relative;
+    background-color: white;
+    color: #4B68FB;
+  }
+
+  .btn-kembali .icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    background-color: white;
+    border-radius: 50%;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-kembali:hover .icon-circle {
+    background-color: #4B68FB;
+  }
+
+  .btn-kembali .icon-circle i {
+    color: #4B68FB;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+
+  .btn-kembali:hover .icon-circle i {
+    color: white;
+  }
+
+  .bintangMerah {
+    color: red;
+    font-weight: bold;
   }
 </style>
 
@@ -137,11 +191,15 @@
           ?>
           <form action="#" method="post">
             <div class="mb-3">
-              <label for="judul" class="form-label">Judul Sidang</label>
+              <label for="judul" class="form-label">
+                <span class="text-danger">* </span>Judul Sidang
+              </label>
               <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo $judul ?>" placeholder="Masukkan Judul Sidang" />
             </div>
             <div class="mb-3">
-              <label for="matkul" class="form-label">Mata Kuliah</label>
+              <label for="matkul" class="form-label">
+                <span class="text-danger">* </span>Mata Kuliah
+              </label>
               <select class="forM form-select" id="matkul" name="matkul">
                 <option selected disabled>Pilih Mata Kuliah</option>
                 <option value="Tugas Akhir" <?php if ($matkul == 'Tugas Akhir') {
@@ -159,7 +217,9 @@
               </select>
             </div>
             <div class="mb-3">
-              <label for="kelas" class="form-label">Kelas</label>
+              <label for="kelas" class="form-label">
+                <span class=text-danger>* </span> Kelas
+              </label>
               <select class="forM form-select" id="kelas" name="kelas">
                 <option selected disabled>Pilih Kelas</option>
                 <option value="A">RPL 1A</option>
@@ -167,12 +227,14 @@
               </select>
             </div>
 
+            <!-- Upload Dokumen Laporan Sidang -->
             <div class="row">
-              <!-- Laporan Sidang -->
               <div class="col-md-6 mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">Dokumen Laporan Sidang</h6>
-                  <form id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
+                  <h6 class="fw-bold text-dark">
+                    <span class="text-danger">* </span>Dokumen Laporan Sidang
+                  </h6>
+                  <div id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="laporanSidang" name="laporanSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
                       <div class="upload-content">
@@ -183,15 +245,17 @@
                         <p class="mt-2 text-muted small" id="laporanLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
                       </div>
                     </label>
-                  </form>
+                  </div>
                 </div>
               </div>
 
-              <!-- Dokumen Pendukung -->
+              <!-- Upload Dokumen Pendukung Sidang -->
               <div class="col-md-6 mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">Dokumen Pendukung Sidang</h6>
-                  <form id="dokPendukungForm" action="#" method="POST" enctype="multipart/form-data">
+                  <h6 class="fw-bold text-dark">
+                    <span class="text-danger">* </span>Dokumen Pendukung Sidang
+                  </h6>
+                  <div id="dokPendukungForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="dokPendukung" name="pendukungSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
                       <div class="upload-content">
@@ -202,24 +266,11 @@
                         <p class="mt-2 text-muted small">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
                       </div>
                     </label>
-                  </form>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <!-- Modal Peringatan -->
-            <div class="modal fade" id="modalPeringatan" tabindex="-1" aria-labelledby="modalPeringatanLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-                  <div class="modal-header border-0 justify-content-center">
-                  </div>
-                  <div class="modal-body">
-                    <div class="mb-3">
-                      <img src="https://cdn-icons-png.flaticon.com/512/463/463612.png" alt="Warning Icon" style="width: 100px;" />
-                    </div>
-                    <p class="fw-semibold mb-0">Dokumen Tidak Boleh Kosong</p>
-                  </div>
-                </div>
+              <div class="bintangMerah">
+                <p>* : wajib diisi</p>
               </div>
             </div>
 
@@ -241,32 +292,26 @@
               </div>
             </div>
 
-            <!-- Verifikasi Modal -->
-            <div class="d-flex justify-content-end gap-2 mt-3">
-              <button type="button" class="btn btn-secondary" id="btnSimpan">Simpan</button>
-              <!-- Trigger -->
-              <button type="button" class="btn-setuju" id="btnOpenModalKonfirmasi">
-                Kirim
-              </button>
 
 
-              <!-- Modal Berhasil -->
-              <!-- modal bootstap gajadi kepake dah diganti JS, might remove later -->
-              <div class="modal fade" id="modalBerhasil" tabindex="-1" aria-labelledby="modalBerhasilLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-                    <div class="modal-header border-0 justify-content-center">
-                      <h4 class="modal-title fw-bold" id="modalBerhasilLabel" style="font-size: 24px;">Berhasil</h4>
-                    </div>
-                    <div class="modal-body">
-                      <div class="mb-3">
-                        <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Success Icon" style="width: 100px;" />
-                      </div>
-                      <p class="fw-semibold mb-0">Dokumen berhasil diunggah!</p>
-                    </div>
-                  </div>
-                </div>
+
+            <!-- Button Simpan & Kirim, Verifikasi Modal -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <button class="btn btn-kembali" onclick="location.href='mPengajuan.php'">
+                  <span class="icon-circle">
+                    <i class="fa-solid fa-arrow-left"></i>
+                  </span>
+                  Kembali
+                </button>
               </div>
+
+              <!-- Kanan: Tombol Simpan & Kirim -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-secondary" id="btnSimpan">Simpan</button>
+                <button type="button" class="btn-setuju" id="btnOpenModalKonfirmasi">Kirim</button>
+              </div>
+            </div>
           </form>
         </div>
       </div>
@@ -312,13 +357,13 @@
 
       if (laporan === 0 || pendukung === 0) {
         Swal.fire({
-        title: 'Dokumen Tidak Boleh Kosong!',
-        icon: 'error',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#4B68FB'
-      }).then(() => {
-        modal.hide();
-      });
+          title: 'Dokumen Tidak Boleh Kosong!',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#4B68FB'
+        }).then(() => {
+          modal.hide();
+        });
       } else {
         modalKonfirmasi.show();
       }
@@ -332,13 +377,13 @@
 
       if (laporan === 0 || pendukung === 0) {
         Swal.fire({
-        title: 'Dokumen Tidak Boleh Kosong!',
-        icon: 'error',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#4B68FB'
-      }).then(() => {
-        modal.hide();
-      });
+          title: 'Dokumen Tidak Boleh Kosong!',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#4B68FB'
+        }).then(() => {
+          modal.hide();
+        });
       } else {
         history.back();
       }

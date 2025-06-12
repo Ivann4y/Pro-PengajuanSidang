@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Zia Zahran Hadi-AliansiSidang_Kelompok5">
     <title>DetailSidang-Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -178,10 +179,11 @@
         .NavSide__main-content h2 {
             margin-bottom: 1.2cm; /* Menyamakan margin-bottom */
             font-weight: 700;     /* Menyamakan ketebalan font */
+            margin-left: 30px; 
            
         }
 
-        .
+        
         
         .NavSide__toggle {
             width: 40px;
@@ -240,8 +242,8 @@
         
         /* Gaya lain yang sudah ada dipertahankan */
         .status-badge {
-            background-color: #4BFBAF;
-            color: rgb(48, 48, 110);
+            background-color: #4fd382;
+            color: #f3f4f6;
             border-radius: 20px;
             padding: 8px 18px; 
             display: inline-block;
@@ -249,6 +251,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
             font-weight: 500;
+            margin-left: 30px;
         }
 
         .info-card {
@@ -264,6 +267,7 @@
             overflow: hidden;
             transition: background-color 0.4s ease;
             margin-right: 30px;
+            margin-left: 30px;
         }
 
         .info-card::after { 
@@ -321,6 +325,7 @@
             font-weight: 500;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+            margin-left: 30px;
         }
 
         .btn-ubah:hover {
@@ -344,6 +349,7 @@
             display: inline-flex; 
             align-items: center; 
             margin-top: 3cm;
+            margin-left: 30px;
             
         }
         .btn-kembali:hover {
@@ -522,20 +528,28 @@
         .modal-body .form-actions .btn-submit:hover { 
             background-color: rgb(106, 95, 255); 
         }
+
+        .modal-body > h2 {
+            font-size: 30px; 
+            color: #374151;
+            font-weight: 600; 
+            margin-bottom: 10px;
+            margin-left: 10px;
+        }
        
         #penjadwalanSidangModal .modal-dialog {
             max-width: 600px;
         }
         .modal-body .form-toggle-buttons {
             display: inline-flex;
-            gap: 5px;
-            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
         }
         .modal-body .form-toggle-buttons button {
             width: 30px;
             height: 30px;
             font-size: 18px;
-            border-radius: 50%; /* Dibuat bulat */
+            border-radius: 20px; /* Dibuat bulat */
             border: 1px solid #ccc;
             cursor: pointer;
             background-color: white;
@@ -549,7 +563,16 @@
             font-weight: 600;
             margin-top: -35px;
             margin-bottom: 20px;
+            margin-left: 30px;
+
         }
+
+        .mt-4 {
+            margin-left: 30px;
+        }
+
+        
+
     </style>
 </head>
 <body>
@@ -620,15 +643,19 @@
                                     <form id="formDalamModal" novalidate>
                                         <div class="form-group">
                                             <label for="modal_nim">NIM</label>
-                                            <input type="text" id="modal_nim" value="0920240033" readonly />
+                                            <p>0920240033</p>
                                         </div>
                                         <div class="form-group">
                                             <label for="modal_judul_sidang">Judul Sidang</label>
-                                            <input type="text" id="modal_judul_sidang" name="judul_sidang" value="Sistem Pengajuan Sidang" readonly />
+                                            <p>Sistem Pengajuan Sidang</p>
+                                        </div>
+                                         <div class="form-group">
+                                            <label for="modal_prodi">Prodi</label>
+                                            <p>Teknik Rekayasa Perangkat Lunak</p>
                                         </div>
                                         <div class="form-group">
                                             <label for="modal_pembimbing">Pembimbing</label>
-                                            <input type="text" id="modal_pembimbing" name="pembimbing_nama" value="Rida Indah Fariani" readonly />
+                                            <p>Rida Indah Fariani</p>
                                         </div>
                                         <div id="penguji-wrapper">
                                             <div class="form-group" id="penguji-form-1">
@@ -640,16 +667,12 @@
                                                         <input type="number" id="modal_qty_penguji1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 1" />
                                                         <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji1')">+</button>
                                                     </div>
-                                                    <div class="form-toggle-buttons">
-                                                        <button type="button" onclick="addPenguji()">+</button>
-                                                        <button type="button" onclick="removePenguji()">-</button>
-                                                    </div>
+                                                      <div class="form-toggle-buttons">
+                                                       <button type="button" onclick="addPenguji()">+</button>
+                                                       <button type="button" onclick="removePenguji()">-</button>
+                                                   </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="modal_prodi">Prodi</label>
-                                            <input type="text" id="modal_prodi" name="prodi" value="Teknologi Rekayasa Perangkat Lunak" readonly/>
                                         </div>
                                         <div class="form-group">
                                             <label for="modal_ruangan">Ruangan</label>

@@ -92,9 +92,11 @@
             color: rgb(252, 252, 252); 
         }
 
+        /* --- Perubahan disini --- */
         .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a:hover {
-            color: rgb(252, 252, 252) !important;
+            color: rgb(252, 252, 252); /* !important dihapus */
         }
+        /* --- Akhir perubahan --- */
 
         .NavSide__sidebar-title {
             white-space: normal;
@@ -153,19 +155,19 @@
             display: block;
         }
 
-.NavSide__topbar {
-        display: none;
-        align-items: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        margin-left: 280px;
-        height: 60px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        z-index: 999;
-    }
+        .NavSide__topbar {
+            display: none;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            margin-left: 280px;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+        }
         
         .NavSide__topbar .NavSide__toggle { /* Styles for toggle INSIDE topbar */
             width: 40px;
@@ -179,7 +181,6 @@
             /* Removed fixed position and left/top from here, as it's within topbar */
         }
         .NavSide__topbar .NavSide__toggle i.bi {
-
             font-size: 24px; /* Slightly smaller icon as per mPerbaikan.php */
             display: none; /* Hidden by default */
             color: #4B68FB;
@@ -196,25 +197,29 @@
         }
 
 
-        .NavSide__main-content {
+       .NavSide__main-content {
             flex-grow: 1;
             padding: 20px 20px 20px calc(20px + 1cm); 
             margin-left: 280px;
+            margin-right: 40px;
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
             /* Adjust padding-top to account for fixed topbar on desktop */
-            padding-top: calc(60px + 20px); /* 60px topbar height + 20px original padding */
+            padding-top: calc(20px); /* 60px topbar height + 20px original padding */
         }
 
         /* Modifikasi Margin Global */
+        /* --- Perubahan disini --- */
         .NavSide__main-content h2 { 
-            margin-bottom: 1.2cm;
+            margin-bottom: 0.9cm; /* Diubah dari 1.2cm */
             font-weight: 700; 
         }
+        /* --- Akhir perubahan --- */
 
         /* Status badge (merah default) */
+        /* --- Perubahan disini --- */
         .status-badge {
-            margin-bottom: 1.2cm; 
+            margin-bottom: 0.9cm; /* Diubah dari 1.2cm */
             background-color: #FFA3A3;
             color: #464869;
             border-radius: 20px;
@@ -226,6 +231,7 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+        /* --- Akhir perubahan --- */
 
         /* Gaya untuk status "Disetujui" (hijau) */
         .status-badge.approved {
@@ -237,11 +243,13 @@
             margin-bottom: 1.2cm; 
         }
 
+        /* --- Perubahan disini --- */
         .NavSide__main-content h5 { 
-            margin-top: 1.2cm;
-            margin-bottom: 1.2cm;
+            margin-top: 0.9cm; /* Diubah dari 1.2cm */
+            margin-bottom: 0.5cm; /* Diubah dari 1.2cm */
             font-weight: 700; 
         }
+        /* --- Akhir perubahan --- */
 
         .file-buttons-container {
             margin-bottom: 1.2cm; 
@@ -325,16 +333,20 @@
             }
 
             /* Mobile styles for NavSide__topbar (as per mPerbaikan.php) */
+            /* --- Perubahan disini --- */
             .NavSide__topbar {
                 display: flex; /* Show topbar on mobile */
                 margin-left: 0; /* No margin-left from sidebar on mobile */
-                z-index: 1045; /* Ensure topbar is on top */
-                background-color: #ffffff; /* Keep it white */
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Keep shadow on mobile */
-                padding-top: 0px; /* Add padding to move toggle button up */
-                height: 50px; /* Increase height to accommodate the moved toggle */
+                /* z-index: 1045; */ /* Dihapus */
+                /* background-color: #ffffff; */ /* Dihapus */
+                /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */ /* Dihapus */
+                /* padding-top: 0px; */ /* Dihapus */
+                /* height: 50px; */ /* Dihapus */
             }
+            /* --- Akhir perubahan --- */
+
             /* Mobile styles for NavSide__toggle (inside topbar) */
+            /* --- Perubahan disini --- */
             .NavSide__topbar .NavSide__toggle {
                 display: flex; /* Show toggle on mobile */
                 position: static; /* Remove fixed positioning */
@@ -342,8 +354,10 @@
                 left: auto;
                 background-color: transparent; /* Remove background */
                 box-shadow: none; /* Remove shadow */
-                margin-left: 15px; /* Add some margin from the left edge */
+                /* margin-left: 15px; */ /* Dihapus */
             }
+            /* --- Akhir perubahan --- */
+
             .NavSide__topbar .NavSide__toggle i.bi {
                  font-size: 28px; /* Reset icon size for mobile as per original detailSidang.php */
             }
@@ -361,9 +375,18 @@
             .status-badge {
                 margin-bottom: 0.5cm; 
             }
+            /* --- Perubahan disini --- */
             .info-card {
                 margin-bottom: 0.5cm; 
+                flex-direction: column; 
+                background-color: #4B68FB; /* Ensure it's blue on mobile */
+                color: white; 
+                transition: none; /* Disable transitions on mobile */
+                box-shadow: none; /* Remove shadow on mobile */
+                /* border-radius: 20px; */ /* Dihapus */
             }
+            /* --- Akhir perubahan --- */
+
             .NavSide__main-content h5 { 
                 margin-top: 0.5cm; 
                 margin-bottom: 0.5cm; 
@@ -377,15 +400,6 @@
             /* Akhir perubahan jarak */
 
             /* Mobile styles for info-card (from original LAMA code, preserved) */
-            .info-card {
-                flex-direction: column; 
-                background-color: #4B68FB; /* Ensure it's blue on mobile */
-                color: white; 
-                transition: none; /* Disable transitions on mobile */
-                box-shadow: none; /* Remove shadow on mobile */
-                border-radius: 20px; /* Adjust border-radius as per mobile image */
-            }
-
             .info-card::after {
                 content: none; /* Remove pseudo-element on mobile */
             }
@@ -701,24 +715,9 @@
         };
     }
 
+    /* --- Perubahan disini --- */
     let listItems = document.querySelectorAll(".NavSide__sidebar-item");
     if (listItems.length > 0) {
-        // Find the active item based on the current URL
-        const currentPath = window.location.pathname.split('/').pop();
-        listItems.forEach(item => {
-            const link = item.querySelector('a');
-            if (link) {
-                const linkHref = link.getAttribute('onclick');
-                // Check if the onclick href matches the current page, case-insensitive
-                if (linkHref && linkHref.toLowerCase().includes(currentPath.toLowerCase())) {
-                    item.classList.add("NavSide__sidebar-item--active");
-                }
-            }
-        });
-
-        // Add click event listener to update active class (optional, if navigation is handled by JS)
-        // For static links, this part might not be strictly necessary if the page reloads.
-        // If the page does not reload and you switch content dynamically, this is important.
         for (let i = 0; i < listItems.length; i++) {
             listItems[i].onclick = function (event) {
                 for (let j = 0; j < listItems.length; j++) {
@@ -728,6 +727,7 @@
             };
         }
     }
+    /* --- Akhir perubahan --- */
 
     // Fungsionalitas baru: Mengubah status badge saat diklik
     const statusBadge = document.getElementById('statusBadge');

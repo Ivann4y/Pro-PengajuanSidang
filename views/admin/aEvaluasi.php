@@ -69,6 +69,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/stylee.css?v=<?= time() ?>">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+   <link rel="stylesheet" href="../../css/button-styles.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -115,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
         <h5 class="mt-3">Catatan Perbaikan</h5>
       </div>
-      <span class="badge-custom">Status Revisi : Belum Disetujui</span>
+      <span class="badge-custom">Status Revisi : Disetujui</span>
     </div>
 
     <!-- <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
@@ -126,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div> -->
  
     <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
-      <h6>Dr. Rida Indah Fariani, S.Kom, M.Kom – Pembimbing</h6>
+      <h6 class= "card-h">Dr. Rida Indah Fariani, S.Kom, M.Kom – Pembimbing</h6>
       <p class="mt-2 mb-0 text-truncate-2">
         Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
       </p>
@@ -135,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-      <strong>Yosep Setiawan, S.Kom, M.Kom - Penguji</strong>
+      <h6 class= "card-h">Yosep Setiawan, S.Kom, M.Kom - Penguji</h6>
       <p class="mt-2 mb-0 text-truncate-2">
         Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
       </p>
@@ -143,7 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
         <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-      <strong>Yosep Setiawan, S.Kom, M.Kom - Penguji</strong>
+      <h6 class= "card-h">Yosep Setiawan, S.Kom, M.Kom - Penguji</h6>
       <p class="mt-2 mb-0 text-truncate-2">
         Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
       </p>
@@ -152,23 +156,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="revision-card shadow-sm">
   <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
   <div class="revision-cardUp">
-  <p class="text-center text-muted small mt-2" ><b>Dokumen_Revisi_SidangSemester_XX</b></p>
+  <p class="text-center text-muted small mt-2" ><b>berkas_laporan_kel.pdf</b></p>
 
   <div class="text-center mt-3">
     
-    <a href="#" class="btn btn primary" target="_blank">
+    <a href="#" target="_blank" style="text-decoration:none">
        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.707 0H9.293zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 10.5a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 12a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/></svg>    
-
+    <p class="text-center text-muted small mt-2" style="margin-top: 2rem " id="upload-prompt-text">Unduh berkas revisi dengan format pdf, docx, pptx, dan zip</p>
     </a>
+
 
 
 </div>
 
   </div>
-    <p class="text-center text-muted small mt-2" id="upload-prompt-text">Unduh berkas revisi dengan format pdf, docx, pptx, dan zip</p> <br/>
+ <br/>
       <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn-kirim" id="submitBtn" disabled>unduh</button>
-            </div>
+          <a href="aEvaluasi.php" class="btn-custom-primaryUnd" download>
+              Unduh
+          </a>
+      </div>
+
 
 </div>
             <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
@@ -178,12 +186,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="text-center mt-3"><p id="fileNameDisplay" class="fw-bold mb-0"></p></div>
           
 
-             <div class="mt-4">
+      
+             <!-- <div class="mt-4">
         <button type="button" id="btnKembali" class="btn btn-custom-primary">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
             Kembali
         </button>
-    </div>
+    </div> -->
+          <div class="button-group-bottom mt-4">
+                <button  id= "btnKembali"class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
+                    Kembali
+                </button>
 
     
         </form>
@@ -244,7 +260,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
- 
+
+  
+<script>
+
 
   <?php
   if (!empty($pesan) && strpos(strtolower($pesan), 'sukses') !== false):

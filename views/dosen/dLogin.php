@@ -4,6 +4,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     header('Location: ../../index.php');
     exit();
 }
+
+$role = "dosen";
 ?>
 
 <!DOCTYPE html>
@@ -12,8 +14,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Dosen - Sistem Pengajuan Sidang</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/button-styles.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -82,6 +87,87 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
         form {
             width: 25vw;
         }
+
+        .btn-kembali {
+            background-color: #4B68FB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+        }
+
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white;
+            color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            text-decoration: none;
+            font-family: "Poppins", sans-serif;
+            color: white;
+            /* Default text color for all buttons */
+        }
+
+        .back-button-container {
+            padding-left: 2vw;
+            margin-top: 20vh;
+        }
+
+        .btnMasuk {
+            background-color: #4B68FB;
+            color: white;
+        }
+
+        .btnMasuk:hover {
+            background-color: #3a53c3;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -120,49 +206,64 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
                 </button>
             </div>
         </div>
-
-        <div class="log d-flex justify-content-center align-items-center pb-5">
+        <div class="log row pt-5">
             <?php
             $error = $_GET['error'] ?? '';
             ?>
-            <form action="../../auth.php" method="POST" novalidate>
-                <div class="text-center pt-5 mb-4">
-                    <h2><strong>Masuk Akun Dosen</strong></h2>
-                </div>
-                <input type="hidden" name="role" value="dosen">
+            <div class="col-md-7 d-flex justify-content-center align-items-center mt-5">
 
-                <div class="mb-3">
-                    <input
-                        type="text"
-                        class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
-                        id="username"
-                        name="username"
-                        placeholder="NIP"
-                        value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
-                    <?php if ($error === 'empty'): ?>
-                        <small class="text-danger">NIP dan Kata Sandi harus diisi!</small>
-                    <?php elseif ($error === '1'): ?>
-                        <small class="text-danger">NIP atau Kata Sandi salah!</small>
-                    <?php endif; ?>
-                </div>
+                <form action="../../auth.php" method="POST" novalidate>
+                    <div class="text-center pt-5 mb-4">
+                        <h2><strong>Masuk Akun</strong></h2>
+                        <h2><strong>Dosen</strong></h2>
+                    </div>
+                    <input type="hidden" name="role" value="<?= $role ?>">
 
-                <div class="mb-3">
-                    <input
-                        type="password"
-                        class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
-                        id="password"
-                        name="password"
-                        placeholder="Kata Sandi">
-                    <a href="#" class="float-end" onclick="toLupaPassword()"> Lupa kata sandi?</a>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">Masuk</button>
-            </form>
+                    <div class="mb-3">
+                        <input
+                            type="text"
+                            class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                            id="username"
+                            name="username"
+                            placeholder="NIM"
+                            value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
+                        <?php if ($error === 'empty'): ?>
+                            <small class="text-danger">NIM dan Kata Sandi harus diisi!</small>
+                        <?php elseif ($error === '1'): ?>
+                            <small class="text-danger">NIM atau Kata Sandi salah!</small>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="mb-3">
+                        <input
+                            type="password"
+                            class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                            id="password"
+                            name="password"
+                            placeholder="Kata Sandi">
+                        <a href="#" class="float-end" onclick="toLupaPassword()"> Lupa kata sandi?</a>
+                    </div>
+                    <button type="submit" class="btnMasuk btn w-100 mt-5">Masuk</button>
+                </form>
+            </div>
+            <div class="back-button-container bottom-50">
+                <button type="submit" class="btn btn-kembali" onclick="kembaliKePilihRole()">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
+                    Kembali
+                </button>
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script>
         function toLupaPassword() {
-            window.location.href = '../../views/lupaPassword.php';
+            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';    
+        }
+
+        function kembaliKePilihRole() {
+            window.location.href = '../../index.php';
         }
     </script>
 </body>

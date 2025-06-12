@@ -253,14 +253,14 @@
       }
 
       #cardNilai {
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
         margin-left: 0;
       }
       #carddataMahasiswa{
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
@@ -274,14 +274,14 @@
         width: 100%;
         margin-left: 23px;
         height: 40px;
-        background-color: #f2f2f2 !important;
-        border-color: #f2f2f2 !important;
+        background-color: rgb(235, 238, 245) !important;
+        border-color: rgb(235, 238, 245) !important;
       }
 
       
 
       #cardPenilaian {
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
@@ -294,6 +294,13 @@
         margin-right: 15px;
         font-weight: 550;
       }
+      .label-row i {
+  font-size: 1.5rem;    /* Perbesar icon */
+}
+
+.label-row .fw-bold {
+  font-size: 1.2rem;    /* Perbesar tulisan label */
+}
 
       #detailpenilaian {
         width: 75px; ;
@@ -304,13 +311,13 @@
       #carddetailPenilaian {
         width: 100%;
         margin-left: 0;
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
       #cardcatatan {
-        background-color: #f2f2f2;
+        background-color: rgb(235, 238, 245);
         border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
@@ -370,9 +377,14 @@
         background-color: #3a56e8;
         transform: translateY(-2px);
       }
+   
       .col-lg-49 {
   flex: 0 0 49%;
   max-width: 49%;
+}
+#catatan::placeholder {
+  color: #888 !important;      
+  opacity: 60% !important;       
 }
       input.form-control:focus,
 input.form-control:active {
@@ -383,7 +395,9 @@ input.form-control:active {
 }
 
       @media (max-width: 750px) {
-        
+        .page-nama{
+          margin-left:10px;
+        }
         h2{
           margin-left: 10px;
           margin-top: 50px;
@@ -488,11 +502,21 @@ input.form-control:active {
           padding: 0 !important;
         }
 
-        .kakimodal .btnKonfirmasi,
-        .mb5 .btnKonfirmasi {
-          min-width: 90px;
-          flex:1 1 auto;
-        }
+       
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    max-width: 48%;
+    flex: 1 1 48%;
+  }
+  .modal-body .btnKonfirmasi {
+  width: 10% !important;
+}
+  .kakimodal {
+    gap: 10px !important;
+    justify-content: center !important;
+  }
+
 
         .penilaian-row {
           flex-direction: row;
@@ -534,12 +558,16 @@ input.form-control:active {
           flex: 3;
         }
          .section{
+          margin-left:0px !important;
            margin-top: 0px !important;
         }
         .section2{
-          margin-top: -25px !important;
+          margin-top: 5px !important;
         }
+    
+           
       }
+     
 
       @media (max-width: 1000px) {
        
@@ -551,11 +579,13 @@ input.form-control:active {
           flex-wrap: nowrap !important;
         }
         .section{
+          margin-left:0px !important;
            margin-top: 0px !important;
         }
         .section2{
-          margin-top: -25px !important;
+          margin-top: 5px !important;
         }
+       
         .col-lg-49{
           display: block;
           flex: 0 0 94.5% ;
@@ -589,7 +619,8 @@ input.form-control:active {
         .NavSide__main-content #cardNilai {
           width: 100% !important;
           margin-left: 0 !important;
-          margin-bottom: 40px;
+          margin-bottom: 0px;
+          margin-top: 30px;
         }
 
         .NavSide__main-content #nilaiMahasiswa {
@@ -645,11 +676,21 @@ input.form-control:active {
           padding: 0 !important;
         }
 
-        .kakimodal .btnKonfirmasi,
-        .mb5 .btnKonfirmasi {
-          min-width: 90px;
-          flex:1 1 auto;
-        }
+       
+  .kakimodal .btnKonfirmasi,
+  .mb5 .btnKonfirmasi {
+    min-width: 90px;
+    max-width: 48%;
+    flex: 1 1 48%;
+  }
+  .modal-body .btnKonfirmasi {
+  width: 10% !important;
+}
+  .kakimodal {
+    gap: 10px !important;
+    justify-content: center !important;
+  }
+
 
         .NavSide__main-content .penilaian-row {
           flex-direction: row;
@@ -690,7 +731,33 @@ input.form-control:active {
           width: 100%;
           flex: 3;
         }
+        .bi-pencil-fill{
+          margin-right:17px !important;
+        }
+   
       }
+      .page-nama {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: -35px;
+            margin-bottom: 20px;
+        }
+        .tooltip .tooltip-inner {
+  background-color: rgb(235, 238, 245) !important;
+  color:black !important;      /* Ganti warna teks sesuai kebutuhan */
+  border: 1px solid black;      /* Opsional: tambahkan border agar lebih jelas */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before,
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before,
+.tooltip.bs-tooltip-start .tooltip-arrow::before,
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-top-color: rgb(235, 238, 245) !important;
+  border-bottom-color: rgb(235, 238, 245) !important;
+  border-left-color: rgb(235, 238, 245) !important;
+  border-right-color: rgb(235, 238, 245) !important;
+}
     </style>
   </head>
   <body>
@@ -737,10 +804,64 @@ input.form-control:active {
            <div class="row mb-3">
       <div class="col-12">
         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+<<<<<<< HEAD
+        <!--<p class="page-nama">M. Harris Nur S</p>-->
+=======
+>>>>>>> 616d0497ac56dc0d7cd1d84e484ca92c862fb93f
       </div>
     </div>
     <br>
         <div class="row align-items-stretch mb-4">
+<<<<<<< HEAD
+          <div class="col-lg-49 mb-3 d-flex">
+  <div class="card flex-fill" id="carddataMahasiswa">
+    <div class="card-body card-soft px-4 py-3">
+      <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
+      <div class="d-flex flex-wrap gap-1 px-4 py-3">
+        
+        <div class="section" style="flex: 1 1 200px; margin-left:30px;  color: #333;">
+         
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-id-card"></i>
+              <span class="fw-bold">NIM</span>
+            </div>
+            <div class="value-row text-secondary fw-bold">0920240033</div>
+          </div>
+          
+          <div class="info-group mb-3" style="margin-top:45px;">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user"></i>
+              <span class="fw-bold">Nama</span>
+            </div>
+            <div class="value-row text-secondary fw-bold">M. Harris Nur S.</div>
+          </div>
+        </div>
+        
+        <div class="section2" style="flex: 1 1 200px; color: #333;">
+         
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-book"></i>
+              <span class="fw-bold">Mata Kuliah</span>
+            </div>
+            <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
+          </div>
+         
+          <div class="info-group mb-3" style="margin-top:45px;">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user-tie"></i>
+              <span class="fw-bold">Dosen Pembimbing</span>
+            </div>
+            <div class="value-row text-secondary fw-bold">Timotius Victory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+=======
+>>>>>>> 616d0497ac56dc0d7cd1d84e484ca92c862fb93f
   <div class="col-lg-49 mb-3 d-flex">
     <div class="card flex-fill" id="cardNilai">
       <div class="card-body card-soft px-4 py-3 text-center">
@@ -753,6 +874,7 @@ input.form-control:active {
             id="nilaiMahasiswa"
             placeholder="--"
             maxlength="1"
+            style="cursor:pointer;"
             readonly
           />
         </div>
@@ -765,14 +887,14 @@ input.form-control:active {
       <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
       <div class="d-flex flex-wrap gap-1 px-4 py-3">
         <!-- Section 1 -->
-        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px;">
+        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
           <!-- NIM -->
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-id-card"></i>
               <span class="fw-bold">NIM</span>
             </div>
-            <div class="value-row text-secondary">123456789</div>
+            <div class="value-row text-secondary">0920240033</div>
           </div>
           <!-- Nama -->
           <div class="info-group mb-3">
@@ -780,18 +902,18 @@ input.form-control:active {
               <i class="fa-solid fa-user"></i>
               <span class="fw-bold">Nama</span>
             </div>
-            <div class="value-row text-secondary">John Doe</div>
+            <div class="value-row text-secondary">M. Harris Nur S.</div>
           </div>
         </div>
         <!-- Section 2 -->
-        <div class="section2" style="flex: 1 1 200px;; margin-top:25px;">
+        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
           <!-- Mata Kuliah -->
           <div class="info-group mb-3">
             <div class="label-row d-flex align-items-center gap-2 mb-1">
               <i class="fa-solid fa-book"></i>
               <span class="fw-bold">Mata Kuliah</span>
             </div>
-            <div class="value-row text-secondary">Struktur Data</div>
+            <div class="value-row text-secondary">Tugas Akhir</div>
           </div>
           <!-- Dosen Pembimbing -->
           <div class="info-group mb-3">
@@ -799,7 +921,7 @@ input.form-control:active {
               <i class="fa-solid fa-user-tie"></i>
               <span class="fw-bold">Dosen Pembimbing</span>
             </div>
-            <div class="value-row text-secondary">Dr. Rida Indah Fariani, S.Si, M.T.I</div>
+            <div class="value-row text-secondary">Timotius Victory</div>
           </div>
         </div>
       </div>
@@ -810,7 +932,12 @@ input.form-control:active {
           <div class="">
             <div class="card" id="carddetailPenilaian">
         <div class="card-body">
-            <h3 class="card-title text-black">Detail Penilaian :</h3>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
+            <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Pencet ini jika nilai ingin sama dengan nilai Akhir" data-bs-boundary="window" data-bs-fallback-placements="[]">
+  <i class="bi bi-pencil-fill" style="margin-right: 25px;"></i>
+</a>
+            </div>
             <div class="row justify-content-center align-items-center">
               <div class="col d-flex align-items-center">
                 <label for="nilaiLaporan" id="labelpenilaian" class="text-black">Nilai laporan</label>
@@ -896,18 +1023,18 @@ input.form-control:active {
     </main>
     
   </div>
+  
   <div class="modal fade" id="konfirmasiModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-3">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                  </div>
       <div class="modal-body">
-        <p class="fs-5 fw-semibold text-black">Apakah nilai akhir sama dengan nilai sementara?</p>
-        <div class="d-flex justify-content-center row kakimodal">
-          <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
-          </div>
-          <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="isiNilaiAkhir()">Iya</button>
-          </div>
+       <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah nilai akhir sama dengan nilai sementara?</p>
+        <div class="d-flex justify-content-between px-5">
+          <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
+          <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="isiNilaiAkhir()">Iya</button>
         </div>
       </div>
     </div>
@@ -915,22 +1042,41 @@ input.form-control:active {
 </div>
  <div class="modal fade" id="konfirmasiModalKirim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center p-3">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                  </div>
       <div class="modal-body">
-        <p class="fs-5 fw-bold text-black">Apakah yakin ingin mengirim nilai akhir?</p>
-        <div class="d-flex justify-content-center row kakimodal">
-          <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
-          </div>
-          <div class="col-md-6">
-          <button type="button" class="btnKonfirmasi" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
-          </div>
+        <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah yakin ingin mengirim nilai akhir?</p>
+        <div class="d-flex justify-content-between px-5">
+          <button type="button" class="btnKonfirmasi  btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi  btn-setujui" id="iyamodal" onclick="kirimNilaiAkhir()">Iya</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 <script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+  document.addEventListener('DOMContentLoaded', function () {
+  var tooltipTrigger = document.querySelector('[data-bs-toggle="tooltip"]');
+  var tooltipInstance = new bootstrap.Tooltip(tooltipTrigger);
+
+  // Tampilkan tooltip secara manual
+  tooltipInstance.show();
+
+  // Sembunyikan tooltip setelah 2 detik (2000 ms)
+  setTimeout(function () {
+    tooltipInstance.hide();
+  }, 5000);
+});
+
 
     let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
@@ -988,8 +1134,7 @@ input.form-control:active {
     const nilaiProyek = document.getElementsByName("NilaiProyek")[0].value;
     if (nilaiMahasiswa === "" || nilaiLaporan === "" || materiPresentasi === "" || penyampaian === "" || nilaiProyek === "") {
       Swal.fire({
-        title: 'Error',
-        text: 'Semua nilai harus diisi sebelum mengirim.',
+        title: 'Semua nilai harus diisi sebelum mengirim!',
         icon: 'error',
         confirmButtonText: 'OK',
         confirmButtonColor: '#4B68FB'
@@ -999,8 +1144,7 @@ input.form-control:active {
     } else{
     modal.hide();
     Swal.fire({
-      title: 'Berhasil',
-      text: 'Nilai akhir telah dikirim.',
+      title: 'Nilai akhir telah dikirim.',
       icon: 'success',
       confirmButtonText: 'OK',
       confirmButtonColor: '#4B68FB'
@@ -1014,23 +1158,25 @@ input.form-control:active {
     modal.show();
   }
   function TutupKonfirmasiModal() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide();
-    setTimeout(() => {
-  const input = document.getElementById("nilaiMahasiswa");
-  input.focus();
-}, 300);
-  }
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  setTimeout(() => {
+    const input = document.getElementById("nilaiMahasiswa");
+    input.focus();
+    showTooltipPensil();
+  }, 300);
+}
   
   function isiNilaiAkhir() {
-    document.getElementById("nilaiMahasiswa").value = "A";
-    document.getElementsByName("nilaiLaporan")[0].value = "90";
-    document.getElementsByName("MateriPresentasi")[0].value = "85";
-    document.getElementsByName("Penyampaian")[0].value = "88";
-    document.getElementsByName("NilaiProyek")[0].value = "92";
-    const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-    modal.hide(); 
-  }
+  document.getElementById("nilaiMahasiswa").value = "A";
+  document.getElementsByName("nilaiLaporan")[0].value = "90";
+  document.getElementsByName("MateriPresentasi")[0].value = "85";
+  document.getElementsByName("Penyampaian")[0].value = "88";
+  document.getElementsByName("NilaiProyek")[0].value = "92";
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  showTooltipPensil();
+}
 
   function hitungRataRataDanSetNilai() {
   // Ambil semua nilai input detail penilaian

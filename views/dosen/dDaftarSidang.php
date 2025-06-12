@@ -15,6 +15,7 @@ if ($_SESSION['role'] !== 'dosen') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,6 +60,11 @@ if ($_SESSION['role'] !== 'dosen') {
             width: 20%;
         }
 
+        thead th:nth-child(6) {
+            text-align: center;
+            width: 20%;
+        }
+
         .isiTabel td {
             padding: 12px 15px;
             font-family: "Poppins";
@@ -71,13 +77,67 @@ if ($_SESSION['role'] !== 'dosen') {
             text-align: center;
         }
 
-        .isiTabel td:nth-child(5) {
+        .isiTabel td:nth-child(6) {
             border-radius: 0 20px 20px 0;
+        }
+
+         /* CSS BARU untuk tombol tanpa border */
+        .detail-btn {
+            border: none !important;
+            background-color: transparent !important;
+            color: #4B68FB; 
+            padding: 0.25rem 0.5rem; 
+        }
+
+        /* Efek saat hover pada tombol */
+        .detail-btn:hover {
+            opacity: 0.7;
+        }
+
+        /* Memastikan warna ikon menjadi putih saat baris di-hover */
+        .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+            color: #FFFFFF;
+            opacity: 1;
+        }
+
+        .modal-header-custom {
+            background-color: #4B68FB;
+            color: white;
+        }
+
+        /* Saat baris di-hover, ubah warna ikon di tombol aksi */
+        tr.jadiBiru:hover .detail-btn i {
+            color: white !important;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header .bodyHeading {
+            font-weight: bold;
+            font-size: 40px;
+            margin: 0;
+            color: #1a1a1a;
+        }
+
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
         }
     </style>
 </head>
 
-<body>
+<body onload="switchDdaftarSidang('Semua')">
 
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -123,7 +183,7 @@ if ($_SESSION['role'] !== 'dosen') {
 
         <main class="NavSide__main-content">
             <div class="dashboard-header">
-                <h2 class="page-title"></h2>
+                <h2 class="bodyHeading">Daftar Sidang</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
@@ -135,18 +195,22 @@ if ($_SESSION['role'] !== 'dosen') {
             <div class="container-fluid">
                 <div class="container-fluid">
                     <div class="row">
-                        <h2 class="bodyHeading">
-                            Daftar Sidang
-                        </h2>
                     </div><br><br>
                     <div class="row">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                Sidang TA
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchDdaftarSidang();">Sidang Semester</a></li>
-                            </ul>
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
+                            <div class="dropdown">
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                        Semua
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semua')">Semua</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('TA')">Sidang TA</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semester')">Sidang Semester</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div><br><br>
                     <div class="row">
@@ -158,54 +222,85 @@ if ($_SESSION['role'] !== 'dosen') {
                                     <th scope="col">Nama</th>
                                     <th scope="col">Mata Kuliah</th>
                                     <th scope="col">Dosen Pembimbing</th>
+                                    <th scope="col">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="dPengajuanTA">
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>1</td>
                                     <td>0920240033</td>
                                     <td>M. Harris Nur S.</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240053', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
                                     <td>Nayaka Ivanna</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240053', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'TA')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>3</td>
                                     <td>0920240055</td>
                                     <td>Nur Widya Astuti</td>
                                     <td>Tugas Akhir</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                             <tbody id="dPengajuanSem" style="display: none;">
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240033', 'Semester')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>1</td>
                                     <td>0920240033</td>
                                     <td>M. Harris Nur S.</td>
                                     <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240053', 'Semester')">
+                                <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
                                     <td>Nayaka Ivanna</td>
                                     <td>Pemrograman 2</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240053', 'Semester')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru" onclick="goToEvaluasi('0920240055', 'Semester')">
+                                <tr class="isiTabel jadiBiru" >
                                     <td>3</td>
                                     <td>0920240055</td>
                                     <td>Nur Widya Astuti</td>
                                     <td>Pemrograman 2</td>
                                     <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'Semester')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-
                             </tbody>
                         </table>
                     </div>
@@ -224,7 +319,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="modal-body mx-auto">
                             Apakah anda yakin ingin keluar?
                         </div>
-                        <div class="modal-footer justify-content-center">
+                        <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                             <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                         </div>
@@ -255,26 +350,26 @@ if ($_SESSION['role'] !== 'dosen') {
                 // }
                 let isTA = true;
 
-                function switchDdaftarSidang() {
+                function switchDdaftarSidang(mode) {
                     const taTable = document.getElementById('dPengajuanTA');
                     const semTable = document.getElementById('dPengajuanSem');
                     const dropdownButton = document.getElementById('ddMSidang');
-                    const dropdownMenuItem = document.getElementById('ddMSidangMenu');
 
-                    if (isTA) {
-                        taTable.style.display = 'none';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Sidang Semester';
-                        dropdownMenuItem.textContent = 'Sidang TA';
-                    } else {
+                    if (mode === 'TA') {
                         taTable.style.display = 'table-row-group';
                         semTable.style.display = 'none';
                         dropdownButton.textContent = 'Sidang TA';
-                        dropdownMenuItem.textContent = 'Sidang Semester';
+                    } else if (mode === 'Semester') {
+                        taTable.style.display = 'none';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Sidang Semester';
+                    } else {
+                        taTable.style.display = 'table-row-group';
+                        semTable.style.display = 'table-row-group';
+                        dropdownButton.textContent = 'Semua';
                     }
-
-                    isTA = !isTA;
                 }
+
             </script>
             <script src="../../assets/js/main.js"></script>
 </body>

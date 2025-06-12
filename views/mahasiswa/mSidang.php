@@ -73,6 +73,16 @@
         .dropdown-menu .dropdown-item {
             font-family: "Poppins", sans-serif;
         }
+
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
+        }
         /* Original mSidang table structural styles - END */
     </style>
 </head>
@@ -185,7 +195,7 @@
                 <div class="modal-body mx-auto">
                     Apakah anda yakin ingin keluar?
                 </div>
-                <div class="modal-footer justify-content-center">
+                <div class="modal-footer justify-content-center border-0">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                     <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                 </div>
