@@ -286,7 +286,7 @@
 
 
         <!-- Baris Nilai & Data Mahasiswa -->
-        <div class="row align-items-stretch mb-5 p-3">
+        <div class="row align-items-stretch mb-4 p-2">
           <div class="col-lg-6 mb-3 d-flex">
             <div class="card flex-fill" id="cardNilai">
               <div class="card-body card-soft px-3 py-3 text-center">
@@ -508,7 +508,7 @@
 
     // Fungsi untuk tombol kembali (tetap dipertahankan)
     function pindahKeHalamanDaftarSidang() {
-      window.location.href = "dDaftarSidang.php"; // Ganti dengan halaman tujuan yang benar
+      window.location.href = "aDaftarSidang.php"; // Ganti dengan halaman tujuan yang benar
     }
 </script>
 </body>
