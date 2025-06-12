@@ -229,7 +229,7 @@
         }
 
         .main-title {
-            color: #4B68FB;
+            color:rgb(0, 0, 0);
             font-weight: 700;
             font-size: 2.1rem;
             margin-bottom: 1rem;
@@ -241,12 +241,7 @@
             align-items: flex-end;
             gap: 0.75rem;
         }
-
-        .profile-icon {
-            font-size: 2.5rem;
-            color: #343a40;
-        }
-
+        
         .search-input-group {
             background-color: #F3F4F6;
             border-radius: 0.5rem;
@@ -262,6 +257,45 @@
         .search-input-group .input-group-text {
             background-color: transparent;
             border: none;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-icons > a {
+            font-size: 1.4rem;
+            color: #5a5a5a;
+            transition: color 0.2s ease;
+        }
+
+        .header-icons > a:hover {
+            color: #4B68FB;
+        }
+
+        .header-right-panel .profile-icon {
+            background-color: #333;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .header-right-panel .profile-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .header-right-panel .profile-icon a {
+            color: white;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #ddAdminSidangTypeButton {
@@ -284,7 +318,6 @@
         .table-admin-custom tbody tr.isiTabel {
             background-color: #F5F5F5;
             transition: background-color 0.3s ease, color 0.3s ease;
-            cursor: pointer;
         }
 
         .table-admin-custom .isiTabel td {
@@ -306,20 +339,17 @@
             color: #FFFFFF;
         }
 
-        /* CSS BARU untuk tombol tanpa border */
         .detail-btn {
             border: none !important;
             background-color: transparent !important;
-            color: #4B68FB; /* Warna ikon */
-            padding: 0.25rem 0.5rem; /* Menyesuaikan padding agar tidak terlalu besar */
+            color: #4B68FB;
+            padding: 0.25rem 0.5rem;
         }
 
-        /* Efek saat hover pada tombol */
         .detail-btn:hover {
             opacity: 0.7;
         }
 
-        /* Memastikan warna ikon menjadi putih saat baris di-hover */
         .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
             color: #FFFFFF;
             opacity: 1;
@@ -346,7 +376,7 @@
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png"alt="AstraTech Logo Admin">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo Admin">
             </div>
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
@@ -386,13 +416,20 @@
                                 Semua
                             </button>
                             <ul class="dropdown-menu" id="dynamicDropdownMenu">
-                                </ul>
+                            </ul>
                         </div>
                     </div>
                 </div>
                 <div class="header-right-panel">
-                    <div class="profile-icon">
-                        <i class="bi bi-person-circle"></i>
+                    <div class="header-icons">
+                        <a href="aNotifikasi.php" title="Notifikasi">
+                            <i class="bi bi-bell-fill"></i>
+                        </a>
+                        <div class="profile-icon">
+                            <a href="aProfil.php" title="Profil">
+                                <i class="bi bi-person-fill"></i>
+                            </a>
+                        </div>
                     </div>
                     <div class="input-group search-input-group" style="width: 250px;">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -544,12 +581,7 @@
                 item.addEventListener('click', function(event) {
                     const link = this.querySelector('a');
                     if (link && !link.hasAttribute('data-bs-toggle')) {
-                        listItems.forEach(li => li.classList.remove("NavSide__sidebar-item--active"));
-                        this.classList.add("NavSide__sidebar-item--active");
-
-                        if (link.getAttribute('href') && link.getAttribute('href') !== '#') {
-                            window.location.href = link.href;
-                        }
+                        window.location.href = link.href;
                     }
                 });
             });
@@ -558,35 +590,25 @@
 
             const allTableRows = document.querySelectorAll('.table-admin-custom tbody tr.isiTabel');
             allTableRows.forEach(row => {
-                row.addEventListener('click', function() {
-                    const sidangId = this.dataset.id;
-                    const sidangType = this.dataset.type;
-                    if (sidangId && sidangType) {
-                        if (sidangType === 'ta') {
-                            window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
-                        } else if (sidangType === 'semester') {
-                            window.location.href = `aDetailSidangSem.php?type=${sidangType}&id=${sidangId}`;
+                row.addEventListener('click', function(event) {
+                    const detailButton = event.target.closest('.detail-btn');
+
+                    if (detailButton) {
+                        const sidangId = this.dataset.id;
+                        const sidangType = this.dataset.type;
+
+                        if (sidangId && sidangType) {
+                            if (sidangType === 'ta') {
+                                window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
+                            } else if (sidangType === 'semester') {
+                                window.location.href = `aDetailSidangSem.php?type=${sidangType}&id=${sidangId}`;
+                            }
                         }
                     }
                 });
-
-                const detailButton = row.querySelector('.detail-btn');
-                if (detailButton) {
-                    detailButton.addEventListener('click', function(event) {
-                        event.stopPropagation(); 
-
-                        const sidangId = row.dataset.id;
-                        const sidangType = row.dataset.type;
-
-                        if (sidangType === 'ta') {
-                            window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
-                        } else if (sidangType === 'semester') {
-                            window.location.href = `aDetailSidangSem.php?type=${sidangType}&id=${sidangId}`;
-                        }
-                    });
-                }
             });
         });
     </script>
 </body>
+
 </html>
