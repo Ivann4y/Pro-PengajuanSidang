@@ -14,7 +14,7 @@
         .text-heading { 
             font-size: 2.0rem;
             font-weight: 600;
-            color: #333;
+            color: #4B68FB;
             margin-bottom: 1.5rem; 
         }
 
@@ -174,23 +174,22 @@
 
         @media (max-width: 768px) {
             .action-column {
+                display: none;
+            }
+
+            .header-icons {
                 position: fixed;
                 top: 15px;
                 right: 60px;
-                margin: 0;
-                padding: 0;
                 z-index: 1046;
             }
 
-            .tambah-sidang-btn {
-                padding: 6px 16px;
-                font-size: 0.85rem;
-                background-color: rgb(67, 54, 240);
-                border-radius: 15px;
+            .header-icons .tambah-sidang-btn {
+                display: none; /* Hide the button in header for mobile */
             }
 
-            .NavSide__topbar {
-                padding-right: 140px;
+            .mobile-add-button-container {
+                margin-top: 15px;
             }
         }
 
@@ -240,22 +239,6 @@
             margin-left: 10px;
         }
 
-        @media (max-width: 768px) {
-            .header-icons {
-                position: fixed;
-                top: 15px;
-                right: 60px;
-                z-index: 1046;
-            }
-
-            .header-icons a {
-                color: rgb(67, 54, 240);
-            }
-
-            .action-column {
-                display: none;
-            }      
-        }
         .modal-footer .btn-danger {
             background-color: #FD7D7D;
             border-color: #FD7D7D;
@@ -320,28 +303,36 @@
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-
-        <div class="container-fluid"> 
-                <div class="row">
-                    <div class="dashboard-header">
-                    <h2 class="text-header">Nayaka Ivana Putra (Mahasiswa)</h2>
-                    <div class="header-icons d-none d-md-flex">
-                        <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
-                        <div class="profile-icon">
-                            <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
-                        </div>
+            <!-- Top bar desktop -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="dashboard-header">
+                <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon">
+                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
                 <div class="row">
-                    <div class="col-12 col-md-6">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                Sidang TA
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
-                            </ul>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                    Sidang TA
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" id="ddMSidangMenu" onclick="switchMSidang();">Sidang Semester</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mobile-add-button-container d-md-none">
+                            <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
                         </div>
                     </div>
                 </div>

@@ -166,7 +166,7 @@
                     </div>
                 </div>
             </div>
-                </div><br>
+                </div>
                 <div class="row">
                     <div class="col-12 col-md-6"> 
                         <div class="dropdown">
@@ -178,7 +178,7 @@
                             </ul>
                         </div>
                     </div>
-                </div><br>
+                </div><br><br>
                 <div class="row table-responsive">
                     <table>
                         <thead>
