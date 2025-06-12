@@ -1,28 +1,53 @@
 <?php
 session_start();
-$success = '';
-$error = '';
-$errorType = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$success = '';
+$errorType = '';
+$judul = '';
+$role = $_GET['role'] ?? $_POST['role'] ?? '';
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $newPassword = $_POST['newPassword'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';
 
     if (empty($newPassword) || empty($confirmPassword)) {
-        $errorType = 'empty';
-        // $error = "Tidak boleh kosong.";
+        header("Location: inputPasswordBaru.php?error=empty&role=$role");
+        exit;
     } elseif (strlen($newPassword) < 2) {
-        $errorType = 'short';
-        // $error = "Kata sandi minimal 2 karakter.";
+        header("Location: inputPasswordBaru.php?error=short&role=$role");
+        exit;
     } elseif ($newPassword !== $confirmPassword) {
-        $errorType = 'mismatch';
-        // $error = "Kata sandi dan konfirmasi tidak cocok.";
+        header("Location: inputPasswordBaru.php?error=mismatch&role=$role");
+        exit;
     } else {
         $_SESSION['reset_user']['password'] = $newPassword;
-        $success = "Kata sandi berhasil diubah!";
+        header("Location: inputPasswordBaru.php?success=1&role=$role");
+        exit;
     }
 }
+
+if (isset($_GET['success'])) {
+    $success = "Kata sandi berhasil diubah!";
+}
+
+$errorType = $_GET['error'] ?? '';
+
+switch ($role) {
+    case 'mahasiswa':
+        $judul = 'Ubah Kata Sandi Mahasiswa';
+        break;
+    case 'dosen':
+        $judul = 'Ubah Kata Sandi Dosen';
+        break;
+    case 'admin':
+        $judul = 'Ubah Kata Sandi Admin';
+        break;
+    default:
+        $judul = 'Ubah Kata Sandi';
+        break;
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,9 +55,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Mahasiswa - Sistem Pengajuan Sidang</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <title><?= $judul ?> - Sistem Pengajuan Sidang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/button-styles.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -120,6 +148,85 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: green;
             stroke: green;
         }
+
+        .btn {
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            text-decoration: none;
+            font-family: "Poppins", sans-serif;
+            color: white;
+            /* Default text color for all buttons */
+        }
+
+        .btn-kembali {
+            background-color: #4B68FB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+        }
+
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white;
+            color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white;
+        }
+
+        .btn-setujui {
+            background-color: #4fd382;
+            color: white;
+            /* Changed from black to white */
+        }
+
+        .btn-setujui:hover {
+            background-color: #3ab070;
+            color: white;
+            /* Already white, no change needed */
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -164,13 +271,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="log">
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                     <div class="text-center pt-5 mb-4">
-                        <h2 class="fs-2 fw-bold">Ubah Kata Sandi</h2>
+                        <h2 class="fs-2 fw-bold"><?= $judul ?></h2>
                         <?php if (!empty($success)): ?>
                             <div class="alert alert-success mt-3">
                                 <?= $success ?>
                             </div>
                         <?php endif; ?>
                     </div>
+                    <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
+
                     <div class="mb-3">
                         <label for="">Masukkan Kata Sandi Baru</label>
                         <input type="password"
@@ -196,13 +305,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
             </div>
 
-            <div class="button-container">
-                <button type="submit" class="btn btn-primary px-3 rounded rounded-5" onclick="history.back()">
-                    <img src="../assets/img/Kembali.svg" alt="" class="me-1">
+            <div class="button-container d-flex justify-content-between">
+                <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
                     Kembali
-                    <button type="submit" class="btn btn-success w-25 px-3 rounded rounded-5 float-end me-3">
-                        Kirim
-                    </button>
+                </button>
+                <button type="submit" class="btn btn-setujui me-4" id="btnKirim">
+                    Kirim
                 </button>
             </div>
             </form>
@@ -216,7 +327,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }, 2000);
         </script>
     <?php endif; ?>
-
+    <script>
+        function kembaliKeLupaPassword() {
+            window.location.href = `lupaPassword.php?role=<?= htmlspecialchars($role) ?>`;
+        }
+    </script>
 </body>
 
 </html>

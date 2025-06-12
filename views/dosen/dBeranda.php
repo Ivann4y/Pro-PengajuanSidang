@@ -304,6 +304,16 @@ if ($_SESSION['role'] !== 'dosen') {
             color: #4F46E5;
         }
 
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
+        }
+
     </style>
 </head>
 <body>
