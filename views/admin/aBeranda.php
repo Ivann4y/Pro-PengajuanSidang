@@ -174,7 +174,7 @@ if ($_SESSION['role'] !== 'admin') {
             </div>
             <div class="header-icons">
                 <!-- tugas -->
-                <a href="atugas.php" title="tugas" style="text-decoration: none; color: inherit;">
+                <a href="aNotifikasi.php" title="tugas" style="text-decoration: none; color: inherit;">
                     <i class="bi bi-bell-fill"></i>
                 </a>
                 <!-- Profil -->
@@ -191,7 +191,7 @@ if ($_SESSION['role'] !== 'admin') {
             <div class="dashboard-header">
                 <h2 class="page-title">Dashboard Admin</h2>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="atugas.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                    <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
                         <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
@@ -207,7 +207,7 @@ if ($_SESSION['role'] !== 'admin') {
             <div class="col-12 col-md-6">
             <!-- Kartu Penjadwalan -->
             <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit;">
-                <div class="dashboard-card penjadwalan-status-card w-100">
+                <div class="dashboard-card penjadwalan-status-card">
                     <div class="number">4</div>
                     <div class="text">
                         <span class="title">Penjadwalan</span>
@@ -352,105 +352,10 @@ if ($_SESSION['role'] !== 'admin') {
     <!-- Bootstrap JS Bundle (termasuk Popper) -->
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Dashboard.js -->
+    <script src="../../assets/js/dashboard.js"></script>
+    
     <script>
-        // =========================
-        // Sidebar Toggle Logic
-        // =========================
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
-
-        // Toggle sidebar untuk mobile
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-
-        // =========================
-        // Kalender Interaktif
-        // =========================
-
-        // Ambil elemen kalender
-        const calendarTableBody = document.querySelector("#calendarTable tbody");
-        const currentMonthYearHeader = document.getElementById("currentMonthYear");
-        const prevMonthBtn = document.getElementById("prevMonth");
-        const nextMonthBtn = document.getElementById("nextMonth");
-
-        // Tanggal hari ini dan tanggal aktif
-        let currentDate = new Date();
-        let activeDate = new Date();
-
-        // Nama-nama bulan dalam bahasa Indonesia
-        const monthNames = [
-            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-        ];
-
-        // Fungsi untuk merender kalender
-        function renderCalendar() {
-            calendarTableBody.innerHTML = "";
-            currentMonthYearHeader.textContent = `${monthNames[activeDate.getMonth()]} ${activeDate.getFullYear()}`;
-
-            const year = activeDate.getFullYear();
-            const month = activeDate.getMonth();
-
-            // Hari pertama dalam bulan (0 = Minggu)
-            const firstDayOfMonth = new Date(year, month, 1).getDay();
-            // Jumlah hari dalam bulan
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            let date = 1;
-            // Render 6 baris (minggu)
-            for (let i = 0; i < 6; i++) {
-                const row = document.createElement("tr");
-
-                // Render 7 kolom (hari)
-                for (let j = 0; j < 7; j++) {
-                    const cell = document.createElement("td");
-                    // Kosongkan sel sebelum tanggal 1
-                    if (i === 0 && j < firstDayOfMonth) {
-                        cell.innerHTML = "";
-                    } else if (date > daysInMonth) {
-                        // Kosongkan sel setelah akhir bulan
-                        cell.innerHTML = "";
-                    } else {
-                        // Isi tanggal
-                        const daySpan = document.createElement("span");
-                        daySpan.classList.add("calendar-day");
-                        daySpan.textContent = date;
-
-                        // Tandai hari ini
-                        if (
-                            date === currentDate.getDate() &&
-                            month === currentDate.getMonth() &&
-                            year === currentDate.getFullYear()
-                        ) {
-                            daySpan.classList.add("current-day");
-                        }
-                        cell.appendChild(daySpan);
-                        date++;
-                    }
-                    row.appendChild(cell);
-                }
-                calendarTableBody.appendChild(row);
-            }
-        }
-
-        // Navigasi bulan sebelumnya
-        prevMonthBtn.addEventListener("click", () => {
-            activeDate.setMonth(activeDate.getMonth() - 1);
-            activeDate.setDate(1);
-            renderCalendar();
-        });
-
-        // Navigasi bulan berikutnya
-        nextMonthBtn.addEventListener("click", () => {
-            activeDate.setMonth(activeDate.getMonth() + 1);
-            activeDate.setDate(1);
-            renderCalendar();
-        });
-
-        // Render kalender saat halaman dimuat
-        renderCalendar();
     </script>
 </body>
 
