@@ -111,8 +111,7 @@
       text-align: center;
       border-radius: 30px;
       width: 100%;
-      /* margin-left dihapus */
-      height: 40px;
+      height: 50%;
       background-color: rgb(235, 238, 245) !important;
       border-color: rgb(235, 238, 245) !important;
       cursor: default;
@@ -272,19 +271,25 @@
     </div>
 
     <main class="NavSide__main-content">
-      <div class="container-fluid">
-        <div class="row mb-3">
-          <div class="col-12">
-            <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-          </div>
-        </div>
-        <br>
+
+    <!-- Top bar desktop -->
+      
+            <div class="dashboard-header p-3">
+                <h2 class="text-heading text-black walcomeText" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon">
+                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                    </div>
+                </div>
+              </div>
+
 
         <!-- Baris Nilai & Data Mahasiswa -->
-        <div class="row align-items-stretch mb-4">
+        <div class="row align-items-stretch mb-5 p-3">
           <div class="col-lg-6 mb-3 d-flex">
             <div class="card flex-fill" id="cardNilai">
-              <div class="card-body card-soft px-4 py-3 text-center">
+              <div class="card-body card-soft px-3 py-3 text-center">
                 <h3 class="card-title mb-3 text-black" style="padding:10px;">Nilai Mahasiswa</h3>
                 <div>
                   <input
@@ -349,7 +354,7 @@
         </div>
 
         <!-- Baris Detail Penilaian tanpa modal -->
-        <div class="row mt-5">
+        <div class="row mt-3 p-3">
             <div class="card flex-fill h-100" id="carddetailPenilaian">
               <div class="card-body px-4 py-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -409,9 +414,9 @@
             </div>
         </div>
 
-        
+
         <!-- Baris Catatan -->
-        <div class="row mt-5">
+        <div class="row mt-3 p-3">
             <div class="card flex-fill h-100" id="cardcatatan">
               <div class="card-body px-4 py-3 d-flex flex-column">
                 <h3 class="card-title text-black mb-4">Catatan:</h3>
