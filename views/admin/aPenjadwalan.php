@@ -31,6 +31,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
 
+
     /* Sidebar and Topbar adjustments for smaller screens if not already present/correct */
     /* Ensure your NavSide__sidebar-brand img is horizontally centered */
     .NavSide__sidebar-brand img {
@@ -74,6 +75,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         display: flex;
         align-items: center;
         gap: 10px;
+        margin-left: 1vh;
     }
 
     .filter-container .filter-label {
@@ -134,20 +136,19 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
         padding-right: 0; /* No padding on right as input has left padding */
     }
 
-    /* Filter Buttons (merged from aPenjadwalan's filter-btn and aDaftarSidang's ddAdminSidangTypeButton) */
-    #ddAdminSidangTypeButton, #ddAdminSidangStatusButton { /* Apply to both filter buttons */
-        background-color: #4B68FB; /* Specific blue from aPenjadwalan.php */
-        color: white;
-        border-radius: 20px;
-        padding: 8px 20px;
-        font-weight: 500;
-        font-size: 0.95rem;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.2s ease, color 0.2s;
+    /* This new rule targets a single button and uses Bootstrap's default rounding */
+    #ddAdminSidangStatusButton, #ddAdminSidangTypeButton {
+        background-color: #4B68FB !important;
+        padding-top: 0px;
+        padding-left: 7px;
+        padding-right: 7px;
+        border-color: #4B68FB !important;
+        border-radius: 10px !important;
     }
-    #ddAdminSidangTypeButton:hover, #ddAdminSidangStatusButton:hover {
+
+    #ddAdminSidangStatusButton, #ddAdminSidangTypeButton :hover {
         background-color: #312a9e;
+        border-color: #312a9e;
     }
 
     /* Dropdown Menu styling (merged from both) */
@@ -411,7 +412,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                 <div class="filter-container">
                     <span class="filter-label fw-semibold">Filter:</span>
                     <div class="dropdown me-2">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-primary dropdown-toggle ddAdminSidangTypeButton" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= htmlspecialchars($selectedTipe == 'TA' ? 'Sidang TA' : 'Sidang Semester') ?>
                         </button>
                         <ul class="dropdown-menu">
@@ -420,7 +421,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $status
                         </ul>
                     </div>
                     <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangStatusButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-primary dropdown-toggle ddAdminSidangStatusButton" type="button" id="ddAdminSidangStatusButton" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= htmlspecialchars($selectedStatus == 'belum' ? 'Belum Disetujui' : 'Disetujui') ?>
                         </button>
                         <ul class="dropdown-menu">
