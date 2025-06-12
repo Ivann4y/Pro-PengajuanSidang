@@ -102,6 +102,21 @@
             color: white !important;
         }
 
+         .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header .bodyHeading {
+            font-weight: bold;
+            font-size: 40px;
+            margin: 0;
+            color: #1a1a1a;
+        }
+
         .modal-footer .btn-danger {
             background-color: #FD7D7D;
             border-color: #FD7D7D;
@@ -158,10 +173,7 @@
         </div>
         <main class="NavSide__main-content" id="dBeranda">
             <div class="dashboard-header">
-                 <h1 class="bodyHeading" style= "font-weight: bold">
-                            Pengajuan Sidang
-                        </h1>
-                <h2 class="page-title"> </h2>
+                <h2 class="bodyHeading">Pengajuan Sidang</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">

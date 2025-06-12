@@ -220,7 +220,7 @@
             <div class="row">
               <div class="col-md-6 mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">Dokumen Laporan Sidang</h6>
+                  <h6 class="fw-bold text-dark">*Dokumen Laporan Sidang</h6>
                   <form id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="laporanSidang" name="laporanSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
@@ -239,7 +239,7 @@
               <!-- Upload Dokumen Pendukung Sidang -->
               <div class="col-md-6 mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">Dokumen Pendukung Sidang</h6>
+                  <h6 class="fw-bold text-dark">*Dokumen Pendukung Sidang</h6>
                   <form id="dokPendukungForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="dokPendukung" name="pendukungSidang" accept=".pdf,.docx,.pptx,.zip" hidden />

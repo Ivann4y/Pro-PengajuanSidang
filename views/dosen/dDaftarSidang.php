@@ -122,7 +122,7 @@ if ($_SESSION['role'] !== 'dosen') {
             font-weight: bold;
             font-size: 40px;
             margin: 0;
-            color: #1a1a1a; /* optional: sesuai tema */
+            color: #1a1a1a;
         }
 
         .modal-footer .btn-danger {
