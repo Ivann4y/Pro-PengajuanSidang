@@ -85,9 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             body {
                 overflow-y: auto;
+                position: fixed;
             }
 
             .bgBiru {
@@ -107,17 +108,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 padding-left: 20%;
             }
 
+            .img-topLeft{
+                position: absolute;
+                top: 95%;
+                right: 12%;
+            }
+
+            .img-buttomLeft{
+                /* position: absolute; */
+                display: block;
+                bottom: 95%;
+                /* right: 100%; */
+                margin-top: 25%;
+                padding-right: 25%;
+            }
+
             .img-topRight,
-            .img-buttomLeft,
             .img-buttomRight{
                 display: none;
             }
 
-            .img-topLeft{
-                position: absolute;
-                top: 90%;
-                right: 12%;
-            }
 
             .letak-LogBox {
                 position: relative;
@@ -130,6 +140,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             .letak-LogBox .container {
                 padding: 1.5em;
+            }
+
+            .bgWhite {
+                position: relative;
+                top: 0;
+                width: 100%;
+                height: auto;
+                padding: 2vh 0;
             }
         }
     </style>
