@@ -259,7 +259,7 @@
             <div class="col-lg-6 d-flex">
                 <div class="card flex-fill" id="cardNilai">
                     <div class="card-body d-flex flex-column justify-content-center">
-                        <h3 class="card-title text-dark text-center">Nilai Mahasiswa:</h3>
+                        <h3 class="card-title text-dark text-center">Nilai Mahasiswa :</h3>
                         <div class="d-flex justify-content-center align-items-center flex-grow-1">
                             <input type="text" class="form-control text-dark"
                                 id="nilaiMahasiswa" value="A" readonly />
