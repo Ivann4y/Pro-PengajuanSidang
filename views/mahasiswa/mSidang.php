@@ -73,6 +73,16 @@
         .dropdown-menu .dropdown-item {
             font-family: "Poppins", sans-serif;
         }
+
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
+        }
         /* Original mSidang table structural styles - END */
     </style>
 </head>

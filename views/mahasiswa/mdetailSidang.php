@@ -240,21 +240,22 @@
             flex-grow: 1;
             padding: 20px 20px 20px calc(20px + 1cm); 
             margin-left: 280px;
+            margin-right: 40px;
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
             /* Adjust padding-top to account for fixed topbar on desktop */
-            padding-top: calc(60px + 20px); /* 60px topbar height + 20px original padding */
+            padding-top: calc(20px); /* 60px topbar height + 20px original padding */
         }
 
         /* Modifikasi Margin Global */
         .NavSide__main-content h2 { 
-            margin-bottom: 1.2cm;
+            margin-bottom: 0.9cm;
             font-weight: 700; 
         }
 
         /* Status badge (merah default) */
         .status-badge {
-            margin-bottom: 1.2cm; 
+            margin-bottom: 0.9cm; 
             background-color: #FFA3A3;
             color: #464869;
             border-radius: 20px;
@@ -278,8 +279,8 @@
         }
 
         .NavSide__main-content h5 { 
-            margin-top: 1.2cm;
-            margin-bottom: 1.2cm;
+            margin-top: 0.9cm;
+            margin-bottom: 0.5cm;
             font-weight: 700; 
         }
 
@@ -399,7 +400,7 @@
                 margin-bottom: 0.5cm; 
             }
             .info-card {
-                margin-bottom: 0.5cm; 
+                margin-bottom: 0.cm; 
             }
             .NavSide__main-content h5 { 
                 margin-top: 0.5cm; 
