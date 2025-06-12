@@ -621,6 +621,11 @@
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
             height: 45px;
         }
+        
+        #catatanEvaluasi::placeholder {
+        color: #888 !important;      
+        opacity: 60% !important;       
+        }
 
         /* Efek hover untuk tombol konfirmasi 'Kirim' */
         #btnKonfirmasiKirim:hover {
@@ -965,7 +970,7 @@
                 </div>
                 <div class="form-group-custom">
                     <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-                    <textarea id="catatanEvaluasi" class="form-control-custom"></textarea>
+                    <textarea id="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."></textarea>
                 </div>
                 <!-- Pesan error untuk catatan evaluasi -->
                 <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
