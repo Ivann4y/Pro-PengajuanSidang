@@ -451,7 +451,7 @@
             color: #2d2d52;
             background-color: transparent;
             margin: 0 5px; 
-            pointer-events: none;
+            
         }
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
         .modal-body .bobot-input-new::-webkit-inner-spin-button {
@@ -468,16 +468,20 @@
             flex-grow: 1; 
         }
         .modal-body .bobot-nilai-input-group {
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 6px;
             background-color: #F9FAFB;
             border-radius: 35px;
-            padding: 2px 6px;
+            padding: 4px 10px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            height: 35px;
+            flex-shrink: 0;
         }
         .modal-body .btn-bobot-new { 
-            width: auto; 
-            height: auto; 
+            width: 28px; 
+            height: 28px; 
             background-color: transparent; 
             border: none;
             color: #2d2d52;
@@ -487,9 +491,10 @@
             display: flex; 
             align-items: center;
             justify-content: center; 
-            padding: 0 8px; 
-            border-radius: 35px;
+            padding: 0;
+            border-radius: 50%;
             transition: background-color 0.2s ease;
+            flex-shrink: 0;
         }
         .modal-body .btn-bobot-new:hover {
             background-color:rgba(0, 0, 0, 0.05); 
@@ -533,7 +538,7 @@
             margin-left: 10px;
         }
         #penjadwalanSidangModal .modal-dialog {
-            max-width: 850px;
+            max-width: 600px;
         }
         .modal-body .form-toggle-buttons {
             display: inline-flex;
@@ -581,6 +586,80 @@
            margin-left: 30px;
        }
 
+       .select-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            padding-right: 30px; /* space for icon */
+            appearance: none; /* remove default arrow */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .select-wrapper .dropdown-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none; /* biar nggak ganggu klik */
+            color:rgb(24, 25, 26);
+            margin-right: 10px;
+            margin-top: -2px;
+        }
+
+
+@media (max-width: 768px) {
+
+    /* 1. Ubah layout utama form group menjadi vertikal (atas-bawah) */
+    /* Aturan ini akan berlaku untuk 'Ruangan', 'Tanggal', 'Jam' dan juga 'Penguji' */
+    .modal-body .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* 2. Buat label menjadi lebar penuh dan beri jarak bawah */
+    /* Aturan ini juga berlaku untuk semua label */
+    .modal-body .form-group label {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    /* BAGIAN UNTUK PENGUJI TELAH DIHAPUS DARI SINI, 
+       sehingga `.input-with-buttons` akan kembali ke gaya desktopnya (menyamping).
+    */
+
+    /* 4. Hapus padding kiri agar tombol Tambah/Hapus rata kiri */
+    .modal-body .form-toggle-buttons {
+        padding-left: 0;
+        justify-content: center;
+        width: 100%;
+    }
+
+    /* 5. Buat tombol submit (Batalkan & Buat) menjadi lebar penuh dan tersusun ke bawah */
+    .modal-body .form-actions {
+        flex-direction: column;
+        padding-left: 0;
+        gap: 10px;
+    }
+
+    .modal-body .form-actions .btn-batal,
+    .modal-body .form-actions .btn-submit {
+        width: 100%;
+        margin-right: 0;
+    }
+
+     .info-card {
+        padding-right: 80px;
+        box-sizing: border-box;
+    }
+
+}
 
 
     </style>
@@ -701,20 +780,22 @@
                         
                         <div class="form-group">
                           <label for="modal_prodi">Prodi</label>
-                          
-                          <select id="modal_prodi" name="prodi" class="form-control">
-                            <option value="">-- Pilih Prodi --</option>
-                            <option value="TRPL">TRPL</option>
-                            <option value="MI">MI</option>
-                            <option value="MK">MK</option>
-                            <option value="MO">MO</option>
-                            <option value="TRL">TRL</option>
-                            <option value="TAB">TAB</option>
-                            <option value="P4">P4</option>
-                            <option value="TKBG">TKBG</option>
-                            <option value="TPM">TPM</option>
-                          </select>
-                          
+
+                          <div class="select-wrapper">                          
+                            <select id="modal_prodi" name="prodi" class="form-control">
+                              <option value="">-- Pilih Prodi --</option>
+                              <option value="TRPL">TRPL</option>
+                              <option value="MI">MI</option>
+                              <option value="MK">MK</option>
+                              <option value="MO">MO</option>
+                              <option value="TRL">TRL</option>
+                              <option value="TAB">TAB</option>
+                              <option value="P4">P4</option>
+                              <option value="TKBG">TKBG</option>
+                              <option value="TPM">TPM</option>
+                            </select>
+                           <i class="fa-solid fa-sort-down dropdown-icon"></i>
+                          </div>
                         </div>
                        
 

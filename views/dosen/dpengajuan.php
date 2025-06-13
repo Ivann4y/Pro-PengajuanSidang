@@ -148,6 +148,30 @@
         border: none;
         padding-right: 0; /* No padding on right as input has left padding */
     }
+
+   .pagination-container {
+    margin-top: 2rem;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #4B68FB;
+    border-color: #4B68FB;
+    z-index: 2;
+    color: white;
+}
+
+.pagination .page-link {
+    color: #4B68FB;
+}
+.pagination .page-link:hover {
+    color: #2c45c9;
+}
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+}
+
+
+
     </style>
 </head>
 
@@ -229,8 +253,8 @@
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                                 <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari">
                             </div>
-
                         </div>
+                        
                     </div><br><br>
                     <div class="row">
                         <table>
@@ -319,9 +343,87 @@
                                         </button>
                                     </td>
                                 </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                 <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                 <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                 <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                 <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>   
+                                
                             </tbody>
                         </table>
-                    </div>
+                        <div class="pagination-container">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center" id="pagination-controls"></ul>
+                            </nav>
+                        </div>
+
                 </div>
             </div>
 
@@ -345,33 +447,131 @@
                 </div>
             </div>
             <script>
+                // Untuk search
                  document.addEventListener("DOMContentLoaded", function () {
                     const searchInput = document.querySelector('.search-input-group input');
                     const tbodyTA = document.getElementById("dPengajuanTA");
                     const tbodySem = document.getElementById("dPengajuanSem");
+                    const paginationControls = document.getElementById('pagination-controls');
 
-                    searchInput.addEventListener("keyup", function () {
-                        const query = searchInput.value.toLowerCase();
+                    let currentPage = 1;
+                    const rowsPerPage = 10;
+                    let activeRows = [];
 
-                        filterTableRows(tbodyTA, query);
-                        filterTableRows(tbodySem, query);
-                    });
+                    function getAllRows() {
+                    let rowsTA = Array.from(tbodyTA.querySelectorAll('tr'));
+                    let rowsSem = Array.from(tbodySem.querySelectorAll('tr'));
+                    let allRows = rowsTA.concat(rowsSem);
+                    return allRows; // Ini penting
+                }
 
-                    function filterTableRows(tbody, query) {
-                        const rows = tbody.querySelectorAll("tr");
+                    function displayPage(rows, page) {
+                        const start = (page - 1) * rowsPerPage;
+                        const end = start + rowsPerPage;
 
-                        rows.forEach(row => {
-                            const namaCell = row.children[2]; // Kolom Nama
-                            const namaText = namaCell.textContent.toLowerCase();
-
-                            if (namaText.includes(query)) {
-                                row.style.display = "";
+                        rows.forEach((row, index) => {
+                            if (index >= start && index < end) {
+                                row.style.display = '';
                             } else {
-                                row.style.display = "none";
+                                row.style.display = 'none';
                             }
                         });
                     }
+
+                    function setupPagination(rows) {
+                        paginationControls.innerHTML = '';
+                        const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+                        if (pageCount <= 1) return;
+
+                        const prevButton = document.createElement('li');
+                        prevButton.className = 'page-item';
+                        prevButton.innerHTML = '<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>';
+                        prevButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (currentPage > 1) {
+                                currentPage--;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            }
+                        });
+                        paginationControls.appendChild(prevButton);
+
+                        for (let i = 1; i <= pageCount; i++) {
+                            const pageButton = document.createElement('li');
+                            pageButton.className = 'page-item';
+                            pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                            pageButton.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                currentPage = i;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            });
+                            paginationControls.appendChild(pageButton);
+                        }
+
+                        const nextButton = document.createElement('li');
+                        nextButton.className = 'page-item';
+                        nextButton.innerHTML = '<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>';
+                        nextButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (currentPage < pageCount) {
+                                currentPage++;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            }
+                        });
+                        paginationControls.appendChild(nextButton);
+
+                        updatePaginationButtons(pageCount);
+                    }
+
+                    function updatePaginationButtons(pageCount) {
+                        const pageItems = paginationControls.querySelectorAll('.page-item');
+                        pageItems.forEach((item, index) => {
+                            item.classList.remove('active', 'disabled');
+                            if (index === 0 && currentPage === 1) item.classList.add('disabled');
+                            else if (index === pageItems.length - 1 && currentPage === pageCount) item.classList.add('disabled');
+                            else if (index === currentPage) item.classList.add('active');
+                        });
+                    }
+
+                    function refreshTable() {
+                        displayPage(activeRows, currentPage);
+                        setupPagination(activeRows);
+                    }
+
+                    function searchTable(query) {
+                        const allRows = getAllRows();
+                        activeRows = [];
+
+                        allRows.forEach(row => {
+                            const namaCell = row.children[2];
+                            const namaText = namaCell.textContent.toLowerCase();
+
+                            if (namaText.includes(query)) {
+                                row.style.display = '';
+                                activeRows.push(row);
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+
+                        currentPage = 1;
+                        refreshTable();
+                    }
+
+                    // Event search
+                    searchInput.addEventListener("keyup", function () {
+                        const query = searchInput.value.toLowerCase();
+                        searchTable(query);
+                    });
+
+                    // Load default
+                    activeRows = getAllRows();
+                    refreshTable();
                 });
+
                 // Sidebar Toggle Logic
                 let menuToggle = document.querySelector(".NavSide__toggle");
                 let sidebar = document.getElementById("main-sidebar");
