@@ -7,12 +7,12 @@
     <title>Admin - Daftar Pengajuan Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
+        /* CSS Anda tidak perlu diubah, jadi saya singkat di sini agar tidak terlalu panjang */
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
         * {
@@ -257,7 +257,7 @@
 
         .header-right-panel .profile-icon,
         .NavSide__topbar .profile-icon {
-            background-color: #333;
+            background-color:#333;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -285,12 +285,9 @@
             background-color: #4B68FB;
             border-color: #4B68FB;
             border-radius: 20px;
-            /* Membuat sudut menjadi sangat bulat */
-            padding: 10px 30px;
-            /* Menyesuaikan padding agar lebih pas */
+            padding: 6px 16px;
             font-weight: 500;
             box-shadow: none !important;
-            /* Menghilangkan bayangan saat di-klik */
         }
 
         .table-admin-custom {
@@ -498,66 +495,47 @@
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo Admin">
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="aBeranda.php"><span class="fw-semibold">Beranda</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="aPenjadwalan.php"><span class="fw-semibold">Penjadwalan</span></a>
-                </li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                    <b></b><b></b>
-                    <a href="#"><span class="fw-semibold">Daftar Sidang</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logABeranda"><span
-                            class="fw-semibold">Keluar</span></a>
-                </li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aBeranda.php"><span
+                            class="fw-semibold">Beranda</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span
+                            class="fw-semibold">Penjadwalan</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
+                            class="fw-semibold">Daftar Sidang</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
+                        data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
             </ul>
         </div>
 
         <div class="NavSide__topbar">
-            <div class="NavSide__toggle">
-                <i class="bi bi-list open"></i>
-                <i class="bi bi-x-lg close"></i>
-            </div>
+            <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
             <div id="mobile-icons-container"></div>
         </div>
 
         <main class="NavSide__main-content" id="adminDaftarSidangContent">
             <div class="main-header">
                 <div class="header-left-panel">
-                    <h1 class="main-title">Daftar Sidang</h1>
+                    <h1 class="main-title">Daftar Pengajuan Sidang</h1>
                     <div class="filter-container">
                         <span class="filter-label fw-semibold">Filter:</span>
                         <div class="dropdown" id="switcherDropdownContainer">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                Semua
-                            </button>
-                            <ul class="dropdown-menu" id="dynamicDropdownMenu">
-                            </ul>
+                                data-bs-toggle="dropdown" aria-expanded="false">Semua</button>
+                            <ul class="dropdown-menu" id="dynamicDropdownMenu"></ul>
                         </div>
                     </div>
                 </div>
                 <div class="header-right-panel">
                     <div id="desktop-icons-container">
                         <div class="header-icons">
-                            <a href="aNotifikasi.php" title="Notifikasi">
-                                <i class="bi bi-bell-fill"></i>
-                            </a>
-                            <div class="profile-icon">
-                                <a href="aProfil.php" title="Profil">
-                                    <i class="bi bi-person-fill"></i>
-                                </a>
-                            </div>
+                            <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                            <div class="profile-icon"><a href="aProfil.php" title="Profil"><i
+                                        class="bi bi-person-fill"></i></a></div>
                         </div>
                     </div>
                     <div class="input-group search-input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" placeholder="Cari..." aria-label="Cari">
+                        <input type="text" class="form-control" placeholder="Cari..." aria-label="Cari"
+                            id="searchInput">
                     </div>
                 </div>
             </div>
@@ -581,7 +559,7 @@
                             <td data-label="Nama">Nayaka Ivanna</td>
                             <td data-label="Judul/MK">Sistem Pengajuan Sidang</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
-                            <td data-label="Aksi"><button type="button" class="btn detail-btn"> <i
+                            <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
                                         class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA002" data-type="ta">
@@ -591,7 +569,7 @@
                             <td data-label="Judul/MK">Pengembangan Aplikasi Mobile Edukasi</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA003" data-type="ta">
                             <td data-label="Nomor">TA003</td>
@@ -600,7 +578,7 @@
                             <td data-label="Judul/MK">Analisis Big Data E-commerce</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA004" data-type="ta">
                             <td data-label="Nomor">TA004</td>
@@ -609,7 +587,7 @@
                             <td data-label="Judul/MK">Machine Learning untuk Prediksi</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA005" data-type="ta">
                             <td data-label="Nomor">TA005</td>
@@ -618,7 +596,7 @@
                             <td data-label="Judul/MK">IoT untuk Smart Home</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA006" data-type="ta">
                             <td data-label="Nomor">TA006</td>
@@ -627,7 +605,7 @@
                             <td data-label="Judul/MK">Keamanan Siber</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA007" data-type="ta">
                             <td data-label="Nomor">TA007</td>
@@ -636,7 +614,7 @@
                             <td data-label="Judul/MK">Game Development 2D</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA008" data-type="ta">
                             <td data-label="Nomor">TA008</td>
@@ -645,7 +623,7 @@
                             <td data-label="Judul/MK">Virtual Reality untuk Terapi</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA009" data-type="ta">
                             <td data-label="Nomor">TA009</td>
@@ -654,7 +632,7 @@
                             <td data-label="Judul/MK">Cloud Computing Service</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA010" data-type="ta">
                             <td data-label="Nomor">TA010</td>
@@ -663,7 +641,7 @@
                             <td data-label="Judul/MK">Augmented Reality pada Pemasaran</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA011" data-type="ta">
                             <td data-label="Nomor">TA011</td>
@@ -672,7 +650,7 @@
                             <td data-label="Judul/MK">Sistem Rekomendasi Film</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA012" data-type="ta">
                             <td data-label="Nomor">TA012</td>
@@ -681,7 +659,7 @@
                             <td data-label="Judul/MK">Analisis Sentimen Media Sosial</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA013" data-type="ta">
                             <td data-label="Nomor">TA013</td>
@@ -690,7 +668,7 @@
                             <td data-label="Judul/MK">Deteksi Objek Real-time</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA014" data-type="ta">
                             <td data-label="Nomor">TA014</td>
@@ -699,7 +677,7 @@
                             <td data-label="Judul/MK">Perancangan UI/UX Aplikasi Kesehatan</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA015" data-type="ta">
                             <td data-label="Nomor">TA015</td>
@@ -708,7 +686,7 @@
                             <td data-label="Judul/MK">Robotika Cerdas</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA016" data-type="ta">
                             <td data-label="Nomor">TA016</td>
@@ -717,7 +695,7 @@
                             <td data-label="Judul/MK">Implementasi Blockchain</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA017" data-type="ta">
                             <td data-label="Nomor">TA017</td>
@@ -726,7 +704,7 @@
                             <td data-label="Judul/MK">Data Mining pada Retail</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA018" data-type="ta">
                             <td data-label="Nomor">TA018</td>
@@ -735,7 +713,7 @@
                             <td data-label="Judul/MK">Computer Vision untuk Medis</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA019" data-type="ta">
                             <td data-label="Nomor">TA019</td>
@@ -744,7 +722,7 @@
                             <td data-label="Judul/MK">Pengolahan Bahasa Alami</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA020" data-type="ta">
                             <td data-label="Nomor">TA020</td>
@@ -753,7 +731,7 @@
                             <td data-label="Judul/MK">Sistem Informasi Geografis</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA021" data-type="ta">
                             <td data-label="Nomor">TA021</td>
@@ -762,7 +740,7 @@
                             <td data-label="Judul/MK">Deep Learning untuk Audio</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA022" data-type="ta">
                             <td data-label="Nomor">TA022</td>
@@ -771,7 +749,7 @@
                             <td data-label="Judul/MK">Jaringan Syaraf Tiruan</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA023" data-type="ta">
                             <td data-label="Nomor">TA023</td>
@@ -780,7 +758,7 @@
                             <td data-label="Judul/MK">Kriptografi Modern</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA024" data-type="ta">
                             <td data-label="Nomor">TA024</td>
@@ -789,7 +767,7 @@
                             <td data-label="Judul/MK">Manajemen Proyek IT</td>
                             <td data-label="Pembimbing">Dr. Rida Indah F.</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="TA025" data-type="ta">
                             <td data-label="Nomor">TA025</td>
@@ -798,7 +776,7 @@
                             <td data-label="Judul/MK">Sistem Pendukung Keputusan</td>
                             <td data-label="Pembimbing">Dr. Ahmad Khoirul</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM001" data-type="semester">
                             <td data-label="Nomor">SEM001</td>
@@ -807,7 +785,7 @@
                             <td data-label="Judul/MK">Basis Data 1</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM002" data-type="semester">
                             <td data-label="Nomor">SEM002</td>
@@ -816,7 +794,7 @@
                             <td data-label="Judul/MK">Pemrograman 2</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM003" data-type="semester">
                             <td data-label="Nomor">SEM003</td>
@@ -825,7 +803,7 @@
                             <td data-label="Judul/MK">Jaringan Komputer</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM004" data-type="semester">
                             <td data-label="Nomor">SEM004</td>
@@ -834,7 +812,7 @@
                             <td data-label="Judul/MK">Sistem Operasi</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM005" data-type="semester">
                             <td data-label="Nomor">SEM005</td>
@@ -843,7 +821,7 @@
                             <td data-label="Judul/MK">Kalkulus Lanjut</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM006" data-type="semester">
                             <td data-label="Nomor">SEM006</td>
@@ -852,7 +830,7 @@
                             <td data-label="Judul/MK">Struktur Data</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM007" data-type="semester">
                             <td data-label="Nomor">SEM007</td>
@@ -861,7 +839,7 @@
                             <td data-label="Judul/MK">Algoritma & Pemrograman</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM008" data-type="semester">
                             <td data-label="Nomor">SEM008</td>
@@ -870,7 +848,7 @@
                             <td data-label="Judul/MK">Rekayasa Perangkat Lunak</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM009" data-type="semester">
                             <td data-label="Nomor">SEM009</td>
@@ -879,7 +857,7 @@
                             <td data-label="Judul/MK">Kecerdasan Buatan</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM010" data-type="semester">
                             <td data-label="Nomor">SEM010</td>
@@ -888,7 +866,7 @@
                             <td data-label="Judul/MK">Interaksi Manusia & Komputer</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM011" data-type="semester">
                             <td data-label="Nomor">SEM011</td>
@@ -897,7 +875,7 @@
                             <td data-label="Judul/MK">Teori Bahasa & Automata</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM012" data-type="semester">
                             <td data-label="Nomor">SEM012</td>
@@ -906,7 +884,7 @@
                             <td data-label="Judul/MK">Manajemen Basis Data</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM013" data-type="semester">
                             <td data-label="Nomor">SEM013</td>
@@ -915,7 +893,7 @@
                             <td data-label="Judul/MK">Pemrograman Web Lanjut</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM014" data-type="semester">
                             <td data-label="Nomor">SEM014</td>
@@ -924,7 +902,7 @@
                             <td data-label="Judul/MK">Metodologi Penelitian</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM015" data-type="semester">
                             <td data-label="Nomor">SEM015</td>
@@ -933,7 +911,7 @@
                             <td data-label="Judul/MK">Analisis & Desain Sistem</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM016" data-type="semester">
                             <td data-label="Nomor">SEM016</td>
@@ -942,7 +920,7 @@
                             <td data-label="Judul/MK">Sistem Terdistribusi</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM017" data-type="semester">
                             <td data-label="Nomor">SEM017</td>
@@ -951,7 +929,7 @@
                             <td data-label="Judul/MK">Pemrosesan Sinyal Digital</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM018" data-type="semester">
                             <td data-label="Nomor">SEM018</td>
@@ -960,7 +938,7 @@
                             <td data-label="Judul/MK">Fisika Dasar</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM019" data-type="semester">
                             <td data-label="Nomor">SEM019</td>
@@ -969,7 +947,7 @@
                             <td data-label="Judul/MK">Matematika Diskrit</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM020" data-type="semester">
                             <td data-label="Nomor">SEM020</td>
@@ -978,7 +956,7 @@
                             <td data-label="Judul/MK">Logika Informatika</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM021" data-type="semester">
                             <td data-label="Nomor">SEM021</td>
@@ -987,7 +965,7 @@
                             <td data-label="Judul/MK">Arsitektur Komputer</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM022" data-type="semester">
                             <td data-label="Nomor">SEM022</td>
@@ -996,7 +974,7 @@
                             <td data-label="Judul/MK">Grafika Komputer</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM023" data-type="semester">
                             <td data-label="Nomor">SEM023</td>
@@ -1005,7 +983,7 @@
                             <td data-label="Judul/MK">Proyek Perangkat Lunak</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM024" data-type="semester">
                             <td data-label="Nomor">SEM024</td>
@@ -1014,7 +992,7 @@
                             <td data-label="Judul/MK">Etika Profesi</td>
                             <td data-label="Pembimbing">Dr. Siti Aisyah</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                         <tr class="isiTabel" data-id="SEM025" data-type="semester">
                             <td data-label="Nomor">SEM025</td>
@@ -1023,7 +1001,7 @@
                             <td data-label="Judul/MK">Kewirausahaan</td>
                             <td data-label="Pembimbing">Prof. Dr. Ir. Benyamin</td>
                             <td data-label="Aksi"><button type="button" class="btn detail-btn"><i
-                                        class="fa-solid fa-file-signature"></i></i></button></td>
+                                        class="fa-solid fa-file-signature"></i></button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -1059,45 +1037,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // --- KUMPULAN VARIABEL GLOBAL ---
             let currentPage = 1;
-            // PERUBAHAN: Data per halaman diubah menjadi 10
             const rowsPerPage = 10;
             let activeRows = [];
+            let currentTypeFilter = 'All';
 
             const paginationControls = document.getElementById('pagination-controls');
-            const tableBody = document.getElementById('adminSidangContent');
-            const allTableRows = Array.from(tableBody.querySelectorAll('tr.isiTabel'));
+            const allTableRows = Array.from(document.querySelectorAll('#adminSidangContent tr.isiTabel'));
+            const searchInput = document.getElementById('searchInput');
 
-            // --- KUMPULAN FUNGSI ---
-
-            /**
-             * Fungsi untuk menampilkan halaman tertentu dari sekumpulan baris data
-             */
             function displayPage(page) {
                 currentPage = page;
-
-                // Sembunyikan semua baris yang aktif saat ini
                 activeRows.forEach(row => row.style.display = 'none');
-
                 const startIndex = (page - 1) * rowsPerPage;
                 const endIndex = startIndex + rowsPerPage;
                 const paginatedRows = activeRows.slice(startIndex, endIndex);
-
                 paginatedRows.forEach(row => {
                     row.style.display = '';
                 });
-
                 updatePaginationButtons();
             }
 
-            /**
-             * Fungsi untuk membuat dan memperbarui tombol-tombol pagination
-             */
             function setupPagination() {
                 paginationControls.innerHTML = '';
                 const pageCount = Math.ceil(activeRows.length / rowsPerPage);
-
                 if (pageCount <= 1) return;
 
                 const prevButton = document.createElement('li');
@@ -1129,22 +1092,15 @@
                     if (currentPage < totalPages) displayPage(currentPage + 1);
                 });
                 paginationControls.appendChild(nextButton);
-
                 updatePaginationButtons();
             }
 
-            /**
-             * Fungsi untuk memperbarui status (active/disabled) tombol pagination
-             */
             function updatePaginationButtons() {
                 const pageCount = Math.ceil(activeRows.length / rowsPerPage);
                 const pageItems = paginationControls.querySelectorAll('.page-item');
-
                 if (pageItems.length === 0) return;
-
                 pageItems.forEach((item, index) => {
                     item.classList.remove('active', 'disabled');
-
                     if (index === 0) {
                         if (currentPage === 1) item.classList.add('disabled');
                     } else if (index === pageItems.length - 1) {
@@ -1157,26 +1113,34 @@
                 });
             }
 
-          
+            function updateTableDisplay() {
+                const searchTerm = searchInput.value.toLowerCase();
+                let filteredRows = allTableRows;
+
+                if (currentTypeFilter !== 'All') {
+                    filteredRows = filteredRows.filter(row => row.dataset.type === currentTypeFilter);
+                }
+
+                if (searchTerm) {
+                    filteredRows = filteredRows.filter(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        return rowText.includes(searchTerm);
+                    });
+                }
+
+                activeRows = filteredRows;
+                allTableRows.forEach(row => row.style.display = 'none');
+                setupPagination();
+                displayPage(1);
+            }
+
             window.switchAdminSidangView = function (viewType) {
                 const dynamicHeader = document.getElementById("thDynamicHeader");
                 const dropdownMenu = document.getElementById("dynamicDropdownMenu");
                 const ddButton = document.getElementById("ddAdminSidangTypeButton");
                 const dynamicMKHeader = document.querySelectorAll('[data-label="Judul/MK"], [data-label="Judul Sidang"], [data-label="Mata Kuliah"]');
 
-               
-                activeRows = allTableRows.filter(row => {
-                    return viewType === 'All' || row.dataset.type === viewType;
-                });
-
-               
-                allTableRows.forEach(row => row.style.display = 'none');
-
-                
-                setupPagination();
-
-               
-                displayPage(1);
+                currentTypeFilter = viewType;
 
                 dropdownMenu.innerHTML = '';
                 let options = '';
@@ -1203,9 +1167,10 @@
 
                 dynamicMKHeader.forEach(th => th.setAttribute('data-label', mobileLabel));
                 dropdownMenu.insertAdjacentHTML('beforeend', options);
+
+                updateTableDisplay();
             }
 
-          
             const listItems = document.querySelectorAll(".NavSide__sidebar-item");
             listItems.forEach(item => {
                 item.addEventListener('click', function (event) {
@@ -1216,7 +1181,6 @@
                 });
             });
 
-           
             allTableRows.forEach(row => {
                 row.addEventListener('click', function (event) {
                     const detailButton = event.target.closest('.detail-btn');
@@ -1225,40 +1189,41 @@
                         const sidangType = this.dataset.type;
                         if (sidangId && sidangType) {
                             if (sidangType === 'ta') {
-                                window.location.href = `aDetailSidangTA.php?type=${sidangType}&id=${sidangId}`;
+                                window.location.href = `aDetailSidangTA.php?type=<span class="math-inline">\{sidangType\}&id\=</span>{sidangId}`;
                             } else if (sidangType === 'semester') {
-                                window.location.href = `aDetailSidangSem.php?type=${sidangType}&id=${sidangId}`;
+                                window.location.href = `aDetailSidangSem.php?type=<span class="math-inline">\{sidangType\}&id\=</span>{sidangId}`;
                             }
                         }
                     }
                 });
             });
 
-            // Event Listener untuk memindahkan ikon di header
             const menuToggle = document.querySelector(".NavSide__toggle");
             const sidebar = document.getElementById("main-sidebar");
             const desktopIconsContainer = document.getElementById('desktop-icons-container');
             const mobileIconsContainer = document.getElementById('mobile-icons-container');
-            const headerIcons = desktopIconsContainer.querySelector('.header-icons');
-
-            function handleIconPlacement() {
-                if (window.innerWidth <= 992) {
-                    if (!mobileIconsContainer.contains(headerIcons)) mobileIconsContainer.appendChild(headerIcons);
-                } else {
-                    if (!desktopIconsContainer.contains(headerIcons)) desktopIconsContainer.appendChild(headerIcons);
+            if (desktopIconsContainer) {
+                const headerIcons = desktopIconsContainer.querySelector('.header-icons');
+                function handleIconPlacement() {
+                    if (window.innerWidth <= 992) {
+                        if (!mobileIconsContainer.contains(headerIcons)) mobileIconsContainer.appendChild(headerIcons);
+                    } else {
+                        if (!desktopIconsContainer.contains(headerIcons)) desktopIconsContainer.appendChild(headerIcons);
+                    }
                 }
+                if (menuToggle && sidebar) {
+                    menuToggle.onclick = () => {
+                        menuToggle.classList.toggle("NavSide__toggle--active");
+                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                    };
+                }
+                handleIconPlacement();
+                window.addEventListener('resize', handleIconPlacement);
             }
-            if (menuToggle && sidebar) {
-                menuToggle.onclick = () => {
-                    menuToggle.classList.toggle("NavSide__toggle--active");
-                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                };
-            }
-            handleIconPlacement();
-            window.addEventListener('resize', handleIconPlacement);
 
-            
-            switchAdminSidangView('All');
+            searchInput.addEventListener('keyup', updateTableDisplay);
+
+           switchAdminSidangView('All');
         });
     </script>
 </body>
