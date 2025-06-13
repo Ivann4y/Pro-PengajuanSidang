@@ -67,7 +67,7 @@ if ($_SESSION['role'] !== 'dosen') {
 
         .isiTabel td {
             padding: 12px 15px;
-            font-family: "Poppins";
+            font-family: "Poppins", sans-serif;
             font-weight: 400;
             vertical-align: middle;
         }
@@ -121,6 +121,7 @@ if ($_SESSION['role'] !== 'dosen') {
         .dashboard-header .bodyHeading {
             font-weight: bold;
             font-size: 40px;
+            font-family: "Poppins", sans-serif;
             margin: 0;
             color: #1a1a1a;
         }
@@ -209,7 +210,9 @@ if ($_SESSION['role'] !== 'dosen') {
                 <div class="header-icons d-none d-md-flex">
                     <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
-                         <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                         <a href="mProfil.php" title="Profil">
+                            <i class="bi bi-person-fill fs-5" style="color: white"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -226,7 +229,7 @@ if ($_SESSION['role'] !== 'dosen') {
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
                                         Semua
                                     </button>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu rounded shadow">
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semua')">Semua</a></li>
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('TA')">Sidang TA</a></li>
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semester')">Sidang Semester</a></li>
@@ -402,8 +405,7 @@ if ($_SESSION['role'] !== 'dosen') {
                 //         }
                 //     };
                 // }
-                let isTA = true;
-
+                // let isTA = true;
                 function switchDdaftarSidang(mode) {
                     const taTable = document.getElementById('dPengajuanTA');
                     const semTable = document.getElementById('dPengajuanSem');

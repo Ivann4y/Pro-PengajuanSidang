@@ -401,6 +401,7 @@
             text-align: center;
             color: rgb(51, 47, 47); /* Warna teks disesuaikan agar terlihat */
         }
+
         .modal-body .form-group {
             display: flex;
             align-items: center;
@@ -454,7 +455,7 @@
             font-size: 16px;
             color: #2d2d52;
             background-color: transparent;
-            margin: 0 5px; 
+            margin: 0; 
             pointer-events: none;
         }
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
@@ -472,16 +473,20 @@
             flex-grow: 1; 
         }
         .modal-body .bobot-nilai-input-group {
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 6px;
             background-color: #F9FAFB;
             border-radius: 35px;
-            padding: 2px 6px;
+            padding: 4px 10px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            height: 35px;
+            flex-shrink: 0;
         }
         .modal-body .btn-bobot-new { 
-            width: auto; 
-            height: auto; 
+            width: 28px; 
+            height: 28px; 
             background-color: transparent; 
             border: none;
             color: #2d2d52;
@@ -491,9 +496,10 @@
             display: flex; 
             align-items: center;
             justify-content: center; 
-            padding: 0 8px; 
-            border-radius: 35px;
+            padding: 0; 
+            border-radius: 50%;
             transition: background-color 0.2s ease;
+            flex-shrink: 0;
         }
         .modal-body .btn-bobot-new:hover {
             background-color:rgba(0, 0, 0, 0.05); 
@@ -539,21 +545,28 @@
         }
        
         #penjadwalanSidangModal .modal-dialog {
-            max-width: 850px;
+            max-width: 600px;
         }
         .modal-body .form-toggle-buttons {
             display: inline-flex;
             gap: 10px;
             margin-top: 5px;
+            margin-bottom: 20px;
+            padding-left: 175px;
         }
         .modal-body .form-toggle-buttons button {
-            width: 30px;
-            height: 30px;
-            font-size: 18px;
-            border-radius: 20px; /* Dibuat bulat */
+            width: auto;
+            height: 35px;
+            padding: 8px 15px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 35px; 
             border: 1px solid #ccc;
             cursor: pointer;
             background-color: white;
+            transition: background-color 0.2s ease;
         }
         .modal-body .form-toggle-buttons button:hover {
             background-color: #ddd;
@@ -571,21 +584,51 @@
         .mt-4 {
             margin-left: 30px;
         }
-
         
-        /* .bobot-wrapper {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 10px;
-        }
+@media (max-width: 768px) {
 
+    /* 1. Ubah layout utama form group menjadi vertikal (atas-bawah) */
+    /* Aturan ini akan berlaku untuk 'Ruangan', 'Tanggal', 'Jam' dan juga 'Penguji' */
+    .modal-body .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-        .bobot-label {
-            font-size: 14px;
-            color: #333;
-            margin: 0;
-        } */
+    /* 2. Buat label menjadi lebar penuh dan beri jarak bawah */
+    /* Aturan ini juga berlaku untuk semua label */
+    .modal-body .form-group label {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    /* BAGIAN UNTUK PENGUJI TELAH DIHAPUS DARI SINI, 
+       sehingga `.input-with-buttons` akan kembali ke gaya desktopnya (menyamping).
+    */
+
+    /* 4. Hapus padding kiri agar tombol Tambah/Hapus rata kiri */
+    .modal-body .form-toggle-buttons {
+        padding-left: 0;
+        justify-content: center;
+        width: 100%;
+    }
+
+    /* 5. Buat tombol submit (Batalkan & Buat) menjadi lebar penuh dan tersusun ke bawah */
+    .modal-body .form-actions {
+        flex-direction: column;
+        padding-left: 0;
+        gap: 10px;
+    }
+
+    .modal-body .form-actions .btn-batal,
+    .modal-body .form-actions .btn-submit {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+        
+       
 
         
 
@@ -650,82 +693,78 @@
                 </button>
 
 
-                <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                        <div class="modal-content modal-content-custom-form">
-                            <div class="modal-body">
-                                <h2>Penjadwalan Sidang</h2>
-                                <div class="form-container"> 
-                                    <form id="formDalamModal" novalidate>
-                                        <div class="form-group">
-                                            <label for="modal_nim">NIM</label>
-                                            <p>0920240033</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="modal_judul_sidang">Judul Sidang</label>
-                                            <p>Sistem Pengajuan Sidang</p>
-                                        </div>
-                                         <div class="form-group">
-                                            <label for="modal_prodi">Prodi</label>
-                                            <p>Teknik Rekayasa Perangkat Lunak</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="modal_pembimbing">Pembimbing</label>
-                                            <p>Rida Indah Fariani</p>
-                                        </div>
-                                        <div id="penguji-wrapper">
-                                            <div class="form-group" id="penguji-form-1">
-                                                <label for="modal_penguji1">Penguji 1</label>
-                                                <div class="input-with-buttons">
-                                                    <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
-
-                                                    
-                                                    <div class="bobot-container">
-                                                        <label class="bobot-title">Bobot</label>
-                                                        <div class="bobot-nilai-input-group">
-                                                        <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji1')">-</button>
-                                                        <input type="number" id="modal_qty_penguji1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 1" />
-                                                        <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji1')">+</button>
-                                                     </div>
-                                                      
-                                                   
-                                                    <div class="form-toggle-buttons">
-                                                       <button type="button" onclick="addPenguji()">+</button>
-                                                       <button type="button" onclick="removePenguji()">-</button>
-                                                   </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="modal_ruangan">Ruangan</label>
-                                            <input type="text" id="modal_ruangan" name="ruangan"/>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="modal_tanggal">Tanggal</label>
-                                            <input type="date" id="modal_tanggal" name="tanggal"/>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="modal_jam_awal">Jam</label>
-                                            <div class="time-input-range">
-                                                <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal"/>
-                                                <span class="time-separator">-</span>
-                                                <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
-                                            </div>
-                                        </div>
-                                        <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
-                                        <div class="form-actions"> 
-                                            <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
-                                            <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
-                                        </div>
-                                    </form>
+               <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-content-custom-form">
+            <div class="modal-body">
+                <h2>Penjadwalan Sidang</h2>
+                <div class="form-container"> 
+                    <form id="formDalamModal" novalidate>
+                        
+                        <div class="form-group">
+                            <label for="modal_nim">NIM</label>
+                            <p>0920240033</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_judul_sidang">Judul Sidang</label>
+                            <p>Sistem Pengajuan Sidang</p>
+                        </div>
+                         <div class="form-group">
+                            <label for="modal_prodi">Prodi</label>
+                            <p>Teknik Rekayasa Perangkat Lunak</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_pembimbing">Pembimbing</label>
+                            <p>Rida Indah Fariani</p>
+                        </div>
+                        
+                        <div id="penguji-wrapper">
+                            <div class="form-group" id="penguji-form-1">
+                                <label for="modal_penguji1">Penguji 1</label>
+                                <div class="input-with-buttons">
+                                    <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+                                    <div class="bobot-nilai-input-group">
+                                        <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji1')">-</button>
+                                        <input type="number" id="modal_qty_penguji1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 1" />
+                                        <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji1')">+</button>
+                                    </div>
                                 </div>
                             </div>
+                        </div> <div class="form-toggle-buttons">
+                            <button type="button" class="btn-tambah-penguji" onclick="addPenguji()">
+                                <i class="fa-solid fa-plus"></i> Tambah Penguji
+                            </button>
+                            <button type="button" class="btn-hapus-penguji" onclick="removePenguji()">
+                                <i class="fa-solid fa-minus"></i> Hapus Penguji
+                            </button>
                         </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
+
+                        <div class="form-group">
+                            <label for="modal_ruangan">Ruangan</label>
+                            <input type="text" id="modal_ruangan" name="ruangan"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_tanggal">Tanggal</label>
+                            <input type="date" id="modal_tanggal" name="tanggal"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_jam_awal">Jam</label>
+                            <div class="time-input-range">
+                                <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal"/>
+                                <span class="time-separator">-</span>
+                                <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
+                            </div>
+                        </div>
+
+                        <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
+                        <div class="form-actions"> 
+                            <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
+                        </div>
+
+                    </form> </div> </div> </div> </div> </div> 
+
+
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

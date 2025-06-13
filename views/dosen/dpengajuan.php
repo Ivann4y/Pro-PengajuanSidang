@@ -229,8 +229,8 @@
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                                 <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari">
                             </div>
-
                         </div>
+                        
                     </div><br><br>
                     <div class="row">
                         <table>
@@ -319,9 +319,34 @@
                                         </button>
                                     </td>
                                 </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                
                             </tbody>
                         </table>
-                    </div>
+                        <!-- Paging Container -->
                 </div>
             </div>
 
@@ -345,6 +370,7 @@
                 </div>
             </div>
             <script>
+                // Untuk search
                  document.addEventListener("DOMContentLoaded", function () {
                     const searchInput = document.querySelector('.search-input-group input');
                     const tbodyTA = document.getElementById("dPengajuanTA");
