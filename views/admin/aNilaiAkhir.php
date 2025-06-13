@@ -7,16 +7,19 @@
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
     rel="stylesheet"
   />
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     rel="stylesheet"
   />
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
     rel="stylesheet"
   />
+
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet"
@@ -26,6 +29,7 @@
   <link rel="stylesheet" href="../../css/button-styles.css" />
   <link rel="stylesheet" href="../../extra/style.css" />
 
+  
   <title>Admin - Nilai Akhir</title>
   <style>
     /* ... CSS seperti semula, tanpa perubahan untuk carddetailPenilaian dan cardcatatan (pastikan width dan margin-left di-set ke 100% / 0) ... */
@@ -111,13 +115,15 @@
       text-align: center;
       border-radius: 30px;
       width: 100%;
-      height: 50%;
+      margin-left: 23px;
+      height: 40px;
       background-color: rgb(235, 238, 245) !important;
       border-color: rgb(235, 238, 245) !important;
       cursor: default;
     }
 
     label {
+      margin-top: 20px;
       margin-right: 15px;
       font-weight: 550;
 
@@ -126,6 +132,7 @@
     #detailpenilaian {
       width: 75px;
       font-size: 1rem;
+      margin-top: 20px;
       border-color: transparent; /* Ini mungkin belum cukup kuat */
     }
 
@@ -263,6 +270,7 @@
       </ul>
     </div>
 
+
     <div class="NavSide__topbar">
       <div class="NavSide__toggle">
         <i class="bi bi-list open"></i>
@@ -290,7 +298,7 @@
           <div class="col-lg-6 mb-3 d-flex">
             <div class="card flex-fill" id="carddataMahasiswa">
               <div class="card-body card-soft px-4 py-3">
-                <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
+                <h3 class="card-title text-black mb-4 text-center" style="padding:10px;">Data Mahasiswa</h3>
                 <div class="d-flex flex-wrap gap-1 px-4 py-3">
                   <!-- Section 1 -->
                   <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
@@ -300,17 +308,21 @@
                         <i class="fa-solid fa-id-card"></i>
                         <span class="fw-bold">NIM</span>  
                       </div>
-                      <div class="value-row text-secondary">0920240033</div>
+                      <div class="value-row text-secondary fw-bold">0920240033</div>
                     </div>
+
+
                     <!-- Nama -->
-                    <div class="info-group mb-3">
+                    <div class="info-group mb-3  section-bawah" style="margin-top:45px;">
                       <div class="label-row d-flex align-items-center gap-2 mb-1">
                         <i class="fa-solid fa-user"></i>
                         <span class="fw-bold">Nama</span>
                       </div>
-                      <div class="value-row text-secondary">Nayakan Ivanna</div>
+                      <div class="value-row text-secondary fw-bold ">Nayakan Ivanna</div>
                     </div>
                   </div>
+
+
                   <!-- Section 2 -->
                   <div class="section2" style="flex: 1 1 200px; margin-top:25px; color: #333;">
                     <!-- Mata Kuliah -->
@@ -319,15 +331,15 @@
                         <i class="fa-solid fa-book"></i>
                         <span class="fw-bold">Mata Kuliah</span>
                       </div>
-                      <div class="value-row text-secondary">Tugas Akhir</div>
+                      <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
                     </div>
                     <!-- Dosen Pembimbing -->
-                    <div class="info-group mb-3">
+                    <div class="info-group mb-3 section-bawah" style="margin-top:45px;" >
                       <div class="label-row d-flex align-items-center gap-2 mb-1">
                         <i class="fa-solid fa-user-tie"></i>
                         <span class="fw-bold">Dosen Pembimbing</span>
                       </div>
-                      <div class="value-row text-secondary">Timotius Victory</div>
+                      <div class="value-row text-secondary fw-bold">Timotius Victory</div>
                     </div>
                   </div>
                 </div>
@@ -345,19 +357,20 @@
                     id="nilaiMahasiswa"
                     placeholder="A"
                     maxlength="1"
-                    readonly
-                  />
+                    readonly/>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+
+
         <!-- Baris Detail Penilaian tanpa modal -->
         <div class="row mt-3 p-3">
             <div class="card flex-fill h-100" id="carddetailPenilaian">
               <div class="card-body px-4 py-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
                   <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
                 </div>
                 <div class="row justify-content-center align-items-center">
@@ -365,11 +378,11 @@
                     <label for="nilaiLaporan" class="text-black me-2 mb-2">Nilai laporan</label>
                     <label class="colon1 me-2 mb-2">:</label>
                     <input
-                      type="text"
+                      type="type"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="nilaiLaporan"
                       id="detailpenilaian"
-                      placeholder=" 87"
+                      placeholder=" 85"
                       maxlength="3"
                       readonly/>
                   </div>
@@ -377,7 +390,7 @@
                     <label for="MateriPresentasi" class="text-black me-2 mb-2">Materi Presentasi</label>
                     <label class="colon2 me-2 mb-2">:</label>
                     <input
-                      type="text"
+                      type="type"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="MateriPresentasi"
                       id="detailpenilaian"
@@ -389,7 +402,7 @@
                     <label for="Penyampaian" class="text-black me-2 mb-2">Penyampaian</label>
                     <label class="colon3 me-2 mb-2">:</label>
                     <input
-                      type="text"
+                      type="tyep"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="Penyampaian"
                       id="detailpenilaian"
@@ -401,7 +414,7 @@
                     <label for="NilaiProyek" class="text-black me-2 mb-2">Nilai Proyek</label>
                     <label class="colon4 me-2 mb-2">:</label>
                     <input
-                      type="text"
+                      type="type"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="NilaiProyek"
                       id="detailpenilaian"
@@ -415,7 +428,7 @@
         </div>
 
 
-        
+
         <!-- Baris Catatan -->
         <div class="row mt-3 p-3">
             <div class="card flex-fill h-100" id="cardcatatan">
@@ -432,6 +445,7 @@
             </div>
         </div>
 
+
         <!-- Baris Tombol Kembali saja -->
         <div class="row mt-5 justify-content-between">
           <div class="col-auto">
@@ -444,10 +458,10 @@
           </div>
           <!-- Tombol Kirim dihapus -->
         </div>
-
       </div> <!-- akhir container-fluid -->
     </main>
   </div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -475,6 +489,8 @@
         }
       };
 
+
+
       // Terapkan fungsi ke semua input nilai di dalam 'carddetailPenilaian'
       const scoreInputs = document.querySelectorAll('#carddetailPenilaian input.form-control');
       scoreInputs.forEach(makeElementStatic);
@@ -486,6 +502,8 @@
       // --- AKHIR SOLUSI ---
     });
 
+
+
     // Kode untuk toggle sidebar (tetap dipertahankan)
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
@@ -493,6 +511,8 @@
       menuToggle.classList.toggle("NavSide__toggle--active");
       sidebar.classList.toggle("NavSide__sidebar--active-mobile");
     };
+
+
 
     // Kode untuk active item di sidebar (tetap dipertahankan)
     let listItems = document.querySelectorAll(".NavSide__sidebar-item");
@@ -506,6 +526,8 @@
         }
       };
     }
+
+
 
     // Fungsi untuk tombol kembali (tetap dipertahankan)
     function pindahKeHalamanDaftarSidang() {
