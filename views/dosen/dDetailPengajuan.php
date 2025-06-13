@@ -55,20 +55,20 @@
 
     .btn-danger.btn-circle:hover {
       background-color: transparent;
-      color: #FD7D7D;
-      border: 2px solid #FD7D7D;
+      color: #e56a6a;
+      border: 2px solid #e56a6a;
     }
 
     .btn-success.btn-circle {
-      background-color: #198754;
+      background-color: #4FD382;
       color: white;
-      border: 2px solid #198754;
+      border: 2px solid #4FD382;
     }
 
     .btn-success.btn-circle:hover {
       background-color: transparent;
-      color: #198754;
-      border: 2px solid #198754;
+      color: #3ab070;
+      border: 2px solid #3ab070;
     }
     .card {
       border-radius: 12px;
@@ -367,18 +367,14 @@
 </div> -->
 
 
-  <div class="d-flex justify-content-between">
-    <button class="btn-kembali" onclick="location.href='dpengajuan.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>
-    <div class="d-flex justify-content-between ">
-    <button class="btn btn-danger btn-circle me-2" onclick="showModalTolak('Ditolak')">Tolak</button>
-    <button class="btn btn-success btn-circle" id="setujui" onclick="val()">Setujui</button>
-    </div>
+<div class="d-flex justify-content-between">
+  <button class="btn-kembali" onclick="location.href='dpengajuan.php'">
+    <span class="icon-circle"> <i class="fa-solid fa-arrow-left"></i></span>Kembali</button>
+  <div class="d-flex justify-content-between ">
+    <button class="btn btn-danger btn-circle me-2" id="btnTolak">Tolak</button>
+    <button class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
   </div>
+</div>
 
     <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -399,68 +395,91 @@
                     <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menyetujui?</p>
                     <div class="d-flex justify-content-between px-5">
                       <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
-                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" onclick="showModalBerhasil()" id="submitBtn" >Lanjutkan</button>
+                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn" >Lanjutkan</button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-  <script>
+<div class="modal fade" id="modalTolak" tabindex="-1" aria-labelledby="modalTolakLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+        <h4 class="modal-title fw-bold" id="modalTolakLabel" style="font-size: 24px;">Perhatian</h4>
+          </div>
+          <div class="modal-body">
+          <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menolak?</p>
+          <div class="mb-4 px-3">
+            <textarea id="alasanTolak" class="form-control mb-4" placeholder="Masukkan alasan penolakan" rows="3"></textarea>
+            <small id="errorAlasan" class="text-danger d-none">Silakan isi alasan terlebih dahulu.</small>
+          </div>
+          <div class="d-flex justify-content-between px-5">
+          <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+          <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="tolakBtn">Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    function val() {
-      modalKonfirmasi.show();
+<script>
+  const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
+  const modalTolak = new bootstrap.Modal(document.getElementById('modalTolak'));
+
+  // Buka modal konfirmasi ketika klik tombol Setujui
+  document.getElementById('btnSetujui').addEventListener('click', function () {
+    modalKonfirmasi.show();
+  });
+
+  // Buka modal tolak ketika klik tombol Tolak
+  document.getElementById('btnTolak').addEventListener('click', function () {
+    modalTolak.show();
+  });
+
+  // Jika tekan "Lanjutkan" di modal Setujui
+  document.getElementById('submitBtn').addEventListener('click', function () {
+    Swal.fire({
+      title: 'Pengajuan Berhasil Dikirim!',
+      icon: 'success',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        history.back(); 
+      }
+    });
+  });
+
+ document.getElementById('tolakBtn').addEventListener('click', function () {
+  const alasan = document.getElementById('alasanTolak').value.trim();
+
+  if (alasan === '') {
+    Swal.fire({
+      title: 'Gagal',
+      text: 'Silakan isi alasan penolakan terlebih dahulu.',
+      icon: 'warning',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    });
+    return;
+  }
+
+  Swal.fire({
+    title: 'Pengajuan Ditolak',
+    text: 'Pengajuan sidang berhasil ditolak.',
+    icon: 'success',
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#4B68FB'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      console.log("Alasan penolakan:", alasan);
+      history.back();
     }
-    
-    function showModalBerhasil(status) {
-      Swal.fire({
-            title: 'Berhasil',
-            text: 'Nilai akhir telah dikirim.',
-            icon: 'success',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#4B68FB'
-          }); 
-        }
+  });
+});
 
-      function showModalTolak(status) {
-        Swal.fire({
-          title: 'Error',
-          text: 'Semua nilai harus diisi sebelum mengirim.',
-          icon: 'error',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        });
-      }
-
-    const btnOpenModalKonfirmasi = document.getElementById('btnOpenModalKonfirmasi');
-    const modalKonfirmasiEl = document.getElementById('modalKonfirmasi');
-
-    const modalKonfirmasi = new bootstrap.Modal(modalKonfirmasiEl);
-
-    btnOpenModalKonfirmasi.addEventListener('click', function() {
-      const tombolSetujui = document.getElementById('setujui');
-      {
-        modalKonfirmasi.show();
-      }
-    });
-
-    const submitBtn = document.getElementById('submitBtn');
-
-    submitBtn.addEventListener('click', function() {
-      Swal.fire({
-        title: 'Pengajuan Berhasil Dikirim!',
-        icon: 'success',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#4B68FB'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          history.back();
-        }
-      });
-    });
-    
-
-  </script>
+</script>
 </body>
 
 </html>
