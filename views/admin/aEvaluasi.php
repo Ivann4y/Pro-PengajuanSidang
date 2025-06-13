@@ -77,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+  
 
   <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -116,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
           <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
+         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
         <h5 class="mt-3">Catatan Perbaikan</h5>
       </div>
       <span class="badge-custom">Status Revisi : Disetujui</span>

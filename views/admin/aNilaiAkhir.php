@@ -213,7 +213,7 @@
     <div class="card flex-fill h-100" id="cardNilai">
       <div class="card-body card-soft px-4 py-2 d-flex flex-column">
         <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Nilai Mahasiswa</h3>
-<div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+<div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center" style="margin-left:50px;">
   <input
     type="text"
     class="form-control form-control-lg text-center mt-n2"
