@@ -124,13 +124,14 @@
       gap: 8px;
       padding:12px 12px;
       border: 1px solid #212529;  /* border hitam default */
-      border-radius: 8px;
+      border-radius: 20px;
       background-color: transparent;
       color: #212529;
       transition: all 0.3s ease;
       text-decoration: none;
       cursor: pointer;
-      margin-right: 30px
+      margin-right: 30px;
+      margin-bottom: 10px;
     }
 
     .file-link i {
@@ -257,12 +258,6 @@
             color: white;
         }
 
-        /* .info-pengajuan .section p,
-        .info-pengajuan .section h5 {
-           transition: color 0.4s ease;
-        } */
-
-
 
   </style>
 </head>
@@ -353,19 +348,6 @@
     </a>
   </div>
 </div> 
-
-<!-- <div class="card mb-3 dokumen-sidang">
-  <h5 class="fw-semibold">Dokumen Sidang</h5>
-  <div class="mt-2">
-    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
-      <i class="fa-solid fa-file-lines"></i> berkas_laporan_kel-1.pdf
-    </a>
-    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
-      <i class="fa-solid fa-file-zipper"></i> dokumen_pendukung_kel-1.zip
-    </a>
-  </div>
-</div> -->
-
 
 <div class="d-flex justify-content-between">
   <button class="btn-kembali" onclick="location.href='dpengajuan.php'">

@@ -174,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
  <br/>
       <div class="d-flex justify-content-end mt-4">
-          <a href="aEvaluasi.php" class="btn-custom-primaryUnd" download>
+          <a href="aEvaluasi.php" class="btn-custom-primaryUnd" id="btnUnduh" download>
               Unduh
           </a>
       </div>
