@@ -175,14 +175,14 @@
           ?>
           <form action="#" method="post">
             <div class="mb-3">
-              <label for="judul" class="form-label">
-                <span class="text-danger">* </span>Judul Sidang
+              <label for="judul" class="form-label">Judul Sidang
+                <span class="text-danger">* </span>
               </label>
               <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo $judul ?>" placeholder="Masukkan Judul Sidang" />
             </div>
             <div class="mb-3">
-              <label for="matkul" class="form-label">
-                <span class="text-danger">* </span>Mata Kuliah
+              <label for="matkul" class="form-label">Mata Kuliah
+                <span class="text-danger">* </span>
               </label>
               <select class="forM form-select" id="matkul" name="matkul">
                 <option selected disabled>Pilih Mata Kuliah</option>
@@ -201,8 +201,8 @@
               </select>
             </div>
             <div class="mb-3">
-              <label for="kelas" class="form-label">
-                <span class=text-danger>* </span> Kelas
+              <label for="kelas" class="form-label">Kelas
+                <span class=text-danger>* </span>
               </label>
               <select class="forM form-select" id="kelas" name="kelas">
                 <option selected disabled>Pilih Kelas</option>
@@ -213,63 +213,43 @@
 
             <!-- Upload Dokumen Laporan Sidang -->
             <div class="row">
-              <div class="col-md-6 mb-4">
+              <div class="mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">
-                    <span class="text-danger">* </span>Dokumen Laporan Sidang
+                  <h6 class="fw-bold text-dark">Dokumen Sidang
+                    <span class="text-danger">* </span>
                   </h6>
-                  <div id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
+                  <div id="DokumenSidangForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
-                      <input type="file" id="laporanSidang" name="laporanSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
+                      <input type="file" id="DokumenSidang" name="DokumenSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
                       <div class="upload-content">
                         <svg id="uploadIcon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="bi bi-upload" viewBox="0 0 16 16">
                           <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z" />
                           <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z" />
                         </svg>
-                        <p class="mt-2 text-muted small" id="laporanLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
+                        <p class="mt-2 text-muted small" id="DokumenLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
                       </div>
                     </label>
                   </div>
                 </div>
               </div>
 
-              <!-- Upload Dokumen Pendukung Sidang -->
-              <div class="col-md-6 mb-4">
-                <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">
-                    <span class="text-danger">* </span>Dokumen Pendukung Sidang
-                  </h6>
-                  <div id="dokPendukungForm" action="#" method="POST" enctype="multipart/form-data">
-                    <label class="upload-box w-100 mt-3 text-center">
-                      <input type="file" id="dokPendukung" name="pendukungSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
-                      <div class="upload-content">
-                        <svg id="UploadIcon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="bi bi-upload" viewBox="0 0 16 16">
-                          <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z" />
-                          <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z" />
-                        </svg>
-                        <p class="mt-2 text-muted small">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </div>
               <div class="bintangMerah">
                 <p>* : wajib diisi</p>
               </div>
             </div>
 
             <!-- Modal -->
-            <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
+            <div class="modal fade" id="modalValidasi" tabindex="-1" aria-labelledby="modalValidasiLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
                   <div class="modal-header border-0 justify-content-center">
-                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                    <h4 class="modal-title fw-bold" id="modalValidasiLabel" style="font-size: 24px;">Perhatian</h4>
                   </div>
                   <div class="modal-body">
                     <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin mengajukan sidang?</p>
                     <div class="d-flex justify-content-between px-5">
                       <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
-                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn">Lanjutkan</button>
+                      <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="btnLanjutkan">Lanjutkan</button>
                     </div>
                   </div>
                 </div>
@@ -279,10 +259,10 @@
 
 
 
-            <!-- Button Simpan & Kirim, Verifikasi Modal -->
+            <!-- Tombol Kembali -->
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <button class="btn btn-kembali" onclick=location.href="mPengajuan.php">
+                <button class="btn btn-kembali" onclick="history.back()">
                   <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                   </span>
@@ -290,10 +270,10 @@
                 </button>
               </div>
 
-              <!-- Kanan: Tombol Simpan & Kirim -->
+              <!-- Tombol Simpan & Kirim -->
               <div class="d-flex gap-2">
                 <button type="button" class="btn btn-secondary" id="btnSimpan">Simpan</button>
-                <button type="button" class="btn-setuju" id="btnOpenModalKonfirmasi">Kirim</button>
+                <button type="button" class="btn-setuju" id="btnKirim">Kirim</button>
               </div>
             </div>
           </form>
@@ -328,38 +308,26 @@
       };
     }
 
-    const btnOpenModalKonfirmasi = document.getElementById('btnOpenModalKonfirmasi');
-    const modalKonfirmasiEl = document.getElementById('modalKonfirmasi');
-    // const modalPeringatanEl = document.getElementById('modalPeringatan');
+    //Tombol Kirim dan Simpan
+    const btnKirim = document.getElementById('btnKirim');
 
-    const modalKonfirmasi = new bootstrap.Modal(modalKonfirmasiEl);
-    // const modalPeringatan = new bootstrap.Modal(modalPeringatanEl);
+    btnKirim.addEventListener('click', function() {
+      const laporan = document.getElementById('DokumenSidang').files.length;
+      const judul = document.getElementById('judul').value;
+      const matkul = document.getElementById('matkul').value;
+      const kelas = document.getElementById('kelas').value;
+      const modalValidasi = new bootstrap.Modal(document.getElementById('modalValidasi'));
 
-    btnOpenModalKonfirmasi.addEventListener('click', function() {
-      const laporan = document.getElementById('laporanSidang').files.length;
-      const pendukung = document.getElementById('dokPendukung').files.length;
-
-      if (laporan === 0 || pendukung === 0) {
+      if (judul == "" || matkul == "Pilih Mata  Kuliah" || kelas == "Pilih Kelas") {
         Swal.fire({
-          title: 'Mohon Lengkapi Seluruh Form!',
+          title: 'Mohon lengkapi semua form!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
         }).then(() => {
           modal.hide();
         });
-      } else {
-        modalKonfirmasi.show();
-      }
-    });
-
-    const btnSimpan = document.getElementById('btnSimpan');
-
-    btnSimpan.addEventListener('click', function() {
-      const laporan = document.getElementById('laporanSidang').files.length;
-      const pendukung = document.getElementById('dokPendukung').files.length;
-
-      if (laporan === 0 || pendukung === 0) {
+      } else if (laporan === 0) {
         Swal.fire({
           title: 'Dokumen Tidak Boleh Kosong!',
           icon: 'error',
@@ -369,49 +337,78 @@
           modal.hide();
         });
       } else {
-        history.back();
+        modalValidasi.show();
       }
     });
 
-    const laporanInput = document.getElementById('laporanSidang');
-    const uploadIcon = document.getElementById('uploadIcon');
-    const laporanBox = laporanInput.closest('.upload-box');
+    const btnSimpan = document.getElementById('btnSimpan');
 
-    laporanInput.addEventListener('change', function() {
-      if (laporanInput.files.length > 0) {
+    btnSimpan.addEventListener('click', function() {
+      const laporan = document.getElementById('DokumenSidang').files.length;
+      const judul = document.getElementById('judul').value;
+      const matkul = document.getElementById('matkul').value;
+      const kelas = document.getElementById('kelas').value;
+
+      if (judul == "" || matkul == "Pilih Mata  Kuliah" || kelas == "Pilih Kelas") {
+        Swal.fire({
+          title: 'Mohon lengkapi semua form!',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#4B68FB'
+        }).then(() => {
+          modal.hide();
+        });
+      } else if (laporan === 0) {
+        Swal.fire({
+          title: 'Dokumen Tidak Boleh Kosong!',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#4B68FB'
+        }).then(() => {
+          modal.hide();
+        });
+      } else {
+        Swal.fire({
+          title: 'Pengajuan Berhasil Disimpan!',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#4B68FB'
+        }).then(() => {
+          history.back();
+        });
+      }
+    });
+
+    // Upload Dokumen Sidang
+    const DokumenSidang = document.getElementById('DokumenSidang');
+    const uploadIcon = document.getElementById('uploadIcon');
+    const laporanBox = DokumenSidang.closest('.upload-box');
+
+    DokumenSidang.addEventListener('change', function() {
+      if (DokumenSidang.files.length > 0) {
         uploadIcon.style.display = 'none';
       }
     });
 
-    const pendukungInput = document.getElementById('dokPendukung');
-    const pendukungBox = pendukungInput.closest('.upload-box');
-    const UploadIcon = document.getElementById('UploadIcon');
-
-    pendukungInput.addEventListener('change', function() {
-      if (pendukungInput.files.length > 0) {
-        UploadIcon.style.display = 'none';
-      }
-    });
-
+    // Warna upload dokumen ganti ketika file dipilih
     function updateUploadBox(input, box) {
+      const textLabel = box.querySelector('.DokumenLabelText');
+      const uploadBox = document.querySelector('.upload-box');
+
       if (input.files.length > 0) {
         const fileName = input.files[0].name;
         box.classList.add('file-selected');
-        box.querySelector('.upload-content p').textContent = `File terupload: ${fileName}`;
+        textLabel.textContent = `File terupload: ${fileName}`;
       } else {
         box.classList.remove('file-selected');
-        box.querySelector('.upload-content p').textContent = 'Upload file revisi dengan format pdf, docx, pptx, dan zip';
+        textLabel.textContent = 'Upload file revisi dengan format pdf, docx, pptx, dan zip';
       }
     }
+    DokumenSidang.addEventListener('change', () => updateUploadBox(DokumenSidang, uploadBox));
 
-
-
-    laporanInput.addEventListener('change', () => updateUploadBox(laporanInput, laporanBox));
-    pendukungInput.addEventListener('change', () => updateUploadBox(pendukungInput, pendukungBox));
-
-    const submitBtn = document.getElementById('submitBtn');
-
-    submitBtn.addEventListener('click', function() {
+    //Tombol Lanjutkan, Modal verifikasi berhasil
+    const btnLanjutkan = document.getElementById('btnLanjutkan');
+    btnLanjutkan.addEventListener('click', function() {
       Swal.fire({
         title: 'Pengajuan Berhasil Dikirim!',
         icon: 'success',
@@ -419,7 +416,7 @@
         confirmButtonColor: '#4B68FB'
       }).then((result) => {
         if (result.isConfirmed) {
-          history.back();
+          location.href = 'mPengajuan.php';
         }
       });
     });

@@ -39,7 +39,9 @@
       position: relative;
     }
     /* (semua CSS NavSide dan styling lain dipertahankan) */
-
+     .label-row i {
+  font-size: 1.5rem;    /* Perbesar icon */
+}
     body,
     .card,
     .form-control,
@@ -331,7 +333,7 @@
                         <i class="fa-solid fa-book"></i>
                         <span class="fw-bold">Mata Kuliah</span>
                       </div>
-                      <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
+                      <div class="value-row text-secondary fw-bold"> instalasi otomatis</div>
                     </div>
                     <!-- Dosen Pembimbing -->
                     <div class="info-group mb-3 section-bawah" style="margin-top:45px;" >
@@ -339,7 +341,7 @@
                         <i class="fa-solid fa-user-tie"></i>
                         <span class="fw-bold">Dosen Pembimbing</span>
                       </div>
-                      <div class="value-row text-secondary fw-bold">Timotius Victory</div>
+                      <div class="value-row text-secondary fw-bold">Dr. Ridah Indah F.</div>
                     </div>
                   </div>
                 </div>
