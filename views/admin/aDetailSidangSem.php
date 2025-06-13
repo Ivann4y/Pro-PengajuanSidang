@@ -451,7 +451,7 @@
             color: #2d2d52;
             background-color: transparent;
             margin: 0 5px; 
-            pointer-events: none;
+            
         }
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
         .modal-body .bobot-input-new::-webkit-inner-spin-button {
@@ -468,16 +468,20 @@
             flex-grow: 1; 
         }
         .modal-body .bobot-nilai-input-group {
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 6px;
             background-color: #F9FAFB;
             border-radius: 35px;
-            padding: 2px 6px;
+            padding: 4px 10px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            height: 35px;
+            flex-shrink: 0;
         }
         .modal-body .btn-bobot-new { 
-            width: auto; 
-            height: auto; 
+            width: 28px; 
+            height: 28px; 
             background-color: transparent; 
             border: none;
             color: #2d2d52;
@@ -487,9 +491,10 @@
             display: flex; 
             align-items: center;
             justify-content: center; 
-            padding: 0 8px; 
-            border-radius: 35px;
+            padding: 0;
+            border-radius: 50%;
             transition: background-color 0.2s ease;
+            flex-shrink: 0;
         }
         .modal-body .btn-bobot-new:hover {
             background-color:rgba(0, 0, 0, 0.05); 
@@ -648,6 +653,12 @@
         width: 100%;
         margin-right: 0;
     }
+
+     .info-card {
+        padding-right: 80px;
+        box-sizing: border-box;
+    }
+
 }
 
 
