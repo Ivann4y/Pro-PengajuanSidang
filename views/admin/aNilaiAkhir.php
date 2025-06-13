@@ -272,39 +272,6 @@
 
     <main class="NavSide__main-content">
 
-<<<<<<< HEAD
-<div class="row mt-5 align-items-stretch">
-  <div class="col-md-6 d-flex">
-    <div class="card flex-fill h-100" id="cardNilai">
-      <div class="card-body card-soft px-4 py-2 d-flex flex-column">
-        <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Nilai Mahasiswa</h3>
-<div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center" style="margin-left:50px;">
-  <input
-    type="text"
-    class="form-control form-control-lg text-center mt-n2"
-    id="nilaiMahasiswa"
-    placeholder="A"
-    maxlength="1"
-    readonly/>
-</div>
-
-
-      </div>
-    </div>
-  </div>
-  <div class="col-md-6 d-flex">
-    <div class="card flex-fill h-100" id="carddataMahasiswa">
-      <div class="card-body card-soft px-4 py-2 d-flex flex-column">
-        <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
-        <div class="d-flex flex-wrap gap-1 px-4 py-3 flex-grow-1">
-          <!-- Section 1 -->
-          <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
-            <!-- NIM -->
-            <div class="info-group mb-3">
-              <div class="label-row d-flex align-items-center gap-2 mb-1">
-                <i class="fa-solid fa-id-card"></i>
-                <span class="fw-bold">NIM</span>
-=======
     <!-- Top bar desktop -->
       
             <div class="dashboard-header p-3">
@@ -315,7 +282,6 @@
                         <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
                 </div>
->>>>>>> 2bd5aecbde30fca4a6b38f15b45991d04f9e57dc
               </div>
 
 
