@@ -655,6 +655,11 @@ h3 {
     width: 100%; /* Buat tombol memenuhi lebar pembungkusnya */
   }
 }
+@media (max-width: 700px){
+    h2{
+        margin-top: 60px;
+    }
+}
       .page-nama {
             font-size: 1.3rem;
             font-weight: 600;
