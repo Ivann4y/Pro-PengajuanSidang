@@ -287,8 +287,104 @@ if ($_SESSION['role'] !== 'dosen') {
                                             <i class="fa-solid fa-file-signature"></i>
                                         </button>
                                     </td>
-
                                 </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                
                                 <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
@@ -327,6 +423,103 @@ if ($_SESSION['role'] !== 'dosen') {
                                         </button>
                                     </td>
                                 </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                
                                 <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
@@ -391,7 +584,7 @@ if ($_SESSION['role'] !== 'dosen') {
                     const dropdownButton = document.getElementById('ddMSidang');
 
                     let currentPage = 1;
-                    const rowsPerPage = 5;
+                    const rowsPerPage = 10;
                     let activeRows = [];
 
                     function getAllRows() {
