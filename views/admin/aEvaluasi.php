@@ -67,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Detail Sidang</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../../assets/css/stylee.css?v=<?= time() ?>">
+  
   <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
    <link rel="stylesheet" href="../../css/button-styles.css">
@@ -75,8 +75,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="../../assets/css/aEvaluasi.css?v=<?= time() ?>">
 </head>
 <body>
+  
 
   <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -116,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
           <div class="d-flex justify-content-between align-items-center">
       <div>
-        <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
+         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
         <h5 class="mt-3">Catatan Perbaikan</h5>
       </div>
       <span class="badge-custom">Status Revisi : Disetujui</span>
@@ -172,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
  <br/>
       <div class="d-flex justify-content-end mt-4">
-          <a href="aEvaluasi.php" class="btn-custom-primaryUnd" download>
+          <a href="aEvaluasi.php" class="btn-custom-primaryUnd" id="btnUnduh" download>
               Unduh
           </a>
       </div>
@@ -199,10 +201,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
-                </button>
-
+</button>
     
-        </form>
+        
     </div>
 
   

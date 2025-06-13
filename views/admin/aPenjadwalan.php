@@ -111,11 +111,12 @@ if ($selectedStatus == 'disetujui') {
     }
 
     .main-title {
-        color: #4B68FB;
-        font-weight: 700;
+        color: black;
+        font-weight: 500;
         font-size: 2.1rem;
         margin-bottom: 1rem;
         padding-left:10px;
+        font-family: "Poppings", sans-serif;
         margin-top: -0.5vh;
     }
 
