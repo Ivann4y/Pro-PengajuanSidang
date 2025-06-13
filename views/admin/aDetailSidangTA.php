@@ -313,7 +313,7 @@
         .info-card:hover .section i{
             color: white;
         }
-
+    
         .btn-ubah {
             background-color: #4B68FB;
             color: white;
@@ -456,7 +456,6 @@
             color: #2d2d52;
             background-color: transparent;
             margin: 0; 
-            pointer-events: none;
         }
         .modal-body .bobot-input-new::-webkit-outer-spin-button,
         .modal-body .bobot-input-new::-webkit-inner-spin-button {
@@ -555,7 +554,7 @@
             padding-left: 175px;
         }
         .modal-body .form-toggle-buttons button {
-            width: auto;
+            width: 175.5px;
             height: 35px;
             padding: 8px 15px;
             font-size: 14px;
@@ -585,6 +584,8 @@
             margin-left: 30px;
         }
         
+        
+
 @media (max-width: 768px) {
 
     /* 1. Ubah layout utama form group menjadi vertikal (atas-bawah) */
@@ -626,13 +627,25 @@
         width: 100%;
         margin-right: 0;
     }
+
+    .info-card {
+        padding-right: 80px;
+        box-sizing: border-box;
+    }
+
+     .modal-body .form-toggle-buttons button {
+        font-size: 12px;
+        padding: 6px 10px;
+        gap: 5px;
+        
+    }
 }
         
        
 
         
 
-    </style>
+</style>
 </head>
 <body>
     <div id="NavSide">
@@ -722,7 +735,9 @@
                             <div class="form-group" id="penguji-form-1">
                                 <label for="modal_penguji1">Penguji 1</label>
                                 <div class="input-with-buttons">
+
                                     <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+                                    
                                     <div class="bobot-nilai-input-group">
                                         <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji1')">-</button>
                                         <input type="number" id="modal_qty_penguji1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 1" />

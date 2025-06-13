@@ -166,6 +166,8 @@
             border: none;
             transition: all 0.3s ease;
             cursor: pointer;
+            width: auto;
+            min-width: 160px;
         }
 
         .tambah-sidang-btn:hover {
@@ -174,124 +176,54 @@
         }
 
         @media (max-width: 768px) {
-            table, thead, tbody, th, td, tr {
+            .action-column {
+                display: none;
+            }
+
+            .mobile-add-button-container {
                 display: block;
+                margin: 15px 0;
+                padding: 0 15px;
             }
 
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
+            .mobile-add-button-container .tambah-sidang-btn {
+                width: fit-content;
             }
 
-            .isiTabel {
-                margin-bottom: 15px;
-                background-color: rgb(235, 238, 245);
-                border-radius: 10px;
-                -moz-border-radius: 10px;
+            .header-icons .tambah-sidang-btn {
+                display: none;
             }
+        }
 
-            .isiTabel td {
-                position: relative;
-                padding-left: 50% !important;
-                text-align: right;
-                border: none;
-                border-bottom: 1px solid #eee;
+        @media (min-width: 769px) {
+            .mobile-add-button-container {
+                display: none;
             }
+        }
 
-            .isiTabel td:last-child {
-                border-bottom: none;
-                text-align: center;
-                padding: 10px !important;
-            }
-
-            .isiTabel td:before {
-                position: absolute;
-                left: 12px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
-                text-align: left;
-                font-weight: 600;
-            }
-
-            /* Add labels for each td */
-            .isiTabel td:nth-of-type(1):before { content: "No"; }
-            .isiTabel td:nth-of-type(2):before { content: "Judul"; }
-            .isiTabel td:nth-of-type(3):before { content: "Mata Kuliah"; }
-            .isiTabel td:nth-of-type(4):before { content: "Dosen Pembimbing"; }
-            .isiTabel td:nth-of-type(5):before { content: "Aksi"; }
-
-            /* Reset border radius for mobile */
-            .isiTabel td:first-child,
-            .isiTabel td:last-child {
-                border-radius: 0;
-                -moz-border-radius: 0;
-            }
-
-            /* Adjust table width */
+        @media (max-width: 576px) {
             .table-responsive {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                margin: 0;
-                padding: 0 10px;
+                padding: 0 5px;
             }
 
             table {
-                min-width: 800px;
-                width: 100%;
+                min-width: 700px;
             }
 
-            /* Hover effect adjustment */
-            .jadiBiru:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            }
-
-            /* Adjust font sizes */
             .isiTabel td {
-                font-size: 0.9rem;
-                padding: 12px 15px;
-            }
-
-            .isiTabel td:before {
                 font-size: 0.85rem;
+                padding: 10px 12px;
             }
         }
 
-        /* Additional mobile optimizations */
-        @media (max-width: 576px) {
-            .isiTabel td {
-                font-size: 0.85rem;
-                padding: 10px 15px;
-            }
-
-            .isiTabel td:before {
-                font-size: 0.8rem;
-            }
-
-            .pagination .page-link {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.9rem;
-            }
-
-            .tambah-sidang-btn {
-                width: 100%;
-                margin-bottom: 15px;
-            }
-        }
-
-        /* Small mobile devices */
         @media (max-width: 375px) {
-            .isiTabel td {
-                font-size: 0.8rem;
-                padding: 8px 12px;
+            table {
+                min-width: 650px;
             }
 
-            .isiTabel td:before {
-                font-size: 0.75rem;
+            .isiTabel td {
+                font-size: 0.8rem;
+                padding: 8px 10px;
             }
         }
 
@@ -361,6 +293,18 @@
         /* Pagination styles */
         .pagination-container {
             margin-top: 2rem;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .pagination {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin: 0;
+            padding: 0;
         }
 
         .pagination .page-item.active .page-link {
@@ -373,14 +317,15 @@
         .pagination .page-link {
             color: #4B68FB;
         }
+
         .pagination .page-link:hover {
             color: #2c45c9;
         }
+
         .pagination .page-item.disabled .page-link {
             color: #6c757d;
         }
 
-        /* Responsive styles */
         @media (max-width: 768px) {
             .table-responsive {
                 overflow-x: auto;
@@ -389,14 +334,19 @@
                 padding: 0 10px;
             }
 
-            table {
-                min-width: 800px;
-                width: 100%;
+            .pagination-container {
+                position: sticky;
+                left: 0;
+                right: 0;
+                background: white;
+                z-index: 1;
+                padding: 10px 0;
             }
 
-            .pagination-container {
-                overflow-x: hidden;
-                margin-top: 1rem;
+            .pagination {
+                position: relative;
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -457,10 +407,9 @@
             <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
-        </div>
+            </div>
 
             <div class="header-icons">
-                <button class="tambah-sidang-btn d-md-none" onclick="tambahData()">+ Tambah Sidang</button>
                 <i class="bi bi-bell-fill"></i>
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i>
@@ -497,7 +446,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="mobile-add-button-container d-md-none">
+                        <div class="mobile-add-button-container">
                             <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
                         </div>
                     </div>

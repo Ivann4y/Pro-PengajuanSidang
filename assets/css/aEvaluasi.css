@@ -6,6 +6,8 @@ body {
   font-family: "Segoe UI", sans-serif;
 }
 
+
+
 .sidebar {
   height: 100vh;
   width: 240px;
@@ -115,10 +117,34 @@ body {
 .card-h{
    font-weight:bold;
 }
-.NavSide__main-content{
-  margin-left: 300px !important;
-  margin-right: 20px !important;
+
+    #NavSide {
+  display: flex;
+  min-height: 100vh;
+ 
 }
+
+.NavSide__sidebar {
+ 
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  width: 280px;
+   flex-shrink: 0; 
+  min-height: 100vh; 
+  
+}
+
+.NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  background-color: #f9fafb;
+  padding-top: 3vh;
+}
+
+
 .card-comment:hover {
 
   background-color:   #007bff !important;
@@ -211,7 +237,21 @@ body {
             background-color: white;
             color: #4B68FB;
 }
+@media (max-width: 769px){
 
+  .button-group-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start; /* kiri */
+}
+
+
+}
+
+ .button-group-bottom {
+  margin-top:3px !important;
+ }
 
         .btn-custom-primary .icon-circle {
             display: inline-flex;
@@ -223,6 +263,7 @@ body {
             border-radius: 50%;
             margin-right: 10px;
             transition: background-color 0.3s ease;
+            
         }
 
         .btn-custom-primary:hover .icon-circle {
@@ -236,6 +277,13 @@ body {
         .btn-custom-primary:hover .icon-circle i {
             color: white;
         }
+
+
+
+    
+
+
+        
 
 
 /* Style khusus untuk saat tombol dinonaktifkan */
@@ -259,7 +307,7 @@ body {
 }
 
 
-.btn-custom-primaryUnd {
+      .btn-custom-primaryUnd {
             background-color: #4B68FB;
             color: white;
             font-weight: 600;
@@ -269,6 +317,8 @@ body {
             box-shadow: 0 4px 15px rgba(75, 104, 251, 0.3);
             transition: all 0.2s ease-in-out;
             text-decoration:none;
+            
+           
         }
 
         .btn-custom-primaryUnd:hover {

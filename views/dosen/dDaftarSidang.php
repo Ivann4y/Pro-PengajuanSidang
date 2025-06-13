@@ -157,6 +157,27 @@ if ($_SESSION['role'] !== 'dosen') {
             border: none;
             padding-right: 0; /* No padding on right as input has left padding */
         }
+        
+        .pagination-container {
+        margin-top: 2rem;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #4B68FB;
+        border-color: #4B68FB;
+        color: white;
+        z-index: 2;
+    }
+
+    .pagination .page-link {
+        color: #4B68FB;
+    }
+    .pagination .page-link:hover {
+        color: #2c45c9;
+    }
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+    }
     </style>
 </head>
 
@@ -266,8 +287,104 @@ if ($_SESSION['role'] !== 'dosen') {
                                             <i class="fa-solid fa-file-signature"></i>
                                         </button>
                                     </td>
-
                                 </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                
                                 <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
@@ -307,6 +424,103 @@ if ($_SESSION['role'] !== 'dosen') {
                                     </td>
                                 </tr>
                                 <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td> 
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
+                                            <i class="fa-solid fa-file-signature"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
                                     <td>Nayaka Ivanna</td>
@@ -332,6 +546,11 @@ if ($_SESSION['role'] !== 'dosen') {
                                 </tr>
                             </tbody>
                         </table>
+                        <div class="pagination-container">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center" id="pagination-controls"></ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -357,33 +576,167 @@ if ($_SESSION['role'] !== 'dosen') {
             </div>
             <script>
                 // js buat search
-                  document.addEventListener("DOMContentLoaded", function () {
+                 document.addEventListener("DOMContentLoaded", function () {
                     const searchInput = document.querySelector('.search-input-group input');
                     const tbodyTA = document.getElementById("dPengajuanTA");
                     const tbodySem = document.getElementById("dPengajuanSem");
+                    const paginationControls = document.getElementById('pagination-controls');
+                    const dropdownButton = document.getElementById('ddMSidang');
 
-                    searchInput.addEventListener("keyup", function () {
-                        const query = searchInput.value.toLowerCase();
+                    let currentPage = 1;
+                    const rowsPerPage = 10;
+                    let activeRows = [];
 
-                        filterTableRows(tbodyTA, query);
-                        filterTableRows(tbodySem, query);
-                    });
+                    function getAllRows() {
+                        const rowsTA = Array.from(tbodyTA.querySelectorAll('tr'));
+                        const rowsSem = Array.from(tbodySem.querySelectorAll('tr'));
 
-                    function filterTableRows(tbody, query) {
-                        const rows = tbody.querySelectorAll("tr");
+                        if (tbodyTA.style.display !== 'none' && tbodySem.style.display === 'none') {
+                            return rowsTA;
+                        } else if (tbodySem.style.display !== 'none' && tbodyTA.style.display === 'none') {
+                            return rowsSem;
+                        } else {
+                            return rowsTA.concat(rowsSem);
+                        }
+                    }
 
-                        rows.forEach(row => {
-                            const namaCell = row.children[2]; // Kolom Nama
-                            const namaText = namaCell.textContent.toLowerCase();
+                    function displayPage(rows, page) {
+                        const start = (page - 1) * rowsPerPage;
+                        const end = start + rowsPerPage;
 
-                            if (namaText.includes(query)) {
-                                row.style.display = "";
-                            } else {
-                                row.style.display = "none";
+                        rows.forEach((row, index) => {
+                            row.style.display = (index >= start && index < end) ? '' : 'none';
+                        });
+                    }
+
+                    function setupPagination(rows) {
+                        paginationControls.innerHTML = '';
+                        const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+                        if (pageCount <= 1) {
+                            paginationControls.style.display = 'none';
+                            return;
+                        }
+
+                        paginationControls.style.display = 'flex';
+
+                        // Previous
+                        const prevButton = document.createElement('li');
+                        prevButton.className = 'page-item';
+                        prevButton.innerHTML = `<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>`;
+                        prevButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (currentPage > 1) {
+                                currentPage--;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            }
+                        });
+                        paginationControls.appendChild(prevButton);
+
+                        // Number buttons
+                        for (let i = 1; i <= pageCount; i++) {
+                            const pageButton = document.createElement('li');
+                            pageButton.className = 'page-item';
+                            pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                            pageButton.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                currentPage = i;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            });
+                            paginationControls.appendChild(pageButton);
+                        }
+
+                        // Next
+                        const nextButton = document.createElement('li');
+                        nextButton.className = 'page-item';
+                        nextButton.innerHTML = `<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>`;
+                        nextButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (currentPage < pageCount) {
+                                currentPage++;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            }
+                        });
+                        paginationControls.appendChild(nextButton);
+
+                        updatePaginationButtons(pageCount);
+                    }
+
+                    function updatePaginationButtons(pageCount) {
+                        const pageItems = paginationControls.querySelectorAll('.page-item');
+                        pageItems.forEach((item, index) => {
+                            item.classList.remove('active', 'disabled');
+
+                            if (index === 0 && currentPage === 1) {
+                                item.classList.add('disabled');
+                            } else if (index === pageItems.length - 1 && currentPage === pageCount) {
+                                item.classList.add('disabled');
+                            } else if (index === currentPage) {
+                                item.classList.add('active');
                             }
                         });
                     }
+
+                    function refreshTable() {
+                        displayPage(activeRows, currentPage);
+                        setupPagination(activeRows);
+                    }
+
+                    function searchTable(query) {
+                        const allRows = getAllRows();
+                        activeRows = [];
+
+                        allRows.forEach(row => {
+                            const namaCell = row.children[2];
+                            const namaText = namaCell.textContent.toLowerCase();
+
+                            if (namaText.includes(query)) {
+                                row.style.display = '';
+                                activeRows.push(row);
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+
+                        currentPage = 1;
+                        refreshTable();
+                    }
+
+                    searchInput.addEventListener("keyup", function () {
+                        const query = searchInput.value.toLowerCase();
+                        searchTable(query);
+                    });
+
+                    // GABUNGAN filter + update dropdown label
+                    window.switchDdaftarSidang = function (tipe) {
+                        if (tipe === 'TA') {
+                            tbodyTA.style.display = '';
+                            tbodySem.style.display = 'none';
+                            dropdownButton.textContent = 'Sidang TA';
+                        } else if (tipe === 'Semester') {
+                            tbodyTA.style.display = 'none';
+                            tbodySem.style.display = '';
+                            dropdownButton.textContent = 'Sidang Semester';
+                        } else {
+                            tbodyTA.style.display = '';
+                            tbodySem.style.display = '';
+                            dropdownButton.textContent = 'Semua';
+                        }
+
+                        searchInput.value = '';
+                        activeRows = getAllRows();
+                        currentPage = 1;
+                        refreshTable();
+                    };
+
+                    // Load awal
+                    activeRows = getAllRows();
+                    refreshTable();
                 });
+                
                 let menuToggle = document.querySelector(".NavSide__toggle");
                 let sidebar = document.getElementById("main-sidebar");
 
@@ -391,30 +744,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         menuToggle.classList.toggle("NavSide__toggle--active");
                         sidebar.classList.toggle("NavSide__sidebar--active-mobile");
                     };
-
-                // JS buat dd
-                function switchDdaftarSidang(mode) {
-                    const taTable = document.getElementById('dPengajuanTA');
-                    const semTable = document.getElementById('dPengajuanSem');
-                    const dropdownButton = document.getElementById('ddMSidang');
-
-                    if (mode === 'TA') {
-                        taTable.style.display = 'table-row-group';
-                        semTable.style.display = 'none';
-                        dropdownButton.textContent = 'Sidang TA';
-                    } else if (mode === 'Semester') {
-                        taTable.style.display = 'none';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Sidang Semester';
-                    } else {
-                        taTable.style.display = 'table-row-group';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Semua';
-                    }
-                }
-
             </script>
             <script src="../../assets/js/main.js"></script>
 </body>
-
 </html>

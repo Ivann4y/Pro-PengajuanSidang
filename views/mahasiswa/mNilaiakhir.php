@@ -50,52 +50,20 @@
         margin-bottom: 0.5rem; 
     }
     
-    .student-info {
-        font-size: 1rem;
-        color: #6c757d; 
-        font-weight: 500;
-    }
-    
-    /* Aturan untuk card agar konsisten */
-    #carddetailPenilaian, #cardcatatan {
+    #cardcatatan {
         background-color: rgb(235, 238, 245);
         border-radius: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-left: 15px;
+        width: 100%;
     }
 
-    #cardNilai {
-        background-color: rgb(235, 238, 245);
-        border-radius: 50px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        margin-left: 0;
-    }
-    
-    #carddataMahasiswa {
+    #cardNilai, #carddataMahasiswa {
         background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
     }
 
-    #carddetailPenilaian, #cardcatatan {
-        width: 100%; /* Dibuat fleksibel */
-    }
-
-    /* Style untuk grup info (NIM, Nama, dll) */
-    .info-group, .value-row {
-        font-size: 1rem;
-    }
-    
-    .fw-bold {
-        font-weight: 600 !important;
-    }
-    
-    @media (max-width: 992px) {
-        /* Media queries lainnya tetap sama */
-    }
-    
     #nilaiMahasiswa {
         font-size: 9.5rem !important;
         font-weight: bold;
@@ -106,6 +74,7 @@
         border: none !important;
         box-shadow: none !important;
         padding: 0;
+        margin: 0 auto;
     }
     
     #catatan-content {
@@ -129,6 +98,7 @@
         margin-top: 1.2cm;
         margin-left: 15px;
     }
+    
     .btn-kembali:hover {
         position: relative;
         background-color: white;
@@ -160,13 +130,41 @@
     .btn-kembali:hover .icon-circle i {
         color: white;
     }
+    
+    /* CSS UNTUK MEMPERBESAR IKON DAN TEKS DATA MAHASISWA */
+    #carddataMahasiswa .label-row {
+        gap: 1rem !important;
+    }
+
+    #carddataMahasiswa .label-row i {
+        font-size: 1.8rem;
+        width: 20px;
+        color: black; /* Diubah menjadi hitam */
+    }
+
+    #carddataMahasiswa .label-row .fw-bold {
+        font-size: 1.3rem;
+    }
+
+    #carddataMahasiswa .value-row {
+        font-size: 1.1rem;
+    }
+
+    #carddataMahasiswa .info-group {
+        margin-bottom: 2rem !important;
+        padding-left: 0 !important;
+    }
+
+    #carddataMahasiswa .card-body {
+        padding: 2.5rem !important;
+    }
+    
 </style>
   </head>
   <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
-            <!-- Sidebar Content -->
-             <div class="NavSide__sidebar-brand img ">
+            <div class="NavSide__sidebar-brand img ">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
@@ -186,7 +184,6 @@
         </div>
 
         <div class="NavSide__topbar">
-            <!-- Topbar Content -->
              <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
@@ -198,83 +195,73 @@
                 </div>
             </div>
         </div>
+
    <main class="NavSide__main-content">
     <div class="container-fluid">
         <div class="row mb-4 title-container">
             <div class="col-12">
-                <h2 class="main-title">
+                <h2 class="main-title ps-4">
                     Mahasiswa / Detail Evaluasi - Sistem Pengajuan Sidang
                 </h2>
             </div>
         </div>
         
-        <div class="row mt-4 g-4 row align-items-stretch mb-5 p-3">
-            <!-- KARTU DATA MAHASISWA (SEKARANG DI KIRI) -->
+        <!-- ================== AWAL PERUBAHAN STRUKTUR HTML ================== -->
+        <div class="row mt-4 g-4 align-items-stretch mb-5 p-3">
+            <!-- KARTU DATA MAHASISWA -->
             <div class="col-lg-6 d-flex">
               <div class="card flex-fill" id="carddataMahasiswa">
-                <div class="card-body card-soft p-4">
-                  <h3 class="card-title text-dark mb-4 text-center">Data Mahasiswa</h3>
-                  
-                  <!-- NIM (Ikon: fa-id-card) -->
-                  <div class="info-group mb-3  ps-5">
-                    <div class="label-row d-flex align-items-center gap-2 mb-1">
+                <div class="card-body card-soft">
+                  <h3 class="card-title text-dark mb-5 text-center">Data Mahasiswa</h3>
+                  <div class="info-group">
+                    <div class="label-row d-flex align-items-center mb-1">
                       <i class="fa-solid fa-id-card"></i>
-                      <span class="fw-bold">NIM</span>
+                      <span class="fw-bold text-dark">NIM</span>
                     </div>
                     <div class="value-row text-secondary fw-bold"><?php echo htmlspecialchars($mahasiswa['nim']); ?></div>
                   </div>
-
-                  <!-- Nama (Ikon: fa-user) -->
-                  <div class="info-group mb-3  ps-5">
-                    <div class="label-row d-flex align-items-center gap-2 mb-1">
+                  <div class="info-group">
+                    <div class="label-row d-flex align-items-center mb-1">
                       <i class="fa-solid fa-user"></i>
-                      <span class="fw-bold">Nama</span>
+                      <span class="fw-bold text-dark">Nama</span>
                     </div>
                     <div class="value-row text-secondary fw-bold"><?php echo htmlspecialchars($mahasiswa['nama']); ?></div>
                   </div>
-
-                  <!-- Mata Kuliah (Ikon: fa-book) - SESUAI GAMBAR -->
-                  <div class="info-group mb-3  ps-5">
-                    <div class="label-row d-flex align-items-center gap-2 mb-1">
+                  <div class="info-group">
+                    <div class="label-row d-flex align-items-center mb-1">
                       <i class="fa-solid fa-book"></i>
-                      <span class="fw-bold">Mata Kuliah</span>
+                      <span class="fw-bold text-dark">Mata Kuliah</span>
                     </div>
                     <div class="value-row text-secondary fw-bold"><?php echo htmlspecialchars($mahasiswa['matkul']); ?></div>
                   </div>
-
-                  <!-- Dosen Pembimbing (Ikon: fa-user-tie) -->
-                  <div class="info-group mb-3  ps-5">
-                    <div class="label-row d-flex align-items-center gap-2 mb-1">
+                  <div class="info-group">
+                    <div class="label-row d-flex align-items-center mb-1">
                       <i class="fa-solid fa-user-tie"></i>
-                      <span class="fw-bold">Dosen Pembimbing</span>
+                      <span class="fw-bold text-dark">Dosen Pembimbing</span>
                     </div>
                     <div class="value-row text-secondary fw-bold"><?php echo htmlspecialchars($mahasiswa['dosen']); ?></div>
                   </div>
-                  
                 </div>
               </div>
             </div>
             
-            <!-- KARTU NILAI MAHASISWA (SEKARANG DI KANAN) -->
+            <!-- KARTU NILAI MAHASISWA -->
             <div class="col-lg-6 d-flex">
                 <div class="card flex-fill" id="cardNilai">
                     <div class="card-body d-flex flex-column justify-content-center">
                         <h3 class="card-title text-dark text-center">Nilai Mahasiswa :</h3>
                         <div class="d-flex justify-content-center align-items-center flex-grow-1">
-                            <input type="text" class="form-control text-dark"
-                                id="nilaiMahasiswa" value="A" readonly />
+                            <input type="text" class="form-control text-dark" id="nilaiMahasiswa" value="A" readonly />
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-
-        <div class="row mt-5">
+            <!-- KARTU CATATAN (DIPINDAHKAN KE DALAM ROW YANG SAMA) -->
             <div class="col-12">
                 <div class="card" id="cardcatatan">
                     <div class="card-body">
-                        <h3 class="card-title text-dark" >Catatan:</h3>
+                        <h3 class="card-title text-dark">Catatan:</h3>
                         <div class="text-dark" id="catatan-content">
                             Tidak ada catatan.
                         </div>
@@ -282,8 +269,9 @@
                 </div>
             </div>
         </div>
+        <!-- ================== AKHIR PERUBAHAN STRUKTUR HTML ================== -->
         
-        <div class="row mt-5">
+        <div class="row">
             <div class="col-auto"> 
                 <button class="btn-kembali" onclick="location.href='mSidang.php'">
                     <span class="icon-circle">
@@ -298,7 +286,6 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-    // ... (Your existing JavaScript remains unchanged) ...
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
 
