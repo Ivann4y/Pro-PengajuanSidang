@@ -384,171 +384,166 @@ if ($_SESSION['role'] !== 'dosen') {
             <script>
                 // js buat search
                  document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.querySelector('.search-input-group input');
-    const tbodyTA = document.getElementById("dPengajuanTA");
-    const tbodySem = document.getElementById("dPengajuanSem");
-    const paginationControls = document.getElementById('pagination-controls');
+                    const searchInput = document.querySelector('.search-input-group input');
+                    const tbodyTA = document.getElementById("dPengajuanTA");
+                    const tbodySem = document.getElementById("dPengajuanSem");
+                    const paginationControls = document.getElementById('pagination-controls');
+                    const dropdownButton = document.getElementById('ddMSidang');
 
-    let currentPage = 1;
-    const rowsPerPage = 5;
-    let activeRows = [];
+                    let currentPage = 1;
+                    const rowsPerPage = 5;
+                    let activeRows = [];
 
-    function getAllRows() {
-        const rowsTA = Array.from(tbodyTA.querySelectorAll('tr'));
-        const rowsSem = Array.from(tbodySem.querySelectorAll('tr'));
+                    function getAllRows() {
+                        const rowsTA = Array.from(tbodyTA.querySelectorAll('tr'));
+                        const rowsSem = Array.from(tbodySem.querySelectorAll('tr'));
 
-        // Cek filter aktif: TA / Semester / Semua
-        if (tbodyTA.style.display !== 'none' && tbodySem.style.display === 'none') {
-            return rowsTA;
-        } else if (tbodySem.style.display !== 'none' && tbodyTA.style.display === 'none') {
-            return rowsSem;
-        } else {
-            return rowsTA.concat(rowsSem);
-        }
-    }
+                        if (tbodyTA.style.display !== 'none' && tbodySem.style.display === 'none') {
+                            return rowsTA;
+                        } else if (tbodySem.style.display !== 'none' && tbodyTA.style.display === 'none') {
+                            return rowsSem;
+                        } else {
+                            return rowsTA.concat(rowsSem);
+                        }
+                    }
 
-    function displayPage(rows, page) {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
+                    function displayPage(rows, page) {
+                        const start = (page - 1) * rowsPerPage;
+                        const end = start + rowsPerPage;
 
-        rows.forEach((row, index) => {
-            row.style.display = (index >= start && index < end) ? '' : 'none';
-        });
-    }
+                        rows.forEach((row, index) => {
+                            row.style.display = (index >= start && index < end) ? '' : 'none';
+                        });
+                    }
 
-    function setupPagination(rows) {
-        paginationControls.innerHTML = '';
-        const pageCount = Math.ceil(rows.length / rowsPerPage);
+                    function setupPagination(rows) {
+                        paginationControls.innerHTML = '';
+                        const pageCount = Math.ceil(rows.length / rowsPerPage);
 
-        if (pageCount <= 1) {
-            paginationControls.style.display = 'none';
-            return;
-        }
+                        if (pageCount <= 1) {
+                            paginationControls.style.display = 'none';
+                            return;
+                        }
 
-        paginationControls.style.display = 'flex';
+                        paginationControls.style.display = 'flex';
 
-        // Previous
-        const prevButton = document.createElement('li');
-        prevButton.className = 'page-item';
-        prevButton.innerHTML = `
-            <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>`;
-        prevButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (currentPage > 1) {
-                currentPage--;
-                displayPage(rows, currentPage);
-                updatePaginationButtons(pageCount);
-            }
-        });
-        paginationControls.appendChild(prevButton);
+                        // Previous
+                        const prevButton = document.createElement('li');
+                        prevButton.className = 'page-item';
+                        prevButton.innerHTML = `<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>`;
+                        prevButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (currentPage > 1) {
+                                currentPage--;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            }
+                        });
+                        paginationControls.appendChild(prevButton);
 
-        // Page numbers
-        for (let i = 1; i <= pageCount; i++) {
-            const pageButton = document.createElement('li');
-            pageButton.className = 'page-item';
-            pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-            pageButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                currentPage = i;
-                displayPage(rows, currentPage);
-                updatePaginationButtons(pageCount);
-            });
-            paginationControls.appendChild(pageButton);
-        }
+                        // Number buttons
+                        for (let i = 1; i <= pageCount; i++) {
+                            const pageButton = document.createElement('li');
+                            pageButton.className = 'page-item';
+                            pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                            pageButton.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                currentPage = i;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            });
+                            paginationControls.appendChild(pageButton);
+                        }
 
-        // Next
-        const nextButton = document.createElement('li');
-        nextButton.className = 'page-item';
-        nextButton.innerHTML = `
-            <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>`;
-        nextButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (currentPage < pageCount) {
-                currentPage++;
-                displayPage(rows, currentPage);
-                updatePaginationButtons(pageCount);
-            }
-        });
-        paginationControls.appendChild(nextButton);
+                        // Next
+                        const nextButton = document.createElement('li');
+                        nextButton.className = 'page-item';
+                        nextButton.innerHTML = `<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>`;
+                        nextButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (currentPage < pageCount) {
+                                currentPage++;
+                                displayPage(rows, currentPage);
+                                updatePaginationButtons(pageCount);
+                            }
+                        });
+                        paginationControls.appendChild(nextButton);
 
-        updatePaginationButtons(pageCount);
-    }
+                        updatePaginationButtons(pageCount);
+                    }
 
-    function updatePaginationButtons(pageCount) {
-        const pageItems = paginationControls.querySelectorAll('.page-item');
-        pageItems.forEach((item, index) => {
-            item.classList.remove('active', 'disabled');
+                    function updatePaginationButtons(pageCount) {
+                        const pageItems = paginationControls.querySelectorAll('.page-item');
+                        pageItems.forEach((item, index) => {
+                            item.classList.remove('active', 'disabled');
 
-            if (index === 0 && currentPage === 1) {
-                item.classList.add('disabled');
-            } else if (index === pageItems.length - 1 && currentPage === pageCount) {
-                item.classList.add('disabled');
-            } else if (index === currentPage) {
-                item.classList.add('active');
-            }
-        });
-    }
+                            if (index === 0 && currentPage === 1) {
+                                item.classList.add('disabled');
+                            } else if (index === pageItems.length - 1 && currentPage === pageCount) {
+                                item.classList.add('disabled');
+                            } else if (index === currentPage) {
+                                item.classList.add('active');
+                            }
+                        });
+                    }
 
-    function refreshTable() {
-        displayPage(activeRows, currentPage);
-        setupPagination(activeRows);
-    }
+                    function refreshTable() {
+                        displayPage(activeRows, currentPage);
+                        setupPagination(activeRows);
+                    }
 
-    function searchTable(query) {
-        const allRows = getAllRows();
-        activeRows = [];
+                    function searchTable(query) {
+                        const allRows = getAllRows();
+                        activeRows = [];
 
-        allRows.forEach(row => {
-            const namaCell = row.children[2];
-            const namaText = namaCell.textContent.toLowerCase();
+                        allRows.forEach(row => {
+                            const namaCell = row.children[2];
+                            const namaText = namaCell.textContent.toLowerCase();
 
-            if (namaText.includes(query)) {
-                row.style.display = '';
-                activeRows.push(row);
-            } else {
-                row.style.display = 'none';
-            }
-        });
+                            if (namaText.includes(query)) {
+                                row.style.display = '';
+                                activeRows.push(row);
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
 
-        currentPage = 1;
-        refreshTable();
-    }
+                        currentPage = 1;
+                        refreshTable();
+                    }
 
-    // Event search
-    searchInput.addEventListener("keyup", function () {
-        const query = searchInput.value.toLowerCase();
-        searchTable(query);
-    });
+                    searchInput.addEventListener("keyup", function () {
+                        const query = searchInput.value.toLowerCase();
+                        searchTable(query);
+                    });
 
-    // Support filter dropdown onchange (trigger refresh)
-    window.switchDdaftarSidang = function (tipe) {
-        if (tipe === 'TA') {
-            tbodyTA.style.display = '';
-            tbodySem.style.display = 'none';
-        } else if (tipe === 'Semester') {
-            tbodyTA.style.display = 'none';
-            tbodySem.style.display = '';
-        } else {
-            tbodyTA.style.display = '';
-            tbodySem.style.display = '';
-        }
+                    // GABUNGAN filter + update dropdown label
+                    window.switchDdaftarSidang = function (tipe) {
+                        if (tipe === 'TA') {
+                            tbodyTA.style.display = '';
+                            tbodySem.style.display = 'none';
+                            dropdownButton.textContent = 'Sidang TA';
+                        } else if (tipe === 'Semester') {
+                            tbodyTA.style.display = 'none';
+                            tbodySem.style.display = '';
+                            dropdownButton.textContent = 'Sidang Semester';
+                        } else {
+                            tbodyTA.style.display = '';
+                            tbodySem.style.display = '';
+                            dropdownButton.textContent = 'Semua';
+                        }
 
-        searchInput.value = '';
-        activeRows = getAllRows();
-        currentPage = 1;
-        refreshTable();
-    }
+                        searchInput.value = '';
+                        activeRows = getAllRows();
+                        currentPage = 1;
+                        refreshTable();
+                    };
 
-    // Load awal
-    activeRows = getAllRows();
-    refreshTable();
-});
-
-
+                    // Load awal
+                    activeRows = getAllRows();
+                    refreshTable();
+                });
+                
                 let menuToggle = document.querySelector(".NavSide__toggle");
                 let sidebar = document.getElementById("main-sidebar");
 
@@ -556,28 +551,6 @@ if ($_SESSION['role'] !== 'dosen') {
                         menuToggle.classList.toggle("NavSide__toggle--active");
                         sidebar.classList.toggle("NavSide__sidebar--active-mobile");
                     };
-
-                // JS buat dd
-                function switchDdaftarSidang(mode) {
-                    const taTable = document.getElementById('dPengajuanTA');
-                    const semTable = document.getElementById('dPengajuanSem');
-                    const dropdownButton = document.getElementById('ddMSidang');
-
-                    if (mode === 'TA') {
-                        taTable.style.display = 'table-row-group';
-                        semTable.style.display = 'none';
-                        dropdownButton.textContent = 'Sidang TA';
-                    } else if (mode === 'Semester') {
-                        taTable.style.display = 'none';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Sidang Semester';
-                    } else {
-                        taTable.style.display = 'table-row-group';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Semua';
-                    }
-                }
-
             </script>
             <script src="../../assets/js/main.js"></script>
 </body>
