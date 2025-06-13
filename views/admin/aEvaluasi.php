@@ -201,10 +201,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
-                </button>
-
+</button>
     
-        </form>
+        
     </div>
 
   

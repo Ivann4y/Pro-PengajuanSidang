@@ -282,6 +282,103 @@
                                     </td>
                                 </tr>
                                 <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Tugas Akhir</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr class="isiTabel jadiBiru">
                                     <td>2</td>
                                     <td>0920240053</td>
                                     <td>Nayaka Ivanna</td>
@@ -307,6 +404,30 @@
                                 </tr>
                             </tbody>
                             <tbody id="dPengajuanSem" style="display: none;">
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>1</td>
+                                    <td>0920240033</td>
+                                    <td>M. Harris Nur S.</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
                                 <tr class="isiTabel jadiBiru">
                                     <td>1</td>
                                     <td>0920240033</td>
@@ -453,28 +574,31 @@
                     const tbodyTA = document.getElementById("dPengajuanTA");
                     const tbodySem = document.getElementById("dPengajuanSem");
                     const paginationControls = document.getElementById('pagination-controls');
+                    const dropdownButton = document.getElementById('ddMSidang');
 
                     let currentPage = 1;
                     const rowsPerPage = 10;
                     let activeRows = [];
 
                     function getAllRows() {
-                    let rowsTA = Array.from(tbodyTA.querySelectorAll('tr'));
-                    let rowsSem = Array.from(tbodySem.querySelectorAll('tr'));
-                    let allRows = rowsTA.concat(rowsSem);
-                    return allRows; // Ini penting
-                }
+                        const rowsTA = Array.from(tbodyTA.querySelectorAll('tr'));
+                        const rowsSem = Array.from(tbodySem.querySelectorAll('tr'));
+
+                        if (tbodyTA.style.display !== 'none' && tbodySem.style.display === 'none') {
+                            return rowsTA;
+                        } else if (tbodySem.style.display !== 'none' && tbodyTA.style.display === 'none') {
+                            return rowsSem;
+                        } else {
+                            return rowsTA.concat(rowsSem);
+                        }
+                    }
 
                     function displayPage(rows, page) {
                         const start = (page - 1) * rowsPerPage;
                         const end = start + rowsPerPage;
 
                         rows.forEach((row, index) => {
-                            if (index >= start && index < end) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
+                            row.style.display = (index >= start && index < end) ? '' : 'none';
                         });
                     }
 
@@ -482,7 +606,12 @@
                         paginationControls.innerHTML = '';
                         const pageCount = Math.ceil(rows.length / rowsPerPage);
 
-                        if (pageCount <= 1) return;
+                        if (pageCount <= 1) {
+                            paginationControls.style.display = 'none';
+                            return;
+                        }
+
+                        paginationControls.style.display = 'flex';
 
                         const prevButton = document.createElement('li');
                         prevButton.className = 'page-item';
@@ -530,9 +659,14 @@
                         const pageItems = paginationControls.querySelectorAll('.page-item');
                         pageItems.forEach((item, index) => {
                             item.classList.remove('active', 'disabled');
-                            if (index === 0 && currentPage === 1) item.classList.add('disabled');
-                            else if (index === pageItems.length - 1 && currentPage === pageCount) item.classList.add('disabled');
-                            else if (index === currentPage) item.classList.add('active');
+
+                            if (index === 0 && currentPage === 1) {
+                                item.classList.add('disabled');
+                            } else if (index === pageItems.length - 1 && currentPage === pageCount) {
+                                item.classList.add('disabled');
+                            } else if (index === currentPage) {
+                                item.classList.add('active');
+                            }
                         });
                     }
 
@@ -561,13 +695,33 @@
                         refreshTable();
                     }
 
-                    // Event search
                     searchInput.addEventListener("keyup", function () {
                         const query = searchInput.value.toLowerCase();
                         searchTable(query);
                     });
 
-                    // Load default
+                    window.switchDdaftarPengajuan = function (tipe) {
+                        if (tipe === 'TA') {
+                            tbodyTA.style.display = '';
+                            tbodySem.style.display = 'none';
+                            dropdownButton.textContent = 'Sidang TA';
+                        } else if (tipe === 'Semester') {
+                            tbodyTA.style.display = 'none';
+                            tbodySem.style.display = '';
+                            dropdownButton.textContent = 'Sidang Semester';
+                        } else {
+                            tbodyTA.style.display = '';
+                            tbodySem.style.display = '';
+                            dropdownButton.textContent = 'Semua';
+                        }
+
+                        searchInput.value = '';
+                        activeRows = getAllRows();
+                        currentPage = 1;
+                        refreshTable();
+                    };
+
+                    // Load awal
                     activeRows = getAllRows();
                     refreshTable();
                 });
@@ -580,40 +734,6 @@
                     menuToggle.classList.toggle("NavSide__toggle--active");
                     sidebar.classList.toggle("NavSide__sidebar--active-mobile");
                 };
-
-                // Sidebar Active Item Logic
-                // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-                // for (let i = 0; i < listItems.length; i++) {
-                //     listItems[i].onclick = function() {
-                //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                //             for (let j = 0; j < listItems.length; j++) {
-                //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-                //             }
-                //             this.classList.add("NavSide__sidebar-item--active");
-                //         }
-                //     };
-                // }
-                let isTA = true;
-
-               function switchDdaftarPengajuan(mode) {
-                    const taTable = document.getElementById('dPengajuanTA');
-                    const semTable = document.getElementById('dPengajuanSem');
-                    const dropdownButton = document.getElementById('ddMSidang');
-
-                    if (mode === 'TA') {
-                        taTable.style.display = 'table-row-group';
-                        semTable.style.display = 'none';
-                        dropdownButton.textContent = 'Sidang TA';
-                    } else if (mode === 'Semester') {
-                        taTable.style.display = 'none';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Sidang Semester';
-                    } else {
-                        taTable.style.display = 'table-row-group';
-                        semTable.style.display = 'table-row-group';
-                        dropdownButton.textContent = 'Semua';
-                    }
-                }
             </script>
             <script src="../../assets/js/main.js"></script>
 </body>

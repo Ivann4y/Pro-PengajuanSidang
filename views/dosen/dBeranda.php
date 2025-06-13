@@ -115,6 +115,7 @@ if ($_SESSION['role'] !== 'dosen') {
             padding: 1.25rem;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+
         }
         .calendar-card {
             background-color: #4B68FB;
@@ -224,10 +225,14 @@ if ($_SESSION['role'] !== 'dosen') {
        
         .sidang-mendatang-card {
             background-color: #F3F4F6;
-            overflow-y: auto;
-            max-height: 38.5vh; /* <-- Baris ini diaktifkan */
-            padding: 1.25rem;
-}
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            max-height: 450px; 
+            overflow-y: auto; 
+            padding-bottom: 1.25rem; 
+        }
+        
         .sidang-mendatang-card .section-title { /* Judul "Sidang Mendatang" */
             position: sticky;
             top: -1.25rem; /* Sesuaikan dengan padding card agar menempel pas di atas */
@@ -310,22 +315,10 @@ if ($_SESSION['role'] !== 'dosen') {
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"> </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                    <b></b><b></b>
-                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a></li>
             </ul>
         </div>
 
@@ -348,7 +341,7 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
             </div>
 
-            <div class="dashboardTitle">Beranda Dosen</div>
+            <div class="dashboardTitle">Beranda</div>
             <h2 class="welcomeText">Selamat Datang, Evan Wahyu!</h2>
 
             <div class="row gy-4">
@@ -362,9 +355,18 @@ if ($_SESSION['role'] !== 'dosen') {
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div class="mb-4">
                         <div class="statusCard card-perbaikan" onclick="location.href='dDaftarSidang.php'">
                             <div class="statusTitle">Perbaikan</div>
+                            <div class="statusNumberAndText">
+                                <div class="statusNumber">2</div>
+                                <div class="statusText">Menunggu<br>untuk Dinilai</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="statusCard card-penilaian" onclick="location.href='dDaftarSidang.php'">
+                            <div class="statusTitle">Penilaian</div>
                             <div class="statusNumberAndText">
                                 <div class="statusNumber">2</div>
                                 <div class="statusText">Menunggu<br>untuk Dinilai</div>
@@ -374,62 +376,31 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
 
                 <div class="col-lg-4">
-                    <div class="mb-4">
-                        <div class="statusCard card-penilaian" onclick="location.href='dDaftarSidang.php'">
-                            <div class="statusTitle">Penilaian</div>
-                            <div class="statusNumberAndText">
-                                <div class="statusNumber">2</div>
-                                <div class="statusText">Menunggu<br>untuk Dinilai</div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="dashboard-card sidang-mendatang-card">
                         <h3 class="section-title">Sidang Mendatang</h3>
                         <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">22</span><span class="month">Apr</span>
-                            </div>
+                            <div class="date-bubble"><span class="day">22</span><span class="month">Apr</span></div>
                             <span class="info">Nayaka Ivana Putra<br><small style="color: #6B7280; font-size: 0.75rem;">Anniversary TRPL</small></span>
                             <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
                         <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">29</span><span class="month">Mei</span>
-                            </div>
+                            <div class="date-bubble"><span class="day">29</span><span class="month">Mei</span></div>
                             <span class="info">Zahrah Imelda Asari<br><small style="color: #6B7280; font-size: 0.75rem;">Sistem Pengajuan Sidang</small></span>
                             <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">17</span><span class="month">Agu</span>
-                            </div>
+                         <div class="item">
+                            <div class="date-bubble"><span class="day">17</span><span class="month">Agu</span></div>
                             <span class="info">Mnur<br><small style="color: #6B7280; font-size: 0.75rem;">Sistem Rekayasa Agama</small></span>
                             <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
                         <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">12</span><span class="month">Sep</span>
-                            </div>
+                            <div class="date-bubble"><span class="day">12</span><span class="month">Sep</span></div>
                             <span class="info">Naufal Abdirrahman Faiz<br><small style="color: #6B7280; font-size: 0.75rem;">Pengunaan Kawat</small></span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">29</span><span class="month">Sep</span>
-                            </div>
-                            <span class="info">Nur Salim<br><small style="color: #6B7280; font-size: 0.75rem;">Dampak Penjualan Narkoba</small></span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">10</span><span class="month">Okt</span>
-                            </div>
-                            <span class="info">Andrew Hermawan Surgiato<br><small style="color: #6B7280; font-size: 0.75rem;">Rekayasa Logistik</small></span>
                             <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="col-lg-5">
                     <div class="dashboard-card calendar-card">
                         <div class="section-title-container">
@@ -442,13 +413,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         <table class="calendar" id="calendarTable">
                             <thead>
                                 <tr>
-                                    <th>Min</th>
-                                    <th>Sen</th>
-                                    <th>Sel</th>
-                                    <th>Rab</th>
-                                    <th>Kam</th>
-                                    <th>Jum</th>
-                                    <th>Sab</th>
+                                    <th>Min</th><th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th><th>Sab</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -457,27 +422,27 @@ if ($_SESSION['role'] !== 'dosen') {
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
     
      <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div style="background-color:#4B68FB;">
-                        <div class="modal-header">
-                            <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                        </div>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color:#4B68FB;">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                     </div>
-                    <div class="modal-body mx-auto">
-                        Apakah anda yakin ingin keluar?
-                    </div>
-                    <div class="modal-footer justify-content-center border-0">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                        <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-                    </div>
+                </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                 </div>
             </div>
         </div>
+    </div>
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script>

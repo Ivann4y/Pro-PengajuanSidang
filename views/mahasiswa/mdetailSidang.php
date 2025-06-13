@@ -1,36 +1,3 @@
-<?php //ZAFKI ADIPRATAMA PUTRA 
-
-    // Mengambil parameter dari URL
-    $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
-    $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
-
-    $mahasiswa = [];
-
-    if ($tipe === 'TA') {
-        $mahasiswa = [
-            'nama'        => 'M. Haaris Nur S.',
-            'nim'         => '0920240033',
-            'mata_kuliah' => 'Tugas Akhir',
-        ];
-    } elseif ($tipe === 'Semester') {
-        $mahasiswa = [
-            'nama'         => 'M. Harris Nur S.',
-            'nim'          => '0920240033',
-            'mata_kuliah'  => 'Pemrograman 2',
-            'judul_sidang' => 'Sistem Pengajuan Sidang'
-        ];
-    } else {
-        // Data default jika tipe tidak dikenali
-        $mahasiswa = [
-            'nama'          => 'Data Tidak Ditemukan',
-            'nim'           => 'N/A',
-            'mata_kuliah'   => 'N/A',
-            'file_laporan'  => '#',
-            'file_pendukung' => '#'
-        ];
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -62,6 +29,7 @@
         }
 
         .NavSide__sidebar-brand {
+            /* Adjust padding to move logo and menu higher */
             padding: 10% 5% 50% 5%;
             text-align: center;
         }
@@ -121,12 +89,12 @@
             box-sizing: border-box;
         }
 
-        /* Memastikan warna teks putih untuk item navigasi yang TIDAK aktif */
+        /* Ensure white text color for INACTIVE navigation items */
         .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a {
             color: rgb(252, 252, 252); 
         }
 
-        /* Memastikan warna teks putih saat hover untuk item navigasi yang TIDAK aktif */
+        /* Ensure white text color on hover for INACTIVE navigation items */
         .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a:hover {
             color: rgb(252, 252, 252);
         }
@@ -188,71 +156,82 @@
             display: block;
         }
 
-    .NavSide__topbar {
-        display: none;
-        align-items: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 60px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        z-index: 999;
-    }
-
-        @media (max-width: 700px) {
-            .NavSide__topbar {
-                display: flex; /* Show only on mobile */
-                margin-left: 0; /* Reset margin on mobile */
-                padding: 0 15px; /* Added padding for consistency */
-                justify-content: space-between; /* Added for consistency */
-            }
-        }
-
-        .NavSide__topbar .NavSide__toggle { /* Styles for toggle INSIDE topbar */
-            width: 40px;
-            height: 40px;
+        /* Styles for the sidebar toggle button (menu icon for mobile) */
+        .NavSide__toggle {
+            display: none; /* Hidden by default on desktop */
+            position: fixed; 
+            top: 15px;
+            left: 20px;
+            z-index: 1045; 
             cursor: pointer;
-            border-radius: 5px;
-            align-items: center;
-            justify-content: center;
-            padding:0;
-            position: static; /* Added from new topbar style */
-            top: auto; /* Added from new topbar style */
-            left: auto; /* Added from new topbar style */
-            background-color: transparent; /* Added from new topbar style */
-            box-shadow: none; /* Added from new topbar style */
+            color: rgb(67, 54, 240);
+            transition: transform 0.4s ease-in-out;
+            width: 28px; 
+            height: 28px;
         }
-        .NavSide__topbar .NavSide__toggle i.bi {
-            position: static; /* Changed from absolute */
-            font-size: 28px; /* Changed from 24px */
-            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
-        }
-        /* Removed .NavSide__topbar .NavSide__toggle i.bi.open as it will always be visible */
-        /* Removed .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open */
-        /* Removed .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close */
 
+        .NavSide__toggle i.bi {
+            font-size: 28px;
+            /* Use opacity and visibility for icon fade transition */
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+        }
+        .NavSide__toggle i.bi.open { 
+            opacity: 1; 
+            visibility: visible;
+        }
+        .NavSide__toggle.NavSide__toggle--active i.bi.open { 
+            opacity: 0; 
+            visibility: hidden;
+        }
+        .NavSide__toggle.NavSide__toggle--active i.bi.close { 
+            opacity: 1; 
+            visibility: visible;
+        }
+
+        /* Styles for the main content area (wrapper for topbar + main) */
+        #page-content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-left: 280px; /* On desktop, make space for the sidebar */
+            transition: margin-left 0.5s ease-in-out;
+        }
+
+        /* Styles for the full-width topbar (visual only) */
+        .NavSide__topbar {
+            display: none; /* Hidden on desktop */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 998; 
+        }
 
         .NavSide__main-content {
             flex-grow: 1;
             padding: 20px 20px 20px calc(20px + 1cm); 
-            margin-left: 280px;
-            margin-right: 45px;
+            margin-right: 30px;
             overflow-y: auto;
-            transition: margin-left 0.5s ease-in-out;
-            /* Adjust padding-top to account for fixed topbar on desktop */
-            padding-top: calc(20px); /* 60px topbar height + 20px original padding */
+            /* Top padding on desktop (no fixed topbar here) */
+            padding-top: 20px; 
         }
 
-        /* Modifikasi Margin Global */
+        /* Adjust global margins for content elements */
         .NavSide__main-content h2 { 
             margin-bottom: 0.5cm;
             font-weight: 700; 
         }
 
-        /* Status badge (merah default) */
+        /* Status badge styles (default red) */
         .status-badge {
             margin-bottom: 0.9cm; 
             background-color: #FFA3A3;
@@ -267,7 +246,7 @@
             transition: background-color 0.3s ease;
         }
 
-        /* Gaya untuk status "Disetujui" (hijau) */
+        /* Styles for "Approved" status (green) */
         .status-badge.approved {
             background-color: #4BFBAF;
             color: black;
@@ -334,85 +313,61 @@
             color: white;
         }
 
-        /* Desktop toggle icon */
-        .desktop-toggle-icon {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            cursor: default;
-            pointer-events: none;
-        }
-        .desktop-toggle-icon i.bi {
-            font-size: 28px;
-            color: #4B68FB;
-        }
-
-
         @media (max-width: 700px) {
             .NavSide__sidebar {
-                width: 50%;
-                transform: translateX(-100%);
+                transform: translateX(-280px); /* Initially hidden off-screen */
                 border-left-width: 0;
-                z-index: 1040; /* Make sure sidebar is above other content but below topbar when active */
-                padding-top: 60px; /* Shift sidebar content down to clear topbar */
+                z-index: 1040; 
+                /* Reduce top padding to lift logo and menu higher on mobile */
+                padding-top: 35px;
             }
 
             .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
+                transform: translateX(0); /* Show sidebar */
                 box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
             }
 
             .NavSide__sidebar-brand {
-                padding: 20px 10px 30px 10px;
+               padding: 10% 5% 50% 5%;
             }
             .NavSide__sidebar-brand img {
                 width: 90%;
             }
 
             .NavSide__sidebar-nav {
-                padding-top: 20%;
+                padding-top: 3%;
             }
             .NavSide__sidebar-item a {
                 padding: 12% 10%;
                 height: 2vh;
             }
 
-            /* Mobile styles for NavSide__topbar (as per mPerbaikan.php) */
-            .NavSide__topbar {
-                display: flex; /* Show topbar on mobile */
-                margin-left: 0; /* No margin-left from sidebar on mobile */
-                z-index: 1045; /* Ensure topbar is on top */
-                background-color: #ffffff; /* Keep it white */
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Keep shadow on mobile */
+            /* Mobile styles for NavSide__toggle (visible and moves) */
+            .NavSide__toggle {
+                display: block; /* Show on mobile */
             }
-            /* Mobile styles for NavSide__toggle (inside topbar) */
-            .NavSide__topbar .NavSide__toggle {
-                display: flex; /* Show toggle on mobile */
-                position: static; /* Remove fixed positioning */
-                top: auto;
-                left: auto;
-                background-color: transparent; /* Remove background */
-                box-shadow: none; /* Remove shadow */
+            .NavSide__toggle.NavSide__toggle--active {
+                transform: translateX(280px); /* Toggle moves right when sidebar is open */
             }
-            .NavSide__topbar .NavSide__toggle i.bi {
-                 font-size: 28px; /* Reset icon size for mobile as per original detailSidang.php */
+            
+            /* Adjust main content wrapper for mobile */
+            #page-content-wrapper {
+                margin-left: 0; /* No margin-left on mobile */
             }
 
+            /* Show fixed topbar on mobile */
+            .NavSide__topbar {
+                display: block;
+            }
 
             .NavSide__main-content {
                 margin-left: 0; 
-                padding: 20px; /* Adjust padding for mobile to be more consistent */
-                margin-right: 0; /* Menghilangkan margin kanan yang tersisa di mobile */
-                padding-top: calc(60px + 20px); /* Adjust padding-top for topbar height on mobile */
+                padding: 20px; /* General padding for mobile */
+                /* Adjust top padding for fixed topbar (60px + 20px content padding) */
+                padding-top: calc(60px + 20px); 
             }
             
-            /* Sesuaikan margin vertikal agar elemen lebih rapat di mobile */
+            /* Adjust vertical margins for tighter elements on mobile */
             .NavSide__main-content h2 { 
                 margin-bottom: 0.5cm; 
             }
@@ -432,54 +387,19 @@
             .btn-kembali {
                 margin-top: 0.5cm; 
             }
-            /* Akhir perubahan jarak */
 
-            /* Mobile styles for info-card (dari revisi sebelumnya, dijaga agar tidak berubah) */
+            /* Info-card styles on mobile (hover fix) */
             .info-card {
                 flex-direction: column; 
-                background-color: #4B68FB; /* Reverted to fixed blue background */
-                color: white; /* Reverted to fixed white text */
-                transition: none; /* Reverted to no transition */
-                box-shadow: none; /* Reverted to no shadow */
             }
-
-            .info-card::after {
-                content: none; /* Reverted to pseudo-element removed */
-            }
-
             .info-card .section {
-                z-index: 1; 
                 margin-bottom: 1rem; 
-                transition: none; /* Reverted to no transition */
             }
             .info-card .section:last-child {
                 margin-bottom: 0; 
             }
-            
-            .info-card .section .label-row i {
-                color: white; /* Reverted to fixed white icon */
-                transition: none; /* Reverted to no transition */
-            }
-
-            .info-card:hover {
-                background-color: #4B68FB; /* Hover should do nothing, keep fixed background */
-                color: white; /* Hover should do nothing, keep fixed text color */
-            }
-            .info-card:hover::after {
-                content: none; /* Hover should do nothing, keep pseudo-element removed */
-            }
-            .info-card:hover .section {
-                color: white; /* Hover should do nothing, keep fixed text color */
-            }
-            .info-card:hover .section .label-row i {
-                color: white; /* Hover should do nothing, keep fixed icon color */
-            }
-            /* Hide desktop toggle icon on mobile */
-            .desktop-toggle-icon {
-                display: none;
-            }
         }
-       
+           
         .info-card {
             position: relative;
             background: rgb(235, 238, 245); 
@@ -526,7 +446,7 @@
             color: white;
         }
 
-        /* Styling untuk baris label dan nilai */
+        /* Styles for label and value rows */
         .info-card .section .label-row {
             display: flex;
             align-items: center;
@@ -558,8 +478,8 @@
             font-size: 0.95rem; 
             margin-bottom: 0; 
         }
-       
-        /* Styling Tombol Berkas */
+           
+        /* File Button Styles */
         .file-button {
             display: inline-flex; 
             align-items: center;
@@ -594,7 +514,7 @@
             color: white;
         }
 
-        /* Penyesuaian responsif untuk tombol berkas */
+        /* Responsive adjustments for file buttons */
         @media (max-width: 576px) {
             .file-button {
                 flex-basis: 100%;
@@ -604,9 +524,9 @@
             }
         }
 
-        /* Styling info-group dan spacer */
+        /* Info-group and spacer styles */
         .info-card .section .info-group {
-            margin-bottom: 0rem; 
+            margin-bottom: rem; 
         }
         .info-card .section .info-group:last-child {
             margin-bottom: 0; 
@@ -618,6 +538,7 @@
 </head>
 <body>
     <div id="NavSide">
+        <!-- Sidebar -->
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
@@ -644,60 +565,50 @@
             </ul>
         </div>
 
-        <!-- NEW: Wrap main content in a flex-grow div and add NavSide__topbar -->
-        <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
-            <!-- Ikon Hamburger Desktop (Hanya untuk Desktop) -->
-            <div class="desktop-toggle-icon">
-                <i class="bi bi-list"></i>
-            </div>
-            <div class="NavSide__topbar">
-                <div class="NavSide__toggle">
-                    <i class="bi bi-list open"></i>
-                    <!-- Removed <i class="bi bi-x-lg close"></i> -->
-                </div>
-            </div>
+        <!-- Sidebar toggle button, visible and functional on mobile -->
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
+        </div>
+
+        <!-- Wrapper for main page content -->
+        <div id="page-content-wrapper">
+            <!-- Full-width topbar visible on mobile -->
+            <div class="NavSide__topbar"></div>
 
             <main class="NavSide__main-content">
                 <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-                <!-- Badge status pengajuan -->
+                <!-- Application status badge -->
                 <div class="status-badge" id="statusBadge">Status Pengajuan : Belum Disetujui</div>
                 
                 <div class="info-card">
                     <div class="section">
-                        <!-- Judul Sidang -->
+                        <!-- Course Title -->
                         <div class="info-group">
                             <div class="label-row">
-                                <i class="fa-solid fa-file-invoice"></i> 
-                                <span class="fw-bold">Judul Sidang</span>
+                                <i class="fa-solid fa-book"></i>
+                                <span class="fw-bold">Judul Mata Kuliah</span>
                             </div>
-                            <div class="value-row">Sistem Pengajuan Sidang</div>
+                            <div class="value-row">Pemrograman 2</div>
                         </div>
 
-                        <!-- Dosen Pembimbing -->
-                        <div class="info-group">
-                            <div class="label-row">
-                                <i class="fa-solid fa-user-tie"></i> 
-                                <span class="fw-bold">Dosen Pembimbing</span>
-                            </div>
-                            <div class="value-row">
-                                Dr. Rida Indah Fariani, S.Kom, M.Kom
-                            </div>
-                        </div>
+                        <!-- Spacer to push Lecturer info down -->
+                        <div class="spacer"></div>
 
-                        <!-- Dosen Penguji -->
+                        <!-- Lecturers -->
                         <div class="info-group">
                             <div class="label-row">
-                                <i class="fa-solid fa-user-group"></i>
-                                <span class="fw-bold">Dosen Penguji</span>
+                                <i class="fa-solid fa-user-group"></i> 
+                                <span class="fw-bold">Dosen Pengampu</span>
                             </div>
                             <div class="value-row">
                                 Timotius Victory, S.Kom, M.Kom<br>
-                                Ning Ratwasturi, S.Kom, M.Kom
+                                Yosep Setiawan, S.Kom, M.Kom
                             </div>
                         </div>
                     </div>
                     <div class="section">
-                        <!-- Ruangan -->
+                        <!-- Room -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-door-open"></i>
@@ -706,7 +617,7 @@
                             <div class="value-row">CB101 - RPL 1B</div>
                         </div>
 
-                        <!-- Tanggal -->
+                        <!-- Date -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-calendar-days"></i>
@@ -715,7 +626,7 @@
                             <div class="value-row">Selasa, 22 April 2025</div>
                         </div>
 
-                        <!-- Jam -->
+                        <!-- Time -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-clock"></i>
@@ -744,78 +655,54 @@
                     </span>
                     Kembali
                 </button>
-                
-                <!-- Modal Penjadwalan Sidang telah dihapus -->
-
             </main>
         </div>
     </div>
-    
-    <!-- Modals (successModal and confirmationKirimModal) have been removed -->
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
-      // Skrip untuk toggle sidebar dan active menu item
+      // Script for sidebar toggle functionality
       let menuToggle = document.querySelector(".NavSide__toggle");
       let sidebar = document.getElementById("main-sidebar");
 
       if (menuToggle && sidebar) {
         menuToggle.onclick = function () {
-          // Hanya toggle class untuk sidebar, tidak perlu mengubah ikon karena ikon 'X' sudah dihapus
-          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-          // Remove the NavSide__toggle--active class as it's no longer needed to hide the burger icon
-          // If you want the toggle button itself to change visual state (e.g., background),
-          // you might need to keep this toggle, but it won't affect the icon.
           menuToggle.classList.toggle("NavSide__toggle--active");
+          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
       }
 
-      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-      if (listItems.length > 0) {
-        // Find the active item based on the current URL
-        const currentPath = window.location.pathname.split('/').pop();
-        listItems.forEach(item => {
-            const link = item.querySelector('a');
-            if (link) {
-                const linkHref = link.getAttribute('onclick');
-                // Check if the onclick href matches the current page, case-insensitive
-                if (linkHref && linkHref.toLowerCase().includes(currentPath.toLowerCase())) {
-                    item.classList.add("NavSide__sidebar-item--active");
-                }
-            }
-        });
-
-        // Add click event listener to update active class
-        for (let i = 0; i < listItems.length; i++) {
-          listItems[i].onclick = function (event) {
-            for (let j = 0; j < listItems.length; j++) {
-              listItems[j].classList.remove("NavSide__sidebar-item--active");
-            }
+      // Script for marking active menu item
+      let menuItems = document.querySelectorAll(".NavSide__sidebar-item");
+      if (menuItems.length > 0) {
+        menuItems.forEach(item => {
+          item.onclick = function (event) {
+            menuItems.forEach(innerItem => {
+              innerItem.classList.remove("NavSide__sidebar-item--active");
+            });
             this.classList.add("NavSide__sidebar-item--active");
           };
-        }
+        });
       }
 
-      // Fungsionalitas: Mengubah status badge saat diklik
+      // Functionality: Change status badge on click
       const statusBadge = document.getElementById('statusBadge');
 
       if (statusBadge) {
           statusBadge.addEventListener('click', function() {
-              // Periksa apakah badge saat ini bertuliskan "Belum Disetujui"
+              // Check if the badge currently says "Belum Disetujui"
               if (this.textContent.includes('Belum Disetujui')) {
                   this.textContent = 'Status Pengajuan : Disetujui';
-                  this.classList.add('approved'); // Tambahkan kelas 'approved'
+                  this.classList.add('approved'); // Add 'approved' class
               } else {
-                  // Jika bertuliskan "Disetujui", kembalikan ke "Belum Disetujui"
+                  // If it says "Disetujui", revert to "Belum Disetujui"
                   this.textContent = 'Status Pengajuan : Belum Disetujui';
-                  this.classList.remove('approved'); // Hapus kelas 'approved'
+                  this.classList.remove('approved'); // Remove 'approved' class
               }
           });
       }
-
-      // Semua fungsi JS terkait form nilai, catatan, dan modal konfirmasi pengiriman telah dihapus.
     </script>
 </body>
 </html>

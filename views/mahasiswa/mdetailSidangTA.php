@@ -1,48 +1,20 @@
-<?php //ZAFKI ADIPRATAMA PUTRA 
-
-    // Mengambil parameter dari URL
-    $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
-    $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
-
-    $mahasiswa = [];
-
-    if ($tipe === 'TA') {
-        $mahasiswa = [
-            'nama'        => 'M. Haaris Nur S.',
-            'nim'         => '0920240033',
-            'mata_kuliah' => 'Tugas Akhir',
-        ];
-    } elseif ($tipe === 'Semester') {
-        $mahasiswa = [
-            'nama'         => 'M. Harris Nur S.',
-            'nim'          => '0920240033',
-            'mata_kuliah'  => 'Pemrograman 2',
-            'judul_sidang' => 'Sistem Pengajuan Sidang'
-        ];
-    } else {
-        // Data default jika tipe tidak dikenali
-        $mahasiswa = [
-            'nama'          => 'Data Tidak Ditemukan',
-            'nim'           => 'N/A',
-            'mata_kuliah'   => 'N/A',
-            'file_laporan'  => '#',
-            'file_pendukung' => '#'
-        ];
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Sidang</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts (Poppins) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* General styles */
         * {
             margin: 0;
             padding: 0;
@@ -55,14 +27,16 @@
             background-color: #ffffff;
         }
 
+        /* Main container for sidebar and content */
         #NavSide {
             display: flex;
             min-height: 100vh;
             position: relative;
         }
 
+        /* Sidebar branding (logo area) */
         .NavSide__sidebar-brand {
-            padding: 10% 5% 50% 5%;
+            padding: 10% 5% 50% 5%; /* Adjust padding for logo and menu positioning */
             text-align: center;
         }
 
@@ -73,14 +47,13 @@
             display: inline-block;
         }
 
+        /* Main sidebar styles */
         .NavSide__sidebar {
             position: fixed;
-            top: 0px;
-            left: 0px;
-            bottom: 0px;
+            top: 0;
+            left: 0;
+            bottom: 0;
             width: 280px;
-            border-radius: 1px;
-            box-sizing: border-box;
             border-left: 5px solid #4B68FB;
             background: #4B68FB;
             overflow-x: hidden;
@@ -91,6 +64,7 @@
             transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
         }
 
+        /* Sidebar navigation list */
         .NavSide__sidebar-nav {
             width: 100%;
             padding-left: 0;
@@ -99,6 +73,7 @@
             flex-grow: 1;
         }
 
+        /* Individual sidebar item */
         .NavSide__sidebar-item {
             position: relative;
             display: block;
@@ -121,12 +96,12 @@
             box-sizing: border-box;
         }
 
-        /* Memastikan warna teks putih untuk item navigasi yang TIDAK aktif */
+        /* Ensure white text color for inactive navigation items */
         .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a {
             color: rgb(252, 252, 252); 
         }
 
-        /* Memastikan warna teks putih saat hover untuk item navigasi yang TIDAK aktif */
+        /* Ensure white text color on hover for inactive navigation items */
         .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a:hover {
             color: rgb(252, 252, 252);
         }
@@ -137,6 +112,7 @@
             line-height: 1.5;
         }
 
+        /* Active sidebar item styling */
         .NavSide__sidebar-item.NavSide__sidebar-item--active {
             background: #ffffff;
         }
@@ -145,33 +121,19 @@
             color: #4B68FB;
         }
 
-        .NavSide__sidebar-item b:nth-child(1) {
-            position: absolute;
-            top: -20px;
-            height: 20px;
-            width: 100%;
-            background: rgb(255, 255, 255);
-            display: none;
-        }
-        .NavSide__sidebar-item b:nth-child(1)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-bottom-right-radius: 20px;
-            background: #4B68FB;
-            display: block;
-        }
+        /* Curve styling for active sidebar item */
+        .NavSide__sidebar-item b:nth-child(1),
         .NavSide__sidebar-item b:nth-child(2) {
             position: absolute;
-            bottom: -20px;
             height: 20px;
             width: 100%;
             background: rgb(255, 255, 255);
             display: none;
         }
+        .NavSide__sidebar-item b:nth-child(1) { top: -20px; }
+        .NavSide__sidebar-item b:nth-child(2) { bottom: -20px; }
+        
+        .NavSide__sidebar-item b:nth-child(1)::before,
         .NavSide__sidebar-item b:nth-child(2)::before {
             content: "";
             position: absolute;
@@ -179,83 +141,93 @@
             left: 0;
             width: 100%;
             height: 100%;
-            border-top-right-radius: 20px;
             background: #4B68FB;
             display: block;
         }
+        .NavSide__sidebar-item b:nth-child(1)::before { border-bottom-right-radius: 20px; }
+        .NavSide__sidebar-item b:nth-child(2)::before { border-top-right-radius: 20px; }
+
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
             display: block;
         }
 
-    .NavSide__topbar {
-        display: none;
-        align-items: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 60px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        z-index: 999;
-    }
-
-        @media (max-width: 700px) {
-            .NavSide__topbar {
-                display: flex; /* Show only on mobile */
-                margin-left: 0; /* Reset margin on mobile */
-                padding: 0 15px; /* Added padding for consistency */
-                justify-content: space-between; /* Added for consistency */
-            }
-        }
-
-        .NavSide__topbar .NavSide__toggle { /* Styles for toggle INSIDE topbar */
-            width: 40px;
-            height: 40px;
+        /* Sidebar toggle button (menu icon for mobile) */
+        .NavSide__toggle {
+            display: none; /* Hidden by default on desktop */
+            position: fixed; 
+            top: 15px;
+            left: 20px;
+            z-index: 1045; /* Higher z-index than sidebar and topbar */
             cursor: pointer;
-            border-radius: 5px;
-            /* Removed display: none; for open icon as it's always visible */
-            align-items: center;
-            justify-content: center;
-            padding:0;
-            position: static; /* Added from new topbar style */
-            top: auto; /* Added from new topbar style */
-            left: auto; /* Added from new topbar style */
-            background-color: transparent; /* Added from new topbar style */
-            box-shadow: none; /* Added from new topbar style */
+            color: rgb(67, 54, 240);
+            transition: transform 0.4s ease-in-out;
+            width: 28px; 
+            height: 28px;
         }
-        .NavSide__topbar .NavSide__toggle i.bi {
-            position: static; /* Changed from absolute */
-            font-size: 28px; /* Changed from 24px */
-            /* Removed display: none; for initial state */
-            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
-            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+
+        .NavSide__toggle i.bi {
+            font-size: 28px;
+            /* Use opacity and visibility for icon fade transition */
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
         }
-        /* Removed rules for .NavSide__topbar .NavSide__toggle i.bi.open as it will always be visible */
-        /* Removed rules for .NavSide__topbar .NavSide__toggle i.bi.close as the icon is removed */
-        /* Removed .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open */
-        /* Removed .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close */
+        .NavSide__toggle i.bi.open { 
+            opacity: 1; 
+            visibility: visible;
+        }
+        .NavSide__toggle.NavSide__toggle--active i.bi.open { 
+            opacity: 0; 
+            visibility: hidden;
+        }
+        .NavSide__toggle.NavSide__toggle--active i.bi.close { 
+            opacity: 1; 
+            visibility: visible;
+        }
 
+        /* Main content area wrapper (for topbar + main) */
+        #page-content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-left: 280px; /* Space for sidebar on desktop */
+            transition: margin-left 0.5s ease-in-out;
+        }
 
+        /* Full-width topbar (visual only, shown on mobile) */
+        .NavSide__topbar {
+            display: none; /* Hidden on desktop */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 998; 
+        }
+
+        /* Main content section */
         .NavSide__main-content {
             flex-grow: 1;
             padding: 20px 20px 20px calc(20px + 1cm); 
-            margin-left: 280px;
-            margin-right: 45px;
+            margin-right: 30px;
             overflow-y: auto;
-            transition: margin-left 0.5s ease-in-out;
-            /* Adjust padding-top to account for fixed topbar on desktop */
-            padding-top: calc(20px); /* 60px topbar height + 20px original padding */
+            padding-top: 20px; /* Top padding on desktop */
         }
 
-        /* Modifikasi Margin Global */
+        /* Content heading styles */
         .NavSide__main-content h2 { 
             margin-bottom: 0.5cm;
             font-weight: 700; 
         }
 
-        /* Status badge (merah default) */
+        /* Status badge styling (default red) */
         .status-badge {
             margin-bottom: 0.9cm; 
             background-color: #FFA3A3;
@@ -270,26 +242,144 @@
             transition: background-color 0.3s ease;
         }
 
-        /* Gaya untuk status "Disetujui" (hijau) */
+        /* Styles for "Approved" status (green) */
         .status-badge.approved {
             background-color: #4BFBAF;
             color: black;
         }
 
+        /* Info card container */
         .info-card {
             margin-bottom: 1.2cm; 
+            position: relative;
+            background: rgb(235, 238, 245); 
+            border-radius: 30px; 
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            overflow: hidden;
+            transition: background-color 0.4s ease;
         }
 
+        /* Info card hover effect (blue background overlay) */
+        .info-card::after { 
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px; 
+            height: 100%;
+            background-color: #4B68FB;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: width 0.4s ease;
+            z-index: 0;
+        }
+
+        .info-card:hover::after {
+            width: 100%;
+            border-radius: 20px;
+        }
+
+        /* Sections within info card */
+        .info-card .section {
+            flex: 0 0 48%; 
+            z-index: 1;
+            color: #333;
+            transition: color 0.4s ease;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+        }
+
+        .info-card:hover .section {
+            color: white;
+        }
+
+        /* Styling for label rows (icon and bold text) */
+        .info-card .section .label-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem; 
+            font-size: 1rem; 
+        }
+
+        .info-card .section .label-row i {
+            margin-right: 10px; 
+            color: #495057; 
+            font-weight: 900; 
+            transition: color 0.4s ease;
+            width: 20px; 
+            text-align: center;
+        }
+
+        .info-card:hover .section .label-row i {
+            color: white;
+        }
+
+        .info-card .section .label-row .fw-bold {
+            font-weight: 600; 
+            font-size: 1.05rem; 
+        }
+
+        /* Styling for value rows */
+        .info-card .section .value-row {
+            margin-left: 30px; 
+            line-height: 1.5;
+            font-size: 0.95rem; 
+            margin-bottom: 0; 
+        }
+           
+        /* Heading for documents section */
         .NavSide__main-content h5 { 
             margin-top: 0.9cm;
             margin-bottom: 0.9cm;
             font-weight: 700; 
         }
 
+        /* Container for file buttons */
         .file-buttons-container {
             margin-bottom: 1.8cm; 
         }
 
+        /* Styling for file buttons */
+        .file-button {
+            display: inline-flex; 
+            align-items: center;
+            background-color: rgb(235, 238, 245); 
+            border-radius: 20px; 
+            padding: 12px 20px;
+            margin-right: 15px; 
+            margin-bottom: 15px; 
+            text-decoration: none; 
+            color: #4B68FB;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
+        }
+
+        .file-button:hover {
+            background-color: #4B68FB;
+            color: white; 
+            text-decoration: none; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+        }
+
+        .file-button i {
+            font-size: 1.25rem; 
+            margin-right: 10px; 
+            color: #4B68FB;
+            transition: color 0.2s ease; 
+        }
+
+        .file-button:hover i { 
+            color: white;
+        }
+
+        /* Back button styling */
         .btn-kembali {
             background-color: #4B68FB;
             color: white;
@@ -337,281 +427,9 @@
             color: white;
         }
 
-        /* Desktop toggle icon */
-        .desktop-toggle-icon {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            cursor: default;
-            pointer-events: none;
-        }
-        .desktop-toggle-icon i.bi {
-            font-size: 28px;
-            color: #4B68FB;
-        }
-
-
-        @media (max-width: 700px) {
-            .NavSide__sidebar {
-                width: 50%;
-                transform: translateX(-100%);
-                border-left-width: 0;
-                z-index: 1040; /* Make sure sidebar is above other content but below topbar when active */
-                padding-top: 60px; /* Shift sidebar content down to clear topbar */
-            }
-
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
-            }
-
-            .NavSide__sidebar-brand {
-                padding: 20px 10px 30px 10px;
-            }
-            .NavSide__sidebar-brand img {
-                width: 90%;
-            }
-
-            .NavSide__sidebar-nav {
-                padding-top: 20%;
-            }
-            .NavSide__sidebar-item a {
-                padding: 12% 10%;
-                height: 2vh;
-            }
-
-            /* Mobile styles for NavSide__topbar (as per mPerbaikan.php) */
-            .NavSide__topbar {
-                display: flex; /* Show topbar on mobile */
-                margin-left: 0; /* No margin-left from sidebar on mobile */
-                z-index: 1045; /* Ensure topbar is on top */
-                background-color: #ffffff; /* Keep it white */
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Keep shadow on mobile */
-            }
-            /* Mobile styles for NavSide__toggle (inside topbar) */
-            .NavSide__topbar .NavSide__toggle {
-                display: flex; /* Show toggle on mobile */
-                position: static; /* Remove fixed positioning */
-                top: auto;
-                left: auto;
-                background-color: transparent; /* Remove background */
-                box-shadow: none; /* Remove shadow */
-            }
-            .NavSide__topbar .NavSide__toggle i.bi {
-                 font-size: 28px; /* Reset icon size for mobile as per original detailSidang.php */
-            }
-
-
-            .NavSide__main-content {
-                margin-left: 0; 
-                padding: 20px; /* Adjust padding for mobile to be more consistent */
-                margin-right: 0; /* Menghilangkan margin kanan yang tersisa di mobile */
-                padding-top: calc(60px + 20px); /* Adjust padding-top for topbar height on mobile */
-            }
-            
-            /* Sesuaikan margin vertikal agar elemen lebih rapat di mobile */
-            .NavSide__main-content h2 { 
-                margin-bottom: 0.5cm; 
-            }
-            .status-badge {
-                margin-bottom: 0.5cm; 
-            }
-            .info-card {
-                margin-bottom: 0.cm; 
-            }
-            .NavSide__main-content h5 { 
-                margin-top: 0.5cm; 
-                margin-bottom: 0.5cm; 
-            }
-            .file-buttons-container {
-                margin-bottom: 0.5cm; 
-            }
-            .btn-kembali {
-                margin-top: 0.5cm; 
-            }
-            /* Akhir perubahan jarak */
-
-            /* Mobile styles for info-card (dari revisi sebelumnya, dijaga agar tidak berubah) */
-            .info-card {
-                flex-direction: column; 
-                background-color: rgb(235, 238, 245); 
-                color: #333; 
-                transition: background-color 0.4s ease; 
-                box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            }
-
-            .info-card::after {
-                content: ""; 
-                width: 60px; 
-                border-radius: 20px; 
-            }
-            .info-card .section {
-                z-index: 1; 
-                margin-bottom: 1rem; 
-                transition: color 0.4s ease; 
-            }
-            .info-card .section:last-child {
-                margin-bottom: 0; 
-            }
-            
-            .info-card .section .label-row i {
-                color: #495057; 
-                transition: color 0.4s ease; 
-            }
-
-            .info-card:hover {
-                background-color: #4B68FB; 
-                color: white; 
-            }
-            .info-card:hover::after {
-                width: 100%; 
-                border-radius: 20px; 
-            }
-            .info-card:hover .section {
-                color: white; 
-            }
-            .info-card:hover .section .label-row i {
-                color: white; 
-            }
-            /* Hide desktop toggle icon on mobile */
-            .desktop-toggle-icon {
-                display: none;
-            }
-        }
-       
-        .info-card {
-            position: relative;
-            background: rgb(235, 238, 245); 
-            border-radius: 30px; 
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            overflow: hidden;
-            transition: background-color 0.4s ease;
-        }
-
-        .info-card::after { 
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px; 
-            height: 100%;
-            background-color: #4B68FB;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-            transition: width 0.4s ease;
-            z-index: 0;
-        }
-
-        .info-card:hover::after {
-            width: 100%;
-            border-radius: 20px;
-        }
-
-        .info-card .section {
-            flex: 0 0 48%; 
-            z-index: 1;
-            color: #333;
-            transition: color 0.4s ease;
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-        }
-
-        .info-card:hover .section {
-            color: white;
-        }
-
-        /* Styling untuk baris label dan nilai */
-        .info-card .section .label-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.25rem; 
-            font-size: 1rem; 
-        }
-
-        .info-card .section .label-row i {
-            margin-right: 10px; 
-            color: #495057; 
-            font-weight: 900; 
-            transition: color 0.4s ease;
-            width: 20px; 
-            text-align: center;
-        }
-
-        .info-card:hover .section .label-row i {
-            color: white;
-        }
-
-        .info-card .section .label-row .fw-bold {
-            font-weight: 600; 
-            font-size: 1.05rem; 
-        }
-
-        .info-card .section .value-row {
-            margin-left: 30px; 
-            line-height: 1.5;
-            font-size: 0.95rem; 
-            margin-bottom: 0; 
-        }
-       
-        /* Styling Tombol Berkas */
-        .file-button {
-            display: inline-flex; 
-            align-items: center;
-            background-color: rgb(235, 238, 245); 
-            border-radius: 20px; 
-            padding: 12px 20px;
-            margin-right: 15px; 
-            margin-bottom: 15px; 
-            text-decoration: none; 
-            color: #4B68FB;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
-        }
-
-        .file-button:hover {
-            background-color: #4B68FB;
-            color: white; 
-            text-decoration: none; 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
-        }
-
-        .file-button i {
-            font-size: 1.25rem; 
-            margin-right: 10px; 
-            color: #4B68FB;
-            transition: color 0.2s ease; 
-        }
-
-        .file-button:hover i { 
-            color: white;
-        }
-
-        /* Penyesuaian responsif untuk tombol berkas */
-        @media (max-width: 576px) {
-            .file-button {
-                flex-basis: 100%;
-                width: 100%; 
-                display: flex; 
-                margin-right: 0; 
-            }
-        }
-
-        /* Styling info-group dan spacer */
+        /* Info group and spacer for layout */
         .info-card .section .info-group {
-            margin-bottom: 0rem; 
+            margin-bottom: rem; 
         }
         .info-card .section .info-group:last-child {
             margin-bottom: 0; 
@@ -619,10 +437,96 @@
         .info-card .section .spacer {
             flex-grow: 1; 
         }
+
+        /* Media queries for mobile responsiveness (max-width: 700px) */
+        @media (max-width: 700px) {
+            .NavSide__sidebar {
+                transform: translateX(-280px); /* Hidden off-screen by default */
+                border-left-width: 0;
+                z-index: 1040; 
+                padding-top: 35px; /* Adjust top padding for mobile */
+            }
+
+            .NavSide__sidebar.NavSide__sidebar--active-mobile {
+                transform: translateX(0); /* Show sidebar when active */
+                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .NavSide__sidebar-brand {
+                padding: 10% 5% 50% 5%;
+            }
+            .NavSide__sidebar-brand img {
+                width: 90%;
+            }
+
+            .NavSide__sidebar-nav {
+                padding-top: 3%;
+            }
+            .NavSide__sidebar-item a {
+                padding: 12% 10%;
+                height: 2vh;
+            }
+
+            /* Mobile styles for sidebar toggle */
+            .NavSide__toggle {
+                display: block; /* Show on mobile */
+            }
+            .NavSide__toggle.NavSide__toggle--active {
+                transform: translateX(280px); /* Move toggle when sidebar opens */
+            }
+            
+            /* Adjust main content wrapper for mobile */
+            #page-content-wrapper {
+                margin-left: 0; /* No margin-left on mobile */
+            }
+
+            /* Show fixed topbar on mobile */
+            .NavSide__topbar {
+                display: block;
+            }
+
+            /* Main content padding for mobile */
+            .NavSide__main-content {
+                margin-left: 0; 
+                padding: 20px; 
+                padding-top: calc(60px + 20px); /* Account for fixed topbar */
+            }
+            
+            /* Adjust vertical margins for tighter layout on mobile */
+            .NavSide__main-content h2 { margin-bottom: 0.5cm; }
+            .status-badge { margin-bottom: 0.5cm; }
+            .info-card { margin-bottom: 0cm; }
+            .NavSide__main-content h5 { 
+                margin-top: 0.5cm; 
+                margin-bottom: 0.5cm; 
+            }
+            .file-buttons-container { margin-bottom: 0.5cm; }
+            .btn-kembali { margin-top: 0.5cm; }
+
+            /* Info-card layout on mobile */
+            .info-card {
+                flex-direction: column; 
+            }
+            .info-card .section {
+                margin-bottom: 1rem; 
+            }
+            .info-card .section:last-child {
+                margin-bottom: 0; 
+            }
+
+            /* Responsive adjustments for file buttons on smaller screens */
+            .file-button {
+                flex-basis: 100%;
+                width: 100%; 
+                display: flex; 
+                margin-right: 0; 
+            }
+        }
     </style>
 </head>
 <body>
     <div id="NavSide">
+        <!-- Sidebar Navigation -->
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
@@ -649,27 +553,26 @@
             </ul>
         </div>
 
-        <!-- NEW: Wrap main content in a flex-grow div and add NavSide__topbar -->
-        <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
-            <!-- Ikon Hamburger Desktop (Hanya untuk Desktop) -->
-            <div class="desktop-toggle-icon">
-                <i class="bi bi-list"></i>
-            </div>
-            <div class="NavSide__topbar">
-                <div class="NavSide__toggle">
-                    <i class="bi bi-list open"></i>
-                    <!-- Removed <i class="bi bi-x-lg close"></i> -->
-                </div>
-            </div>
+        <!-- Sidebar toggle button for mobile -->
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
+        </div>
+
+        <!-- Wrapper for main content area -->
+        <div id="page-content-wrapper">
+            <!-- Full-width topbar for mobile -->
+            <div class="NavSide__topbar"></div>
 
             <main class="NavSide__main-content">
                 <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-                <!-- Badge status pengajuan -->
+                <!-- Application status badge -->
                 <div class="status-badge" id="statusBadge">Status Pengajuan : Belum Disetujui</div>
                 
+                <!-- Info Card for Sidang Details -->
                 <div class="info-card">
                     <div class="section">
-                        <!-- Judul Sidang -->
+                        <!-- Sidang Title -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-file-invoice"></i> 
@@ -678,7 +581,7 @@
                             <div class="value-row">Sistem Pengajuan Sidang</div>
                         </div>
 
-                        <!-- Dosen Pembimbing -->
+                        <!-- Supervising Lecturer -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-user-tie"></i> 
@@ -689,7 +592,7 @@
                             </div>
                         </div>
 
-                        <!-- Dosen Penguji -->
+                        <!-- Examining Lecturers -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-user-group"></i>
@@ -702,7 +605,7 @@
                         </div>
                     </div>
                     <div class="section">
-                        <!-- Ruangan -->
+                        <!-- Room Information -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-door-open"></i>
@@ -711,7 +614,7 @@
                             <div class="value-row">CB101 - RPL 1B</div>
                         </div>
 
-                        <!-- Tanggal -->
+                        <!-- Date Information -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-calendar-days"></i>
@@ -720,7 +623,7 @@
                             <div class="value-row">Selasa, 22 April 2025</div>
                         </div>
 
-                        <!-- Jam -->
+                        <!-- Time Information -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-clock"></i>
@@ -732,6 +635,7 @@
                 </div>
                 
                 <h5>Dokumen Sidang</h5>
+                <!-- Container for document download buttons -->
                 <div class="file-buttons-container d-flex flex-wrap"> 
                     <a href="#" class="file-button">
                         <i class="fa-solid fa-file-pdf"></i>
@@ -743,84 +647,71 @@
                     </a>
                 </div>
                 
+               <!-- Back button -->
                <button class="btn-kembali" onclick="location.href='mSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
                 </button>
-                
-                <!-- Modal Penjadwalan Sidang telah dihapus -->
-
             </main>
         </div>
     </div>
     
-    <!-- Modals (successModal and confirmationKirimModal) have been removed -->
-    
+    <!-- jQuery and Bootstrap JS Bundles -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
-      // Skrip untuk toggle sidebar dan active menu item
+      // Script for sidebar toggle functionality on mobile
       let menuToggle = document.querySelector(".NavSide__toggle");
       let sidebar = document.getElementById("main-sidebar");
 
       if (menuToggle && sidebar) {
         menuToggle.onclick = function () {
-          // Hanya toggle class untuk sidebar, tidak perlu mengubah ikon karena ikon 'X' sudah dihapus
-          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-          // Remove the NavSide__toggle--active class as it's no longer needed to hide the burger icon
-          // If you want the toggle button itself to change visual state (e.g., background),
-          // you might need to keep this toggle, but it won't affect the icon.
           menuToggle.classList.toggle("NavSide__toggle--active");
+          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
       }
 
-      let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-      if (listItems.length > 0) {
-        // Find the active item based on the current URL
+      // Script for marking the active menu item
+      let menuItems = document.querySelectorAll(".NavSide__sidebar-item");
+      if (menuItems.length > 0) {
+        menuItems.forEach(item => {
+          item.addEventListener('click', function (event) { 
+            menuItems.forEach(innerItem => {
+              innerItem.classList.remove("NavSide__sidebar-item--active");
+            });
+            this.classList.add("NavSide__sidebar-item--active");
+          });
+        });
+        // Set initial active state based on current URL
         const currentPath = window.location.pathname.split('/').pop();
-        listItems.forEach(item => {
+        menuItems.forEach(item => {
             const link = item.querySelector('a');
             if (link) {
                 const linkHref = link.getAttribute('onclick');
-                // Check if the onclick href matches the current page, case-insensitive
                 if (linkHref && linkHref.toLowerCase().includes(currentPath.toLowerCase())) {
                     item.classList.add("NavSide__sidebar-item--active");
                 }
             }
         });
-
-        // Add click event listener to update active class
-        for (let i = 0; i < listItems.length; i++) {
-          listItems[i].onclick = function (event) {
-            for (let j = 0; j < listItems.length; j++) {
-              listItems[j].classList.remove("NavSide__sidebar-item--active");
-            }
-            this.classList.add("NavSide__sidebar-item--active");
-          };
-        }
       }
 
-      // Fungsionalitas: Mengubah status badge saat diklik
+      // Functionality: Toggle status badge text and color on click
       const statusBadge = document.getElementById('statusBadge');
 
       if (statusBadge) {
           statusBadge.addEventListener('click', function() {
-              // Periksa apakah badge saat ini bertuliskan "Belum Disetujui"
               if (this.textContent.includes('Belum Disetujui')) {
                   this.textContent = 'Status Pengajuan : Disetujui';
-                  this.classList.add('approved'); // Tambahkan kelas 'approved'
+                  this.classList.add('approved'); 
               } else {
-                  // Jika bertuliskan "Disetujui", kembalikan ke "Belum Disetujui"
                   this.textContent = 'Status Pengajuan : Belum Disetujui';
-                  this.classList.remove('approved'); // Hapus kelas 'approved'
+                  this.classList.remove('approved'); 
               }
           });
       }
-
-      // Semua fungsi JS terkait form nilai, catatan, dan modal konfirmasi pengiriman telah dihapus.
     </script>
 </body>
 </html>

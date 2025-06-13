@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8"> <!-- Pengaturan karakter untuk dukungan universal -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Konfigurasi responsivitas di berbagai perangkat -->
-    <title>Evaluasi Sidang</title> <!-- Judul halaman di tab browser -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluasi Sidang</title>
 
-    <!-- CSS Frameworks dan Font -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> <!-- Ikon Bootstrap -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> <!-- Font Poppins -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="../../css/button-styles.css"> <!-- Custom CSS untuk gaya tombol -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 untuk notifikasi pop-up -->
+    <!-- CSS Frameworks and Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for pop-up notifications -->
 
     <style>
-        /* --- General and Body Styles --- */
+        /* General Styles */
         * {
             margin: 0;
             padding: 0;
@@ -27,7 +26,7 @@
             background-color: #ffffff;
         }
 
-        /* --- Base Sidebar, Main Content, and Info Card Styles --- */
+        /* Base Sidebar, Main Content, and Info Card Styles */
         #NavSide {
             display: flex;
             min-height: 100vh;
@@ -36,12 +35,10 @@
 
         .NavSide__sidebar {
             position: fixed;
-            top: 0px;
-            left: 0px;
-            bottom: 0px;
+            top: 0;
+            left: 0;
+            bottom: 0;
             width: 280px;
-            border-radius: 1px;
-            box-sizing: border-box;
             border-left: 5px solid #4B68FB;
             background: #4B68FB;
             overflow-x: hidden;
@@ -85,61 +82,53 @@
         .NavSide__sidebar-item a {
             position: relative;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            align-items: center; /* Vertically center content */
+            justify-content: center; /* Horizontally center content */
             width: 100%;
             text-decoration: none;
             color: rgb(252, 252, 252);
-            padding: 5% 2%;
-            height: 60px;
+            height: 60px; /* Fixed height for consistent sizing */
             box-sizing: border-box;
+        }
+
+        /* Ensure white text color for inactive navigation items */
+        .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a {
+            color: rgb(252, 252, 252);
+        }
+
+        /* Ensure white text color on hover for inactive navigation items */
+        .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a:hover {
+            color: rgb(252, 252, 252);
         }
 
         .NavSide__sidebar-title {
             white-space: normal;
             text-align: center;
             line-height: 1.5;
-            color: white;
         }
 
+        /* Active sidebar item styling */
         .NavSide__sidebar-item.NavSide__sidebar-item--active {
             background: #ffffff;
         }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: #4B68FB !important;
+            color: #4B68FB !important; /* Apply color to active link text */
         }
 
-        .NavSide__sidebar-item b:nth-child(1) {
-            position: absolute;
-            top: -20px;
-            height: 20px;
-            width: 100%;
-            background: rgb(255, 255, 255);
-            display: none;
-        }
-
-        .NavSide__sidebar-item b:nth-child(1)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-bottom-right-radius: 20px;
-            background: #4B68FB;
-            display: block;
-        }
-
+        /* Active sidebar item curve effects */
+        .NavSide__sidebar-item b:nth-child(1),
         .NavSide__sidebar-item b:nth-child(2) {
             position: absolute;
-            bottom: -20px;
             height: 20px;
             width: 100%;
             background: rgb(255, 255, 255);
             display: none;
         }
+        .NavSide__sidebar-item b:nth-child(1) { top: -20px; }
+        .NavSide__sidebar-item b:nth-child(2) { bottom: -20px; }
 
+        .NavSide__sidebar-item b:nth-child(1)::before,
         .NavSide__sidebar-item b:nth-child(2)::before {
             content: "";
             position: absolute;
@@ -147,23 +136,83 @@
             left: 0;
             width: 100%;
             height: 100%;
-            border-top-right-radius: 20px;
             background: #4B68FB;
             display: block;
         }
+        .NavSide__sidebar-item b:nth-child(1)::before { border-bottom-right-radius: 20px; }
+        .NavSide__sidebar-item b:nth-child(2)::before { border-top-right-radius: 20px; }
 
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
         .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
             display: block;
         }
 
+        /* Sidebar toggle button (for mobile view) */
+        .NavSide__toggle {
+            display: none; /* Hidden by default on desktop */
+            position: fixed; 
+            top: 15px;
+            left: 20px;
+            z-index: 1045; 
+            cursor: pointer;
+            color: rgb(67, 54, 240);
+            transition: transform 0.4s ease-in-out;
+            width: 28px;
+            height: 28px;
+        }
+
+        .NavSide__toggle i.bi {
+            font-size: 28px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+        }
+        .NavSide__toggle i.bi.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .NavSide__toggle.NavSide__toggle--active i.bi.open { /* Hide menu icon when active */
+            opacity: 0;
+            visibility: hidden;
+        }
+        .NavSide__toggle.NavSide__toggle--active i.bi.close { /* Show close icon when active */
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Main content area wrapper */
+        #page-content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-left: 280px; /* Space for sidebar on desktop */
+            transition: margin-left 0.5s ease-in-out;
+        }
+
+        /* Topbar (visible on mobile) */
+        .NavSide__topbar {
+            display: none; /* Hidden on desktop */
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 998; 
+        }
+
+        /* Main content styling */
         .NavSide__main-content {
             flex-grow: 1;
-            padding: 20px 20px 20px calc(20px + 1cm);
-            margin-left: 280px; /* Margin kiri konten utama untuk desktop */
+            padding: 20px 0.7cm 20px calc(20px + 0.7cm); /* Adjusted padding */
+            margin-right: 0; 
             overflow-y: auto;
-            transition: margin-left 0.5s ease-in-out;
-            padding-top: calc(20px); /* Padding atas untuk desktop */
+            padding-top: 20px;
         }
 
         .NavSide__main-content h2 {
@@ -177,6 +226,7 @@
             margin-bottom: 0.2cm;
         }
 
+        /* Status badge styling */
         .status-badge {
             background-color: #FFA3A3;
             color: black;
@@ -193,6 +243,7 @@
             background-color: #4BFBAF;
         }
 
+        /* Info card styling */
         .info-card {
             position: relative;
             background: rgb(235, 238, 245);
@@ -205,9 +256,10 @@
             overflow: hidden;
             transition: background-color 0.4s ease;
             margin-bottom: 1.2cm;
-            margin-right: 40px; 
+            margin-right: 0.9cm;
         }
 
+        /* Info card hover effect */
         .info-card::after {
             content: "";
             position: absolute;
@@ -281,6 +333,7 @@
             margin-bottom: 0;
         }
 
+        /* Back button styling */
         .btn-kembali {
             background-color: #4B68FB;
             color: white;
@@ -328,13 +381,14 @@
             color: white;
         }
 
+        /* Form card styling */
         .form-card {
             background:rgb(235, 238, 245);
             border-radius: 30px;
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 25px;
             margin-bottom: 1.2cm;
-            margin-right: 40px;
+            margin-right: 0.9cm;
         }
 
         .form-card h4 {
@@ -343,6 +397,7 @@
             margin-bottom: 0.8cm;
         }
 
+        /* Penilaian input row layout */
         .penilaian-row {
             display: flex;
             flex-wrap: wrap;
@@ -358,7 +413,7 @@
         .penilaian-row .col-3 {
             padding: 0 !important;
             flex: 0 0 auto;
-            width: calc(25% - (20px * 3 / 4));
+            width: calc(25% - (20px * 3 / 4)); /* Distribute 4 columns with gap */
             box-sizing: border-box;
             display: flex;
             align-items: center;
@@ -382,6 +437,7 @@
             color: #333;
         }
 
+        /* Custom input field for scores */
         input.form-control-custom.input-nilai {
             width: 75px;
             font-size: 1rem;
@@ -402,6 +458,7 @@
             outline: none;
         }
 
+        /* Custom form group for textareas */
         .form-group-custom {
             margin-bottom: 1rem;
             display: flex;
@@ -440,14 +497,16 @@
             resize: vertical;
         }
 
+        /* Bottom button group styling */
         .button-group-bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 1.2cm;
-            margin-right: 40px;
+            margin-right: 0.9cm; 
         }
 
+        /* Submit button styling */
         .btn-kirim {
             background-color: #4FD382;
             color: #FFFFFF;
@@ -470,79 +529,42 @@
             color: white;
         }
 
-        .success-modal-content {
-            background-color: rgb(235, 238, 245);
-            border-radius: 30px;
-            border: none;
-            padding: 20px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .success-modal-body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px 20px;
-        }
-
-        .success-icon {
-            width: 6rem;
-            height: 6rem;
-            margin-bottom: 20px;
-        }
-
-        .success-message {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .error-message {
-            color: red;
-            font-size: 0.9rem;
-            font-weight: 500;
-            display: none;
-            margin-top: 10px;
-            margin-left: 0;
-            text-align: left;
-        }
-
+        /* Custom modal styling (for confirmation pop-ups) */
         .modal-content.custom-modal-content {
             border-radius: 30px !important;
             background-color: #f8f9fa;
             border: none;
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px; 
         }
 
         .modal-header.custom-modal-header {
             border-bottom: none;
             justify-content: center;
-            padding: 0;
+            padding: 0; 
+            margin-bottom: 20px; 
         }
 
         .modal-body.custom-modal-body {
             text-align: center;
+            padding: 0; 
         }
 
-        /* --- START PERBAIKAN: Gaya Tombol Modal Konsisten --- */
         .btn-tolak,
         .btn-setujui {
-            border-radius: 20px; /* Radius yang sama dengan tombol Kembali/Kirim utama */
+            border-radius: 20px;
             cursor: pointer;
             font-size: 0.95rem;
             font-weight: 500;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            height: 45px; /* Tinggi yang sama dengan tombol Kembali/Kirim utama */
+            height: 45px;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 25px; /* Padding yang sama dengan tombol Kembali/Kirim utama */
+            padding: 0 25px;
         }
-        /* --- END PERBAIKAN --- */
 
         .btn-tolak {
             background-color: #FD7D7D;
@@ -562,35 +584,20 @@
             color: white;
         }
 
-        #catatanEvaluasi::placeholder {
-            color: #888 !important;
-            opacity: 60% !important;
+        /* Error message styling for validation */
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+            margin-top: 10px;
+            margin-left: 0;
+            text-align: left;
         }
 
-        #btnKonfirmasiKirim:hover {
-            background-color: #157347 !important;
-            color: #fff !important;
-        }
+        /* --- Media Queries for Responsiveness --- */
 
-        .desktop-toggle-icon {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            cursor: default;
-            pointer-events: none;
-        }
-        .desktop-toggle-icon i.bi {
-            font-size: 28px;
-            color: #4B68FB;
-        }
-
-        /* Media query untuk perangkat dengan lebar layar <= 768px (tablet & mobile) */
+        /* Styles for tablets and mobile (max-width: 768px) */
         @media (max-width: 768px) {
             .penilaian-row {
                 margin-left: 0 !important;
@@ -598,7 +605,7 @@
                 gap: 15px 0;
             }
             .penilaian-row .col-3 {
-                width: 100%;
+                width: 100%; /* Make each score input take full width */
                 justify-content: flex-start;
                 padding: 0 !important;
                 margin-bottom: 0;
@@ -639,114 +646,98 @@
                 padding: 0 !important;
                 text-align: center;
             }
-            
+
             .modal-body.custom-modal-body > .d-flex.justify-content-between.px-5 {
                 padding-left: 20px !important;
                 padding-right: 20px !important;
                 gap: 15px;
                 width: 100%;
-                flex-wrap: nowrap;
+                flex-wrap: nowrap; 
             }
 
-            /* --- START PERBAIKAN: Gaya Tombol Modal Mobile Konsisten --- */
             .modal-body.custom-modal-body .btn-tolak,
             .modal-body.custom-modal-body .btn-setujui {
                 flex-grow: 1;
                 flex-shrink: 0;
                 flex-basis: auto;
-                width: auto; 
-                height: 40px; /* Sesuai dengan tombol Kembali/Kirim di mobile */
+                width: auto;
+                height: 40px;
                 font-size: 0.9rem;
-                padding: 0 10px !important; /* Sesuai dengan tombol Kembali/Kirim di mobile */
-                border-radius: 18px; /* Sesuai dengan tombol Kembali/Kirim di mobile */
+                padding: 0 10px !important;
+                border-radius: 18px;
                 box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
             }
-            /* --- END PERBAIKAN --- */
         }
 
-        /* Media query untuk perangkat dengan lebar layar <= 700px (mobile) */
+        /* Styles for mobile (max-width: 700px) */
         @media (max-width: 700px) {
-            .NavSide__topbar {
-                display: flex;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 60px;
-                background-color: #ffffff;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                z-index: 999;
-                align-items: center;
-                padding: 0 15px;
-                justify-content: space-between;
-                margin-left: 0;
-            }
-
-            .NavSide__toggle {
-                position: static;
-                top: auto;
-                left: auto;
-                width: 40px;
-                height: 40px;
-                z-index: 1100;
-                cursor: pointer;
-                border-radius: 5px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: none;
-                background-color: transparent;
-                margin-right: 0;
-            }
-
-            .NavSide__toggle i.bi {
-                position: static;
-                font-size: 28px;
-            }
-
-            .NavSide__toggle i.bi.open {
-                color: #4B68FB;
-                display: block;
-            }
-
-            .NavSide__toggle i.bi.close {
-                color: #4B68FB;
-                display: none;
-            }
-
-            .NavSide__toggle.NavSide__toggle--active i.bi.open {
-                display: none;
-            }
-
-            .NavSide__toggle.NavSide__toggle--active i.bi.close {
-                display: block;
-            }
-
             .NavSide__sidebar {
-                width: 50%;
-                transform: translateX(-100%);
+                width: 280px;
+                transform: translateX(-280px); /* Initially hidden off-screen */
                 border-left-width: 0;
-                padding-top: 60px;
+                z-index: 1040;
+                padding-top: 35px;
             }
 
             .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
+                transform: translateX(0); /* Show sidebar */
                 box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .NavSide__sidebar-brand {
+                padding: 10% 5% 50% 5%;
+            }
+            .NavSide__sidebar-brand img {
+                width: 90%;
+            }
+
+            .NavSide__sidebar-nav {
+                padding-top: 3%;
+            }
+            .NavSide__sidebar-item a {
+                height: 50px; /* Adjust height for mobile */
+            }
+
+            .NavSide__toggle {
+                display: block;
+            }
+            .NavSide__toggle.NavSide__toggle--active {
+                transform: translateX(280px);
+            }
+
+            #page-content-wrapper {
+                margin-left: 0;
+            }
+
+            .NavSide__topbar {
+                display: block;
             }
 
             .NavSide__main-content {
                 margin-left: 0;
-                padding: 15px;
-                padding-top: 75px;
+                padding: 20px; 
+                padding-top: calc(60px + 20px);
+                margin-right: 0;
             }
 
+            .NavSide__main-content h2 { margin-bottom: 0.5cm; }
+            .status-badge { margin-bottom: 0.5cm; }
+            .info-card {
+                margin-bottom: 0.5cm;
+                margin-right: 0; 
+                flex-direction: column;
+            }
             .info-card .section {
                 flex: 0 0 100%;
                 margin-bottom: 1rem;
             }
-
             .info-card .section:last-child {
                 margin-bottom: 0;
+            }
+
+            .form-card {
+                margin-right: 0; 
+                padding: 15px;
             }
 
             .button-group-bottom {
@@ -755,14 +746,13 @@
                 align-items: center;
                 margin-top: 1.2cm;
                 margin-left: 0;
-                margin-right: 0;
+                margin-right: 0; 
             }
 
             .btn-kembali, .btn-kirim {
                 width: auto;
                 flex: none;
                 margin: 0;
-                
                 height: 40px;
                 padding: 0 10px;
                 font-size: 0.85rem;
@@ -777,19 +767,6 @@
             }
             .btn-kembali .icon-circle i {
                 font-size: 1.1rem;
-            }
-
-            .form-card {
-                margin-right: 0;
-                padding: 15px;
-            }
-
-            .desktop-toggle-icon {
-                display: none;
-            }
-
-            .info-card {
-                margin-right: 0;
             }
 
             .penilaian-row label {
@@ -809,65 +786,59 @@
     </style>
 </head>
 <body>
-    <!-- Kontainer utama untuk sidebar navigasi dan konten utama -->
+    <!-- Main container for sidebar and content -->
     <div id="NavSide">
-        <!-- Sidebar navigasi -->
+        <!-- Sidebar Navigation -->
         <div id="main-sidebar" class="NavSide__sidebar">
-            <!-- Area merek/logo di sidebar -->
+            <!-- Sidebar branding area (logo) -->
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
             </div>
-            <!-- Daftar menu navigasi sidebar -->
+            <!-- Sidebar navigation menu -->
             <ul class="NavSide__sidebar-nav">
-                <!-- Item menu 'Evaluasi' (ditandai aktif) -->
+                <!-- 'Evaluasi' menu item (marked as active) -->
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="dEvaluasiSidang.php">
-                        <span class="fw-semibold">Evaluasi</span>
+                        <span class="fw-semibold NavSide__sidebar-title">Evaluasi</span>
                     </a>
                 </li>
-                <!-- Item menu 'Dokumen' -->
+                <!-- 'Dokumen' menu item -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="dDokumenRevisi.php">
-                        <span class="fw-semibold">Dokumen</span>
+                        <span class="fw-semibold NavSide__sidebar-title">Dokumen</span>
                     </a>
                 </li>
-                <!-- Item menu 'Nilai Akhir' -->
+                <!-- 'Nilai Akhir' menu item -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="dNilaiAkhir.php">
-                        <span class="fw-semibold">Nilai Akhir</span>
+                        <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                     </a>
                 </li>
             </ul>
         </div>
 
-        <!-- Kontainer untuk topbar (header responsif) dan area konten utama -->
-        <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
-            <!-- Ikon Hamburger Desktop (Hanya untuk Desktop) -->
-            <div class="desktop-toggle-icon">
-                <i class="bi bi-list"></i>
-            </div>
+        <!-- Sidebar toggle button for mobile view -->
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
+        </div>
 
-            <!-- Topbar (header yang muncul di perangkat mobile) -->
-            <div class="NavSide__topbar">
-                <!-- Tombol toggle sidebar untuk mobile (dipindahkan ke sini) -->
-                <div class="NavSide__toggle">
-                    <i class="bi bi-list open"></i>
-                    <i class="bi bi-x-lg close"></i>
-                </div>
-                <!-- Judul atau elemen lain di topbar bisa ditambahkan di sini jika perlu -->
-            </div>
+        <!-- Wrapper for responsive topbar and main content area -->
+        <div id="page-content-wrapper">
+            <!-- Topbar (appears on mobile devices) -->
+            <div class="NavSide__topbar"></div>
 
-            <!-- Area konten utama halaman -->
+            <!-- Main content area of the page -->
             <main class="NavSide__main-content">
                 <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
 
-                <!-- Kartu informasi detail sidang -->
+                <!-- Info card displaying sidang details -->
                 <div class="info-card">
                     <div class="section">
-                        <!-- Grup informasi Judul Sidang -->
+                        <!-- Sidang Title information group -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-file-invoice"></i>
@@ -876,7 +847,7 @@
                             <div class="value-row">Struktur Data</div>
                         </div>
 
-                        <!-- Grup informasi Dosen Pembimbing -->
+                        <!-- Supervising Lecturer information group -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-user-tie"></i>
@@ -885,7 +856,7 @@
                             <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div>
                         </div>
 
-                        <!-- Grup informasi Dosen Penguji -->
+                        <!-- Examining Lecturers information group -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-user-group"></i>
@@ -898,34 +869,28 @@
                         </div>
                     </div>
                     <div class="section">
-                        <!-- Grup informasi Ruangan -->
+                        <!-- Room information group -->
                         <div class="info-group">
                             <div class="label-row">
-                                <!-- START PERBAIKAN: class dan ikon -->
-                                <i class="fa-solid fa-door-open"></i> 
-                                <!-- END PERBAIKAN -->
+                                <i class="fa-solid fa-door-open"></i>
                                 <span class="fw-bold">Ruangan</span>
                             </div>
                             <div class="value-row">CB101 - RPL 1B</div>
                         </div>
 
-                        <!-- Grup informasi Tanggal -->
+                        <!-- Date information group -->
                         <div class="info-group">
                             <div class="label-row">
-                                <!-- START PERBAIKAN: class -->
                                 <i class="fa-solid fa-calendar-days"></i>
-                                <!-- END PERBAIKAN -->
                                 <span class="fw-bold">Tanggal</span>
                             </div>
                             <div class="value-row">Selasa, 22 April 2025</div>
                         </div>
 
-                        <!-- Grup informasi Jam -->
+                        <!-- Time information group -->
                         <div class="info-group">
                             <div class="label-row">
-                                <!-- START PERBAIKAN: class -->
                                 <i class="fa-solid fa-clock"></i>
-                                <!-- END PERBAIKAN -->
                                 <span class="fw-bold">Jam</span>
                             </div>
                             <div class="value-row">09.00 - 10.00</div>
@@ -934,6 +899,7 @@
                 </div>
 
                 <h3>Nilai Sidang (Sementara)</h3>
+                <!-- Form card for score input -->
                 <div class="form-card">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h4>Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
@@ -946,8 +912,7 @@
                                 type="text"
                                 class="form-control-custom input-nilai"
                                 id="nilaiLaporan"
-                                placeholder=""
-                                maxlength="3"/>
+                                placeholder=""/>
                         </div>
                         <div class="col-3 d-flex align-items-center">
                             <label for="materiPresentasi" class="text-black">Materi Presentasi</label>
@@ -956,8 +921,7 @@
                                 type="text"
                                 class="form-control-custom input-nilai"
                                 id="materiPresentasi"
-                                placeholder=""
-                                maxlength="3"/>
+                                placeholder=""/>
                         </div>
                         <div class="col-3 d-flex align-items-center ">
                             <label for="nilaiPenyampaian" class="text-black">Penyampaian</label>
@@ -966,8 +930,7 @@
                                 type="text"
                                 class="form-control-custom input-nilai"
                                 id="nilaiPenyampaian"
-                                placeholder=""
-                                maxlength="3"/>
+                                placeholder=""/>
                         </div>
                         <div class="col-3 d-flex align-items-center ">
                             <label for="nilaiProyek" class="text-black">Nilai Proyek</label>
@@ -976,15 +939,15 @@
                                 type="text"
                                 class="form-control-custom input-nilai"
                                 id="nilaiProyek"
-                                placeholder=""
-                                maxlength="3"/>
+                                placeholder=""/>
                         </div>
                     </div>
-                    <!-- Pesan error untuk input nilai sidang -->
+                    <!-- Error message for score inputs -->
                     <p class="error-message" id="nilaiSidangErrorMessage"> *Semua nilai harus diisi!</p>
                 </div>
 
                 <h3>Catatan Evaluasi Sidang</h3>
+                <!-- Form card for evaluation notes -->
                 <div class="form-card">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
@@ -993,20 +956,20 @@
                         <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
                         <textarea id="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."></textarea>
                     </div>
-                    <!-- Pesan error untuk catatan evaluasi -->
+                    <!-- Error message for evaluation notes -->
                     <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                 </div>
 
-                <!-- Grup tombol di bagian bawah halaman -->
+                <!-- Button group at the bottom of the page -->
                 <div class="button-group-bottom">
-                    <!-- Tombol 'Kembali' -->
+                    <!-- 'Kembali' (Back) button -->
                     <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
                         <span class="icon-circle">
                             <i class="fa-solid fa-arrow-left"></i>
                         </span>
                         Kembali
                     </button>
-                    <!-- Tombol 'Kirim' -->
+                    <!-- 'Kirim' (Submit) button -->
                     <button class="btn-kirim" id="btnKirim">
                         Kirim
                     </button>
@@ -1015,32 +978,18 @@
         </div>
     </div>
 
-    <!-- Modal Sukses (muncul setelah berhasil mengirim evaluasi) -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content success-modal-content">
-                <div class="modal-body success-modal-body">
-                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon">
-                    <p class="success-message">Evaluasi Sidang Berhasil Dikirim!</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Konfirmasi Kirim (muncul sebelum mengirim evaluasi) -->
+    <!-- Confirmation Modal for submission -->
     <div class="modal fade" id="confirmationKirimModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationKirimModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-                <div class="modal-header border-0 justify-content-center">
+                <div class="modal-header custom-modal-header border-0 justify-content-center">
                     <h4 class="modal-title fw-bold" id="confirmationKirimModalLabel" style="font-size: 24px;">Perhatian!</h4>
                 </div>
                 <div class="modal-body custom-modal-body">
                     <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin hendak mengirimkan evaluasi sidang?</p>
-                    <div class="d-flex justify-content-between px-5"> 
-                        <!-- START PERBAIKAN: Ubah teks, hapus kelas padding Bootstrap -->
-                        <button type="button" class="btn custom-batal fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
-                        <button type="button" class="btn fw-semibold btn-setujui" id="btnKonfirmasiKirim">Kirimkan</button>
-                        <!-- END PERBAIKAN -->
+                    <div class="d-flex justify-content-between px-5">
+                        <button type="button" class="btn btn-tolak fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+                        <button type="button" class="btn btn-setujui fw-semibold" id="btnKonfirmasiKirim">Kirimkan</button>
                     </div>
                 </div>
             </div>
@@ -1053,7 +1002,7 @@
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            // Skrip untuk mengontrol sidebar (buka/tutup) dan efek aktif pada item menu
+            // Script for sidebar toggle functionality on mobile
             let menuToggle = document.querySelector(".NavSide__toggle");
             let sidebar = document.getElementById("main-sidebar");
 
@@ -1064,22 +1013,31 @@
                 };
             }
 
-            // Skrip untuk mengatur item menu sidebar yang ditandai sebagai 'aktif'
+            // Script for setting the active state of sidebar menu items
             let listItems = document.querySelectorAll(".NavSide__sidebar-item");
             if (listItems.length > 0) {
-                for (let i = 0; i < listItems.length; i++) {
-                    listItems[i].onclick = function() {
-                        if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                            for (let j = 0; j < listItems.length; j++) {
-                                listItems[j].classList.remove("NavSide__sidebar-item--active");
-                            }
-                            this.classList.add("NavSide__sidebar-item--active");
+                listItems.forEach(item => {
+                    item.addEventListener('click', function (event) { 
+                        listItems.forEach(innerItem => {
+                            innerItem.classList.remove("NavSide__sidebar-item--active");
+                        });
+                        this.classList.add("NavSide__sidebar-item--active");
+                    });
+                });
+                // Set initial active state based on current URL path
+                const currentPath = window.location.pathname.split('/').pop();
+                listItems.forEach(item => {
+                    const link = item.querySelector('a');
+                    if (link) {
+                        const linkHref = link.getAttribute('href'); 
+                        if (linkHref && linkHref.toLowerCase().includes(currentPath.toLowerCase())) {
+                            item.classList.add("NavSide__sidebar-item--active");
                         }
-                    };
-                }
+                    }
+                });
             }
 
-            // Variabel elemen DOM untuk form dan modal
+            // DOM element variables for form inputs and modals
             const btnKirim = document.getElementById('btnKirim');
             const nilaiLaporan = document.getElementById('nilaiLaporan');
             const materiPresentasi = document.getElementById('materiPresentasi');
@@ -1087,45 +1045,47 @@
             const nilaiProyek = document.getElementById('nilaiProyek');
             const catatanEvaluasi = document.getElementById('catatanEvaluasi');
 
-            const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage'); // Pesan error untuk input nilai sidang
-            const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage'); // Pesan error untuk catatan evaluasi
+            const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage');
+            const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage');
 
-            const successModalElement = document.getElementById('successModal'); // Modal sukses
-            const confirmationKirimModalElement = document.getElementById('confirmationKirimModal'); // Modal konfirmasi pengiriman
-            const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim'); // Tombol 'Lanjutkan' di modal konfirmasi
+            const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
+            const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
 
-            // Event listener saat modal sukses disembunyikan
-            if (successModalElement) {
-                successModalElement.addEventListener('hidden.bs.modal', function () {
-                    window.location.href = 'dDaftarSidang.php'; // Redirect ke halaman daftar sidang
-                });
-            }
-
-            // Logika validasi input hanya angka dan batas 0-100
+            // Input validation for score fields:
+            // 1. Allow only numbers
+            // 2. Limit length to 3 characters
+            // 3. Limit value to 0-100
             document.querySelectorAll('.input-nilai').forEach(function(input){
                 input.addEventListener('input', function() {
-                    // Hapus karakter non-angka
+                    // 1. Remove non-numeric characters
                     this.value = this.value.replace(/[^0-9]/g, '');
-                    // Hapus nol di depan jika lebih dari satu digit (misal '05' jadi '5')
+
+                    // 2. Limit length to 3 characters (must be after non-numeric removal)
+                    if (this.value.length > 3) {
+                        this.value = this.value.slice(0, 3);
+                    }
+                    
+                    // Remove leading zeros if more than one digit (e.g., '05' becomes '5')
                     if (this.value.length > 1 && this.value.startsWith('0')) {
                         this.value = this.value.replace(/^0+/, '');
                     }
-                    // Batasi nilai maksimal 100
+
+                    // 3. Limit maximum value to 100
                     if (parseInt(this.value) > 100) {
                         this.value = '100';
                     }
                 });
             });
 
-            // Event listener untuk tombol 'Kirim'
+            // Event listener for the 'Kirim' (Submit) button
             btnKirim.addEventListener('click', function(event) {
                 let isValid = true;
 
-                // Sembunyikan pesan error sebelumnya
+                // Hide previous error messages
                 nilaiSidangError.style.display = 'none';
                 catatanEvaluasiError.style.display = 'none';
 
-                // Validasi kolom "Nilai Sidang (Sementara)"
+                // Validate "Nilai Sidang" fields (check for emptiness)
                 if (nilaiLaporan.value.trim() === '' ||
                     materiPresentasi.value.trim() === '' ||
                     nilaiPenyampaian.value.trim() === '' ||
@@ -1134,15 +1094,15 @@
                     isValid = false;
                 }
 
-                // Validasi kolom "Catatan Evaluasi Sidang"
+                // Validate "Catatan Evaluasi Sidang" field (check for emptiness)
                 if (catatanEvaluasi.value.trim() === '') {
                     catatanEvaluasiError.style.display = 'block';
                     isValid = false;
                 }
 
-                // Jika ada validasi yang gagal (field kosong)
+                // If any validation fails (empty fields)
                 if (!isValid) {
-                    event.preventDefault(); // Hentikan tindakan default
+                    event.preventDefault(); // Prevent default form submission
                     Swal.fire({
                         title: 'Harap mengisi kolom nilai dan catatan terlebih dahulu sebelum mengirim!',
                         icon: 'error',
@@ -1150,23 +1110,30 @@
                         confirmButtonColor: '#4B68FB'
                     });
                 } else {
-                    // Jika validasi sukses, tampilkan modal konfirmasi pengiriman
+                    // If validation succeeds, show the confirmation modal
                     const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
                     confirmationKirimModal.show();
                 }
             });
 
-            // Event listener untuk tombol 'Lanjutkan' pada modal konfirmasi pengiriman
+            // Event listener for the 'Kirimkan' (Confirm Submit) button in the modal
             btnKonfirmasiKirim.addEventListener('click', function() {
-                // Sembunyikan modal konfirmasi pengiriman
+                // Hide the confirmation modal
                 const confirmationKirimModalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
                 if (confirmationKirimModalInstance) {
                     confirmationKirimModalInstance.hide();
                 }
 
-                // Tampilkan modal sukses
-                const successModal = new bootstrap.Modal(successModalElement);
-                successModal.show();
+                // Display success SweetAlert
+                Swal.fire({
+                    title: 'Evaluasi Sidang Berhasil Dikirim!',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4B68FB'
+                }).then(() => {
+                    // Redirect to the daftar sidang page after SweetAlert is closed
+                    window.location.href = 'dDaftarSidang.php';
+                });
             });
         });
     </script>
