@@ -288,23 +288,6 @@
         <!-- Baris Nilai & Data Mahasiswa -->
         <div class="row align-items-stretch mb-4 p-2">
           <div class="col-lg-6 mb-3 d-flex">
-            <div class="card flex-fill" id="cardNilai">
-              <div class="card-body card-soft px-3 py-3 text-center">
-                <h3 class="card-title mb-3 text-black" style="padding:10px;">Nilai Mahasiswa</h3>
-                <div>
-                  <input
-                    type="text"
-                    class="form-control form-control-lg text-center mx-auto"
-                    id="nilaiMahasiswa"
-                    placeholder="A"
-                    maxlength="1"
-                    readonly
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6 mb-3 d-flex">
             <div class="card flex-fill" id="carddataMahasiswa">
               <div class="card-body card-soft px-4 py-3">
                 <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
@@ -347,6 +330,23 @@
                       <div class="value-row text-secondary">Timotius Victory</div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 mb-3 d-flex">
+            <div class="card flex-fill" id="cardNilai">
+              <div class="card-body card-soft px-3 py-3 text-center">
+                <h3 class="card-title mb-3 text-black" style="padding:10px;">Nilai Mahasiswa</h3>
+                <div>
+                  <input
+                    type="text"
+                    class="form-control form-control-lg text-center mx-auto"
+                    id="nilaiMahasiswa"
+                    placeholder="A"
+                    maxlength="1"
+                    readonly
+                  />
                 </div>
               </div>
             </div>
