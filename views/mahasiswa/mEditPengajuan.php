@@ -259,10 +259,10 @@
 
 
 
-            <!-- Button Simpan & Kirim, Verifikasi Modal -->
+            <!-- Tombol Kembali -->
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <button class="btn btn-kembali" onclick=location.href="mPengajuan.php">
+                <button class="btn btn-kembali" onclick="history.back()">
                   <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                   </span>
@@ -270,7 +270,7 @@
                 </button>
               </div>
 
-              <!-- Kanan: Tombol Simpan & Kirim -->
+              <!-- Tombol Simpan & Kirim -->
               <div class="d-flex gap-2">
                 <button type="button" class="btn btn-secondary" id="btnSimpan">Simpan</button>
                 <button type="button" class="btn-setuju" id="btnKirim">Kirim</button>
@@ -308,6 +308,7 @@
       };
     }
 
+    //Tombol Kirim dan Simpan
     const btnKirim = document.getElementById('btnKirim');
 
     btnKirim.addEventListener('click', function() {
@@ -317,18 +318,18 @@
       const kelas = document.getElementById('kelas').value;
       const modalValidasi = new bootstrap.Modal(document.getElementById('modalValidasi'));
 
-      if (laporan === 0) {
+      if (judul == "" || matkul == "Pilih Mata  Kuliah" || kelas == "Pilih Kelas") {
         Swal.fire({
-          title: 'Dokumen Tidak Boleh Kosong!',
+          title: 'Mohon lengkapi semua form!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
         }).then(() => {
           modal.hide();
         });
-      } else if (judul == "" || matkul == "Pilih Mata  Kuliah" || kelas == "Pilih Kelas") {
+      } else if (laporan === 0) {
         Swal.fire({
-          title: 'Mohon lengkapi semua form!',
+          title: 'Dokumen Tidak Boleh Kosong!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
@@ -348,18 +349,18 @@
       const matkul = document.getElementById('matkul').value;
       const kelas = document.getElementById('kelas').value;
 
-      if (laporan === 0) {
+      if (judul == "" || matkul == "Pilih Mata  Kuliah" || kelas == "Pilih Kelas") {
         Swal.fire({
-          title: 'Dokumen Tidak Boleh Kosong!',
+          title: 'Mohon lengkapi semua form!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
         }).then(() => {
           modal.hide();
         });
-      } else if (judul == "" || matkul == "Pilih Mata  Kuliah" || kelas == "Pilih Kelas") {
+      } else if (laporan === 0) {
         Swal.fire({
-          title: 'Mohon lengkapi semua form!',
+          title: 'Dokumen Tidak Boleh Kosong!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
@@ -378,6 +379,7 @@
       }
     });
 
+    // Upload Dokumen Sidang
     const DokumenSidang = document.getElementById('DokumenSidang');
     const uploadIcon = document.getElementById('uploadIcon');
     const laporanBox = DokumenSidang.closest('.upload-box');
@@ -391,6 +393,7 @@
     // Warna upload dokumen ganti ketika file dipilih
     function updateUploadBox(input, box) {
       const textLabel = box.querySelector('.DokumenLabelText');
+      const uploadBox = document.querySelector('.upload-box');
 
       if (input.files.length > 0) {
         const fileName = input.files[0].name;
@@ -401,12 +404,9 @@
         textLabel.textContent = 'Upload file revisi dengan format pdf, docx, pptx, dan zip';
       }
     }
-
-    const uploadBox = document.querySelector('.upload-box');
-
     DokumenSidang.addEventListener('change', () => updateUploadBox(DokumenSidang, uploadBox));
 
-    //Modal verifikasi berhasil
+    //Tombol Lanjutkan, Modal verifikasi berhasil
     const btnLanjutkan = document.getElementById('btnLanjutkan');
     btnLanjutkan.addEventListener('click', function() {
       Swal.fire({
