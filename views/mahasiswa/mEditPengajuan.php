@@ -200,16 +200,6 @@
                                                 ?>>Sistem Operasi</option>
               </select>
             </div>
-            <div class="mb-3">
-              <label for="kelas" class="form-label">Kelas
-                <span class=text-danger>* </span>
-              </label>
-              <select class="forM form-select" id="kelas" name="kelas">
-                <option selected disabled>Pilih Kelas</option>
-                <option value="A">RPL 1A</option>
-                <option value="B">RPL 1B</option>
-              </select>
-            </div>
 
             <!-- Upload Dokumen Laporan Sidang -->
             <div class="row">
@@ -315,10 +305,9 @@
       const laporan = document.getElementById('DokumenSidang').files.length;
       const judul = document.getElementById('judul').value;
       const matkul = document.getElementById('matkul').value;
-      const kelas = document.getElementById('kelas').value;
       const modalValidasi = new bootstrap.Modal(document.getElementById('modalValidasi'));
 
-      if (judul == "" || matkul == "Pilih Mata  Kuliah" || kelas == "Pilih Kelas") {
+      if (judul == "" || matkul == "Pilih Mata  Kuliah") {
         Swal.fire({
           title: 'Mohon lengkapi semua form!',
           icon: 'error',
@@ -347,9 +336,8 @@
       const laporan = document.getElementById('DokumenSidang').files.length;
       const judul = document.getElementById('judul').value;
       const matkul = document.getElementById('matkul').value;
-      const kelas = document.getElementById('kelas').value;
 
-      if (judul == "" || matkul == "Pilih Mata  Kuliah" || kelas == "Pilih Kelas") {
+      if (judul == "" || matkul == "Pilih Mata  Kuliah") {
         Swal.fire({
           title: 'Mohon lengkapi semua form!',
           icon: 'error',
@@ -404,6 +392,7 @@
         textLabel.textContent = 'Upload file revisi dengan format pdf, docx, pptx, dan zip';
       }
     }
+    const uploadBox = document.querySelector('.upload-box');
     DokumenSidang.addEventListener('change', () => updateUploadBox(DokumenSidang, uploadBox));
 
     //Tombol Lanjutkan, Modal verifikasi berhasil
