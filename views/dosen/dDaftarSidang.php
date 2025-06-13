@@ -355,9 +355,8 @@ if ($_SESSION['role'] !== 'dosen') {
                     </div>
                 </div>
             </div>
-
             <script>
-
+                // js buat search
                   document.addEventListener("DOMContentLoaded", function () {
                     const searchInput = document.querySelector('.search-input-group input');
                     const tbodyTA = document.getElementById("dPengajuanTA");
@@ -393,19 +392,7 @@ if ($_SESSION['role'] !== 'dosen') {
                         sidebar.classList.toggle("NavSide__sidebar--active-mobile");
                     };
 
-                // Sidebar Active Item Logic
-                // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-                // for (let i = 0; i < listItems.length; i++) {
-                //     listItems[i].onclick = function() {
-                //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                //             for (let j = 0; j < listItems.length; j++) {
-                //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-                //             }
-                //             this.classList.add("NavSide__sidebar-item--active");
-                //         }
-                //     };
-                // }
-                // let isTA = true;
+                // JS buat dd
                 function switchDdaftarSidang(mode) {
                     const taTable = document.getElementById('dPengajuanTA');
                     const semTable = document.getElementById('dPengajuanSem');

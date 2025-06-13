@@ -114,7 +114,8 @@ body {
    font-weight:bold;
 }
 .NavSide__main-content{
-  margin-left: 290px !important;
+  margin-left: 300px !important;
+  margin-right: 20px !important;
 }
 .card-comment:hover {
 
