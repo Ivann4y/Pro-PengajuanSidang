@@ -1,47 +1,17 @@
-<?php //ZAFKI ADIPRATAMA PUTRA
-
-    // Ambil parameter dari URL
-    $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
-    $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
-
-    $mahasiswa = [];
-
-    if ($tipe === 'TA') {
-        $mahasiswa = [
-            'nama'        => 'M. Haaris Nur S.',
-            'nim'         => '0920240033',
-            'mata_kuliah' => 'Tugas Akhir',
-        ];
-    } elseif ($tipe === 'Semester') {
-        $mahasiswa = [
-            'nama'         => 'M. Harris Nur S.',
-            'nim'          => '0920240033',
-            'mata_kuliah'  => 'Pemrograman 2',
-            'judul_sidang' => 'Sistem Pengajuan Sidang'
-        ];
-    } else {
-        // Data default jika tipe tidak dikenali
-        $mahasiswa = [
-            'nama'          => 'Data Tidak Ditemukan',
-            'nim'           => 'N/A',
-            'mata_kuliah'   => 'N/A',
-            'file_laporan'  => '#',
-            'file_pendukung' => '#'
-        ];
-    }
-?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluasi Sidang</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../css/button-styles.css">
+    <meta charset="UTF-8"> <!-- Pengaturan karakter untuk dukungan universal -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Konfigurasi responsivitas di berbagai perangkat -->
+    <title>Evaluasi Sidang</title> <!-- Judul halaman di tab browser -->
+
+    <!-- CSS Frameworks dan Font -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> <!-- Ikon Bootstrap -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> <!-- Font Poppins -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../../css/button-styles.css"> <!-- Custom CSS untuk gaya tombol -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 untuk notifikasi pop-up -->
 
     <style>
         /* --- General and Body Styles --- */
@@ -190,13 +160,14 @@
         .NavSide__main-content {
             flex-grow: 1;
             padding: 20px 20px 20px calc(20px + 1cm);
-            margin-left: 280px;
+            margin-left: 280px; /* Margin kiri konten utama untuk desktop */
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
+            padding-top: calc(20px); /* Padding atas untuk desktop */
         }
 
         .NavSide__main-content h2 {
-            margin-bottom: 1.2cm;
+            margin-bottom: 0.9cm;
             font-weight: 700;
         }
 
@@ -206,17 +177,16 @@
             margin-bottom: 0.2cm;
         }
 
-        /* Keep the rest of your existing styles */
-        .status-badge { 
+        .status-badge {
             background-color: #FFA3A3;
             color: black;
             border-radius: 20px;
-            padding: 8px 18px; 
-            display: inline-block; 
-            font-size: 0.875rem; 
+            padding: 8px 18px;
+            display: inline-block;
+            font-size: 0.875rem;
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
-            font-weight: bold; 
-            margin-bottom: 1.2cm; 
+            font-weight: bold;
+            margin-bottom: 1.2cm;
         }
 
         .status-badge.approved {
@@ -235,7 +205,7 @@
             overflow: hidden;
             transition: background-color 0.4s ease;
             margin-bottom: 1.2cm;
-            margin-right: 30px;
+            margin-right: 40px; 
         }
 
         .info-card::after {
@@ -250,7 +220,6 @@
             border-bottom-right-radius: 20px;
             transition: width 0.4s ease;
             z-index: 0;
-            
         }
 
         .info-card:hover::after {
@@ -361,17 +330,76 @@
 
         .form-card {
             background:rgb(235, 238, 245);
-            border-radius: 30px; 
+            border-radius: 30px;
             box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 25px;
             margin-bottom: 1.2cm;
-            margin-right: 30px;
+            margin-right: 40px;
         }
 
         .form-card h4 {
             font-weight: 600;
             font-size: 1.05rem;
             margin-bottom: 0.8cm;
+        }
+
+        .penilaian-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 0.5cm;
+            margin-bottom: 1rem;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            gap: 20px;
+        }
+
+        .penilaian-row .col-3 {
+            padding: 0 !important;
+            flex: 0 0 auto;
+            width: calc(25% - (20px * 3 / 4));
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .penilaian-row label {
+            flex-shrink: 0;
+            white-space: nowrap;
+            margin-right: 10px;
+            font-weight: 550;
+            margin-top: 0;
+            color: #333;
+            min-width: unset;
+            text-align: left;
+        }
+
+        .penilaian-row .colon {
+            flex-shrink: 0;
+            margin-right: 10px;
+            color: #333;
+        }
+
+        input.form-control-custom.input-nilai {
+            width: 75px;
+            font-size: 1rem;
+            height: 40px;
+            padding: 5px 10px;
+            text-align: center;
+            flex-grow: 0;
+            min-width: unset;
+            background-color: #ffffff !important;
+            border: 1px solid #F2F2F2;
+            border-radius: 10px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-card .form-control-custom.input-nilai:focus {
+            border-color: #4B68FB;
+            box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25);
+            outline: none;
         }
 
         .form-group-custom {
@@ -392,7 +420,7 @@
         .form-group-custom .form-control-custom {
             flex: 1;
             min-width: 200px;
-            background-color: white;
+            background-color: white !important;
             border: 1px solid #F2F2F2;
             border-radius: 10px;
             padding: 10px 15px;
@@ -417,11 +445,12 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 1.2cm;
+            margin-right: 40px;
         }
 
         .btn-kirim {
-            background-color: #4FD382; /* Changed from #4cfaab to button setuju color */
-            color: #FFFFFF; /* Text color remains black */
+            background-color: #4FD382;
+            color: #FFFFFF;
             border: none;
             border-radius: 20px;
             padding: 0 25px;
@@ -434,7 +463,6 @@
             align-items: center;
             justify-content: center;
             height: 45px;
-            margin-top: 55px;
         }
 
         .btn-kirim:hover {
@@ -481,7 +509,110 @@
             text-align: left;
         }
 
+        .modal-content.custom-modal-content {
+            border-radius: 30px !important;
+            background-color: #f8f9fa;
+            border: none;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-header.custom-modal-header {
+            border-bottom: none;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .modal-body.custom-modal-body {
+            text-align: center;
+        }
+
+        /* --- START PERBAIKAN: Gaya Tombol Modal Konsisten --- */
+        .btn-tolak,
+        .btn-setujui {
+            border-radius: 20px; /* Radius yang sama dengan tombol Kembali/Kirim utama */
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            height: 45px; /* Tinggi yang sama dengan tombol Kembali/Kirim utama */
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 25px; /* Padding yang sama dengan tombol Kembali/Kirim utama */
+        }
+        /* --- END PERBAIKAN --- */
+
+        .btn-tolak {
+            background-color: #FD7D7D;
+            color: white;
+        }
+        .btn-tolak:hover {
+            background-color: #F85C5C;
+            color: white;
+        }
+
+        .btn-setujui {
+            background-color: #4FD382;
+            color: white;
+        }
+        .btn-setujui:hover {
+            background-color: #3AB070;
+            color: white;
+        }
+
+        #catatanEvaluasi::placeholder {
+            color: #888 !important;
+            opacity: 60% !important;
+        }
+
+        #btnKonfirmasiKirim:hover {
+            background-color: #157347 !important;
+            color: #fff !important;
+        }
+
+        .desktop-toggle-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            cursor: default;
+            pointer-events: none;
+        }
+        .desktop-toggle-icon i.bi {
+            font-size: 28px;
+            color: #4B68FB;
+        }
+
+        /* Media query untuk perangkat dengan lebar layar <= 768px (tablet & mobile) */
         @media (max-width: 768px) {
+            .penilaian-row {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                gap: 15px 0;
+            }
+            .penilaian-row .col-3 {
+                width: 100%;
+                justify-content: flex-start;
+                padding: 0 !important;
+                margin-bottom: 0;
+            }
+            .penilaian-row label {
+                min-width: unset;
+                text-align: left;
+                margin-right: 10px;
+            }
+            .form-card .form-control-custom.input-nilai {
+                flex-grow: 1;
+                width: auto;
+            }
+
             .form-group-custom {
                 flex-direction: column;
                 align-items: flex-start;
@@ -496,68 +627,106 @@
                 width: 100%;
                 min-width: unset;
             }
+
+            .modal-dialog {
+                margin: 1rem auto;
+                max-width: 95% !important;
+            }
+            .modal-content.custom-modal-content {
+                padding: 15px !important;
+            }
+            .modal-body.custom-modal-body {
+                padding: 0 !important;
+                text-align: center;
+            }
+            
+            .modal-body.custom-modal-body > .d-flex.justify-content-between.px-5 {
+                padding-left: 20px !important;
+                padding-right: 20px !important;
+                gap: 15px;
+                width: 100%;
+                flex-wrap: nowrap;
+            }
+
+            /* --- START PERBAIKAN: Gaya Tombol Modal Mobile Konsisten --- */
+            .modal-body.custom-modal-body .btn-tolak,
+            .modal-body.custom-modal-body .btn-setujui {
+                flex-grow: 1;
+                flex-shrink: 0;
+                flex-basis: auto;
+                width: auto; 
+                height: 40px; /* Sesuai dengan tombol Kembali/Kirim di mobile */
+                font-size: 0.9rem;
+                padding: 0 10px !important; /* Sesuai dengan tombol Kembali/Kirim di mobile */
+                border-radius: 18px; /* Sesuai dengan tombol Kembali/Kirim di mobile */
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            }
+            /* --- END PERBAIKAN --- */
         }
 
-        /* --- Responsive Design Styles --- */
-        .NavSide__toggle {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            width: 40px;
-            height: 40px;
-            z-index: 1100;
-            transition: left 0.5s ease-in-out;
-            cursor: pointer;
-            border-radius: 5px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .NavSide__toggle i.bi {
-            position: absolute;
-            font-size: 28px;
-            display: none;
-        }
-
-        .NavSide__toggle i.bi.open {
-            color: #4B68FB;
-        }
-
-        .NavSide__toggle i.bi.close {
-            color: #4B68FB;
-        }
-
-        .NavSide__toggle.NavSide__toggle--active i.bi.open {
-            display: none;
-        }
-
-        .NavSide__toggle.NavSide__toggle--active i.bi.close {
-            display: block;
-        }
-
-        .NavSide__topbar {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-            align-items: center;
-            padding: 0 15px;
-            justify-content: space-between;
-        }
-
-        /* Responsive styles for screens smaller than 700px */
+        /* Media query untuk perangkat dengan lebar layar <= 700px (mobile) */
         @media (max-width: 700px) {
+            .NavSide__topbar {
+                display: flex;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                background-color: #ffffff;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                z-index: 999;
+                align-items: center;
+                padding: 0 15px;
+                justify-content: space-between;
+                margin-left: 0;
+            }
+
+            .NavSide__toggle {
+                position: static;
+                top: auto;
+                left: auto;
+                width: 40px;
+                height: 40px;
+                z-index: 1100;
+                cursor: pointer;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: none;
+                background-color: transparent;
+                margin-right: 0;
+            }
+
+            .NavSide__toggle i.bi {
+                position: static;
+                font-size: 28px;
+            }
+
+            .NavSide__toggle i.bi.open {
+                color: #4B68FB;
+                display: block;
+            }
+
+            .NavSide__toggle i.bi.close {
+                color: #4B68FB;
+                display: none;
+            }
+
+            .NavSide__toggle.NavSide__toggle--active i.bi.open {
+                display: none;
+            }
+
+            .NavSide__toggle.NavSide__toggle--active i.bi.close {
+                display: block;
+            }
+
             .NavSide__sidebar {
                 width: 50%;
                 transform: translateX(-100%);
                 border-left-width: 0;
+                padding-top: 60px;
             }
 
             .NavSide__sidebar.NavSide__sidebar--active-mobile {
@@ -571,27 +740,6 @@
                 padding-top: 75px;
             }
 
-            .NavSide__toggle {
-                display: flex;
-                position: relative;
-                top: auto;
-                left: 0;
-                background-color: transparent;
-                box-shadow: none;
-            }
-
-            .NavSide__toggle i.bi.open {
-                display: block;
-            }
-
-            .NavSide__toggle.NavSide__toggle--active {
-                color: #4B68FB;
-            }
-
-            .NavSide__topbar {
-                display: flex;
-            }
-
             .info-card .section {
                 flex: 0 0 100%;
                 margin-bottom: 1rem;
@@ -602,44 +750,90 @@
             }
 
             .button-group-bottom {
-                flex-direction: column;
-                gap: 1rem;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 1.2cm;
+                margin-left: 0;
+                margin-right: 0;
             }
 
             .btn-kembali, .btn-kirim {
-                width: 100%;
+                width: auto;
+                flex: none;
+                margin: 0;
+                
+                height: 40px;
+                padding: 0 10px;
+                font-size: 0.85rem;
+                border-radius: 18px;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
             }
 
-            .form-group-custom label {
-                flex: 0 0 100%;
-                margin-bottom: 0.5rem;
+            .btn-kembali .icon-circle {
+                width: 25px;
+                height: 25px;
+                margin-right: 8px;
+            }
+            .btn-kembali .icon-circle i {
+                font-size: 1.1rem;
             }
 
-            .form-group-custom .form-control-custom {
-                width: 100%;
+            .form-card {
+                margin-right: 0;
+                padding: 15px;
+            }
+
+            .desktop-toggle-icon {
+                display: none;
+            }
+
+            .info-card {
+                margin-right: 0;
+            }
+
+            .penilaian-row label {
+                width: 150px;
+                flex-shrink: 0;
+                white-space: nowrap;
+                margin-right: 10px;
+                text-align: left;
+            }
+
+            input.form-control-custom.input-nilai {
+                flex-grow: 1;
+                width: auto;
+                min-width: unset;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Kontainer utama untuk sidebar navigasi dan konten utama -->
     <div id="NavSide">
+        <!-- Sidebar navigasi -->
         <div id="main-sidebar" class="NavSide__sidebar">
+            <!-- Area merek/logo di sidebar -->
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
             </div>
+            <!-- Daftar menu navigasi sidebar -->
             <ul class="NavSide__sidebar-nav">
+                <!-- Item menu 'Evaluasi' (ditandai aktif) -->
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="dEvaluasiSidang.php">
                         <span class="fw-semibold">Evaluasi</span>
                     </a>
                 </li>
+                <!-- Item menu 'Dokumen' -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="dDokumenRevisi.php">
                         <span class="fw-semibold">Dokumen</span>
                     </a>
                 </li>
+                <!-- Item menu 'Nilai Akhir' -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="dNilaiAkhir.php">
@@ -649,169 +843,243 @@
             </ul>
         </div>
 
-        <div class="NavSide__toggle">
-            <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
+        <!-- Kontainer untuk topbar (header responsif) dan area konten utama -->
+        <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
+            <!-- Ikon Hamburger Desktop (Hanya untuk Desktop) -->
+            <div class="desktop-toggle-icon">
+                <i class="bi bi-list"></i>
+            </div>
+
+            <!-- Topbar (header yang muncul di perangkat mobile) -->
+            <div class="NavSide__topbar">
+                <!-- Tombol toggle sidebar untuk mobile (dipindahkan ke sini) -->
+                <div class="NavSide__toggle">
+                    <i class="bi bi-list open"></i>
+                    <i class="bi bi-x-lg close"></i>
+                </div>
+                <!-- Judul atau elemen lain di topbar bisa ditambahkan di sini jika perlu -->
+            </div>
+
+            <!-- Area konten utama halaman -->
+            <main class="NavSide__main-content">
+                <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
+
+                <!-- Kartu informasi detail sidang -->
+                <div class="info-card">
+                    <div class="section">
+                        <!-- Grup informasi Judul Sidang -->
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-file-invoice"></i>
+                                <span class="fw-bold">Judul Sidang</span>
+                            </div>
+                            <div class="value-row">Struktur Data</div>
+                        </div>
+
+                        <!-- Grup informasi Dosen Pembimbing -->
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-user-tie"></i>
+                                <span class="fw-bold">Dosen Pembimbing</span>
+                            </div>
+                            <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div>
+                        </div>
+
+                        <!-- Grup informasi Dosen Penguji -->
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-user-group"></i>
+                                <span class="fw-bold">Dosen Penguji</span>
+                            </div>
+                            <div class="value-row">
+                                Timotius Victory, S.Kom, M.Kom<br>
+                                Ning Ratwasturi, S.T, M.Eng
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <!-- Grup informasi Ruangan -->
+                        <div class="info-group">
+                            <div class="label-row">
+                                <!-- START PERBAIKAN: class dan ikon -->
+                                <i class="fa-solid fa-door-open"></i> 
+                                <!-- END PERBAIKAN -->
+                                <span class="fw-bold">Ruangan</span>
+                            </div>
+                            <div class="value-row">CB101 - RPL 1B</div>
+                        </div>
+
+                        <!-- Grup informasi Tanggal -->
+                        <div class="info-group">
+                            <div class="label-row">
+                                <!-- START PERBAIKAN: class -->
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <!-- END PERBAIKAN -->
+                                <span class="fw-bold">Tanggal</span>
+                            </div>
+                            <div class="value-row">Selasa, 22 April 2025</div>
+                        </div>
+
+                        <!-- Grup informasi Jam -->
+                        <div class="info-group">
+                            <div class="label-row">
+                                <!-- START PERBAIKAN: class -->
+                                <i class="fa-solid fa-clock"></i>
+                                <!-- END PERBAIKAN -->
+                                <span class="fw-bold">Jam</span>
+                            </div>
+                            <div class="value-row">09.00 - 10.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Nilai Sidang (Sementara)</h3>
+                <div class="form-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4>Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
+                    </div>
+                    <div class="row penilaian-row">
+                        <div class="col-3 d-flex align-items-center">
+                            <label for="nilaiLaporan" class="text-black">Nilai laporan</label>
+                            <span class="colon">:</span>
+                            <input
+                                type="text"
+                                class="form-control-custom input-nilai"
+                                id="nilaiLaporan"
+                                placeholder=""
+                                maxlength="3"/>
+                        </div>
+                        <div class="col-3 d-flex align-items-center">
+                            <label for="materiPresentasi" class="text-black">Materi Presentasi</label>
+                            <span class="colon">:</span>
+                            <input
+                                type="text"
+                                class="form-control-custom input-nilai"
+                                id="materiPresentasi"
+                                placeholder=""
+                                maxlength="3"/>
+                        </div>
+                        <div class="col-3 d-flex align-items-center ">
+                            <label for="nilaiPenyampaian" class="text-black">Penyampaian</label>
+                            <span class="colon">:</span>
+                            <input
+                                type="text"
+                                class="form-control-custom input-nilai"
+                                id="nilaiPenyampaian"
+                                placeholder=""
+                                maxlength="3"/>
+                        </div>
+                        <div class="col-3 d-flex align-items-center ">
+                            <label for="nilaiProyek" class="text-black">Nilai Proyek</label>
+                            <span class="colon">:</span>
+                            <input
+                                type="text"
+                                class="form-control-custom input-nilai"
+                                id="nilaiProyek"
+                                placeholder=""
+                                maxlength="3"/>
+                        </div>
+                    </div>
+                    <!-- Pesan error untuk input nilai sidang -->
+                    <p class="error-message" id="nilaiSidangErrorMessage"> *Semua nilai harus diisi!</p>
+                </div>
+
+                <h3>Catatan Evaluasi Sidang</h3>
+                <div class="form-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
+                        <textarea id="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."></textarea>
+                    </div>
+                    <!-- Pesan error untuk catatan evaluasi -->
+                    <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
+                </div>
+
+                <!-- Grup tombol di bagian bawah halaman -->
+                <div class="button-group-bottom">
+                    <!-- Tombol 'Kembali' -->
+                    <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
+                        <span class="icon-circle">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </span>
+                        Kembali
+                    </button>
+                    <!-- Tombol 'Kirim' -->
+                    <button class="btn-kirim" id="btnKirim">
+                        Kirim
+                    </button>
+                </div>
+            </main>
         </div>
-
-        <main class="NavSide__main-content">
-            <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-            <!-- Badge Status Pengajuan Dihapus sesuai gambar -->
-            
-            <div class="info-card">
-                <div class="section">
-                    <!-- Judul Sidang -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-file-invoice"></i> <!-- Icon berubah -->
-                            <span class="fw-bold">Judul Sidang</span>
-                        </div>
-                        <div class="value-row">Struktur Data</div> <!-- Nilai berubah -->
-                    </div>
-
-                    <!-- Dosen Pembimbing -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-user-tie"></i> <!-- Icon baru -->
-                            <span class="fw-bold">Dosen Pembimbing</span>
-                        </div>
-                        <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div> <!-- Nilai baru -->
-                    </div>
-                    
-                    <!-- Dosen Penguji -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-user-group"></i> 
-                            <span class="fw-bold">Dosen Penguji</span>
-                        </div>
-                        <div class="value-row">
-                            Timotius Victory, S.Kom, M.Kom<br>
-                            Ning Ratwasturi, S.T, M.Eng
-                        </div>
-                    </div>
-                </div>
-                <div class="section">
-                    <!-- Ruangan -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-door-open"></i>
-                            <span class="fw-bold">Ruangan</span>
-                        </div>
-                        <div class="value-row">CB101 - RPL 1B</div>
-                    </div>
-
-                    <!-- Tanggal -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <span class="fw-bold">Tanggal</span>
-                        </div>
-                        <div class="value-row">Selasa, 22 April 2025</div>
-                    </div>
-
-                    <!-- Jam -->
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-clock"></i>
-                            <span class="fw-bold">Jam</span>
-                        </div>
-                        <div class="value-row">09.00 - 10.00</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- BAGIAN BARU: Nilai Sidang (Sementara) -->
-            <h3>Nilai Sidang (Sementara)</h3>
-            <div class="form-card">
-                <h4>Masukkan Nilai Sidang</h4>
-                <div class="form-group-custom">
-                    <label for="nilaiLaporan">Nilai Laporan</label>
-                    <input type="text" id="nilaiLaporan" class="form-control-custom">
-                </div>
-                <div class="form-group-custom">
-                    <label for="materiPresentasi">Materi Presentasi</label>
-                    <input type="text" id="materiPresentasi" class="form-control-custom">
-                </div>
-                <div class="form-group-custom">
-                    <label for="nilaiPenyampaian">Nilai Penyampaian</label>
-                    <input type="text" id="nilaiPenyampaian" class="form-control-custom">
-                </div>
-                <div class="form-group-custom">
-                    <label for="nilaiProyek">Nilai Proyek</label>
-                    <input type="text" id="nilaiProyek" class="form-control-custom">
-                </div>
-                <!-- Elemen untuk pesan error Nilai Sidang -->
-                <p class="error-message" id="nilaiSidangErrorMessage"> *Harus diisi!</p>
-            </div>
-
-            <!-- BAGIAN BARU: Catatan Evaluasi Sidang -->
-            <h3>Catatan Evaluasi Sidang</h3>
-            <div class="form-card">
-                <h4>Masukkan Catatan Evaluasi Sidang</h4>
-                <div class="form-group-custom">
-                    <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label> 
-                    <textarea id="catatanEvaluasi" class="form-control-custom"></textarea>
-                </div>
-                <!-- Elemen untuk pesan error Catatan Evaluasi -->
-                <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
-            </div>
-            
-            <div class="button-group-bottom">
-                <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>
-                <button class="btn btn-setujui" id="btnKirim">
-                    Kirim
-                </button>
-            </div>
-        </main>
     </div>
-    
-    <!-- Success Modal HTML -->
+
+    <!-- Modal Sukses (muncul setelah berhasil mengirim evaluasi) -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content success-modal-content">
                 <div class="modal-body success-modal-body">
-                    <!-- --- PERUBAHAN IKON SUKSES DI SINI --- -->
-                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon"> <!-- Path diubah -->
-                    <!-- --- AKHIR PERUBAHAN UNTUK IKON SUKSES --- -->
+                    <img src="../../assets/img/centang.svg" alt="Success Checkmark" class="success-icon">
                     <p class="success-message">Evaluasi Sidang Berhasil Dikirim!</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Kirim (muncul sebelum mengirim evaluasi) -->
+    <div class="modal fade" id="confirmationKirimModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationKirimModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+                <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="confirmationKirimModalLabel" style="font-size: 24px;">Perhatian!</h4>
+                </div>
+                <div class="modal-body custom-modal-body">
+                    <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin hendak mengirimkan evaluasi sidang?</p>
+                    <div class="d-flex justify-content-between px-5"> 
+                        <!-- START PERBAIKAN: Ubah teks, hapus kelas padding Bootstrap -->
+                        <button type="button" class="btn custom-batal fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+                        <button type="button" class="btn fw-semibold btn-setujui" id="btnKonfirmasiKirim">Kirimkan</button>
+                        <!-- END PERBAIKAN -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script type="text/javascript">
-        // --- Sidebar Toggle Logic for Mobile ---
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
-
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-
-        // Sidebar Active Item Logic
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function() {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
-
-        // BARU: Logika validasi form
         document.addEventListener('DOMContentLoaded', function() {
+            // Skrip untuk mengontrol sidebar (buka/tutup) dan efek aktif pada item menu
+            let menuToggle = document.querySelector(".NavSide__toggle");
+            let sidebar = document.getElementById("main-sidebar");
+
+            if (menuToggle && sidebar) {
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
+
+            // Skrip untuk mengatur item menu sidebar yang ditandai sebagai 'aktif'
+            let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+            if (listItems.length > 0) {
+                for (let i = 0; i < listItems.length; i++) {
+                    listItems[i].onclick = function() {
+                        if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                            for (let j = 0; j < listItems.length; j++) {
+                                listItems[j].classList.remove("NavSide__sidebar-item--active");
+                            }
+                            this.classList.add("NavSide__sidebar-item--active");
+                        }
+                    };
+                }
+            }
+
+            // Variabel elemen DOM untuk form dan modal
             const btnKirim = document.getElementById('btnKirim');
             const nilaiLaporan = document.getElementById('nilaiLaporan');
             const materiPresentasi = document.getElementById('materiPresentasi');
@@ -819,20 +1087,37 @@
             const nilaiProyek = document.getElementById('nilaiProyek');
             const catatanEvaluasi = document.getElementById('catatanEvaluasi');
 
-            const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage');
-            const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage');
+            const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage'); // Pesan error untuk input nilai sidang
+            const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage'); // Pesan error untuk catatan evaluasi
 
-            // Dapatkan elemen modal sukses
-            const successModalElement = document.getElementById('successModal');
+            const successModalElement = document.getElementById('successModal'); // Modal sukses
+            const confirmationKirimModalElement = document.getElementById('confirmationKirimModal'); // Modal konfirmasi pengiriman
+            const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim'); // Tombol 'Lanjutkan' di modal konfirmasi
 
-            // Tambahkan event listener untuk saat modal sukses disembunyikan
+            // Event listener saat modal sukses disembunyikan
             if (successModalElement) {
                 successModalElement.addEventListener('hidden.bs.modal', function () {
-                    // Arahkan kembali ke halaman dDaftarSidang.php
-                    window.location.href = 'dDaftarSidang.php';
+                    window.location.href = 'dDaftarSidang.php'; // Redirect ke halaman daftar sidang
                 });
             }
 
+            // Logika validasi input hanya angka dan batas 0-100
+            document.querySelectorAll('.input-nilai').forEach(function(input){
+                input.addEventListener('input', function() {
+                    // Hapus karakter non-angka
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    // Hapus nol di depan jika lebih dari satu digit (misal '05' jadi '5')
+                    if (this.value.length > 1 && this.value.startsWith('0')) {
+                        this.value = this.value.replace(/^0+/, '');
+                    }
+                    // Batasi nilai maksimal 100
+                    if (parseInt(this.value) > 100) {
+                        this.value = '100';
+                    }
+                });
+            });
+
+            // Event listener untuk tombol 'Kirim'
             btnKirim.addEventListener('click', function(event) {
                 let isValid = true;
 
@@ -845,7 +1130,6 @@
                     materiPresentasi.value.trim() === '' ||
                     nilaiPenyampaian.value.trim() === '' ||
                     nilaiProyek.value.trim() === '') {
-                    
                     nilaiSidangError.style.display = 'block';
                     isValid = false;
                 }
@@ -856,14 +1140,33 @@
                     isValid = false;
                 }
 
-                // Jika validasi gagal
+                // Jika ada validasi yang gagal (field kosong)
                 if (!isValid) {
                     event.preventDefault(); // Hentikan tindakan default
+                    Swal.fire({
+                        title: 'Harap mengisi kolom nilai dan catatan terlebih dahulu sebelum mengirim!',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#4B68FB'
+                    });
                 } else {
-                    // Jika validasi sukses, tampilkan modal secara manual
-                    const successModal = new bootstrap.Modal(successModalElement); // Gunakan referensi elemen yang sudah diambil
-                    successModal.show();
+                    // Jika validasi sukses, tampilkan modal konfirmasi pengiriman
+                    const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
+                    confirmationKirimModal.show();
                 }
+            });
+
+            // Event listener untuk tombol 'Lanjutkan' pada modal konfirmasi pengiriman
+            btnKonfirmasiKirim.addEventListener('click', function() {
+                // Sembunyikan modal konfirmasi pengiriman
+                const confirmationKirimModalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
+                if (confirmationKirimModalInstance) {
+                    confirmationKirimModalInstance.hide();
+                }
+
+                // Tampilkan modal sukses
+                const successModal = new bootstrap.Modal(successModalElement);
+                successModal.show();
             });
         });
     </script>

@@ -1,4 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
 .sideNav {
   position: fixed;
   top: 0;
@@ -32,7 +45,7 @@ body {
 }
 
 .jadiBiru {
-  background-color: #f5f5f5;
+  background-color: rgb(235, 238, 245);
   color: black;
   transition: 300ms;
 }
@@ -82,6 +95,7 @@ body {
 }
 
 /* Sidebar */
+
 #NavSide {
   display: flex;
   min-height: 100vh;
@@ -132,7 +146,8 @@ body {
   width: 100%;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  /* Kept from user's last version */
 }
 
 .NavSide__sidebar-item a {
@@ -219,6 +234,7 @@ body {
   transition: margin-left 0.5s ease-in-out;
   background-color: #f9fafb;
   padding-top: 3vh;
+  /* Default for larger screens */
 }
 
 .NavSide__toggle {
@@ -376,14 +392,43 @@ body {
   .dashboard-header {
     margin-top: 0;
   }
+
+  .text-heading {
+    display: none;
+  }
+
+  .text-heading-mobile {
+    color: #4b68fb;
+    font-weight: 550;
+    margin: auto;
+  }
 }
 
-/* DASHBOARD STYLES */
+/* Responsivitas mobile fold */
+@media (max-width: 350px) {
+  .text-heading-mobile {
+    color: #4b68fb;
+    font-weight: 550;
+    margin: auto;
+    font-size: 1.2rem;
+  }
+}
+
+/* =======================
+      Dashboard  Styles
+  ======================== */
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+}
+
+.dashboardTitle {
+  color: #4b68fb;
+  font-size: 1.5rem;
+  font-weight: 500;
 }
 
 .dashboard-header .page-title {
@@ -520,7 +565,6 @@ body {
 
 /* Modal Buttons */
 .btnKonfirmasi {
-  background-color: #4b68fb;
   color: white;
   border: none;
   border-radius: 15px;
@@ -582,4 +626,267 @@ button.btn-kembali:hover .icon-circle i.fa-arrow-left {
 .modal-heading-color {
   background-color: #4b68fb;
   color: white;
+}
+
+/* Kalender Card Styles*/
+
+.calendar-card {
+  background-color: #4b68fb;
+  color: white;
+  display: flex;
+  /* This is correct, it makes the card a flex container */
+  flex-direction: column;
+  /* This is correct, it stacks children vertically */
+  padding: 1rem;
+  border-radius: 5vh;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  min-height: 300px;
+}
+
+.calendar-card .section-title-container {
+  /* No changes needed here, this is fine */
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  flex-shrink: 0;
+  /* Prevents this header from shrinking */
+}
+
+.calendar-card .calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.calendar-card .section-title {
+  color: white;
+  margin-bottom: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.calendar-card .calendar-nav i {
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  color: #c7d2fe;
+}
+
+.calendar-card .calendar-nav i:hover {
+  color: white;
+}
+
+.calendar-card .calendar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  flex-grow: 1;
+  /* This is key: it makes the <table> fill available space */
+  display: flex;
+  /* IMPORTANT: Treat the table itself as a flex container */
+  flex-direction: column;
+  /* Stack its children (thead, tbody) vertically */
+}
+
+.calendar-card .calendar thead,
+.calendar-card .calendar tbody {
+  display: flex;
+  /* Treat thead and tbody as flex containers */
+  flex-direction: column;
+  width: 100%;
+}
+
+.calendar-card .calendar tbody {
+  flex-grow: 1;
+  /* Make the body grow to fill the table's space */
+}
+
+.calendar-card .calendar tr {
+  display: flex;
+  /* Treat each row as a flex container */
+  flex-grow: 1;
+  /* Make each row take up equal vertical space in tbody */
+  width: 100%;
+}
+
+.calendar-card .calendar th,
+.calendar-card .calendar td {
+  flex: 1;
+  /* This is the magic! Makes each cell take up equal horizontal space */
+  display: flex;
+  /* Use flex to center the content inside the cell */
+  align-items: center;
+  justify-content: center;
+  padding: 0rem;
+  /* Keep your padding for the cell */
+  text-align: center;
+}
+
+.calendar-card .calendar th {
+  /* Styles specific to header cells */
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #c7d2fe;
+  text-transform: uppercase;
+  padding: 0.3rem 0.25rem;
+}
+
+.calendar-card .calendar-day {
+  /* No changes needed here, this styling is for the bubble inside the cell */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.calendar-card .calendar-day.current-day {
+  background-color: white;
+  color: #4b68fb;
+  font-weight: 700;
+}
+
+.calendar-card .calendar-day:hover:not(.current-day) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Tugas Card Styles --- */
+
+.tugas-card {
+  overflow-y: auto;
+  max-height: 60vh;
+  height: 100%;
+  padding-top: 0rem;
+  padding-bottom: 1rem;
+}
+
+.tugas-card .section-title {
+  position: sticky;
+  top: 0px;
+  background-color: #f3f4f6;
+  z-index: 10;
+  padding-top: 0.3rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.tugas-card .tugas-item {
+  background-color: white;
+  color: #4b5563;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.tugas-card .tugas-item:last-child {
+  margin-bottom: 0;
+}
+
+.content-card {
+  background-color: #f3f4f6;
+}
+
+.content-card .section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+/* --- Sidang Mendatang Card Styles --- */
+
+.sidang-mendatang-card {
+  overflow-y: auto;
+  max-height: 36vh;
+  height: 100%;
+  padding-top: 0rem;
+  padding-bottom: 1rem;
+}
+
+.sidang-mendatang-card .section-title {
+  position: sticky;
+  top: 0px;
+  background-color: #f3f4f6;
+  z-index: 10;
+  padding-top: 0.3rem;
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.sidang-mendatang-card .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e0e7ff;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.sidang-mendatang-card .item:last-child {
+  margin-bottom: 0;
+}
+
+.sidang-mendatang-card .date-bubble {
+  background-color: white;
+  border-radius: 8px;
+  padding: 0.4rem 0rem;
+  text-align: center;
+  margin-right: 1rem;
+  min-width: 48px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidang-mendatang-card .date-bubble .day {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4b68fb;
+  line-height: 1.1;
+}
+
+.sidang-mendatang-card .date-bubble .month {
+  font-size: 0.7rem;
+  color: #6b7280;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.sidang-mendatang-card .info {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.sidang-mendatang-card .arrow i {
+  font-size: 1.2rem;
+  color: #4b68fb;
+}
+
+.modal-footer .btn-danger {
+  background-color: #fd7d7d;
+  border-color: #fd7d7d;
+}
+
+.modal-footer .btn-success {
+  background-color: #4fd382;
+  border-color: #4fd382;
 }

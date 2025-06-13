@@ -195,7 +195,6 @@
         top: 0;
         left: 0;
         width: 100%;
-        margin-left: 280px;
         height: 60px;
         background-color: #ffffff;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -206,6 +205,8 @@
             .NavSide__topbar {
                 display: flex; /* Show only on mobile */
                 margin-left: 0; /* Reset margin on mobile */
+                padding: 0 15px; /* Added padding for consistency */
+                justify-content: space-between; /* Added for consistency */
             }
         }
 
@@ -214,33 +215,31 @@
             height: 40px;
             cursor: pointer;
             border-radius: 5px;
-            display: none; /* Hidden on desktop, will be shown by media query */
             align-items: center;
             justify-content: center;
             padding:0;
+            position: static; /* Added from new topbar style */
+            top: auto; /* Added from new topbar style */
+            left: auto; /* Added from new topbar style */
+            background-color: transparent; /* Added from new topbar style */
+            box-shadow: none; /* Added from new topbar style */
         }
         .NavSide__topbar .NavSide__toggle i.bi {
-            position: absolute; /* Relative to its parent .NavSide__toggle */
-            font-size: 24px; /* Slightly smaller icon as per mPerbaikan.php */
-            display: none; /* Hidden by default */
-            color: rgb(67, 54, 240);
+            position: static; /* Changed from absolute */
+            font-size: 28px; /* Changed from 24px */
+            color: #4B68FB; /* Changed from rgb(67, 54, 240) */
             transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
         }
-        .NavSide__topbar .NavSide__toggle i.bi.open { 
-            display: block; /* Default icon visible */
-        }
-        .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open { 
-            display: none; 
-        }
-        .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close { 
-            display: block; 
-        }
+        /* Removed .NavSide__topbar .NavSide__toggle i.bi.open as it will always be visible */
+        /* Removed .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.open */
+        /* Removed .NavSide__topbar .NavSide__toggle.NavSide__toggle--active i.bi.close */
+
 
         .NavSide__main-content {
             flex-grow: 1;
             padding: 20px 20px 20px calc(20px + 1cm); 
             margin-left: 280px;
-            margin-right: 40px;
+            margin-right: 45px;
             overflow-y: auto;
             transition: margin-left 0.5s ease-in-out;
             /* Adjust padding-top to account for fixed topbar on desktop */
@@ -249,7 +248,7 @@
 
         /* Modifikasi Margin Global */
         .NavSide__main-content h2 { 
-            margin-bottom: 0.9cm;
+            margin-bottom: 0.5cm;
             font-weight: 700; 
         }
 
@@ -280,12 +279,12 @@
 
         .NavSide__main-content h5 { 
             margin-top: 0.9cm;
-            margin-bottom: 0.5cm;
+            margin-bottom: 0.9cm;
             font-weight: 700; 
         }
 
         .file-buttons-container {
-            margin-bottom: 1.2cm; 
+            margin-bottom: 2.5cm; 
         }
 
         .btn-kembali {
@@ -334,6 +333,26 @@
         .btn-kembali:hover .icon-circle i {
             color: white;
         }
+
+        /* Desktop toggle icon */
+        .desktop-toggle-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            cursor: default;
+            pointer-events: none;
+        }
+        .desktop-toggle-icon i.bi {
+            font-size: 28px;
+            color: #4B68FB;
+        }
+
 
         @media (max-width: 700px) {
             .NavSide__sidebar {
@@ -389,6 +408,7 @@
             .NavSide__main-content {
                 margin-left: 0; 
                 padding: 20px; /* Adjust padding for mobile to be more consistent */
+                margin-right: 0; /* Menghilangkan margin kanan yang tersisa di mobile */
                 padding-top: calc(60px + 20px); /* Adjust padding-top for topbar height on mobile */
             }
             
@@ -417,42 +437,46 @@
             /* Mobile styles for info-card (dari revisi sebelumnya, dijaga agar tidak berubah) */
             .info-card {
                 flex-direction: column; 
-                background-color: #4B68FB; 
-                color: white; 
-                transition: none; 
-                box-shadow: none; 
+                background-color: #4B68FB; /* Reverted to fixed blue background */
+                color: white; /* Reverted to fixed white text */
+                transition: none; /* Reverted to no transition */
+                box-shadow: none; /* Reverted to no shadow */
             }
 
             .info-card::after {
-                content: none; 
+                content: none; /* Reverted to pseudo-element removed */
             }
 
             .info-card .section {
                 z-index: 1; 
                 margin-bottom: 1rem; 
-                transition: none; 
+                transition: none; /* Reverted to no transition */
             }
             .info-card .section:last-child {
                 margin-bottom: 0; 
             }
             
             .info-card .section .label-row i {
-                color: white; 
-                transition: none; 
+                color: white; /* Reverted to fixed white icon */
+                transition: none; /* Reverted to no transition */
             }
 
             .info-card:hover {
-                background-color: #4B68FB; 
-                color: white; 
+                background-color: #4B68FB; /* Hover should do nothing, keep fixed background */
+                color: white; /* Hover should do nothing, keep fixed text color */
             }
             .info-card:hover::after {
-                content: none; 
+                content: none; /* Hover should do nothing, keep pseudo-element removed */
             }
             .info-card:hover .section {
-                color: white; 
+                color: white; /* Hover should do nothing, keep fixed text color */
             }
             .info-card:hover .section .label-row i {
-                color: white; 
+                color: white; /* Hover should do nothing, keep fixed icon color */
+            }
+            /* Hide desktop toggle icon on mobile */
+            .desktop-toggle-icon {
+                display: none;
             }
         }
        
@@ -582,7 +606,7 @@
 
         /* Styling info-group dan spacer */
         .info-card .section .info-group {
-            margin-bottom: 1rem; 
+            margin-bottom: 0rem; 
         }
         .info-card .section .info-group:last-child {
             margin-bottom: 0; 
@@ -622,10 +646,14 @@
 
         <!-- NEW: Wrap main content in a flex-grow div and add NavSide__topbar -->
         <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
+            <!-- Ikon Hamburger Desktop (Hanya untuk Desktop) -->
+            <div class="desktop-toggle-icon">
+                <i class="bi bi-list"></i>
+            </div>
             <div class="NavSide__topbar">
                 <div class="NavSide__toggle">
                     <i class="bi bi-list open"></i>
-                    <i class="bi bi-x-lg close"></i>
+                    <!-- Removed <i class="bi bi-x-lg close"></i> -->
                 </div>
             </div>
 
@@ -636,27 +664,35 @@
                 
                 <div class="info-card">
                     <div class="section">
-                        <!-- Mata Kuliah -->
+                        <!-- Judul Sidang -->
                         <div class="info-group">
                             <div class="label-row">
-                                <i class="fa-solid fa-book"></i>
-                                <span class="fw-bold">Judul Mata Kuliah</span>
+                                <i class="fa-solid fa-file-invoice"></i> 
+                                <span class="fw-bold">Judul Sidang</span>
                             </div>
-                            <div class="value-row">Pemrograman 2</div>
+                            <div class="value-row">Sistem Pengajuan Sidang</div>
                         </div>
 
-                        <!-- Spacer untuk mendorong Dosen Pengampu ke bawah -->
-                        <div class="spacer"></div>
-
-                        <!-- Dosen Pengampu -->
+                        <!-- Dosen Pembimbing -->
                         <div class="info-group">
                             <div class="label-row">
-                                <i class="fa-solid fa-user-group"></i> 
-                                <span class="fw-bold">Dosen Pengampu</span>
+                                <i class="fa-solid fa-user-tie"></i> 
+                                <span class="fw-bold">Dosen Pembimbing</span>
+                            </div>
+                            <div class="value-row">
+                                Dr. Rida Indah Fariani, S.Kom, M.Kom
+                            </div>
+                        </div>
+
+                        <!-- Dosen Penguji -->
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-user-group"></i>
+                                <span class="fw-bold">Dosen Penguji</span>
                             </div>
                             <div class="value-row">
                                 Timotius Victory, S.Kom, M.Kom<br>
-                                Yosep Setiawan, S.Kom, M.Kom
+                                Ning Ratwasturi, S.Kom, M.Kom
                             </div>
                         </div>
                     </div>
@@ -715,6 +751,8 @@
         </div>
     </div>
     
+    <!-- Modals (successModal and confirmationKirimModal) have been removed -->
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -725,13 +763,31 @@
 
       if (menuToggle && sidebar) {
         menuToggle.onclick = function () {
-          menuToggle.classList.toggle("NavSide__toggle--active");
+          // Hanya toggle class untuk sidebar, tidak perlu mengubah ikon karena ikon 'X' sudah dihapus
           sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+          // Remove the NavSide__toggle--active class as it's no longer needed to hide the burger icon
+          // If you want the toggle button itself to change visual state (e.g., background),
+          // you might need to keep this toggle, but it won't affect the icon.
+          menuToggle.classList.toggle("NavSide__toggle--active");
         };
       }
 
       let listItems = document.querySelectorAll(".NavSide__sidebar-item");
       if (listItems.length > 0) {
+        // Find the active item based on the current URL
+        const currentPath = window.location.pathname.split('/').pop();
+        listItems.forEach(item => {
+            const link = item.querySelector('a');
+            if (link) {
+                const linkHref = link.getAttribute('onclick');
+                // Check if the onclick href matches the current page, case-insensitive
+                if (linkHref && linkHref.toLowerCase().includes(currentPath.toLowerCase())) {
+                    item.classList.add("NavSide__sidebar-item--active");
+                }
+            }
+        });
+
+        // Add click event listener to update active class
         for (let i = 0; i < listItems.length; i++) {
           listItems[i].onclick = function (event) {
             for (let j = 0; j < listItems.length; j++) {
@@ -759,7 +815,7 @@
           });
       }
 
-      // Fungsi-fungsi JS terkait modal penjadwalan sidang telah dihapus karena modalnya sudah tidak digunakan.
+      // Semua fungsi JS terkait form nilai, catatan, dan modal konfirmasi pengiriman telah dihapus.
     </script>
 </body>
 </html>

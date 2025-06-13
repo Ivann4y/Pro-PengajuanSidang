@@ -126,6 +126,28 @@
             background-color: #4FD382;
             border-color: #4FD382;
         }
+
+         .search-input-group {
+        background-color: #F3F4F6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        width: 250px; /* Standardize width as seen in aDaftarSidang.php */
+        margin-top: 0.19vh -1px;
+        margin-right : 1vh;
+    }
+
+    .search-input-group input.form-control {
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        padding-left: 1rem; /* Adjust padding as search icon is inside span */
+    }
+
+    .search-input-group .input-group-text {
+        background-color: transparent;
+        border: none;
+        padding-right: 0; /* No padding on right as input has left padding */
+    }
     </style>
 </head>
 
@@ -168,6 +190,8 @@
                     <a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-person-fill fs-5"></i>
                     </a>
+
+                    
                 </div>
             </div>
         </div>
@@ -200,9 +224,13 @@
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semester')">Sidang Semester</a></li>
                                     </ul>
                                 </div>
-
+                            </div>
+                            <div class="search-input-group ms-auto d-flex align-items-center">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari">
                             </div>
                         </div>
+                        
                     </div><br><br>
                     <div class="row">
                         <table>
@@ -291,9 +319,34 @@
                                         </button>
                                     </td>
                                 </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="isiTabel jadiBiru">
+                                    <td>3</td>
+                                    <td>0920240055</td>
+                                    <td>Nur Widya Astuti</td>
+                                    <td>Pemrograman 2</td>
+                                    <td>Timotius Victory</td>
+                                    <td style="text-align: center;">
+                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                
                             </tbody>
                         </table>
-                    </div>
+                        <!-- Paging Container -->
                 </div>
             </div>
 
@@ -317,6 +370,34 @@
                 </div>
             </div>
             <script>
+                // Untuk search
+                 document.addEventListener("DOMContentLoaded", function () {
+                    const searchInput = document.querySelector('.search-input-group input');
+                    const tbodyTA = document.getElementById("dPengajuanTA");
+                    const tbodySem = document.getElementById("dPengajuanSem");
+
+                    searchInput.addEventListener("keyup", function () {
+                        const query = searchInput.value.toLowerCase();
+
+                        filterTableRows(tbodyTA, query);
+                        filterTableRows(tbodySem, query);
+                    });
+
+                    function filterTableRows(tbody, query) {
+                        const rows = tbody.querySelectorAll("tr");
+
+                        rows.forEach(row => {
+                            const namaCell = row.children[2]; // Kolom Nama
+                            const namaText = namaCell.textContent.toLowerCase();
+
+                            if (namaText.includes(query)) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    }
+                });
                 // Sidebar Toggle Logic
                 let menuToggle = document.querySelector(".NavSide__toggle");
                 let sidebar = document.getElementById("main-sidebar");

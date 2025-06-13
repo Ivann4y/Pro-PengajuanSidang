@@ -115,6 +115,11 @@
   .btn-kembali:hover .icon-circle i {
     color: white;
   }
+
+  .bintangMerah {
+    color: red;
+    font-weight: bold;
+  }
 </style>
 
 
@@ -150,28 +155,12 @@
         <i class="bi bi-list open"></i>
         <i class="bi bi-x-lg close"></i>
       </div>
-      <div class="header-icons">
-        <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
-          <i class="bi bi-bell-fill"></i>
-        </a>
-        <div class="profile-icon">
-          <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
-            <i class="bi bi-person-fill fs-5"></i>
-          </a>
-        </div>
-      </div>
     </div>
 
     <main class="NavSide__main-content" id="mPengajuan">
       <div class="container-fluid">
         <div class="dashboard-header">
           <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
-          <div class="header-icons d-none d-md-flex">
-            <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
-            <div class="profile-icon">
-              <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
-            </div>
-          </div>
         </div>
         <div class="row">
           <div class="col-12">
@@ -186,11 +175,15 @@
           ?>
           <form action="#" method="post">
             <div class="mb-3">
-              <label for="judul" class="form-label">Judul Sidang</label>
+              <label for="judul" class="form-label">
+                <span class="text-danger">* </span>Judul Sidang
+              </label>
               <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo $judul ?>" placeholder="Masukkan Judul Sidang" />
             </div>
             <div class="mb-3">
-              <label for="matkul" class="form-label">Mata Kuliah</label>
+              <label for="matkul" class="form-label">
+                <span class="text-danger">* </span>Mata Kuliah
+              </label>
               <select class="forM form-select" id="matkul" name="matkul">
                 <option selected disabled>Pilih Mata Kuliah</option>
                 <option value="Tugas Akhir" <?php if ($matkul == 'Tugas Akhir') {
@@ -208,7 +201,9 @@
               </select>
             </div>
             <div class="mb-3">
-              <label for="kelas" class="form-label">Kelas</label>
+              <label for="kelas" class="form-label">
+                <span class=text-danger>* </span> Kelas
+              </label>
               <select class="forM form-select" id="kelas" name="kelas">
                 <option selected disabled>Pilih Kelas</option>
                 <option value="A">RPL 1A</option>
@@ -220,8 +215,10 @@
             <div class="row">
               <div class="col-md-6 mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">*Dokumen Laporan Sidang</h6>
-                  <form id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
+                  <h6 class="fw-bold text-dark">
+                    <span class="text-danger">* </span>Dokumen Laporan Sidang
+                  </h6>
+                  <div id="laporanSidangForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="laporanSidang" name="laporanSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
                       <div class="upload-content">
@@ -232,15 +229,17 @@
                         <p class="mt-2 text-muted small" id="laporanLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
                       </div>
                     </label>
-                  </form>
+                  </div>
                 </div>
               </div>
 
               <!-- Upload Dokumen Pendukung Sidang -->
               <div class="col-md-6 mb-4">
                 <div class="p-4 rounded bg-light border text-start">
-                  <h6 class="fw-bold text-dark">*Dokumen Pendukung Sidang</h6>
-                  <form id="dokPendukungForm" action="#" method="POST" enctype="multipart/form-data">
+                  <h6 class="fw-bold text-dark">
+                    <span class="text-danger">* </span>Dokumen Pendukung Sidang
+                  </h6>
+                  <div id="dokPendukungForm" action="#" method="POST" enctype="multipart/form-data">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="dokPendukung" name="pendukungSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
                       <div class="upload-content">
@@ -251,28 +250,11 @@
                         <p class="mt-2 text-muted small">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
                       </div>
                     </label>
-                  </form>
+                  </div>
                 </div>
               </div>
-              <p>* : wajib diisi</p>
-            </div>
-
-
-
-            <!-- Modal Peringatan -->
-            <!-- modal bootstap gajadi kepake dah diganti JS, might remove later -->
-            <div class="modal fade" id="modalPeringatan" tabindex="-1" aria-labelledby="modalPeringatanLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-                  <div class="modal-header border-0 justify-content-center">
-                  </div>
-                  <div class="modal-body">
-                    <div class="mb-3">
-                      <img src="https://cdn-icons-png.flaticon.com/512/463/463612.png" alt="Warning Icon" style="width: 100px;" />
-                    </div>
-                    <p class="fw-semibold mb-0">Dokumen Tidak Boleh Kosong</p>
-                  </div>
-                </div>
+              <div class="bintangMerah">
+                <p>* : wajib diisi</p>
               </div>
             </div>
 
@@ -300,7 +282,7 @@
             <!-- Button Simpan & Kirim, Verifikasi Modal -->
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <button class="btn btn-kembali" onclick="location.href='mPengajuan.php'">
+                <button class="btn btn-kembali" onclick=location.href="mPengajuan.php">
                   <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                   </span>
@@ -312,24 +294,6 @@
               <div class="d-flex gap-2">
                 <button type="button" class="btn btn-secondary" id="btnSimpan">Simpan</button>
                 <button type="button" class="btn-setuju" id="btnOpenModalKonfirmasi">Kirim</button>
-              </div>
-            </div>
-
-            <!-- Modal Berhasil -->
-            <!-- modal bootstap gajadi kepake dah diganti JS, might remove later -->
-            <div class="modal fade" id="modalBerhasil" tabindex="-1" aria-labelledby="modalBerhasilLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-                  <div class="modal-header border-0 justify-content-center">
-                    <h4 class="modal-title fw-bold" id="modalBerhasilLabel" style="font-size: 24px;">Berhasil</h4>
-                  </div>
-                  <div class="modal-body">
-                    <div class="mb-3">
-                      <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Success Icon" style="width: 100px;" />
-                    </div>
-                    <p class="fw-semibold mb-0">Dokumen berhasil diunggah!</p>
-                  </div>
-                </div>
               </div>
             </div>
           </form>
@@ -377,7 +341,7 @@
 
       if (laporan === 0 || pendukung === 0) {
         Swal.fire({
-          title: 'Dokumen Tidak Boleh Kosong!',
+          title: 'Mohon Lengkapi Seluruh Form!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'

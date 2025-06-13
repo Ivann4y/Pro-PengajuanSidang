@@ -294,6 +294,13 @@
         margin-right: 15px;
         font-weight: 550;
       }
+      .label-row i {
+  font-size: 1.5rem;    /* Perbesar icon */
+}
+
+.label-row .fw-bold {
+  font-size: 1.2rem;    /* Perbesar tulisan label */
+}
 
       #detailpenilaian {
         width: 75px; ;
@@ -375,6 +382,8 @@
   flex: 0 0 49%;
   max-width: 49%;
 }
+
+
 #catatan::placeholder {
   color: #888 !important;      
   opacity: 60% !important;       
@@ -385,10 +394,45 @@ input.form-control:active {
   border-color: #ced4da !important;
   box-shadow: none !important;
   color:rgb(0, 0, 0) !important;
+} 
+@media(max-width:360px){
+  .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 53px !important;
+        }
+        .btn-tolak{
+          margin-left:-25px;
+          margin-right:20px;
+        }
+}
+@media (min-width:390px)and(max-width:400px){
+  .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 68px !important;
+        }
+        .btn-tolak{
+          margin-left:-25px;
+          margin-right:20px;
+        }
+}
+@media (min-width:1280px){
+  .section{
+    margin-left:0px !important;
+  }
+  .section-bawah{
+    margin-top:0px !important;
+  }
 }
 
-      @media (max-width: 750px) {
-        
+      @media (max-width: 768px) {
+        .section-bawah{
+          margin-top:0px !important;
+        }
+        .page-nama{
+          margin-left:10px;
+        }
         h2{
           margin-left: 10px;
           margin-top: 50px;
@@ -398,6 +442,7 @@ input.form-control:active {
           flex: 0 0 95.5% ;
           max-width: 95.5% ;
         }
+        
              .NavSide__main-content {
   flex-grow: 1;
   padding: 20px;
@@ -494,16 +539,7 @@ input.form-control:active {
         }
 
        
-  .kakimodal .btnKonfirmasi,
-  .mb5 .btnKonfirmasi {
-    min-width: 90px;
-    max-width: 48%;
-    flex: 1 1 48%;
-  }
-  .kakimodal {
-    gap: 10px !important;
-    justify-content: center !important;
-  }
+ 
 
 
         .penilaian-row {
@@ -532,7 +568,7 @@ input.form-control:active {
         .colon3{
           flex: 1;
           display: flex;
-          margin-left: 69px;
+          margin-left: 69px !important;
         }
 
         .colon4{
@@ -555,8 +591,190 @@ input.form-control:active {
     
            
       }
+      @media (min-width: 412px) and (max-width:540px){
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 69px !important;
+        }
+      }
+
+      @media (max-width: 1024px){
+         .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .section{
+          margin-left:0px !important;
+        }
+        .section-bawah{
+          margin-top:0px !important;
+        }
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 121px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 69px;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+
+      }
+      @media (min-width:820px) and (max-width:870px){
+           .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 121px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 68px!important;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+      }
+      @media (min-width:900px) and (max-width:990px){
+           .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 121px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 49px !important;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+      }
+      @media (max-width:344px) {
+
+            .NavSide__main-content .penilaian-row {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .NavSide__main-content .label-penilaian {
+          display: flex;
+          text-align: center;
+        }
+
+        .NavSide__main-content .colon1 {
+          flex: 1;
+          display: flex;
+          margin-left: 121px;
+        }
+
+        .NavSide__main-content .colon2{
+          flex: 1;
+          display: flex;
+          margin-left: 42px;
+        }
+
+        .NavSide__main-content .colon3{
+          flex: 1;
+          display: flex;
+          margin-left: 39px !important;
+        }
+
+        .NavSide__main-content .colon4{
+          flex: 1;
+          display: flex;
+          margin-left: 88px;
+        }
+
+        .NavSide__main-content .input-penilaian {
+          width: 100%;
+          flex: 3;
+        }
+      }
 
       @media (max-width: 1000px) {
+         .section-bawah{
+          margin-top:0px !important;
+        }
        
         .NavSide__main-content .row.mt-5.justify-content-between {
           flex-direction: row !important;
@@ -572,6 +790,7 @@ input.form-control:active {
         .section2{
           margin-top: 5px !important;
         }
+       
         .col-lg-49{
           display: block;
           flex: 0 0 94.5% ;
@@ -605,7 +824,8 @@ input.form-control:active {
         .NavSide__main-content #cardNilai {
           width: 100% !important;
           margin-left: 0 !important;
-          margin-bottom: 40px;
+          margin-bottom: 0px;
+          margin-top: 30px;
         }
 
         .NavSide__main-content #nilaiMahasiswa {
@@ -662,16 +882,7 @@ input.form-control:active {
         }
 
        
-  .kakimodal .btnKonfirmasi,
-  .mb5 .btnKonfirmasi {
-    min-width: 90px;
-    max-width: 48%;
-    flex: 1 1 48%;
-  }
-  .kakimodal {
-    gap: 10px !important;
-    justify-content: center !important;
-  }
+
 
 
         .NavSide__main-content .penilaian-row {
@@ -700,7 +911,7 @@ input.form-control:active {
         .NavSide__main-content .colon3{
           flex: 1;
           display: flex;
-          margin-left: 69px;
+          margin-left: 0px;
         }
 
         .NavSide__main-content .colon4{
@@ -786,17 +997,64 @@ input.form-control:active {
            <div class="row mb-3">
       <div class="col-12">
         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+        <!--<p class="page-nama">M. Harris Nur S</p>-->
       </div>
     </div>
     <br>
         <div class="row align-items-stretch mb-4">
+          <div class="col-lg-49 mb-3 d-flex">
+  <div class="card flex-fill" id="carddataMahasiswa">
+    <div class="card-body card-soft px-4 py-3">
+      <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
+      <div class="d-flex flex-wrap gap-1 px-4 py-3">
+        
+        <div class="section" style="flex: 1 1 200px; margin-left:30px;  color: #333;">
+         
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-id-card"></i>
+              <span class="fw-bold">NIM</span>
+            </div>
+            <div class="value-row text-secondary fw-bold">0920240033</div>
+          </div>
+          
+          <div class="info-group mb-3 section-bawah" style="margin-top:45px;">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user"></i>
+              <span class="fw-bold">Nama</span>
+            </div>
+            <div class="value-row text-secondary fw-bold">M. Harris Nur S.</div>
+          </div>
+        </div>
+        
+        <div class="section2" style="flex: 1 1 200px; color: #333;">
+         
+          <div class="info-group mb-3">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-book"></i>
+              <span class="fw-bold">Mata Kuliah</span>
+            </div>
+            <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
+          </div>
+         
+          <div class="info-group mb-3 section-bawah" style="margin-top:45px;">
+            <div class="label-row d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-user-tie"></i>
+              <span class="fw-bold">Dosen Pembimbing</span>
+            </div>
+            <div class="value-row text-secondary fw-bold">Timotius Victory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   <div class="col-lg-49 mb-3 d-flex">
     <div class="card flex-fill" id="cardNilai">
       <div class="card-body card-soft px-4 py-3 text-center">
         <h3 class="card-title mb-3 text-black" style="padding:10px ;">Nilai Mahasiswa:</h3>
         <div>
           <input
-            onclick="bukaKonfirmasiModal()"
             type="text"
             class="form-control form-control-lg text-center mx-auto"
             id="nilaiMahasiswa"
@@ -809,60 +1067,16 @@ input.form-control:active {
       </div>
     </div>
   </div>
- <div class="col-lg-49 mb-3 d-flex">
-  <div class="card flex-fill" id="carddataMahasiswa">
-    <div class="card-body card-soft px-4 py-3">
-      <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
-      <div class="d-flex flex-wrap gap-1 px-4 py-3">
-        <!-- Section 1 -->
-        <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
-          <!-- NIM -->
-          <div class="info-group mb-3">
-            <div class="label-row d-flex align-items-center gap-2 mb-1">
-              <i class="fa-solid fa-id-card"></i>
-              <span class="fw-bold">NIM</span>
-            </div>
-            <div class="value-row text-secondary">0920240033</div>
-          </div>
-          <!-- Nama -->
-          <div class="info-group mb-3">
-            <div class="label-row d-flex align-items-center gap-2 mb-1">
-              <i class="fa-solid fa-user"></i>
-              <span class="fw-bold">Nama</span>
-            </div>
-            <div class="value-row text-secondary">M. Harris Nur S.</div>
-          </div>
-        </div>
-        <!-- Section 2 -->
-        <div class="section2" style="flex: 1 1 200px;; margin-top:25px; color: #333;">
-          <!-- Mata Kuliah -->
-          <div class="info-group mb-3">
-            <div class="label-row d-flex align-items-center gap-2 mb-1">
-              <i class="fa-solid fa-book"></i>
-              <span class="fw-bold">Mata Kuliah</span>
-            </div>
-            <div class="value-row text-secondary">Tugas Akhir</div>
-          </div>
-          <!-- Dosen Pembimbing -->
-          <div class="info-group mb-3">
-            <div class="label-row d-flex align-items-center gap-2 mb-1">
-              <i class="fa-solid fa-user-tie"></i>
-              <span class="fw-bold">Dosen Pembimbing</span>
-            </div>
-            <div class="value-row text-secondary">Timotius Victory</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+  
+ 
+    
         <div class="row mt-5">
           <div class="">
             <div class="card" id="carddetailPenilaian">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
             <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
-            <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Pencet ini jika nilai ingin sama dengan nilai Akhir" data-bs-boundary="window" data-bs-fallback-placements="[]">
+            <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tekan ini jika ingin menggunakan nilai sementara" data-bs-boundary="window" data-bs-fallback-placements="[]">
   <i class="bi bi-pencil-fill" style="margin-right: 25px;"></i>
 </a>
             </div>
@@ -985,6 +1199,11 @@ input.form-control:active {
   </div>
 </div>
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+  // Tampilkan modal konfirmasi saat halaman dibuka
+  const modal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
+  modal.show();
+});
 
   document.addEventListener('DOMContentLoaded', function () {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -992,18 +1211,14 @@ input.form-control:active {
       new bootstrap.Tooltip(tooltipTriggerEl);
     });
   });
-  document.addEventListener('DOMContentLoaded', function () {
+ function showTooltipPensil() {
   var tooltipTrigger = document.querySelector('[data-bs-toggle="tooltip"]');
-  var tooltipInstance = new bootstrap.Tooltip(tooltipTrigger);
-
-  // Tampilkan tooltip secara manual
+  var tooltipInstance = bootstrap.Tooltip.getInstance(tooltipTrigger) || new bootstrap.Tooltip(tooltipTrigger);
   tooltipInstance.show();
-
-  // Sembunyikan tooltip setelah 2 detik (2000 ms)
   setTimeout(function () {
     tooltipInstance.hide();
   }, 5000);
-});
+}
 
 
     let menuToggle = document.querySelector(".NavSide__toggle");

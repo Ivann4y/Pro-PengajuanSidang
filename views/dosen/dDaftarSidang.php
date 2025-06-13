@@ -15,7 +15,7 @@ if ($_SESSION['role'] !== 'dosen') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,7 +67,7 @@ if ($_SESSION['role'] !== 'dosen') {
 
         .isiTabel td {
             padding: 12px 15px;
-            font-family: "Poppins";
+            font-family: "Poppins", sans-serif;
             font-weight: 400;
             vertical-align: middle;
         }
@@ -121,6 +121,7 @@ if ($_SESSION['role'] !== 'dosen') {
         .dashboard-header .bodyHeading {
             font-weight: bold;
             font-size: 40px;
+            font-family: "Poppins", sans-serif;
             margin: 0;
             color: #1a1a1a;
         }
@@ -133,6 +134,28 @@ if ($_SESSION['role'] !== 'dosen') {
         .modal-footer .btn-success {
             background-color: #4FD382;
             border-color: #4FD382;
+        }
+
+         .search-input-group {
+        background-color: #F3F4F6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        width: 250px; /* Standardize width as seen in aDaftarSidang.php */
+        margin-top: 0.19vh -1px;
+        margin-right : 1vh;
+    }
+
+        .search-input-group input.form-control {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            padding-left: 1rem; /* Adjust padding as search icon is inside span */
+        }
+
+        .search-input-group .input-group-text {
+            background-color: transparent;
+            border: none;
+            padding-right: 0; /* No padding on right as input has left padding */
         }
     </style>
 </head>
@@ -187,7 +210,9 @@ if ($_SESSION['role'] !== 'dosen') {
                 <div class="header-icons d-none d-md-flex">
                     <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
-                         <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                         <a href="mProfil.php" title="Profil">
+                            <i class="bi bi-person-fill fs-5" style="color: white"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -204,12 +229,16 @@ if ($_SESSION['role'] !== 'dosen') {
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
                                         Semua
                                     </button>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu rounded shadow">
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semua')">Semua</a></li>
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('TA')">Sidang TA</a></li>
                                         <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semester')">Sidang Semester</a></li>
                                     </ul>
                                 </div>
+                            </div>
+                            <div class="search-input-group ms-auto d-flex align-items-center">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari">
                             </div>
                         </div>
                     </div><br><br>
@@ -326,30 +355,44 @@ if ($_SESSION['role'] !== 'dosen') {
                     </div>
                 </div>
             </div>
-
             <script>
+                // js buat search
+                  document.addEventListener("DOMContentLoaded", function () {
+                    const searchInput = document.querySelector('.search-input-group input');
+                    const tbodyTA = document.getElementById("dPengajuanTA");
+                    const tbodySem = document.getElementById("dPengajuanSem");
+
+                    searchInput.addEventListener("keyup", function () {
+                        const query = searchInput.value.toLowerCase();
+
+                        filterTableRows(tbodyTA, query);
+                        filterTableRows(tbodySem, query);
+                    });
+
+                    function filterTableRows(tbody, query) {
+                        const rows = tbody.querySelectorAll("tr");
+
+                        rows.forEach(row => {
+                            const namaCell = row.children[2]; // Kolom Nama
+                            const namaText = namaCell.textContent.toLowerCase();
+
+                            if (namaText.includes(query)) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    }
+                });
                 let menuToggle = document.querySelector(".NavSide__toggle");
                 let sidebar = document.getElementById("main-sidebar");
 
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
+                    menuToggle.onclick = function() {
+                        menuToggle.classList.toggle("NavSide__toggle--active");
+                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                    };
 
-                // Sidebar Active Item Logic
-                // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-                // for (let i = 0; i < listItems.length; i++) {
-                //     listItems[i].onclick = function() {
-                //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                //             for (let j = 0; j < listItems.length; j++) {
-                //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-                //             }
-                //             this.classList.add("NavSide__sidebar-item--active");
-                //         }
-                //     };
-                // }
-                let isTA = true;
-
+                // JS buat dd
                 function switchDdaftarSidang(mode) {
                     const taTable = document.getElementById('dPengajuanTA');
                     const semTable = document.getElementById('dPengajuanSem');

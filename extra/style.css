@@ -440,14 +440,14 @@ body {
   background-color: #fd7d7d;
   color: white;
   border: none;
-  border-radius: 20px;
+  
   padding: 0 25px;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease, transform 0.2s ease;
-  height: 45px;
+ 
 }
 
 .btn-tolak:hover {
@@ -461,9 +461,5 @@ body {
     gap: 1rem;
   }
 
-  .btn-tolak,
-  .btn-setuju,
-  .btn-kembali {
-    width: 100%;
-  }
+ 
 }
