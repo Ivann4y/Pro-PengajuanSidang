@@ -17,6 +17,8 @@ body {
   padding-top: 2rem;
 }
 
+
+
 .sidebar h4 {
   text-align: center;
   font-weight: bold;
@@ -114,7 +116,8 @@ body {
    font-weight:bold;
 }
 .NavSide__main-content{
-  margin-left: 290px !important;
+  margin-left: 300px !important;
+  margin-right: 20px !important;
 }
 .card-comment:hover {
 
