@@ -116,6 +116,66 @@
         tr.jadiBiru:hover .detail-btn i {
             color: white !important;
         }
+
+        /* Pagination styles */
+        .pagination-container {
+            margin-top: 2rem;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #4B68FB;
+            border-color: #4B68FB;
+            color: white;
+            z-index: 2;
+        }
+
+        .pagination .page-link {
+            color: #4B68FB;
+        }
+        .pagination .page-link:hover {
+            color: #2c45c9;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 0;
+                padding: 0 10px;
+            }
+
+            table {
+                min-width: 800px;
+                width: 100%;
+            }
+
+            .pagination-container {
+                overflow-x: hidden;
+                margin-top: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            table {
+                min-width: 700px;
+            }
+
+            .pagination .page-item .page-link {
+                padding: 0.35rem 0.65rem;
+                min-width: 32px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .pagination .page-item:not(:first-child):not(:last-child):not(.active) {
+                display: none;
+            }
+        }
         /* Original mSidang table structural styles - END */
     </style>
 </head>
@@ -171,7 +231,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-md-6 d-flex align-items-center"> 
@@ -197,44 +256,14 @@
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="mSidangTA">
-                            <tr class="isiTabel jadiBiru">
-                                <td>1</td>
-                                <td>Sistem Pengajuan Sidang</td>
-                                <td>Tugas Akhir</td>
-                                <td>Rida Indah Fariani</td>
-                                <td style="text-align: center;">
-                                    <button class="detail-btn"  onclick="location.href='mdetailsidangta.php';">
-                                        <i class="fa-solid fa-file-signature"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tbody id="mSidangSem" style="display: none;">
-                            <tr class="isiTabel jadiBiru">
-                                <td>1</td>
-                                <td>Implementasi Sistem Sidang</td>
-                                <td>Pemrograman 2</td>
-                                <td>Timotius Victory</td>
-                                <td style="text-align: center;">
-                                    <button class="detail-btn"  onclick="location.href='mdetailsidang.php';">
-                                        <i class="fa-solid fa-file-signature"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr class="isiTabel jadiBiru">
-                                <td>2</td>
-                                <td>Deployment Sistem Sidang</td>
-                                <td>Sistem Operasi</td>
-                                <td>Suhendra</td>
-                                <td style="text-align: center;">
-                                    <button class="detail-btn"  onclick="location.href='mdetailsidang.php';">
-                                        <i class="fa-solid fa-file-signature"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
+                        <tbody id="mSidangTA"></tbody>
+                        <tbody id="mSidangSem" style="display: none;"></tbody>
                     </table>
+                    <div class="pagination-container">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center" id="pagination-controls"></ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </main>
@@ -275,18 +304,166 @@
             };
         }
 
-        // Sidebar Active Item Logic 
-        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        // for (let i = 0; i < listItems.length; i++) {
-        //     listItems[i].onclick = function(event) {
-        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-        //             for (let j = 0; j < listItems.length; j++) {
-        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-        //             }
-        //             this.classList.add("NavSide__sidebar-item--active");
-        //         }
-        //     };
-        // }
+        // Sample data with entries for each type
+        const dataTA = [
+            { judul: "Sistem Pengajuan Sidang", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+            { judul: "Pengembangan Aplikasi Mobile Learning", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+            { judul: "Sistem Manajemen Perpustakaan Digital", matkul: "Tugas Akhir", dosen: "Suhendra" },
+            { judul: "Aplikasi IoT untuk Smart Home", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+            { judul: "Sistem Informasi Akademik Terintegrasi", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+            { judul: "Platform E-Learning Adaptif", matkul: "Tugas Akhir", dosen: "Suhendra" },
+            { judul: "Sistem Keamanan Berbasis AI", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+            { judul: "Aplikasi Manajemen Proyek Agile", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+            { judul: "Sistem Monitoring Kesehatan IoT", matkul: "Tugas Akhir", dosen: "Suhendra" },
+            { judul: "Platform Social Learning", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+            { judul: "Sistem Analisis Data Pendidikan", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+            { judul: "Aplikasi AR untuk Pembelajaran", matkul: "Tugas Akhir", dosen: "Suhendra" },
+            { judul: "Sistem Manajemen Aset Digital", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+            { judul: "Platform Kolaborasi Online", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+            { judul: "Sistem Otomasi Smart Campus", matkul: "Tugas Akhir", dosen: "Suhendra" }
+        ];
+
+        const dataSemester = [
+            { judul: "Implementasi Database NoSQL", matkul: "Basis Data Lanjut", dosen: "Timotius Victory" },
+            { judul: "Pengembangan Web Service", matkul: "Pemrograman Web", dosen: "Suhendra" },
+            { judul: "Analisis Algoritma", matkul: "Struktur Data", dosen: "Rida Indah Fariani" },
+            { judul: "Implementasi Machine Learning", matkul: "Kecerdasan Buatan", dosen: "Timotius Victory" },
+            { judul: "Arsitektur Microservices", matkul: "Sistem Terdistribusi", dosen: "Suhendra" },
+            { judul: "Keamanan Jaringan", matkul: "Jaringan Komputer", dosen: "Rida Indah Fariani" },
+            { judul: "Cloud Computing", matkul: "Komputasi Awan", dosen: "Timotius Victory" },
+            { judul: "Mobile App Development", matkul: "Pemrograman Mobile", dosen: "Suhendra" },
+            { judul: "Data Mining", matkul: "Analisis Data", dosen: "Rida Indah Fariani" },
+            { judul: "UI/UX Design", matkul: "Interaksi Manusia Komputer", dosen: "Timotius Victory" },
+            { judul: "Software Testing", matkul: "Pengujian Perangkat Lunak", dosen: "Suhendra" },
+            { judul: "Computer Vision", matkul: "Pengolahan Citra", dosen: "Rida Indah Fariani" },
+            { judul: "Network Programming", matkul: "Pemrograman Jaringan", dosen: "Timotius Victory" },
+            { judul: "Embedded Systems", matkul: "Sistem Tertanam", dosen: "Suhendra" },
+            { judul: "Big Data Analytics", matkul: "Analisis Big Data", dosen: "Rida Indah Fariani" }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentPage = 1;
+            const rowsPerPage = 10;
+            let currentData = dataTA;
+
+            function renderTable(data, tbody) {
+                tbody.innerHTML = '';
+                const startIndex = (currentPage - 1) * rowsPerPage;
+                const endIndex = startIndex + rowsPerPage;
+                const paginatedData = data.slice(startIndex, endIndex);
+
+                paginatedData.forEach((item, index) => {
+                    const globalIndex = startIndex + index;
+                    const detailPage = tbody.id === 'mSidangTA' ? 'mdetailsidangta.php' : 'mdetailsidang.php';
+                    tbody.innerHTML += `
+                        <tr class="isiTabel jadiBiru">
+                            <td>${globalIndex + 1}</td>
+                            <td>${item.judul}</td>
+                            <td>${item.matkul}</td>
+                            <td>${item.dosen}</td>
+                            <td style="text-align: center;">
+                                <button class="detail-btn" onclick="location.href='${detailPage}';">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            function displayPage(page) {
+                currentPage = page;
+                const activeTable = document.getElementById('mSidangTA').style.display === 'none' ? 'mSidangSem' : 'mSidangTA';
+                renderTable(currentData, document.getElementById(activeTable));
+                updatePaginationButtons();
+            }
+
+            function setupPagination() {
+                const paginationControls = document.getElementById('pagination-controls');
+                paginationControls.innerHTML = '';
+                const pageCount = Math.ceil(currentData.length / rowsPerPage);
+                if (pageCount <= 1) return;
+
+                const prevButton = document.createElement('li');
+                prevButton.className = 'page-item';
+                prevButton.innerHTML = `<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>`;
+                prevButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (currentPage > 1) displayPage(currentPage - 1);
+                });
+                paginationControls.appendChild(prevButton);
+
+                for (let i = 1; i <= pageCount; i++) {
+                    const pageButton = document.createElement('li');
+                    pageButton.className = 'page-item';
+                    pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                    pageButton.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        displayPage(i);
+                    });
+                    paginationControls.appendChild(pageButton);
+                }
+
+                const nextButton = document.createElement('li');
+                nextButton.className = 'page-item';
+                nextButton.innerHTML = `<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>`;
+                nextButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (currentPage < pageCount) displayPage(currentPage + 1);
+                });
+                paginationControls.appendChild(nextButton);
+
+                updatePaginationButtons();
+            }
+
+            function updatePaginationButtons() {
+                const pageCount = Math.ceil(currentData.length / rowsPerPage);
+                const pageItems = document.querySelectorAll('#pagination-controls .page-item');
+                if (pageItems.length === 0) return;
+
+                pageItems.forEach((item, index) => {
+                    item.classList.remove('active', 'disabled');
+                    if (index === 0) {
+                        if (currentPage === 1) item.classList.add('disabled');
+                    } else if (index === pageItems.length - 1) {
+                        if (currentPage === pageCount) item.classList.add('disabled');
+                    } else {
+                        if (index === currentPage) {
+                            item.classList.add('active');
+                        }
+                    }
+                });
+            }
+
+            window.switchMSidang = function() {
+                const ta = document.getElementById("mSidangTA");
+                const sem = document.getElementById("mSidangSem");
+                const btn = document.getElementById("ddMSidang");
+                const menu = document.getElementById("ddMSidangMenu");
+
+                if (ta.style.display !== "none") {
+                    ta.style.display = "none";
+                    sem.style.display = "";
+                    btn.innerText = "Sidang Semester";
+                    menu.innerText = "Sidang TA";
+                    currentData = dataSemester;
+                } else {
+                    ta.style.display = "";
+                    sem.style.display = "none";
+                    btn.innerText = "Sidang TA";
+                    menu.innerText = "Sidang Semester";
+                    currentData = dataTA;
+                }
+                currentPage = 1;
+                setupPagination();
+                displayPage(1);
+            };
+
+            // Initial setup
+            currentData = dataTA;
+            setupPagination();
+            displayPage(1);
+        });
     </script>
     <script src="../../assets/js/main.js"></script>
 </body>
