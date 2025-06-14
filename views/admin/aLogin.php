@@ -1,9 +1,9 @@
 <?php
-session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../../index.php');
-    exit();
-}
+// session_start();
+// if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+//     header('Location: ../../index.php');
+//     exit();
+// }
 
 $role = "admin";
 ?>
@@ -214,7 +214,7 @@ $role = "admin";
             ?>
             <div class="col-md-7 d-flex justify-content-center align-items-center mt-5">
 
-                <form action="../../auth.php" method="POST" novalidate>
+                <form action="../../Coba_auth.php" method="POST" novalidate>
                     <div class="text-center pt-5 mb-4">
                         <h2><strong>Masuk Akun</strong></h2>
                         <h2><strong>Admin</strong></h2>
