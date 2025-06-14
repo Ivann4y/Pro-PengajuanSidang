@@ -732,6 +732,16 @@ button.btn-kembali:hover .icon-circle i.fa-arrow-left {
   padding: 0.3rem 0.25rem;
 }
 
+.calendar-card .calendar-day.has-sidang {
+  background-color: rgba(255, 255, 255, 0.25);
+  font-weight: 600;
+}
+
+.calendar-card .calendar-day.has-sidang:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
 .calendar-card .calendar-day {
   /* No changes needed here, this styling is for the bubble inside the cell */
   display: inline-flex;
