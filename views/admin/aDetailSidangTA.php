@@ -1,6 +1,6 @@
-<!-- Zia Zahran Hadi-->
-
-
+<?php
+    include "../../koneksi.php"
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -313,7 +313,7 @@
         .info-card:hover .section i{
             color: white;
         }
-
+    
         .btn-ubah {
             background-color: #4B68FB;
             color: white;
@@ -399,7 +399,7 @@
             font-size: 1.25rem; 
             margin-bottom: 20px;
             text-align: center;
-            color: rgb(51, 47, 47); /* Warna teks disesuaikan agar terlihat */
+            color: rgb(51, 47, 47);
         }
 
         .modal-body .form-group {
@@ -447,73 +447,67 @@
             background-color: #f3f4f6;
             cursor: not-allowed;
         }
-        .modal-body .bobot-input-new { 
-            width: 30px; 
-            height: auto;
-            text-align: center;
-            border: none;
-            font-size: 16px;
-            color: #2d2d52;
-            background-color: transparent;
-            margin: 0; 
-            pointer-events: none;
+
+        .input-with-percent {
+            position: relative;
+            width: 120px; 
+            flex-shrink: 0;
         }
-        .modal-body .bobot-input-new::-webkit-outer-spin-button,
-        .modal-body .bobot-input-new::-webkit-inner-spin-button {
+
+        .form-control-bobot {
+            width: 100%;
+            height: 35px;
+            padding: 0 15px;
+            padding-right: 30px; /* Beri ruang di kanan untuk simbol % */
+            text-align: right;   /* Agar angka menempel di kanan dekat simbol % */
+            border: 1px solid #D1D5DB;
+            border-radius: 26px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .form-control-bobot::-webkit-outer-spin-button,
+        .form-control-bobot::-webkit-inner-spin-button {
             -webkit-appearance: none;
-            margin: 0; 
+            margin: 0;
         }
+        .form-control-bobot {
+            -moz-appearance: textfield;
+        }
+
+        .percent-sign {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            pointer-events: none; /* Agar bisa diklik tembus */
+        }
+
         .modal-body .input-with-buttons {
             display: flex;
-            align-items: center;
-            gap: 10px; 
+            align-items: center; /* Diubah ke center agar sejajar dengan textbox bobot */
+            gap: 15px; 
             width: 100%; 
         }
         .modal-body .input-with-buttons input[type="text"] { 
             flex-grow: 1; 
         }
-        .modal-body .bobot-nilai-input-group {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background-color: #F9FAFB;
-            border-radius: 35px;
-            padding: 4px 10px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-            height: 35px;
-            flex-shrink: 0;
-        }
-        .modal-body .btn-bobot-new { 
-            width: 28px; 
-            height: 28px; 
-            background-color: transparent; 
-            border: none;
-            color: #2d2d52;
-            font-size: 16px; 
-            font-weight: bold;
-            cursor: pointer; 
-            display: flex; 
-            align-items: center;
-            justify-content: center; 
-            padding: 0; 
-            border-radius: 50%;
-            transition: background-color 0.2s ease;
-            flex-shrink: 0;
-        }
-        .modal-body .btn-bobot-new:hover {
-            background-color:rgba(0, 0, 0, 0.05); 
-        }
+
         .modal-body .time-input-range { 
+            display: flex; /* Ditambahkan agar gap berfungsi */
             gap: 10px; 
             width: 100%; 
         }
+
         .modal-body .form-actions {
             display: flex; 
             justify-content: flex-end; 
             margin-top: 25px; 
             padding-left: calc(160px + 15px); 
         }
+
         .modal-body .form-actions .btn-batal { 
             background-color: #ff5f5f; 
             color:rgb(255, 255, 255); 
@@ -555,7 +549,7 @@
             padding-left: 175px;
         }
         .modal-body .form-toggle-buttons button {
-            width: auto;
+            width: 175.5px;
             height: 35px;
             padding: 8px 15px;
             font-size: 14px;
@@ -585,6 +579,9 @@
             margin-left: 30px;
         }
         
+       
+        
+
 @media (max-width: 768px) {
 
     /* 1. Ubah layout utama form group menjadi vertikal (atas-bawah) */
@@ -626,13 +623,25 @@
         width: 100%;
         margin-right: 0;
     }
+
+    .info-card {
+        padding-right: 80px;
+        box-sizing: border-box;
+    }
+
+     .modal-body .form-toggle-buttons button {
+        font-size: 12px;
+        padding: 6px 10px;
+        gap: 5px;
+        
+    }
 }
         
        
 
         
 
-    </style>
+</style>
 </head>
 <body>
     <div id="NavSide">
@@ -722,15 +731,29 @@
                             <div class="form-group" id="penguji-form-1">
                                 <label for="modal_penguji1">Penguji 1</label>
                                 <div class="input-with-buttons">
-                                    <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
-                                    <div class="bobot-nilai-input-group">
-                                        <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji1')">-</button>
-                                        <input type="number" id="modal_qty_penguji1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji 1" />
-                                        <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji1')">+</button>
-                                    </div>
+                                   
+                            
+                                <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+                                    
+                                   
+                                <div class="input-with-percent">
+    
+                                    <input 
+                                        type="number" 
+                                        id="modal_qty_penguji1" 
+                                        name="penguji_bobot[]" 
+                                        class="form-control-bobot" 
+                                        min="0"
+                                        placeholder="Bobot" 
+                                    />
+                                    <span class="percent-sign">%</span>
+
                                 </div>
+                              </div>
+
                             </div>
-                        </div> <div class="form-toggle-buttons">
+                        </div> 
+                        <div class="form-toggle-buttons">
                             <button type="button" class="btn-tambah-penguji" onclick="addPenguji()">
                                 <i class="fa-solid fa-plus"></i> Tambah Penguji
                             </button>
@@ -759,7 +782,7 @@
                         <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
                         <div class="form-actions"> 
                             <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
-                            <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
+                            <button type="submit" class="btn btn-submit">Ubah Penjadwalan</button>
                         </div>
 
                     </form> </div> </div> </div> </div> </div> 
@@ -794,40 +817,50 @@
       } 
 
 
-      let pengujiCount = 1;
+        let pengujiCount = 1;
 
-      function addPenguji() {
-        pengujiCount++;
-        const wrapper = document.getElementById('penguji-wrapper');
+        function addPenguji() {
+            pengujiCount++;
+            const wrapper = document.getElementById('penguji-wrapper');
 
-        const div = document.createElement('div');
-        div.className = 'form-group';
-        div.id = `penguji-form-${pengujiCount}`;
-        div.innerHTML = `
-          <label for="modal_penguji${pengujiCount}">Penguji ${pengujiCount}</label>
-          <div class="input-with-buttons">
-            <input type="text" id="modal_penguji${pengujiCount}" name="penguji_nama[]" placeholder="Nama Penguji ${pengujiCount}" />
-            <div class="bobot-nilai-input-group">
-              <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji${pengujiCount}')">-</button>
-              <input type="number" id="modal_qty_penguji${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji ${pengujiCount}" />
-              <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji${pengujiCount}')">+</button>
-            </div>
-          </div>
-        `;
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.id = `penguji-form-${pengujiCount}`;
 
-        wrapper.appendChild(div);
-      }
+            // Perhatikan perubahan di dalam `innerHTML` ini
+            div.innerHTML = `
+                <label for="modal_penguji${pengujiCount}">Penguji ${pengujiCount}</label>
+                <div class="input-with-buttons">
+                    <input type="text" id="modal_penguji${pengujiCount}" name="penguji_nama[]" placeholder="Nama Penguji ${pengujiCount}" />
+                    
+                    <div class="input-with-percent">
+                        <input 
+                            type="number" 
+                            id="modal_qty_penguji${pengujiCount}" 
+                            name="penguji_bobot[]" 
+                            class="form-control-bobot"  
+                            min="0"
+                            placeholder="Bobot"
+                        />
+                        <span class="percent-sign">%</span>
+                    </div>
+                    </div>
+            `;
 
-      function removePenguji() {
-        if (pengujiCount > 1) {
-          const wrapper = document.getElementById('penguji-wrapper');
-          const lastForm = document.getElementById(`penguji-form-${pengujiCount}`);
-          if (lastForm) {
-            wrapper.removeChild(lastForm);
-            pengujiCount--;
-          }
+            wrapper.appendChild(div);
         }
-      }
+
+// Pastikan Anda juga memiliki fungsi removePenguji
+        function removePenguji() {
+            if (pengujiCount > 1) {
+                const wrapper = document.getElementById('penguji-wrapper');
+                const lastPengujiForm = document.getElementById(`penguji-form-${pengujiCount}`);
+                if (lastPengujiForm) {
+                    wrapper.removeChild(lastPengujiForm);
+                    pengujiCount--;
+                }
+            }
+        }
 
       function incrementValue(inputId) {
         const inputElement = document.getElementById(inputId);

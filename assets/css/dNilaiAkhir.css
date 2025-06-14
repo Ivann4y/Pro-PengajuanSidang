@@ -1,0 +1,684 @@
+ #NavSide {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .NavSide__sidebar {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            width: 280px;
+            border-radius: 1px;
+            box-sizing: border-box;
+            border-left: 5px solid #4B68FB;
+            background: #4B68FB;
+            overflow-x: hidden;
+            overflow-y: auto;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
+        }
+
+        .NavSide__sidebar-brand {
+            padding: 10% 5% 50% 5%;
+            text-align: center;
+        }
+
+        .NavSide__sidebar-brand img {
+            width: 90%;
+            max-width: 180px;
+            height: auto;
+            display: inline-block;
+            filter: brightness(0) invert(1);
+        }
+
+        .NavSide__sidebar-nav {
+            width: 100%;
+            padding-left: 0;
+            padding-top: 0;
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .NavSide__sidebar-item {
+            position: relative;
+            display: block;
+            width: 100%;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            margin-bottom: 15px;
+        }
+
+        .NavSide__sidebar-item a {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-decoration: none;
+            color: rgb(252, 252, 252);
+            padding: 5% 2%;
+            height: 60px;
+            box-sizing: border-box;
+        }
+
+        .NavSide__sidebar-title {
+            white-space: normal;
+            text-align: center;
+            line-height: 1.5;
+            color: white;
+        }
+
+        .NavSide__sidebar-item.NavSide__sidebar-item--active {
+            background: #ffffff;
+        }
+
+        .NavSide__sidebar-item.NavSide__sidebar-item--active .NavSide__sidebar-title {
+  color: #4B68FB !important;
+}
+
+        .NavSide__sidebar-item b:nth-child(1) {
+            position: absolute;
+            top: -20px;
+            height: 20px;
+            width: 100%;
+            background: rgb(255, 255, 255);
+            display: none;
+        }
+
+        .NavSide__sidebar-item b:nth-child(1)::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-bottom-right-radius: 20px;
+            background: #4B68FB;
+            display: block;
+        }
+
+        .NavSide__sidebar-item b:nth-child(2) {
+            position: absolute;
+            bottom: -20px;
+            height: 20px;
+            width: 100%;
+            background: rgb(255, 255, 255);
+            display: none;
+        }
+
+        .NavSide__sidebar-item b:nth-child(2)::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-top-right-radius: 20px;
+            background: #4B68FB;
+            display: block;
+        }
+
+        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+            display: block;
+        }
+
+
+        .NavSide__main-content h2 {
+            margin-bottom: 1.2cm;
+            font-weight: 700;
+        }
+
+        .NavSide__main-content h3 {
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 0.2cm;
+        }
+      
+
+
+.info-group {
+  font-size: 1rem;
+}
+.value-row {
+  font-size: 1rem;
+}
+      body,
+      .card,
+      .form-control,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Poppins", sans-serif !important;
+        color: #464869;
+      }
+
+      .btn-kembali {
+        background-color: #4B68FB;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0 25px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 45px;
+      }
+
+      .btn-kembali:hover {
+        background-color: white;
+        transform: translateY(-2px);
+        color:#4B68FB;
+      }
+
+      .btn-kembali .icon-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background-color: white;
+        border-radius: 50%;
+        margin-right: 10px;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-kembali:hover .icon-circle {
+        background-color: #4B68FB;
+      }
+
+      .btn-kembali .icon-circle i {
+        color: #4B68FB;
+      }
+
+      .btn-kembali:hover .icon-circle i {
+        color: white;
+      }
+
+      #cardNilai {
+        background-color: rgb(235, 238, 245);
+        border-radius: 50px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin-left: 0;
+      }
+      #carddataMahasiswa{
+        background-color: rgb(235, 238, 245);
+        border-radius: 50px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+      }
+
+      #nilaiMahasiswa {
+        font-size: 9.5rem !important;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 30px;
+        width: 100%;
+        margin-left: 23px;
+        height: 40px;
+        background-color: rgb(235, 238, 245) !important;
+        border-color: rgb(235, 238, 245) !important;
+      }
+
+      
+
+      #cardPenilaian {
+        background-color: rgb(235, 238, 245);
+        border-radius: 50px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin-left: 50px;
+      }
+
+      
+      .label-row i {
+  font-size: 1.5rem;    /* Perbesar icon */
+}
+
+.label-row .fw-bold {
+  font-size: 1.2rem;    /* Perbesar tulisan label */
+}
+
+    
+
+      #carddetailPenilaian {
+        width: 100%;
+        margin-left: 0;
+        background-color: rgb(235, 238, 245);
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      #cardcatatan {
+        background-color: rgb(235, 238, 245);
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        margin-left: 0;
+      }
+
+      #catatan {
+        width: 100%;
+        height: 150px;
+        border-radius: 30px;
+        font-size: 1rem;
+        margin-top: 20px;
+      }
+
+      .icon-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        color: #4B68FB;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 16px;
+      }
+      #iyamodal{
+        margin-top: 20px;
+        background-color: #4FD382;
+      }
+      #tidakmodal{
+        margin-top: 20px;
+        background-color: #FD7D7D;
+      }
+
+      .modal-content {
+        border-radius: 30px !important;
+      }
+
+      .btn-kirim {
+        background-color: #4B68FB;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0 25px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 45px;
+      }
+
+      .btn-kirim:hover {
+        background-color: #3a56e8;
+        transform: translateY(-2px);
+      }
+   
+      .col-lg-49 {
+  flex: 0 0 49%;
+  max-width: 49%;
+}
+
+
+#catatan::placeholder {
+  color: #888 !important;      
+  opacity: 60% !important;       
+}
+      input.form-control:focus,
+input.form-control:active {
+  background-color: #fff !important;
+  border-color: #ced4da !important;
+  box-shadow: none !important;
+  color:rgb(0, 0, 0) !important;
+} 
+/* ======== CSS DIPERBARUI UNTUK RESPONSIVITAS ======== */
+
+/* --- 1. Style Global & Variabel --- */
+:root {
+  --brand-color: #4B68FB;
+  --sidebar-width: 280px;
+  --background-light: #f9fafb;
+  --card-background: rgb(235, 238, 245);
+  --text-dark: #464869;
+}
+
+body {
+  font-family: "Poppins", sans-serif !important;
+  color: var(--text-dark);
+  background-color: var(--background-light);
+}
+
+h2, h3, h4, h5, h6 {
+  color: var(--text-dark) !important;
+}
+
+h2 {
+  font-weight: 700;
+}
+
+h3 {
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+/* --- 2. Sidebar Navigasi (Sebagian besar tidak berubah) --- */
+#NavSide {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.NavSide__sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--brand-color);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s ease-in-out;
+  overflow-y: auto;
+}
+
+.NavSide__sidebar-brand {
+  padding: 10% 5% 50% 5%;
+  text-align: center;
+}
+.NavSide__sidebar-brand img {
+  width: 90%;
+  max-width: 180px;
+  filter: brightness(0) invert(1);
+}
+.NavSide__sidebar-nav {
+  list-style: none;
+  padding: 0;
+  flex-grow: 1;
+}
+.NavSide__sidebar-item {
+  position: relative;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-bottom: 15px;
+}
+.NavSide__sidebar-item a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  padding: 15px 25px;
+  height: 60px;
+}
+.NavSide__sidebar-item .NavSide__sidebar-title {
+  color: white;
+}
+.NavSide__sidebar-item.NavSide__sidebar-item--active {
+  background: white;
+}
+.NavSide__sidebar-item.NavSide__sidebar-item--active .NavSide__sidebar-title {
+  color: var(--brand-color) !important;
+}
+.NavSide__sidebar-item b { display: none; } /* Disederhanakan, ini untuk efek lengkung */
+.NavSide__sidebar-item.NavSide__sidebar-item--active b { display: block; }
+
+/* --- 3. Area Konten Utama --- */
+.NavSide__main-content {
+  flex-grow: 1;
+  padding: 2rem; /* Gunakan unit yang konsisten */
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.4s ease-in-out;
+}
+
+/* --- 4. Style Card dan Form --- */
+.card {
+  border-radius: 30px !important;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: var(--card-background) !important;
+}
+#cardNilai #nilaiMahasiswa {
+  font-size: clamp(5rem, 15vw, 9.5rem); /* Ukuran font yang fluid */
+  font-weight: bold;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  cursor: default;
+  padding: 0;
+  height: auto;
+}
+
+/* --- 5. KEAJAIBANNYA: Grid untuk Detail Penilaian --- */
+
+
+/* --- 6. Tombol & Elemen Lainnya --- */
+.btn-kembali, .btn-setujui {
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  text-decoration: none;
+}
+.btn-kembali {
+  background-color: var(--brand-color);
+  color: white;
+}
+.btn-kembali:hover {
+  background-color: white;
+  color: var(--brand-color);
+  transform: translateY(-2px);
+}
+.btn-kembali .icon-circle {
+  background-color: white;
+  color: var(--brand-color);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.btn-kembali:hover .icon-circle {
+  background-color: var(--brand-color);
+  color: white;
+}
+
+#catatan {
+  width: 100%;
+  height: 150px;
+  border-radius: 20px;
+  border: 1px solid #ced4da;
+  padding: 15px;
+}
+#catatan::placeholder {
+  color: #888;
+  opacity: 1;
+}
+
+/* ===== CSS BARU UNTUK DETAIL PENILAIAN DENGAN SWITCHER ===== */
+
+/* --- 1. Pengaturan untuk Tampilan Desktop (Horizontal) --- */
+.penilaian-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.penilaian-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.penilaian-item label {
+    font-weight: 500;
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+.penilaian-item input.form-control {
+    width: 80px;
+    height: 45px;
+    border-radius: 10px;
+}
+
+/* --- 2. Pengaturan untuk Tampilan Tablet/Mobile (Vertikal) --- */
+.penilaian-grid-vertical {
+    display: grid;
+    /* Tiga kolom: [Label] [:] [Input] */
+    grid-template-columns: auto auto 1fr;
+    gap: 15px 10px; /* Jarak baris 15px, jarak kolom 10px */
+    align-items: center;
+}
+.penilaian-grid-vertical label,
+.penilaian-grid-vertical span {
+    font-weight: 500;
+    color: #555;
+    margin: 0;
+}
+.penilaian-grid-vertical label {
+    justify-self: start; /* Rata kiri */
+}
+.penilaian-grid-vertical input.form-control {
+    width: 100px; /* Lebar input box */
+    height: 45px;
+    border-radius: 10px;
+    justify-self: end; /* Paksa input box untuk rata kanan */
+}
+
+/* --- 3. Logika Switcher (Paling Penting!) --- */
+
+/* Secara default (layar > 1416px), sembunyikan tampilan vertikal */
+.penilaian-grid-vertical {
+    display: none;
+}
+
+/* Saat layar 1416px atau lebih kecil, lakukan penukaran */
+@media(max-width: 599px){
+  .section{
+    margin-left: 0px !important;
+  }
+  .section-bawah{
+    margin-top: 0px !important;
+  }
+}
+@media (max-width: 1474px) and (min-width: 1416px){
+.section{
+  margin-left:0px !important;
+}
+}
+@media (max-width: 1416px) {
+    /* Sembunyikan tampilan horizontal */
+    .penilaian-container {
+        display: none;
+    }
+    /* Tampilkan tampilan vertikal */
+    .penilaian-grid-vertical {
+        display: grid;
+    }
+       .col-lg-49 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+@media (max-width: 992px) {
+  /* Sembunyikan sidebar ke luar layar */
+  .NavSide__sidebar {
+    transform: translateX(-100%);
+  }
+
+  /* Saat sidebar dibuka (jika Anda menambahkan fungsi toggle dengan JS) */
+  .NavSide__sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  /* (PENTING) Hapus margin kiri dari konten utama agar mengambil lebar penuh */
+  .NavSide__main-content {
+    margin-left: 0;
+    padding: 1rem; /* Sesuaikan padding untuk mobile */
+  }
+
+  /* (PENTING) Buat card utama menjadi tumpukan vertikal */
+  .col-lg-49 {
+     flex: 0 0 100%;
+     max-width: 100%;
+  }
+
+  /* Pusatkan tombol aksi */
+ /* GANTI BLOK DI ATAS DENGAN YANG INI */
+.row.mt-5.justify-content-between {
+    flex-direction: row; /* Ubah menjadi baris */
+    justify-content: space-between; /* Dorong ke kiri dan kanan */
+    align-items: center; /* Jaga agar tetap sejajar secara vertikal */
+}
+
+.row.mt-5.justify-content-between .col-auto {
+    /* Kita tidak lagi perlu lebar 100% untuk tombolnya */
+    width: auto; 
+}
+.btn-kembali, .btn-setujui {
+    /* Atur lebar tombol agar tidak terlalu besar di mobile */
+    min-width: 120px; 
+    padding: 0 20px;
+}
+}
+@media (max-width: 365px) {
+  .row.mt-5.justify-content-between {
+    flex-direction: column; /* Kembalikan menjadi tumpukan vertikal */
+    gap: 1rem; /* Beri jarak antar tombol */
+  }
+
+  .row.mt-5.justify-content-between .col-auto {
+    width: 100%; /* Buat pembungkus tombol selebar kontainer */
+  }
+  
+  .btn-kembali, .btn-setujui {
+    width: 100%; /* Buat tombol memenuhi lebar pembungkusnya */
+  }
+}
+@media (max-width: 700px){
+    h2{
+        margin-top: 60px;
+    }
+}
+      .page-nama {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: -35px;
+            margin-bottom: 20px;
+        }
+        .tooltip .tooltip-inner {
+  background-color: rgb(235, 238, 245) !important;
+  color:black !important;      /* Ganti warna teks sesuai kebutuhan */
+  border: 1px solid black;      /* Opsional: tambahkan border agar lebih jelas */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before,
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before,
+.tooltip.bs-tooltip-start .tooltip-arrow::before,
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-top-color: rgb(235, 238, 245) !important;
+  border-bottom-color: rgb(235, 238, 245) !important;
+  border-left-color: rgb(235, 238, 245) !important;
+  border-right-color: rgb(235, 238, 245) !important;
+}

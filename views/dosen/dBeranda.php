@@ -20,7 +20,6 @@ if ($_SESSION['role'] !== 'dosen') {
     <link rel="stylesheet" href="../../extra/style.css">
  
     <style>
-        
 
         /* Ikon Header untuk Desktop (Profil) */
         .NavSide__main-content .header-icons-desktop {
@@ -35,96 +34,118 @@ if ($_SESSION['role'] !== 'dosen') {
         .NavSide__main-content .header-icons-desktop .profile-icon-desktop {
             width: 48px; /* Ukuran ikon profil sesuai gambar */
             height: 48px;
-            background-color: #1F2937; /* Warna background ikon profil */
+            background-color: #1F2937; 
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.5rem; /* Ukuran ikon di dalam bubble */
+            color: white; 
+            font-size: 1.5rem; 
         }
-
-        /* Styling dari Gambar */
-        .dashboardTitle { /* "Beranda" */
-            color: #1F2937; /* Warna teks gelap */
-            font-size: 1.25rem; /* Sedikit lebih kecil dari gambar */
-            font-weight: 600; /* Lebih tebal */
+        /* "Beranda" */
+        .dashboardTitle { 
+            color: #1F2937; 
+            font-size: 1.25rem; 
+            font-weight: 600; 
             margin-bottom: 0.5rem;
         }
-
-        .welcomeText { /* "Selamat Datang, Evan Wahyu!" */
+        /* "Selamat Datang, Evan Wahyu!" */
+        .welcomeText { 
             color: #1F2937;
-            font-size: 2.5rem; /* Ukuran sesuai gambar */
-            font-weight: 700; /* Bold */
-            margin-bottom: 2rem; /* Jarak bawah lebih besar */
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            margin-bottom: 2rem; /  * Jarak bawah lebih besar */
         }
 
-        .statusCard {
-            padding: 20px;
-            border-radius: 12px; /* Radius sesuai gambar */
-            height: 100%;
-            transition: 0.3s ease;
+        .hover-effect-card { /* Kelas baru untuk card yang bisa dihover */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Konten tengah vertikal */
-            min-height: 160px; /* Tinggi minimum card */
         }
 
-        .statusCard:hover {
-            transform: translateY(-5px); /* Efek hover sedikit naik */
+        .hover-effect-card:hover {
+            transform: translateY(-5px);
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
 
-        .card-pengajuan { /* Kartu "Pengajuan" */
-            background-color: #4B68FB; /* Warna ungu sesuai gambar */
-            color: white;
-        }
-
-        .card-penilaian, .card-perbaikan { /* Kartu "Penilaian" & "Perbaikan" */
-            background-color: #F3F4F6; /* Warna abu-abu muda */
-            color: #1F2937; /* Teks gelap */
-            border: 1px solid #E5E7EB; /* Border tipis */
-        }
-        .card-penilaian .statusNumber, .card-perbaikan .statusNumber {
-             color: #4B68FB; /* Angka berwarna ungu */
-        }
-
-        .statusTitle {
-            font-weight: 600;
-            font-size: 1rem; /* Ukuran judul status */
-            margin-bottom: 8px;
-        }
-        .statusNumberAndText {
+        /* Gaya umum untuk card status (pengajuan, perbaikan, penilaian) */
+        .status-card-common {
             display: flex;
-            align-items: center; /* Angka dan teks sejajar */
+            align-items: center;
+            padding: 1.25rem; 
         }
-        .statusNumber {
-            font-size: 3.5rem; /* Ukuran angka besar */
-            font-weight: 700; /* Bold */
+
+        .status-card-common .number {
+            font-size: 4.8rem;
+            font-weight: 700;
             line-height: 1;
-            margin-right: 10px; /* Jarak angka dan teks */
-        }
-        .statusText {
-            font-size: 0.9rem;
-            line-height: 1.3;
+            margin-right: 1.2rem;
+            min-width: 50px; 
+            text-align: center;
         }
 
-
-        .img-slot img{
-            max-width: 110%; /* Gambar tidak terlalu lebar */
-            max-height: 100%; /* Gambar tidak melebihi kontainer */
-            object-fit: contain;
+        .status-card-common .text-content { 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            overflow-wrap: break-word;
+            min-width: 0;
         }
 
-        /* CSS KALENDER (DARI ANDA) */
+        .status-card-common .text-content .title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        .status-card-common .text-content .description {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        /* Card Pengajuan (biru) */
+        .card-pengajuan.status-card-common {
+            background-color: #4B68FB;
+            color: white;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-pengajuan.status-card-common .number {
+            color: white; 
+        }
+
+        /* Card Perbaikan & Penilaian (abu-abu) */
+        .card-perbaikan.status-card-common,
+        .card-penilaian.status-card-common {
+            background-color: #F3F4F6;
+            color: #1F2937;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); 
+        }
+
+        .card-perbaikan.status-card-common .number,
+        .card-penilaian.status-card-common .number {
+            color: rgb(37, 44, 54); 
+        }
+
+        .card-perbaikan.status-card-common .text-content .title,
+        .card-penilaian.status-card-common .text-content .title {
+            color: #4B5563; /* Warna title abu-abu */
+        }
+
+        .card-perbaikan.status-card-common .text-content .description,
+        .card-penilaian.status-card-common .text-content .description {
+            color: #1F2937; /* Warna description gelap */
+        }
+
         .dashboard-card { /* Tambahan untuk styling dasar kartu dashboard */
             background-color: #FFFFFF;
             padding: 1.25rem;
-            border-radius: 12px;
+            border-radius: 22px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            height: 100%; /* Agar kartu di kolom yang sama punya tinggi sama jika di dalam row */
         }
+
         .calendar-card {
             background-color: #4B68FB;
             color: white;
@@ -134,7 +155,7 @@ if ($_SESSION['role'] !== 'dosen') {
             border-radius: 5vh;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             min-height: 300px;
-            margin-bottom: 2vh;
+            height: fit-content;
         }
         .calendar-card .section-title-container {
             display: flex;
@@ -224,43 +245,44 @@ if ($_SESSION['role'] !== 'dosen') {
             background-color: rgba(255, 255, 255, 0.2);
         }
         .calendar-card .calendar-day.other-month { /* Untuk tanggal dari bulan lain */
-            color: #A5B4FC; /* Warna lebih redup */
+            color: #A5B4FC;
             cursor: default;
         }
         .calendar-card .calendar-day.other-month:hover {
             background-color: transparent;
         }
-
-
-        /* CSS SIDANG MENDATANG (DARI ANDA) */
        
         .sidang-mendatang-card {
             background-color: #F3F4F6;
-            overflow-y: auto;
-            max-height: 38.5vh; /* <-- Baris ini diaktifkan */
-            padding: 1.25rem;
-}
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            max-height: 450px; 
+            overflow-y: auto; 
+            padding-bottom: 1.25rem; 
+        }
+        
         .sidang-mendatang-card .section-title { /* Judul "Sidang Mendatang" */
             position: sticky;
-            top: -1.25rem; /* Sesuaikan dengan padding card agar menempel pas di atas */
+            top: -1.25rem; 
             background-color: #F3F4F6;
             z-index: 10;
-            padding-top: 1.25rem; /* Agar saat scroll tidak terpotong */
-            padding-bottom: 1rem; /* Jarak judul ke item pertama */
-            margin: -1.25rem -1.25rem 0 -1.25rem; /* Ambil full width dan hilangkan margin bawah */
-            padding-left: 1.25rem; /* Kembalikan padding kiri */
-            padding-right: 1.25rem; /* Kembalikan padding kanan */
+            padding-top: 1.25rem; 
+            padding-bottom: 1rem; 
+            margin: -1.25rem -1.25rem 0 -1.25rem; 
+            padding-left: 1.25rem; 
+            padding-right: 1.25rem; 
             font-size: 1.1rem;
             font-weight: 600;
-            color: #1F2937; /* Warna teks gelap */
+            color: #1F2937; 
         }
         .sidang-mendatang-card .item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: #FFFFFF; /* Item berwarna putih */
+            background-color: #FFFFFF; 
             padding: 0.75rem 1rem;
-            border-radius: 8px; /* Radius item lebih kecil */
+            border-radius: 8px; 
             margin-bottom: 0.75rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.03);
         }
@@ -268,7 +290,7 @@ if ($_SESSION['role'] !== 'dosen') {
             margin-bottom: 0;
         }
         .sidang-mendatang-card .date-bubble {
-            background-color: #EEF2FF; /* Background bubble tanggal lebih soft */
+            background-color: #EEF2FF;
             border-radius: 8px;
             padding: 0.4rem 0rem;
             text-align: center;
@@ -283,12 +305,12 @@ if ($_SESSION['role'] !== 'dosen') {
         .sidang-mendatang-card .date-bubble .day {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #4338CA; /* Warna ungu lebih gelap untuk tanggal */
+            color: #4338CA; 
             line-height: 1.1;
         }
         .sidang-mendatang-card .date-bubble .month {
             font-size: 0.7rem;
-            color: #64748B; /* Warna bulan abu-abu */
+            color: #64748B;
             line-height: 1;
             text-transform: uppercase;
             font-weight: 500;
@@ -298,6 +320,7 @@ if ($_SESSION['role'] !== 'dosen') {
             font-size: 0.9rem;
             font-weight: 500;
             color: #374151;
+            
         }
         .sidang-mendatang-card .arrow i {
             font-size: 1.2rem;
@@ -322,22 +345,10 @@ if ($_SESSION['role'] !== 'dosen') {
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"> </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                    <b></b><b></b>
-                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a></li>
             </ul>
         </div>
 
@@ -360,148 +371,117 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
             </div>
 
-            <div class="dashboardTitle">Beranda</div>
+            <div class="dashboardTitle">Beranda Dosen</div>
             <h2 class="welcomeText">Selamat Datang, Evan Wahyu!</h2>
 
             <div class="row gy-4">
-                <div class="col-lg-3">
-                    <div class="mb-4">
-                        <div class="statusCard card-pengajuan" onclick="location.href='dpengajuan.php'">
-                            <div class="statusTitle">Pengajuan</div>
-                            <div class="statusNumberAndText">
-                                <div class="statusNumber">3</div>
-                                <div class="statusText">Menunggu<br>Persetujuan</div>
+            <div class="col-lg-3">
+                <div class="mb-4">
+                    <a href="dpengajuan.php" style="text-decoration: none; color: inherit;">
+                        <div class="dashboard-card card-pengajuan status-card-common hover-effect-card"> <div class="number">3</div>
+                            <div class="text-content">
+                                <span class="title">Pengajuan</span>
+                                <span class="description">Menunggu Persetujuan</span>
                             </div>
                         </div>
-                    </div>
-                    <div>
-                        <div class="statusCard card-perbaikan" onclick="location.href='dDaftarSidang.php'">
-                            <div class="statusTitle">Perbaikan</div>
-                            <div class="statusNumberAndText">
-                                <div class="statusNumber">2</div>
-                                <div class="statusText">Menunggu<br>untuk Dinilai</div>
-                            </div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
+                <div class="mb-4">
+                    <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
+                        <div class="dashboard-card card-perbaikan status-card-common hover-effect-card"> <div class="number">2</div>
+                            <div class="text-content">
+                                <span class="title">Perbaikan</span>
+                                <span class="description">Menunggu untuk Dinilai</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div>
+                    <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
+                        <div class="dashboard-card card-penilaian status-card-common hover-effect-card"> <div class="number">2</div>
+                            <div class="text-content">
+                                <span class="title">Penilaian</span>
+                                <span class="description">Menunggu untuk Dinilai</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
                 <div class="col-lg-4">
-                    <div class="mb-4">
-                        <div class="statusCard card-penilaian" onclick="location.href='dDaftarSidang.php'">
-                            <div class="statusTitle">Penilaian</div>
-                            <div class="statusNumberAndText">
-                                <div class="statusNumber">2</div>
-                                <div class="statusText">Menunggu<br>untuk Dinilai</div>
-                            </div>
+                    <div class="dashboard-card sidang-mendatang-card">
+                        <h3 class="section-title">Sidang Mendatang</h3>
+                        <div class="item">
+                            <div class="date-bubble"><span class="day">22</span><span class="month">Apr</span></div>
+                            <span class="info">Nayaka Ivana Putra<br><small style="color: #6B7280; font-size: 0.75rem;">Anniversary TRPL</small></span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble"><span class="day">29</span><span class="month">Mei</span></div>
+                            <span class="info">Zahrah Imelda Asari<br><small style="color: #6B7280; font-size: 0.75rem;">Sistem Pengajuan Sidang</small></span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                         <div class="item">
+                            <div class="date-bubble"><span class="day">17</span><span class="month">Agu</span></div>
+                            <span class="info">Mnur<br><small style="color: #6B7280; font-size: 0.75rem;">Sistem Rekayasa Agama</small></span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble"><span class="day">12</span><span class="month">Sep</span></div>
+                            <span class="info">Naufal Abdirrahman Faiz<br><small style="color: #6B7280; font-size: 0.75rem;">Pengunaan Kawat</small></span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble"><span class="day">27</span><span class="month">Sep</span></div>
+                            <span class="info">Ezra<br><small style="color: #6B7280; font-size: 0.75rem;">STEI ITB</small></span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
                     </div>
-                    <div>
-                        <!-- <div class="img-slot">
-                            <img src="../../assets/img/img8.png" alt="Dashboard Illustration">
-                        </div> -->
-                    </div>
                 </div>
-
+                
                 <div class="col-lg-5">
-                    <div class="row">
-                        <div class="col-12 mb-4">
-                            <div class="dashboard-card calendar-card">
-                                <div class="section-title-container">
-                                    <div class="calendar-nav">
-                                        <i class="bi bi-chevron-left" id="prevMonth"></i>
-                                        <h3 class="section-title" id="currentMonthYear"></h3>
-                                        <i class="bi bi-chevron-right" id="nextMonth"></i>
-                                    </div>
-                                </div>
-                                <table class="calendar" id="calendarTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Min</th>
-                                            <th>Sen</th>
-                                            <th>Sel</th>
-                                            <th>Rab</th>
-                                            <th>Kam</th>
-                                            <th>Jum</th>
-                                            <th>Sab</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
+                    <div class="dashboard-card calendar-card">
+                        <div class="section-title-container">
+                            <div class="calendar-nav">
+                                <i class="bi bi-chevron-left" id="prevMonth"></i>
+                                <h3 class="section-title" id="currentMonthYear"></h3>
+                                <i class="bi bi-chevron-right" id="nextMonth"></i>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="dashboard-card sidang-mendatang-card">
-                                <h3 class="section-title">Sidang Mendatang</h3>
-                                <div class="item">
-                                    <div class="date-bubble">
-                                        <span class="day">22</span><span class="month">Apr</span>
-                                    </div>
-                                    <span class="info">Nayaka Ivana Putra<br><small style="color: #6B7280; font-size: 0.75rem;">Anniversary TRPL</small></span>
-                                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                                </div>
-                                <div class="item">
-                                    <div class="date-bubble">
-                                        <span class="day">29</span><span class="month">Mei</span>
-                                    </div>
-                                    <span class="info">Zahrah Imelda Asari<br><small style="color: #6B7280; font-size: 0.75rem;">Sistem Pengajuan Sidang</small></span>
-                                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                                </div>
-                                <div class="item">
-                                    <div class="date-bubble">
-                                        <span class="day">17</span><span class="month">Agu</span>
-                                    </div>
-                                    <span class="info">Mnur<br><small style="color: #6B7280; font-size: 0.75rem;">Sistem Rekayasa Agama</small></span>
-                                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                                </div>
-                                <div class="item">
-                                    <div class="date-bubble">
-                                        <span class="day">12</span><span class="month">Sep</span>
-                                    </div>
-                                    <span class="info">Naufal Abdirrahman Faiz<br><small style="color: #6B7280; font-size: 0.75rem;">Pengunaan Kawat</small></span>
-                                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                                </div>
-                                <div class="item">
-                                    <div class="date-bubble">
-                                        <span class="day">29</span><span class="month">Sep</span>
-                                    </div>
-                                    <span class="info">Nur Salim<br><small style="color: #6B7280; font-size: 0.75rem;">Dampak Penjualan Narkoba</small></span>
-                                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                                </div>
-                                <div class="item">
-                                    <div class="date-bubble">
-                                        <span class="day">10</span><span class="month">Okt</span>
-                                    </div>
-                                    <span class="info">Andrew Hermawan Surgiato<br><small style="color: #6B7280; font-size: 0.75rem;">Rekayasa Logistik</small></span>
-                                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                                </div>
-                            </div>
-                        </div>
+                        <table class="calendar" id="calendarTable">
+                            <thead>
+                                <tr>
+                                    <th>Min</th><th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th><th>Sab</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
     
      <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div style="background-color:#4B68FB;">
-                            <div class="modal-header">
-                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                            </div>
-                        </div>
-                        <div class="modal-body mx-auto">
-                            Apakah anda yakin ingin keluar?
-                        </div>
-                        <div class="modal-footer justify-content-center border-0">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-                        </div>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color:#4B68FB;">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                     </div>
                 </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
             </div>
-
+        </div>
+    </div>
+        
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -522,8 +502,7 @@ if ($_SESSION['role'] !== 'dosen') {
             const prevMonthBtn = document.getElementById('prevMonth');
             const nextMonthBtn = document.getElementById('nextMonth');
 
-            let today = new Date(); // Get current date and time
-            // currentDate is the date the calendar is currently displaying, initialized to the 1st of the current month
+            let today = new Date(); 
             let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
 
             function renderCalendar() {
