@@ -14,5 +14,5 @@ if ($conn === false) {
     die(print_r(sqlsrv_errors(), true));
 }
 // If connection is successful
-echo "Koneksi Berhasil!<br>";
+// echo "Koneksi Berhasil!<br>";
 ?>

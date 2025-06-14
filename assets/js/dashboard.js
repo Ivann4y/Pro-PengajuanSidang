@@ -16,10 +16,12 @@ document.addEventListener("DOMContentLoaded", function() {
     // =========================
 
     // Fetch data sidang mendatang dari PHP
+    let sidangData = [];
     let sidangDates = [];
-    fetch("../../sidangMendatang.php")
+    fetch("../../control/sidangMendatang.php")
         .then((response) => response.json())
         .then((data) => {
+            sidangData = data;
             sidangDates = data.map((item) => item.tanggal_sidang);
             renderCalendar();
             renderSidangMendatang(data);
@@ -88,7 +90,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
                     // Format tanggal untuk pencocokan (YYYY-MM-DD)
                     const thisDate = new Date(year, month, date);
-                    const dateStr = thisDate.toISOString().slice(0, 10);
+                    const dateStr = [
+                        thisDate.getFullYear(),
+                        String(thisDate.getMonth() + 1).padStart(2, "0"),
+                        String(thisDate.getDate()).padStart(2, "0"),
+                    ].join("-");
 
                     // Tandai hari ini
                     if (
@@ -156,29 +162,96 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
+    fetch("../../control/jumlahPengajuan.php")
+        .then((response) => response.json())
+        .then((result) => {
+            // result.data adalah array judul sidang yang perlu aksi pengajuannya
+            renderAngkaJumlahPengajuan(result.jumlah_pengajuan_perlu_aksi);
+        });
 
-    // Navigasi bulan tanpa reload
-    document.getElementById("prevMonth").onclick = function() {
-        renderCalendar();
-    };
+    // Render angka jumlah pengajuan
+    function renderAngkaJumlahPengajuan(jumlah) {
+        const card = document.querySelector(".pengajuan-status-card");
+        if (!card) return;
+        // Cari elemen .number di dalam card
+        let numberDiv = card.querySelector(".number");
+        if (!numberDiv) {
+            // Jika belum ada, buat baru
+            numberDiv = document.createElement("div");
+            numberDiv.className = "number";
+            // Sisipkan di awal card
+            card.insertBefore(numberDiv, card.firstChild);
+        }
+        numberDiv.textContent = jumlah;
+    }
 
-    document.getElementById("nextMonth").onclick = function() {
-        renderCalendar();
-    };
+    fetch("../../control/perluJumlahPenjadwalan.php")
+        .then((response) => response.json())
+        .then((result) => {
+            // result.data adalah array judul sidang yang belum terjadwal
+            renderTugas(result.data);
+            renderAngkaJumlahPenjadwalan(result.jumlah);
+        });
 
-    // // Navigasi bulan sebelumnya
-    // prevMonthBtn.addEventListener("click", () => {
-    //     activeDate.setMonth(activeDate.getMonth() - 1);
-    //     activeDate.setDate(1);
+    function renderAngkaJumlahPenjadwalan(jumlah) {
+        const card = document.querySelector(".penjadwalan-status-card");
+        if (!card) return;
+        // Cari elemen .number di dalam card
+        let numberDiv = card.querySelector(".number");
+        if (!numberDiv) {
+            // Jika belum ada, buat baru
+            numberDiv = document.createElement("div");
+            numberDiv.className = "number";
+            // Sisipkan di awal card
+            card.insertBefore(numberDiv, card.firstChild);
+        }
+        numberDiv.textContent = jumlah;
+    }
+
+    // Render tugas item penjadwalan
+    function renderTugas(data) {
+        const tugasContainer = document.querySelector(".tugas-card");
+        // Hapus semua tugas-item lama, kecuali judul
+        tugasContainer.querySelectorAll(".tugas-item").forEach((e) => e.remove());
+
+        if (!data.length) {
+            const p = document.createElement("p");
+            p.className = "text-center text-muted mt-3";
+            p.textContent = "Tidak ada tugas penjadwalan.";
+            tugasContainer.appendChild(p);
+            return;
+        }
+
+        data.forEach((item) => {
+            const div = document.createElement("div");
+            div.className = "tugas-item";
+            div.textContent = "Belum terjadwal " + item.judul;
+            tugasContainer.appendChild(div);
+        });
+    }
+
+    // // Navigasi bulan tanpa reload
+    // document.getElementById("prevMonth").onclick = function() {
     //     renderCalendar();
-    // });
+    // };
 
-    // // Navigasi bulan berikutnya
-    // nextMonthBtn.addEventListener("click", () => {
-    //     activeDate.setMonth(activeDate.getMonth() + 1);
-    //     activeDate.setDate(1);
+    // document.getElementById("nextMonth").onclick = function() {
     //     renderCalendar();
-    // });
+    // };
+
+    // Navigasi bulan sebelumnya
+    prevMonthBtn.addEventListener("click", () => {
+        activeDate.setMonth(activeDate.getMonth() - 1);
+        activeDate.setDate(1);
+        renderCalendar();
+    });
+
+    // Navigasi bulan berikutnya
+    nextMonthBtn.addEventListener("click", () => {
+        activeDate.setMonth(activeDate.getMonth() + 1);
+        activeDate.setDate(1);
+        renderCalendar();
+    });
 
     // Render kalender saat halaman dimuat
     renderCalendar();
