@@ -20,7 +20,6 @@ if ($_SESSION['role'] !== 'dosen') {
     <link rel="stylesheet" href="../../extra/style.css">
  
     <style>
-        
 
         /* Ikon Header untuk Desktop (Profil) */
         .NavSide__main-content .header-icons-desktop {
@@ -35,88 +34,118 @@ if ($_SESSION['role'] !== 'dosen') {
         .NavSide__main-content .header-icons-desktop .profile-icon-desktop {
             width: 48px; /* Ukuran ikon profil sesuai gambar */
             height: 48px;
-            background-color: #1F2937; /* Warna background ikon profil */
+            background-color: #1F2937; 
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.5rem; /* Ukuran ikon di dalam bubble */
+            color: white; 
+            font-size: 1.5rem; 
         }
-
-        /* Styling dari Gambar */
-        .dashboardTitle { /* "Beranda" */
-            color: #1F2937; /* Warna teks gelap */
-            font-size: 1.25rem; /* Sedikit lebih kecil dari gambar */
-            font-weight: 600; /* Lebih tebal */
+        /* "Beranda" */
+        .dashboardTitle { 
+            color: #1F2937; 
+            font-size: 1.25rem; 
+            font-weight: 600; 
             margin-bottom: 0.5rem;
         }
-
-        .welcomeText { /* "Selamat Datang, Evan Wahyu!" */
+        /* "Selamat Datang, Evan Wahyu!" */
+        .welcomeText { 
             color: #1F2937;
-            font-size: 2.5rem; /* Ukuran sesuai gambar */
-            font-weight: 700; /* Bold */
-            margin-bottom: 2rem; /* Jarak bawah lebih besar */
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            margin-bottom: 2rem; /  * Jarak bawah lebih besar */
         }
 
-        .statusCard {
-            padding: 20px;
-            border-radius: 12px; /* Radius sesuai gambar */
-            height: 100%;
-            transition: 0.3s ease;
+        .hover-effect-card { /* Kelas baru untuk card yang bisa dihover */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Konten tengah vertikal */
-            min-height: 160px; /* Tinggi minimum card */
         }
 
-        .statusCard:hover {
-            transform: translateY(-5px); /* Efek hover sedikit naik */
+        .hover-effect-card:hover {
+            transform: translateY(-5px);
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
 
-        .card-pengajuan { /* Kartu "Pengajuan" */
-            background-color: #4B68FB; /* Warna ungu sesuai gambar */
-            color: white;
-        }
-
-        .card-penilaian, .card-perbaikan { /* Kartu "Penilaian" & "Perbaikan" */
-            background-color: #F3F4F6; /* Warna abu-abu muda */
-            color: #1F2937; /* Teks gelap */
-            border: 1px solid #E5E7EB; /* Border tipis */
-        }
-        .card-penilaian .statusNumber, .card-perbaikan .statusNumber {
-             color: #4B68FB; /* Angka berwarna ungu */
-        }
-
-        .statusTitle {
-            font-weight: 600;
-            font-size: 1rem; /* Ukuran judul status */
-            margin-bottom: 8px;
-        }
-        .statusNumberAndText {
+        /* Gaya umum untuk card status (pengajuan, perbaikan, penilaian) */
+        .status-card-common {
             display: flex;
-            align-items: center; /* Angka dan teks sejajar */
+            align-items: center;
+            padding: 1.25rem; 
         }
-        .statusNumber {
-            font-size: 3.5rem; /* Ukuran angka besar */
-            font-weight: 700; /* Bold */
+
+        .status-card-common .number {
+            font-size: 4.8rem;
+            font-weight: 700;
             line-height: 1;
-            margin-right: 10px; /* Jarak angka dan teks */
+            margin-right: 1.2rem;
+            min-width: 50px; 
+            text-align: center;
         }
-        .statusText {
-            font-size: 0.9rem;
-            line-height: 1.3;
+
+        .status-card-common .text-content { 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            overflow-wrap: break-word;
+            min-width: 0;
+        }
+
+        .status-card-common .text-content .title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        .status-card-common .text-content .description {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        /* Card Pengajuan (biru) */
+        .card-pengajuan.status-card-common {
+            background-color: #4B68FB;
+            color: white;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-pengajuan.status-card-common .number {
+            color: white; 
+        }
+
+        /* Card Perbaikan & Penilaian (abu-abu) */
+        .card-perbaikan.status-card-common,
+        .card-penilaian.status-card-common {
+            background-color: #F3F4F6;
+            color: #1F2937;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); 
+        }
+
+        .card-perbaikan.status-card-common .number,
+        .card-penilaian.status-card-common .number {
+            color: rgb(37, 44, 54); 
+        }
+
+        .card-perbaikan.status-card-common .text-content .title,
+        .card-penilaian.status-card-common .text-content .title {
+            color: #4B5563; /* Warna title abu-abu */
+        }
+
+        .card-perbaikan.status-card-common .text-content .description,
+        .card-penilaian.status-card-common .text-content .description {
+            color: #1F2937; /* Warna description gelap */
         }
 
         .dashboard-card { /* Tambahan untuk styling dasar kartu dashboard */
             background-color: #FFFFFF;
             padding: 1.25rem;
-            border-radius: 12px;
+            border-radius: 22px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-
         }
+
         .calendar-card {
             background-color: #4B68FB;
             color: white;
@@ -216,7 +245,7 @@ if ($_SESSION['role'] !== 'dosen') {
             background-color: rgba(255, 255, 255, 0.2);
         }
         .calendar-card .calendar-day.other-month { /* Untuk tanggal dari bulan lain */
-            color: #A5B4FC; /* Warna lebih redup */
+            color: #A5B4FC;
             cursor: default;
         }
         .calendar-card .calendar-day.other-month:hover {
@@ -235,25 +264,25 @@ if ($_SESSION['role'] !== 'dosen') {
         
         .sidang-mendatang-card .section-title { /* Judul "Sidang Mendatang" */
             position: sticky;
-            top: -1.25rem; /* Sesuaikan dengan padding card agar menempel pas di atas */
+            top: -1.25rem; 
             background-color: #F3F4F6;
             z-index: 10;
-            padding-top: 1.25rem; /* Agar saat scroll tidak terpotong */
-            padding-bottom: 1rem; /* Jarak judul ke item pertama */
-            margin: -1.25rem -1.25rem 0 -1.25rem; /* Ambil full width dan hilangkan margin bawah */
-            padding-left: 1.25rem; /* Kembalikan padding kiri */
-            padding-right: 1.25rem; /* Kembalikan padding kanan */
+            padding-top: 1.25rem; 
+            padding-bottom: 1rem; 
+            margin: -1.25rem -1.25rem 0 -1.25rem; 
+            padding-left: 1.25rem; 
+            padding-right: 1.25rem; 
             font-size: 1.1rem;
             font-weight: 600;
-            color: #1F2937; /* Warna teks gelap */
+            color: #1F2937; 
         }
         .sidang-mendatang-card .item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: #FFFFFF; /* Item berwarna putih */
+            background-color: #FFFFFF; 
             padding: 0.75rem 1rem;
-            border-radius: 8px; /* Radius item lebih kecil */
+            border-radius: 8px; 
             margin-bottom: 0.75rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.03);
         }
@@ -261,7 +290,7 @@ if ($_SESSION['role'] !== 'dosen') {
             margin-bottom: 0;
         }
         .sidang-mendatang-card .date-bubble {
-            background-color: #EEF2FF; /* Background bubble tanggal lebih soft */
+            background-color: #EEF2FF;
             border-radius: 8px;
             padding: 0.4rem 0rem;
             text-align: center;
@@ -276,12 +305,12 @@ if ($_SESSION['role'] !== 'dosen') {
         .sidang-mendatang-card .date-bubble .day {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #4338CA; /* Warna ungu lebih gelap untuk tanggal */
+            color: #4338CA; 
             line-height: 1.1;
         }
         .sidang-mendatang-card .date-bubble .month {
             font-size: 0.7rem;
-            color: #64748B; /* Warna bulan abu-abu */
+            color: #64748B;
             line-height: 1;
             text-transform: uppercase;
             font-weight: 500;
@@ -291,6 +320,7 @@ if ($_SESSION['role'] !== 'dosen') {
             font-size: 0.9rem;
             font-weight: 500;
             color: #374151;
+            
         }
         .sidang-mendatang-card .arrow i {
             font-size: 1.2rem;
@@ -341,39 +371,42 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
             </div>
 
-            <div class="dashboardTitle">Beranda</div>
+            <div class="dashboardTitle">Beranda Dosen</div>
             <h2 class="welcomeText">Selamat Datang, Evan Wahyu!</h2>
 
             <div class="row gy-4">
-                <div class="col-lg-3">
-                    <div class="mb-4">
-                        <div class="statusCard card-pengajuan" onclick="location.href='dpengajuan.php'">
-                            <div class="statusTitle">Pengajuan</div>
-                            <div class="statusNumberAndText">
-                                <div class="statusNumber">3</div>
-                                <div class="statusText">Menunggu<br>Persetujuan</div>
+            <div class="col-lg-3">
+                <div class="mb-4">
+                    <a href="dpengajuan.php" style="text-decoration: none; color: inherit;">
+                        <div class="dashboard-card card-pengajuan status-card-common hover-effect-card"> <div class="number">3</div>
+                            <div class="text-content">
+                                <span class="title">Pengajuan</span>
+                                <span class="description">Menunggu Persetujuan</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-4">
-                        <div class="statusCard card-perbaikan" onclick="location.href='dDaftarSidang.php'">
-                            <div class="statusTitle">Perbaikan</div>
-                            <div class="statusNumberAndText">
-                                <div class="statusNumber">2</div>
-                                <div class="statusText">Menunggu<br>untuk Dinilai</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="statusCard card-penilaian" onclick="location.href='dDaftarSidang.php'">
-                            <div class="statusTitle">Penilaian</div>
-                            <div class="statusNumberAndText">
-                                <div class="statusNumber">2</div>
-                                <div class="statusText">Menunggu<br>untuk Dinilai</div>
-                            </div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
+                <div class="mb-4">
+                    <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
+                        <div class="dashboard-card card-perbaikan status-card-common hover-effect-card"> <div class="number">2</div>
+                            <div class="text-content">
+                                <span class="title">Perbaikan</span>
+                                <span class="description">Menunggu untuk Dinilai</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div>
+                    <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
+                        <div class="dashboard-card card-penilaian status-card-common hover-effect-card"> <div class="number">2</div>
+                            <div class="text-content">
+                                <span class="title">Penilaian</span>
+                                <span class="description">Menunggu untuk Dinilai</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
                 <div class="col-lg-4">
                     <div class="dashboard-card sidang-mendatang-card">
@@ -396,6 +429,11 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="item">
                             <div class="date-bubble"><span class="day">12</span><span class="month">Sep</span></div>
                             <span class="info">Naufal Abdirrahman Faiz<br><small style="color: #6B7280; font-size: 0.75rem;">Pengunaan Kawat</small></span>
+                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="item">
+                            <div class="date-bubble"><span class="day">27</span><span class="month">Sep</span></div>
+                            <span class="info">Ezra<br><small style="color: #6B7280; font-size: 0.75rem;">STEI ITB</small></span>
                             <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                         </div>
                     </div>
@@ -464,8 +502,7 @@ if ($_SESSION['role'] !== 'dosen') {
             const prevMonthBtn = document.getElementById('prevMonth');
             const nextMonthBtn = document.getElementById('nextMonth');
 
-            let today = new Date(); // Get current date and time
-            // currentDate is the date the calendar is currently displaying, initialized to the 1st of the current month
+            let today = new Date(); 
             let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
 
             function renderCalendar() {
