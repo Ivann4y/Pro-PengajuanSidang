@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 padding-top: 2vh;
                 color: white;
                 margin: 0 0 2vh 0;
-                padding-left: 20%;
+                padding-left: 19%;
             }
 
             .img-topLeft{

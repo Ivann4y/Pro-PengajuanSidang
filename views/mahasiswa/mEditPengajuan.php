@@ -252,7 +252,7 @@
             <!-- Tombol Kembali -->
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <button class="btn btn-kembali" onclick="history.back()">
+                <button type="button" class="btn btn-kembali" onclick="history.back()">
                   <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                   </span>
@@ -302,12 +302,12 @@
     const btnKirim = document.getElementById('btnKirim');
 
     btnKirim.addEventListener('click', function() {
-      const laporan = document.getElementById('DokumenSidang').files.length;
       const judul = document.getElementById('judul').value;
       const matkul = document.getElementById('matkul').value;
+      const laporan = document.getElementById('DokumenSidang').files.length;
       const modalValidasi = new bootstrap.Modal(document.getElementById('modalValidasi'));
 
-      if (judul == "" || matkul == "Pilih Mata  Kuliah") {
+      if (judul == "" || matkul == "Pilih Mata Kuliah") {
         Swal.fire({
           title: 'Mohon lengkapi semua form!',
           icon: 'error',
@@ -333,11 +333,11 @@
     const btnSimpan = document.getElementById('btnSimpan');
 
     btnSimpan.addEventListener('click', function() {
-      const laporan = document.getElementById('DokumenSidang').files.length;
       const judul = document.getElementById('judul').value;
       const matkul = document.getElementById('matkul').value;
+      const laporan = document.getElementById('DokumenSidang').files.length;
 
-      if (judul == "" || matkul == "Pilih Mata  Kuliah") {
+      if (judul == "" || matkul == "Pilih Mata Kuliah") {
         Swal.fire({
           title: 'Mohon lengkapi semua form!',
           icon: 'error',
