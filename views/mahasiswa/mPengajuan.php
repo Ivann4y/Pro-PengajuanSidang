@@ -14,7 +14,7 @@
         .text-heading { 
             font-size: 2.0rem;
             font-weight: 600;
-            color: #4B68FB;
+            color: black;
             margin-bottom: 1.5rem; 
         }
 
@@ -422,7 +422,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="dashboard-header">
-                <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                <h2 class="text-heading" color:black; >Nayaka Ivana Putra (Mahasiswa)</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
