@@ -299,6 +299,17 @@
 
         .NavSide__topbar {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            align-items: center;
+            padding: 0 15px;
+            justify-content: space-between;
         }
 
 
@@ -530,10 +541,6 @@
 
 <body>
     <div id="NavSide">
-        <div class="NavSide__toggle">
-            <i class="bi bi-list open"></i>
-            <i class="bi bi-x-lg close"></i>
-        </div>
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
@@ -561,6 +568,12 @@
             </ul>
         </div>
 
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+        </div>
        
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
@@ -698,17 +711,10 @@
         
 
         // --- Modal Logic ---
-        function showModal(status) {
-            const modalLabel = document.getElementById('notifModalLabel');
-            modalLabel.innerText = `Dokumen revisi telah berhasil ${status.toLowerCase()}`;
-            const successModal = new bootstrap.Modal(document.getElementById('notifModal'));
-            successModal.show();
-        }
-
         function showConfirmationModal(action) {
             const confirmationModalElement = document.getElementById('confirmationModal');
             if (!confirmationModalElement) {
-                console.error('Modal HTML with id "confirmationModal" not found!');
+                console.error('Modal HTML dengan id "confirmationModal" tidak ditemukan!');
                 return;
             }
             
@@ -720,13 +726,22 @@
             
             modalText.innerText = `Apakah Anda yakin ingin ${actionText} dokumen revisi ini?`;
 
+            // Mengatasi duplikasi event listener
             const newConfirmButton = confirmButton.cloneNode(true);
             confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
 
             newConfirmButton.addEventListener('click', function() {
                 confirmationModal.hide(); 
+                
+                // Jeda sedikit agar transisi modal tertutup mulus
                 setTimeout(function() {
-                    showModal(action); 
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: `Dokumen revisi telah berhasil ${action.toLowerCase()}.`,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#4B68FB'
+                    });
                 }, 500); 
             });
 
