@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../css/button-styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for pop-up notifications -->
 
 
     <style>
@@ -259,84 +260,66 @@
 
         /* --- Responsive Design Styles --- */
         .NavSide__toggle {
+            display: none; 
             position: fixed;
             top: 15px;
-            left: 15px;
+            left: 15px; 
             width: 40px;
             height: 40px;
             z-index: 1100;
-            transition: left 0.5s ease-in-out;
             cursor: pointer;
-            border-radius: 5px;
-            display: none;
+            transition: transform 0.5s ease-in-out; 
+            display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .NavSide__toggle i.bi {
             position: absolute;
             font-size: 28px;
-            display: none;
-        }
-
-        .NavSide__toggle i.bi.open {
             color: #4B68FB;
+            transition: opacity 0.3s ease-in-out;
         }
 
-        .NavSide__toggle i.bi.close {
-            color: #4B68FB;
+        .NavSide__toggle .bi.close {
+            opacity: 0; 
         }
 
-        .NavSide__toggle.NavSide__toggle--active i.bi.open {
-            display: none;
+        .NavSide__toggle.active .bi.open {
+            opacity: 0; 
         }
 
-        .NavSide__toggle.NavSide__toggle--active i.bi.close {
-            display: block;
+        .NavSide__toggle.active .bi.close {
+            opacity: 1; 
+        }
+        
+        .NavSide__toggle.active {
+            transform: translateX(50vw); 
         }
 
         .NavSide__topbar {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-            align-items: center;
-            padding: 0 15px;
-            justify-content: space-between;
         }
+
 
         /* Responsive styles for screens smaller than 700px */
         @media (max-width: 700px) {
             .NavSide__sidebar {
-                width: 50%;
+                width: 50vw; 
                 transform: translateX(-100%);
-                border-left-width: 0;
             }
 
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+            .NavSide__sidebar.active {
+                transform: translateX(0); 
             }
 
             .NavSide__main-content {
                 margin-left: 0;
-                padding: 15px;
                 padding-top: 75px;
             }
 
             .NavSide__toggle {
-                display: flex;
-                position: relative;
-                top: auto;
-                left: 0;
-                background-color: transparent;
-                box-shadow: none;
+                display: flex; 
             }
 
             .NavSide__toggle i.bi.open {
@@ -359,8 +342,45 @@
             .info-card .section:last-child {
                 margin-bottom: 0;
             }
-        }
 
+            .button-group-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 1.2cm;
+                margin-left: 0;
+                margin-right: 0; 
+            }
+            
+            #grup-aksi-dokumen {
+                flex-direction: row !important; 
+                justify-content: space-between !important;
+                gap: 0 !important; 
+                margin-top: 2.5rem;
+            }
+
+            #grup-aksi-dokumen .btn {
+                width: auto !important; 
+                max-width: none !important;
+                margin: 0 !important; 
+            }
+
+           
+            #grup-aksi-dokumen .button-group {
+                flex-direction: row !important; 
+                gap: 0.5rem !important; 
+                margin-top: 0 !important; 
+            }
+        }  
+        
+        .button-group-bottom {
+            margin-top: 0px; 
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
         /* File Button Styles */
         .file-button {
             display: inline-flex;
@@ -480,20 +500,40 @@
         .btn-kembali:hover .icon-circle i {
             color: white;
         }
-
-        .button-group-bottom {
-            margin-top: 0px; 
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
+    
+        .custom-modal-content {
+            border-radius: 30px !important;
+            background-color: #f8f9fa;
+            border: none;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px; 
         }
 
+        .custom-modal-header {
+            border-bottom: none;
+            justify-content: center;
+            padding: 0; 
+            margin-bottom: 20px; 
+        }
+
+        .custom-modal-body {
+            text-align: center;
+            padding: 0; 
+        }
+
+        #confirmationModal .btn {
+            width: auto !important;   
+            flex-grow: 0 !important;  
+        }
     </style>
 </head>
 
 <body>
     <div id="NavSide">
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
+        </div>
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
@@ -521,13 +561,7 @@
             </ul>
         </div>
 
-        <div class="NavSide__topbar">
-            <div class="NavSide__toggle">
-                <i class="bi bi-list open"></i>
-                <i class="bi bi-x-lg close"></i>
-            </div>
-        </div>
-
+       
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
 
@@ -591,16 +625,16 @@
                 </a>
             </div>
 
-            <div class="button-group-bottom">
+            <div class="button-group-bottom" id="grup-aksi-dokumen">
                 <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
-                </button>
+                </button>               
                 <div class="button-group">
-                    <button class="btn btn-tolak" onclick="showModal('Ditolak')">Tolak</button>
-                    <button class="btn btn-setujui" onclick="showModal('Disetujui')">Setujui</button>
+                    <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
+                    <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
                 </div>
             </div>
         </main>
@@ -618,18 +652,37 @@
         </div>
     </div>
 
+    <div class="modal fade" id="confirmationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-modal-content">
+                <div class="modal-header custom-modal-header">
+                    <h4 class="modal-title fw-bold" id="confirmationModalLabel" style="font-size: 24px;">Perhatian!</h4>
+                </div>
+                <div class="modal-body custom-modal-body">
+                    <p class="mb-5 fw-semibold" id="confirmationModalText" style="font-size: 16px;"></p>
+                    <div class="d-flex justify-content-between px-4">
+                        <button type="button" class="btn btn-tolak fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+                        <button type="button" class="btn btn-setujui fw-semibold" id="btnConfirmAction">Lanjutkan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
         // --- Sidebar Toggle Logic for Mobile ---
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
+        const menuToggle = document.querySelector(".NavSide__toggle");
+        const sidebar = document.getElementById("main-sidebar");
 
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', function() {
+                menuToggle.classList.toggle("active");
+                sidebar.classList.toggle("active");
+            });
+        }
 
-        // Sidebar Active Item Logic
+        // --- Sidebar Active Item Logic ---
         let listItems = document.querySelectorAll(".NavSide__sidebar-item");
         for (let i = 0; i < listItems.length; i++) {
             listItems[i].onclick = function() {
@@ -642,11 +695,43 @@
             };
         }
 
+        
+
+        // --- Modal Logic ---
         function showModal(status) {
             const modalLabel = document.getElementById('notifModalLabel');
-            modalLabel.innerText = `Sidang telah berhasil ${status.toLowerCase()}`;
-            const modal = new bootstrap.Modal(document.getElementById('notifModal'));
-            modal.show();
+            modalLabel.innerText = `Dokumen revisi telah berhasil ${status.toLowerCase()}`;
+            const successModal = new bootstrap.Modal(document.getElementById('notifModal'));
+            successModal.show();
+        }
+
+        function showConfirmationModal(action) {
+            const confirmationModalElement = document.getElementById('confirmationModal');
+            if (!confirmationModalElement) {
+                console.error('Modal HTML with id "confirmationModal" not found!');
+                return;
+            }
+            
+            const confirmationModal = new bootstrap.Modal(confirmationModalElement);
+            const modalText = document.getElementById('confirmationModalText');
+            const confirmButton = document.getElementById('btnConfirmAction');
+
+            let actionText = action === 'Disetujui' ? 'menyetujui' : 'menolak';
+            
+            modalText.innerText = `Apakah Anda yakin ingin ${actionText} dokumen revisi ini?`;
+
+            const newConfirmButton = confirmButton.cloneNode(true);
+            confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+
+            newConfirmButton.addEventListener('click', function() {
+                confirmationModal.hide(); 
+                setTimeout(function() {
+                    showModal(action); 
+                }, 500); 
+            });
+
+            // Tampilkan modal konfirmasi
+            confirmationModal.show();
         }
     </script>
 
