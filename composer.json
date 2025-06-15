@@ -1,0 +1,12 @@
+{
+    "name": "astratech/pro_pengajuan_sidang",
+    "description": "Sistem pengajuan sidang Astratech oleh prodi TRPL.",
+    "autoload": {
+        "psr-4": {
+            "Astratech\\ProPengajuanSidang\\": "src/"
+        }
+    },
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
