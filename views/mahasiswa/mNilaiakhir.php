@@ -61,7 +61,7 @@
             background-color: rgb(235, 238, 245);
             border-radius: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-left: 15px;
+            margin-left: 10xpx;
         }
 
     #cardNilai {
@@ -69,7 +69,7 @@
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
-        margin-left: 0;
+        margin-left: 10px;
     }
     
     #carddataMahasiswa {
@@ -77,6 +77,8 @@
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
+        margin-left: 10px;
+
     }
 
     #cardcatatan {
@@ -271,7 +273,7 @@
         </div>
 
 
-        <div class="row mt-5">
+        <div class="row mt-5 ">
             <div class="col-12">
                 <div class="card" id="cardcatatan">
                     <div class="card-body">
