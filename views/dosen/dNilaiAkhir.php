@@ -80,8 +80,8 @@
       </div>
     </div>
     <br>
-        <div class="row align-items-stretch mb-4">
-          <div class="col-lg-49 mb-3 d-flex">
+        <div class="row align-items-stretch">
+          <div class="col-lg-49 mb-4 d-flex">
   <div class="card flex-fill" id="carddataMahasiswa">
     <div class="card-body card-soft px-4 py-3">
       <h3 class="card-title text-black mb-4 text text-center" style="padding:10px;">Data Mahasiswa</h3>
@@ -128,7 +128,7 @@
     </div>
   </div>
 </div>
-  <div class="col-lg-49 mb-3 d-flex">
+  <div class="col-lg-49 mb-4 d-flex">
     <div class="card flex-fill" id="cardNilai">
       <div class="card-body card-soft px-4 py-3 text-center">
         <h3 class="card-title mb-3 text-black" style="padding:10px ;">Nilai Mahasiswa:</h3>
@@ -149,70 +149,60 @@
   
  
     
-        <div class="row mt-5">
-          <div class="">
-            <div class="card" id="carddetailPenilaian">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-            <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
-            <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tekan ini jika ingin menggunakan nilai sementara" data-bs-boundary="window" data-bs-fallback-placements="[]">
-  <i class="bi bi-pencil-fill" style="margin-right: 25px;"></i>
-</a>
-            </div>
-            <div class="row justify-content-center align-items-center">
-              <div class="col d-flex align-items-center">
-                <label for="nilaiLaporan" id="labelpenilaian" class="text-black">Nilai laporan</label>
-                <label for=":" class="colon1">:</label>
-                <input
-                  type="type"
-                  class="form-control form-control-lg text-center input-nilai"
-                  name="nilaiLaporan"
-                  id="detailpenilaian"
-                  placeholder=""
-                  maxlength="3"/>
-              </div>
-              <div class="col d-flex align-items-center">
-                  <label for="MateriPresentasi" id="labelpenilaian" class="text-black">Materi Presentasi</label>
-                  <label for=":" class="colon2">:</label>
-                <input
-                  type="type"
-                  class="form-control form-control-lg text-center input-nilai"
-                  name="MateriPresentasi"
-                  id="detailpenilaian"
-                  placeholder=""
-                  maxlength="3"/>
-              </div>
-              <div class="col d-flex align-items-center ">
-                  <label for="Penyampaian" id="labelpenilaian" class="text-black">Penyampaian</label>
-                  <label for=":" class="colon3">:</label>
-                <input
-                  type="type"
-                  class="form-control form-control-lg text-center input-nilai"
-                  name="Penyampaian"
-                  id="detailpenilaian"
-                  placeholder=""
-                  maxlength="3"/>
-              </div>
-              <div class="col d-flex align-items-center ">
-                  <label for="NilaiProyek" id="labelpenilaian" class="text-black">Nilai Proyek</label>
-                  <label for=":" class="colon4">:</label>
-                <input
-                  type="type"
-                  class="form-control form-control-lg text-center input-nilai"
-                  name="NilaiProyek"
-                  id="detailpenilaian"
-                  placeholder=""
-                  maxlength="3"/>
-                </div>
-                
-              </div>
+        
+          <div class="col-12 mb-4 d-flex">
+            <div class="card flex-fill" id="carddetailPenilaian">
+        <!-- GUNAKAN KODE BARU INI -->
+<!-- STRUKTUR HTML YANG BENAR -->
+<div class="card-body" id="card-penilaian-body">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
+        <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tekan ini jika ingin menggunakan nilai sementara">
+            <i class="bi bi-pencil-fill fs-5" style="color: var(--text-dark);"></i>
+        </a>
+    </div>
+
+    <!-- Wadah untuk tampilan desktop (horizontal) -->
+    <div class="penilaian-container">
+        <div class="penilaian-item">
+            <label for="nilaiLaporan">Nilai laporan :</label>
+            <input type="text" class="form-control text-center input-nilai" name="nilaiLaporan" maxlength="3">
         </div>
+        <div class="penilaian-item">
+            <label for="MateriPresentasi">Materi Presentasi :</label>
+            <input type="text" class="form-control text-center input-nilai" name="MateriPresentasi" maxlength="3">
+        </div>
+        <div class="penilaian-item">
+            <label for="Penyampaian">Penyampaian :</label>
+            <input type="text" class="form-control text-center input-nilai" name="Penyampaian" maxlength="3">
+        </div>
+        <div class="penilaian-item">
+            <label for="NilaiProyek">Nilai Proyek :</label>
+            <input type="text" class="form-control text-center input-nilai" name="NilaiProyek" maxlength="3">
+        </div>
+    </div> <!-- << PENUTUP DIV PINDAH KE SINI -->
+
+    <!-- Wadah BARU untuk tampilan tablet/mobile (vertikal) -->
+    <div class="penilaian-grid-vertical">
+        <label for="nilaiLaporan_v">Nilai laporan</label> <span>:</span>
+        <input type="text" class="form-control text-center input-nilai" name="nilaiLaporan_v" maxlength="3">
+        
+        <label for="MateriPresentasi_v">Materi Presentasi</label> <span>:</span>
+        <input type="text" class="form-control text-center input-nilai" name="MateriPresentasi_v" maxlength="3">
+        
+        <label for="Penyampaian_v">Penyampaian</label> <span>:</span>
+        <input type="text" class="form-control text-center input-nilai" name="Penyampaian_v" maxlength="3">
+        
+        <label for="NilaiProyek_v">Nilai Proyek</label> <span>:</span>
+        <input type="text" class="form-control text-center input-nilai" name="NilaiProyek_v" maxlength="3">
+    </div>
+</div>
         </div>
       </div>
-      </div>
-      <div class="row mt-5">
-        <div class="col-12">
-          <div class="card" id="cardcatatan">
+      
+      
+        <div class="col-12 mb-4 d-flex">
+          <div class="card flex-fill" id="cardcatatan">
             <div class="card-body">
               <h3 class="card-title text-black">Catatan:</h3>
               <textarea
@@ -224,6 +214,7 @@
             </div>
           </div>
         </div>
+      
       </div>
        <div class="row mt-5 justify-content-between">
         <div class="col-auto">
@@ -278,7 +269,7 @@
   </div>
 </div>
 <script>
- 
+  
 </script>
   </body>
 </html>

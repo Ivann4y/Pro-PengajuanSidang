@@ -1,0 +1,18 @@
+{
+    "name": "pengajuan-sidang/function",
+    "description": "\"Sistem Pengajuan Sidang Politeknik Astra\"",
+    "autoload": {
+        "psr-4": {
+            "PengajuanSidang\\Function\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Vicky Prasetya",
+            "email": "vprasetya79@gmail.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.10"
+    }
+}
