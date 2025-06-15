@@ -257,7 +257,7 @@ if ($_SESSION['role'] !== 'dosen') {
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            max-height: 67vh; 
+            max-height: 60vh; 
             overflow-y: auto; 
             padding-bottom: 1.25rem; 
         }
