@@ -69,7 +69,6 @@ $result = sqlsrv_query($conn, $query);
 
         thead th:nth-child(5) {
             width: 10%;
-            text-align: center;
         }
 
         .isiTabel td { /* My explicit background-color and border are removed */
@@ -277,7 +276,11 @@ $result = sqlsrv_query($conn, $query);
                                     <td><?= htmlspecialchars($row['judul']) ?></td>
                                     <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
                                     <td><?= htmlspecialchars($row['dosen']) ?></td>
-                                    <td><a href="mdetailSidangTA.php?id=<?= $row['id_sidang'] ?>" class="bi bi-eye"></a></td>
+                                    <td>
+                                        <button class="detail-btn" onclick="location.href='mdetailSidangTA.php?id=<?= $row['id_sidang'] ?>';">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             <?php endwhile; ?>
                         </tbody>
