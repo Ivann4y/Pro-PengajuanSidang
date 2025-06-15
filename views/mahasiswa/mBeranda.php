@@ -36,6 +36,8 @@ $sidang_mendatang = [
     ['tanggal_sidang' => '2025-07-02', 'judul' => 'Pengumpulan Laporan', 'link_detail' => 'mdetailsidangta.php'],
 ];
 
+// Convert PHP array to JSON for JavaScript
+$sidang_mendatang_json = json_encode($sidang_mendatang);
 
 // Ini g perlu ganti kalau udh ke database harusnya
 // penanda sidang mendatang
@@ -474,12 +476,12 @@ $today_date = date('Y-m-d');
                     <div class="dashboard-card calendar-card">
                         <div class="section-title-container">
                             <div class="calendar-nav">
-                                <a href="<?php echo $prev_link; ?>"><i class="bi bi-chevron-left"></i></a>
-                                <h3 class="section-title"><?php echo $month_name . ' ' . $year; ?></h3>
-                                <a href="<?php echo $next_link; ?>"><i class="bi bi-chevron-right"></i></a>
+                                <i class="bi bi-chevron-left" id="prevMonth"></i>
+                                <h3 class="section-title" id="currentMonthYear"></h3>
+                                <i class="bi bi-chevron-right" id="nextMonth"></i>
                             </div>
                         </div>
-                        <table class="calendar">
+                        <table class="calendar" id="calendarTable">
                             <thead>
                                 <tr>
                                     <th>Min</th>
@@ -492,65 +494,14 @@ $today_date = date('Y-m-d');
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                $day_count = 1;
-                                $cell_count = 0;
-                                echo '<tr>';
-                                for ($i = 0; $i < $first_day_of_week; $i++) {
-                                    echo '<td></td>'; //jadi pengisi hari yang kosong sebelum tanggal 1
-                                    $cell_count++;
-                                }
-                                while ($day_count <= $days_in_month) {
-                                    // 1. Create a new DateTime object specifically for the current day in the loop.
-                                    $current_day_object = new DateTime("$year-$month-$day_count");
-
-                                    // 2. Format it directly to the 'Y-m-d' string. No str_pad needed!
-                                    // The 'm' and 'd' characters automatically handle the leading zeros.
-                                    $cell_date = $current_day_object->format('Y-m-d');
-                                    $class_list = 'calendar-day';
-                                    if ($cell_date == $today_date) {
-                                        $class_list .= ' current-day';
-                                    }
-                                    if (in_array($cell_date, $sidang_dates)) {
-                                        $class_list .= ' has-sidang';
-                                    }
-                                    echo "<td><span class=\"$class_list\">$day_count</span></td>";
-                                    $day_count++;
-                                    $cell_count++;
-                                    if ($cell_count % 7 == 0 && $day_count <= $days_in_month) {
-                                        echo '</tr><tr>';
-                                    }
-                                }
-
-                                while ($cell_count % 7 != 0) {
-                                    echo '<td></td>'; //jadi pengisi hari yang kosong setelah tanggal terakhir
-                                    $cell_count++;
-                                }
-                                echo '</tr>';
-                                ?>
+                                <!-- Calendar will be rendered by JavaScript -->
                             </tbody>
                         </table>
                     </div>
 
                     <div class="dashboard-card content-card sidang-mendatang-card">
                         <h3 class="section-title">Sidang Mendatang</h3>
-                        <?php if (empty($sidang_mendatang)): ?>
-                            <p class="text-center text-muted mt-3">Tidak ada sidang yang dijadwalkan.</p>
-                        <?php else: ?>
-                            <?php foreach ($sidang_mendatang as $sidang): ?>
-                                <?php $sidang_date_obj = new DateTime($sidang['tanggal_sidang']); ?>
-                                <a href="<?php echo htmlspecialchars($sidang['link_detail']); ?>" style="text-decoration: none; color: inherit;">
-                                    <div class="item">
-                                        <div class="date-bubble">
-                                            <span class="day"><?php echo $sidang_date_obj->format('d'); ?></span>
-                                            <span class="month"><?php echo $sidang_date_obj->format('M'); ?></span>
-                                        </div>
-                                        <span class="info"><?php echo htmlspecialchars($sidang['judul']); ?></span>
-                                        <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                                    </div>
-                                </a>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                        <!-- Sidang mendatang will be rendered by JavaScript -->
                     </div>
                 </div>
             </div>
@@ -574,13 +525,10 @@ $today_date = date('Y-m-d');
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
+        // Pass PHP data to JavaScript
+        const sidangMendatangData = <?php echo $sidang_mendatang_json; ?>;
     </script>
+    <script src="../../assets/js/mahasiswa-dashboard.js"></script>
 </body>
 
 </html>
