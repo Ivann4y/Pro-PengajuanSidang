@@ -190,14 +190,71 @@
                                               echo ' selected';
                                             }
                                             ?>>Tugas Akhir</option>
-                <option value="Pemrograman 2" <?php if ($matkul == 'Pemrograman 2') {
+                <option value="Pemrograman Web" <?php if ($matkul == 'Pemrograman Web') {
                                                 echo ' selected';
                                               }
-                                              ?>>Pemrograman 2</option>
+                                              ?>>Pemrograman Web</option>
                 <option value="Sistem Operasi" <?php if ($matkul == 'Sistem Operasi') {
                                                   echo ' selected';
                                                 }
                                                 ?>>Sistem Operasi</option>
+                <option value="Basis Data Lanjut" <?php if ($matkul == 'Basis Data Lanjut') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Basis Data Lanjut</option>
+                <option value="Struktur Data" <?php if ($matkul == 'Struktur Data') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Struktur Data</option>
+                <option value="Kecerdasan Buatan" <?php if ($matkul == 'Kecerdasan Buatan') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Kecerdasan Buatan</option>
+                <option value="Sistem Terdistribusi" <?php if ($matkul == 'Sistem Terdistribusi') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Sistem Terdistribusi</option>
+                <option value="Jaringan Komputer" <?php if ($matkul == 'Jaringan Komputer') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Jaringan Komputer</option>
+                <option value="Komputasi Awan" <?php if ($matkul == 'Komputasi Awan') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Komputasi Awan</option>
+                <option value="Pemrograman Mobile" <?php if ($matkul == 'Pemrograman Mobile') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Pemrograman Mobile</option>
+                <option value="Analisis Data" <?php if ($matkul == 'Analisis Data') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Analisis Data</option>
+                <option value="Interaksi Manusia Komputer" <?php if ($matkul == 'Interaksi Manusia Komputer') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Interaksi Manusia Komputer</option>
+                <option value="Pengujian Perangkat Lunak" <?php if ($matkul == 'Pengujian Perangkat Lunak') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Pengujian Perangkat Lunak</option>
+                <option value="Pengolahan Citra" <?php if ($matkul == 'Pengolahan Citra') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Pengolahan Citra</option>
+                <option value="Pemrograman Jaringan" <?php if ($matkul == 'Pemrograman Jaringan') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Pemrograman Jaringan</option>
+                <option value="Sistem Tertanam" <?php if ($matkul == 'Sistem Tertanam') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Sistem Tertanam</option>
+                <option value="Analisis Big Data" <?php if ($matkul == 'Analisis Big Data') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Analisis Big Data</option>                                                                                                                                                                                                                                                                                                                                                                                               
+
               </select>
             </div>
 
@@ -216,7 +273,7 @@
                           <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z" />
                           <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z" />
                         </svg>
-                        <p class="mt-2 text-muted small" id="DokumenLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
+                        <p class="mt-2 text-muted small DokumenLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
                       </div>
                     </label>
                   </div>
