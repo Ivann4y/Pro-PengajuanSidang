@@ -9,15 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
-    <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-        .text-heading { 
-            font-size: 2.0rem;
-            font-weight: 600;
-            color: black;
-            margin-bottom: 1.5rem; 
-        }
 
+    <style>
         @media (max-width: 700px) {
             .NavSide__sidebar {
                 width: 50%;
@@ -75,10 +68,7 @@
                 display: flex;
             }
         }
-        /* NavSide styles from mBeranda.php - END */
 
-
-        /* Original mPengajuan table structural styles - START */
         table {
             border-spacing: 0 10px;
             border-collapse: separate;
@@ -290,7 +280,6 @@
             color: black;
         }
 
-        /* Pagination styles */
         .pagination-container {
             margin-top: 2rem;
             position: relative;
