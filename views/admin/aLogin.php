@@ -19,7 +19,7 @@ $role = "admin";
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../css/button-styles.css">
+    <!-- <link rel="stylesheet" href="../../css/button-styles.css"> -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -88,6 +88,7 @@ $role = "admin";
         form {
             width: 25vw;
         }
+
         .btn-kembali {
             background-color: #4B68FB;
             color: white;
@@ -178,9 +179,11 @@ $role = "admin";
                 class="position-absolute"
                 style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
                 alt="Background">
-            <div class="position-absolute"
+
+            <!-- <div class="position-absolute"
                 style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
             </div>
+             -->
             <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
                 <label for="">Sistem Pengajuan Sidang</label>
                 <label for="">Politeknik Astra</label>
@@ -214,7 +217,7 @@ $role = "admin";
             ?>
             <div class="col-md-7 d-flex justify-content-center align-items-center mt-5">
 
-                <form action="../../Coba_auth.php" method="POST" novalidate>
+                <form action="../../auth.php" method="POST" novalidate>
                     <div class="text-center pt-5 mb-4">
                         <h2><strong>Masuk Akun</strong></h2>
                         <h2><strong>Admin</strong></h2>
@@ -227,12 +230,12 @@ $role = "admin";
                             class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
                             id="username"
                             name="username"
-                            placeholder="NIM"
+                            placeholder="Nama Pengguna"
                             value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
                         <?php if ($error === 'empty'): ?>
-                            <small class="text-danger">NIM dan Kata Sandi harus diisi!</small>
+                            <small class="text-danger">Nama Pengguna dan Kata Sandi harus diisi!</small>
                         <?php elseif ($error === '1'): ?>
-                            <small class="text-danger">NIM atau Kata Sandi salah!</small>
+                            <small class="text-danger">Nama Pengguna atau Kata Sandi salah!</small>
                         <?php endif; ?>
                     </div>
 
