@@ -156,9 +156,12 @@ if ($result === false) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+                            <?php 
+                            $counter = ($currentPage - 1) * $rowsPerPage + 1;
+                            while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): 
+                            ?>
                                 <tr class="isiTabel jadiBiru">
-                                    <td><?= $row['id_sidang'] ?></td>
+                                    <td><?= $counter ?></td>
                                     <td><?= htmlspecialchars($row['judul']) ?></td>
                                     <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
                                     <td><?= htmlspecialchars($row['dosen']) ?></td>
@@ -168,7 +171,10 @@ if ($result === false) {
                                         </button>
                                     </td>
                                 </tr>
-                            <?php endwhile; ?>
+                            <?php 
+                            $counter++;
+                            endwhile; 
+                            ?>
                         </tbody>
                     </table>
                     <div class="pagination-container">
