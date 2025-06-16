@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../users.php';
+require_once '../function/cobamailer.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['emailAstra']);
@@ -17,24 +17,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Cek hanya di role saat ini
-    if (!isset($users[$role])) {
-        header("Location: lupaPassword.php?error=email&role=$role");
+    // Send reset password email
+    $result = sendResetPasswordEmail($email, $email);
+    
+    if ($result['success']) {
+        $_SESSION['reset_email'] = $email;
+        $_SESSION['reset_role'] = $role;
+        // Tampilkan notifikasi sukses di lupaPassword.php
+        header("Location: lupaPassword.php?success=1&role=$role");
+        exit();
+    } else {
+        header("Location: lupaPassword.php?error=mail&role=$role");
         exit();
     }
-
-    $emailFound = false;
-    foreach ($users[$role] as $user) {
-        if (isset($user['email']) && $user['email'] === $email) {
-            $_SESSION['reset_user'] = $user;
-            $_SESSION['reset_role'] = $role;
-
-            header("Location: inputPasswordBaru.php?role=$role&email=" . urlencode($email));
-            exit();
-        }
-    }
-
-    header("Location: lupaPassword.php?error=email&role=$role");
-    exit();
 }
 ?>

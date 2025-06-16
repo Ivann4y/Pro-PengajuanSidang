@@ -1,7 +1,6 @@
 <!-- Argha arybawa pasha -->
 <?php
     // Placeholder data untuk mahasiswa
-    // Anda bisa menggantinya dengan data dinamis jika diperlukan
     $mahasiswa = [
         'nama'  => 'M. Haaris Nur S.',
         'nim'   => '0920240033',
@@ -37,6 +36,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <title>Mahasiswa - Nilai Akhir</title>
 <style>
+    
     body,
     .card,
     .form-control,
@@ -57,20 +57,19 @@
         font-weight: 500;
     }
     
-    /* Aturan untuk card agar konsisten */
-    #carddetailPenilaian, #cardcatatan {
-        background-color: rgb(235, 238, 245);
-        border-radius: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-left: 15px;
-    }
+    #cardcatatan {
+            background-color: rgb(235, 238, 245);
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-left: 10xpx;
+        }
 
     #cardNilai {
         background-color: rgb(235, 238, 245);
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
-        margin-left: 0;
+        margin-left: 10px;
     }
     
     #carddataMahasiswa {
@@ -78,9 +77,11 @@
         border-radius: 50px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
+        margin-left: 10px;
+
     }
 
-    #carddetailPenilaian, #cardcatatan {
+    #cardcatatan {
         width: 100%; /* Dibuat fleksibel */
     }
 
@@ -272,7 +273,7 @@
         </div>
 
 
-        <div class="row mt-5">
+        <div class="row mt-5 ">
             <div class="col-12">
                 <div class="card" id="cardcatatan">
                     <div class="card-body">
