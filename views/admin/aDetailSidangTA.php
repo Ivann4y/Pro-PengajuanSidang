@@ -582,15 +582,12 @@
 
 @media (max-width: 768px) {
 
-    /* 1. Ubah layout utama form group menjadi vertikal (atas-bawah) */
-    /* Aturan ini akan berlaku untuk 'Ruangan', 'Tanggal', 'Jam' dan juga 'Penguji' */
+    
     .modal-body .form-group {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    /* 2. Buat label menjadi lebar penuh dan beri jarak bawah */
-    /* Aturan ini juga berlaku untuk semua label */
     .modal-body .form-group label {
         width: 100%;
         margin-right: 0;
@@ -598,18 +595,13 @@
         text-align: left;
     }
 
-    /* BAGIAN UNTUK PENGUJI TELAH DIHAPUS DARI SINI, 
-       sehingga `.input-with-buttons` akan kembali ke gaya desktopnya (menyamping).
-    */
-
-    /* 4. Hapus padding kiri agar tombol Tambah/Hapus rata kiri */
+    
     .modal-body .form-toggle-buttons {
         padding-left: 0;
         justify-content: center;
         width: 100%;
     }
 
-    /* 5. Buat tombol submit (Batalkan & Buat) menjadi lebar penuh dan tersusun ke bawah */
     .modal-body .form-actions {
         flex-direction: column;
         padding-left: 0;
@@ -942,7 +934,7 @@
 
           Swal.fire({
             title: 'Berhasil',
-            text: 'Jadwal Berhasil Dibuat.',
+            text: 'Jadwal Berhasil Diubah.',
             icon: 'success',
             confirmButtonText: 'OK',
             confirmButtonColor: '#4B68FB'
