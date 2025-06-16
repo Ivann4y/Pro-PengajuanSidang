@@ -2,7 +2,39 @@
 
 require "../../koneksi.php";
 
-$query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul, MIN(d.nama_dosen) AS dosen FROM Sidang s, MataKuliah m, Dosen d, Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang AND ds.id_matkul = m.id_matkul AND ds.nomor_dosen = d.nomor_dosen GROUP BY s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul ORDER BY s.id_sidang";
+// Get filter type from URL parameter
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+
+// Get current page from URL parameter
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$rowsPerPage = 10;
+
+// Base query
+$query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul, MIN(d.nama_dosen) AS dosen 
+          FROM Sidang s, MataKuliah m, Dosen d, Detail_Sidang ds 
+          WHERE ds.id_sidang = s.id_sidang 
+          AND ds.id_matkul = m.id_matkul 
+          AND ds.nomor_dosen = d.nomor_dosen";
+
+// Add filter condition
+if ($filter === 'ta') {
+    $query .= " AND s.jenis_sidang = 0";
+} elseif ($filter === 'semester') {
+    $query .= " AND s.jenis_sidang = 1";
+}
+
+$query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul ORDER BY s.id_sidang";
+
+// Get total records for pagination
+$countQuery = str_replace("SELECT s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul, MIN(d.nama_dosen) AS dosen", 
+                         "SELECT COUNT(DISTINCT s.id_sidang) as total", $query);
+$countResult = sqlsrv_query($conn, $countQuery);
+$totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
+$totalPages = ceil($totalRecords / $rowsPerPage);
+
+// Add pagination to main query
+$query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
+
 $result = sqlsrv_query($conn, $query);
 
 if ($result === false) {
@@ -17,18 +49,6 @@ if ($result === false) {
     exit();
 }
 
-// Initialize arrays to store data
-$dataTA = array();
-$dataSemester = array();
-
-// Process the results
-while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-    if ($row['jenis_sidang'] == 0) {
-        $dataTA[] = $row;
-    } else {
-        $dataSemester[] = $row;
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -103,12 +123,23 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                         <label for="ddMsidang" class="fw-semibold mb-0">Filter: </label>
                         <div class="dropdown ms-2">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                Semua
+                                <?php
+                                switch($filter) {
+                                    case 'ta':
+                                        echo "Sidang TA";
+                                        break;
+                                    case 'semester':
+                                        echo "Sidang Semester";
+                                        break;
+                                    default:
+                                        echo "Semua";
+                                }
+                                ?>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" onclick="switchMSidang('all')">Semua</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="switchMSidang('ta')">Sidang TA</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="switchMSidang('semester')">Sidang Semester</a></li>
+                                <li><a class="dropdown-item" href="?filter=all&page=1">Semua</a></li>
+                                <li><a class="dropdown-item" href="?filter=ta&page=1">Sidang TA</a></li>
+                                <li><a class="dropdown-item" href="?filter=semester&page=1">Sidang Semester</a></li>
                             </ul>
                         </div>
                     </div>
@@ -124,23 +155,8 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="mSidangAll">
-                            <?php foreach ($dataTA as $row): ?>
-                                <tr class="isiTabel jadiBiru">
-                                    <td><?= $row['id_sidang'] ?></td>
-                                    <td><?= htmlspecialchars($row['judul']) ?></td>
-                                    <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
-                                    <td><?= htmlspecialchars($row['dosen']) ?></td>
-                                    <td>
-                                        <button class="detail-btn" onclick="location.href='mdetailSidangTA.php?id=<?= $row['id_sidang'] ?>';">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
                         <tbody>
-                            <?php foreach ($dataSemester as $row): ?>
+                            <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                 <tr class="isiTabel jadiBiru">
                                     <td><?= $row['id_sidang'] ?></td>
                                     <td><?= htmlspecialchars($row['judul']) ?></td>
@@ -152,42 +168,32 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                                         </button>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        <tbody id="mSidangTA" style="display: none;">
-                            <?php foreach ($dataTA as $row): ?>
-                                <tr class="isiTabel jadiBiru">
-                                    <td><?= $row['id_sidang'] ?></td>
-                                    <td><?= htmlspecialchars($row['judul']) ?></td>
-                                    <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
-                                    <td><?= htmlspecialchars($row['dosen']) ?></td>
-                                    <td>
-                                        <button class="detail-btn" onclick="location.href='mdetailSidangTA.php?id=<?= $row['id_sidang'] ?>';">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        <tbody id="mSidangSem" style="display: none;">
-                            <?php foreach ($dataSemester as $row): ?>
-                                <tr class="isiTabel jadiBiru">
-                                    <td><?= $row['id_sidang'] ?></td>
-                                    <td><?= htmlspecialchars($row['judul']) ?></td>
-                                    <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
-                                    <td><?= htmlspecialchars($row['dosen']) ?></td>
-                                    <td>
-                                        <button class="detail-btn" onclick="location.href='mdetailSidangTA.php?id=<?= $row['id_sidang'] ?>';">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                            <?php endwhile; ?>
                         </tbody>
                     </table>
                     <div class="pagination-container">
                         <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center" id="pagination-controls"></ul>
+                            <ul class="pagination justify-content-center">
+                                <?php if ($totalPages > 1): ?>
+                                    <li class="page-item <?= $currentPage == 1 ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?filter=<?= $filter ?>&page=<?= $currentPage - 1 ?>" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
+                                            <a class="page-link" href="?filter=<?= $filter ?>&page=<?= $i ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    
+                                    <li class="page-item <?= $currentPage == $totalPages ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?filter=<?= $filter ?>&page=<?= $currentPage + 1 ?>" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
                         </nav>
                     </div>
                 </div>
@@ -229,150 +235,6 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                 sidebar.classList.toggle("NavSide__sidebar--active-mobile");
             };
         }
-
-        let currentData = [];
-        let currentPage = 1;
-        const rowsPerPage = 10;
-        const dataTA = <?php echo json_encode($dataTA); ?>;
-        const dataSemester = <?php echo json_encode($dataSemester); ?>;
-
-        function displayPage(page) {
-            currentPage = page;
-            const start = (page - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageData = currentData.slice(start, end);
-            
-            const allTable = document.getElementById('mSidangAll');
-            const taTable = document.getElementById('mSidangTA');
-            const semTable = document.getElementById('mSidangSem');
-            
-            allTable.innerHTML = '';
-            taTable.innerHTML = '';
-            semTable.innerHTML = '';
-            
-            const isTA = currentData === dataTA;
-            const isSemester = currentData === dataSemester;
-            
-            pageData.forEach((row) => {
-                const tr = document.createElement('tr');
-                tr.className = 'isiTabel jadiBiru';
-                tr.innerHTML = `
-                    <td>${row.id_sidang}</td>
-                    <td>${row.judul}</td>
-                    <td>${row.nama_matkul}</td>
-                    <td>${row.dosen}</td>
-                    <td>
-                        <button class="detail-btn" onclick="location.href='mdetailSidangTA.php?id=${row.id_sidang}';">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </td>
-                `;
-                
-                if (isTA) {
-                    taTable.appendChild(tr);
-                } else if (isSemester) {
-                    semTable.appendChild(tr);
-                } else {
-                    allTable.appendChild(tr);
-                }
-            });
-            
-            if (isTA) {
-                allTable.style.display = 'none';
-                taTable.style.display = '';
-                semTable.style.display = 'none';
-            } else if (isSemester) {
-                allTable.style.display = 'none';
-                taTable.style.display = 'none';
-                semTable.style.display = '';
-            } else {
-                allTable.style.display = '';
-                taTable.style.display = 'none';
-                semTable.style.display = 'none';
-            }
-            
-            updatePaginationButtons();
-        }
-
-        function setupPagination() {
-            const paginationControls = document.getElementById('pagination-controls');
-            paginationControls.innerHTML = '';
-            const pageCount = Math.ceil(currentData.length / rowsPerPage);
-            if (pageCount <= 1) return;
-
-            const prevButton = document.createElement('li');
-            prevButton.className = 'page-item';
-            prevButton.innerHTML = `<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>`;
-            prevButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (currentPage > 1) displayPage(currentPage - 1);
-            });
-            paginationControls.appendChild(prevButton);
-
-            for (let i = 1; i <= pageCount; i++) {
-                const pageButton = document.createElement('li');
-                pageButton.className = 'page-item';
-                pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-                pageButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    displayPage(i);
-                });
-                paginationControls.appendChild(pageButton);
-            }
-
-            const nextButton = document.createElement('li');
-            nextButton.className = 'page-item';
-            nextButton.innerHTML = `<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>`;
-            nextButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (currentPage < pageCount) displayPage(currentPage + 1);
-            });
-            paginationControls.appendChild(nextButton);
-
-            updatePaginationButtons();
-        }
-
-        function updatePaginationButtons() {
-            const pageCount = Math.ceil(currentData.length / rowsPerPage);
-            const pageItems = document.querySelectorAll('#pagination-controls .page-item');
-            if (pageItems.length === 0) return;
-
-            pageItems.forEach((item, index) => {
-                item.classList.remove('active', 'disabled');
-                if (index === 0) {
-                    if (currentPage === 1) item.classList.add('disabled');
-                } else if (index === pageItems.length - 1) {
-                    if (currentPage === pageCount) item.classList.add('disabled');
-                } else {
-                    if (index === currentPage) {
-                        item.classList.add('active');
-                    }
-                }
-            });
-        }
-
-        window.switchMSidang = function(type) {
-            const btn = document.getElementById("ddMSidang");
-            
-            if (type === 'ta') {
-                currentData = dataTA;
-                btn.innerText = "Sidang TA";
-            } else if (type === 'semester') {
-                currentData = dataSemester;
-                btn.innerText = "Sidang Semester";
-            } else {
-                currentData = [...dataTA, ...dataSemester];
-                btn.innerText = "Semua";
-            }
-
-            currentPage = 1;
-            setupPagination();
-            displayPage(1);
-        };
-
-        currentData = [...dataTA, ...dataSemester];
-        setupPagination();
-        displayPage(1);
     </script>
     <script src="../../assets/js/main.js"></script>
 </body>
