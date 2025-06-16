@@ -7,7 +7,6 @@
     <title>Mahasiswaa - Pengajuan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
 
@@ -94,7 +93,7 @@
             font-size: 0.9rem;
             border-radius: 20px;
             -moz-border-radius: 20px;
-            background-color: rgb(67, 54, 240); 
+            background-color: rgb(67, 54, 240);
             color: white;
             border: none;
             transition: all 0.3s ease;
@@ -160,7 +159,7 @@
             }
         }
 
-        .btn-primary { 
+        .btn-primary {
             background-color: rgb(67, 54, 240);
             border-color: rgb(67, 54, 240);
         }
@@ -171,16 +170,16 @@
         }
 
         .dropdown-menu .dropdown-item {
-            font-family: "Poppins", sans-serif; 
+            font-family: "Poppins", sans-serif;
         }
 
         /* Edit icon styling */
-        .fa-file-signature {
+        .bi-pencil-square {
             color: rgb(67, 54, 240);
             transition: color 0.3s ease;
         }
 
-        tr.jadiBiru:hover .fa-file-signature {
+        tr.jadiBiru:hover .bi-pencil-square {
             color: white;
         }
 
@@ -267,7 +266,7 @@
             }
 
             .pagination-container {
-                position: sticky;
+                position: sticky;       
                 left: 0;
                 right: 0;
                 background: white;
@@ -345,94 +344,88 @@
                 <i class="bi bi-bell-fill"></i>
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i>
-                </div> 
+                </div>
             </div>
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="dashboard-header">
-                <h2 class="text-heading" color:black; >Nayaka Ivana Putra (Mahasiswa)</h2>
-                <div class="header-icons d-none d-md-flex">
-                    <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
-                    <div class="profile-icon">
-                        <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="dashboard-header">
+                        <h2 class="text-heading" style="color:black;">Nayaka Ivana Putra (Mahasiswa)</h2>
+                        <div class="header-icons d-none d-md-flex">
+                            <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                            <div class="profile-icon">
+                                <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-                <div class="row">
-                    <div class="d-flex flex-column">
-                        <div class="d-flex align-items-center gap-2">
-
+            <div class="row">
+                <div class="d-flex flex-column">
+                    <div class="d-flex align-items-center gap-2">
                         <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
-                            <div class="dropdown">
-                                <div class="dropdown">
-                                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                        Semua
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semua')">Semua</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('TA')">Sidang TA</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semester')">Sidang Semester</a></li>
-                                    </ul>
-                                </div>
-                            </div>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                Semua
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semua')">Semua</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('TA')">Sidang TA</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semester')">Sidang Semester</a></li>
+                            </ul>
                         </div>
-                        
-                        <div class="mobile-add-button-container">
+                    </div>
+                    <div class="mobile-add-button-container">
+                        <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <div class="action-column">
                             <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
                         </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="table-responsive">
-                            <div class="action-column">
-                                <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
-                            </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">No</th>
-                                        <th scope="col">Judul</th>
-                                        <th scope="col">Mata Kuliah</th>
-                                        <th scope="col">Dosen Pembimbing</th>
-                                        <th scope="col" class="text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="mSidangTA"></tbody>
-                                <tbody id="mSidangSem" style="display: none;"></tbody>
-                            </table>
-                            <div class="pagination-container">
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination justify-content-center" id="pagination-controls"></ul>
-                                </nav>
-                            </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Judul</th>
+                                    <th scope="col">Mata Kuliah</th>
+                                    <th scope="col">Dosen Pembimbing</th>
+                                    <th scope="col" class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mSidangTableBody"></tbody>
+                        </table>
+                        <div class="pagination-container">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center" id="pagination-controls"></ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div style="background-color: rgb(67, 54, 240);">
-                                <div class="modal-header">
-                                    <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                                </div>
-            \                </div>
-                            <div class="modal-body mx-auto">
-                                Apakah anda yakin ingin keluar?
+            <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div style="background-color: rgb(67, 54, 240);">
+                            <div class="modal-header">
+                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                             </div>
-                            <div class="modal-footer justify-content-center border-0">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-                            </div>
+                        </div>
+                        <div class="modal-body mx-auto">
+                            Apakah anda yakin ingin keluar?
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
                         </div>
                     </div>
                 </div>
@@ -442,231 +435,213 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Sidebar Toggle Logic
-    const menuToggle = document.querySelector(".NavSide__toggle");
-    const sidebar = document.getElementById("main-sidebar");
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Sidebar Toggle Logic
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
 
-    if (menuToggle) {
-        menuToggle.onclick = function () {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-    }
+            if (menuToggle) {
+                menuToggle.onclick = function () {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
 
-    // Data
-    const dataTA = [
-        { judul: "Sistem Pengajuan Sidang", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Pengembangan Aplikasi Mobile Learning", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Sistem Manajemen Perpustakaan Digital", matkul: "Tugas Akhir", dosen: "Suhendra" },
-        { judul: "Aplikasi IoT untuk Smart Home", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Sistem Informasi Akademik Terintegrasi", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Platform E-Learning Adaptif", matkul: "Tugas Akhir", dosen: "Suhendra" },
-        { judul: "Sistem Keamanan Berbasis AI", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Aplikasi Manajemen Proyek Agile", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Sistem Monitoring Kesehatan IoT", matkul: "Tugas Akhir", dosen: "Suhendra" },
-        { judul: "Platform Social Learning", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Sistem Analisis Data Pendidikan", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Aplikasi AR untuk Pembelajaran", matkul: "Tugas Akhir", dosen: "Suhendra" },
-        { judul: "Sistem Manajemen Aset Digital", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Platform Kolaborasi Online", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Sistem Otomasi Smart Campus", matkul: "Tugas Akhir", dosen: "Suhendra" }
-    ];
+            // Data
+            const dataTA = [
+                { judul: "Sistem Pengajuan Sidang", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+                { judul: "Pengembangan Aplikasi Mobile Learning", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+                { judul: "Sistem Manajemen Perpustakaan Digital", matkul: "Tugas Akhir", dosen: "Suhendra" },
+                { judul: "Aplikasi IoT untuk Smart Home", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+                { judul: "Sistem Informasi Akademik Terintegrasi", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+                { judul: "Platform E-Learning Adaptif", matkul: "Tugas Akhir", dosen: "Suhendra" },
+                { judul: "Sistem Keamanan Berbasis AI", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+                { judul: "Aplikasi Manajemen Proyek Agile", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+                { judul: "Sistem Monitoring Kesehatan IoT", matkul: "Tugas Akhir", dosen: "Suhendra" },
+                { judul: "Platform Social Learning", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+                { judul: "Sistem Analisis Data Pendidikan", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+                { judul: "Aplikasi AR untuk Pembelajaran", matkul: "Tugas Akhir", dosen: "Suhendra" },
+                { judul: "Sistem Manajemen Aset Digital", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+                { judul: "Platform Kolaborasi Online", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+                { judul: "Sistem Otomasi Smart Campus", matkul: "Tugas Akhir", dosen: "Suhendra" }
+            ];
 
-    const dataSemester = [
-        { judul: "Implementasi Database NoSQL", matkul: "Basis Data Lanjut", dosen: "Timotius Victory" },
-        { judul: "Pengembangan Web Service", matkul: "Pemrograman Web", dosen: "Suhendra" },
-        { judul: "Analisis Algoritma", matkul: "Struktur Data", dosen: "Rida Indah Fariani" },
-        { judul: "Implementasi Machine Learning", matkul: "Kecerdasan Buatan", dosen: "Timotius Victory" },
-        { judul: "Arsitektur Microservices", matkul: "Sistem Terdistribusi", dosen: "Suhendra" },
-        { judul: "Keamanan Jaringan", matkul: "Jaringan Komputer", dosen: "Rida Indah Fariani" },
-        { judul: "Cloud Computing", matkul: "Komputasi Awan", dosen: "Timotius Victory" },
-        { judul: "Mobile App Development", matkul: "Pemrograman Mobile", dosen: "Suhendra" },
-        { judul: "Data Mining", matkul: "Analisis Data", dosen: "Rida Indah Fariani" },
-        { judul: "UI/UX Design", matkul: "Interaksi Manusia Komputer", dosen: "Timotius Victory" },
-        { judul: "Software Testing", matkul: "Pengujian Perangkat Lunak", dosen: "Suhendra" },
-        { judul: "Computer Vision", matkul: "Pengolahan Citra", dosen: "Rida Indah Fariani" },
-        { judul: "Network Programming", matkul: "Pemrograman Jaringan", dosen: "Timotius Victory" },
-        { judul: "Embedded Systems", matkul: "Sistem Tertanam", dosen: "Suhendra" },
-        { judul: "Big Data Analytics", matkul: "Analisis Big Data", dosen: "Rida Indah Fariani" }
-    ];
+            const dataSemester = [
+                { judul: "Implementasi Database NoSQL", matkul: "Basis Data Lanjut", dosen: "Timotius Victory" },
+                { judul: "Pengembangan Web Service", matkul: "Pemrograman Web", dosen: "Suhendra" },
+                { judul: "Analisis Algoritma", matkul: "Struktur Data", dosen: "Rida Indah Fariani" },
+                { judul: "Implementasi Machine Learning", matkul: "Kecerdasan Buatan", dosen: "Timotius Victory" },
+                { judul: "Arsitektur Microservices", matkul: "Sistem Terdistribusi", dosen: "Suhendra" },
+                { judul: "Keamanan Jaringan", matkul: "Jaringan Komputer", dosen: "Rida Indah Fariani" },
+                { judul: "Cloud Computing", matkul: "Komputasi Awan", dosen: "Timotius Victory" },
+                { judul: "Mobile App Development", matkul: "Pemrograman Mobile", dosen: "Suhendra" },
+                { judul: "Data Mining", matkul: "Analisis Data", dosen: "Rida Indah Fariani" },
+                { judul: "UI/UX Design", matkul: "Interaksi Manusia Komputer", dosen: "Timotius Victory" },
+                { judul: "Software Testing", matkul: "Pengujian Perangkat Lunak", dosen: "Suhendra" },
+                { judul: "Computer Vision", matkul: "Pengolahan Citra", dosen: "Rida Indah Fariani" },
+                { judul: "Network Programming", matkul: "Pemrograman Jaringan", dosen: "Timotius Victory" },
+                { judul: "Embedded Systems", matkul: "Sistem Tertanam", dosen: "Suhendra" },
+                { judul: "Big Data Analytics", matkul: "Analisis Big Data", dosen: "Rida Indah Fariani" }
+            ];
 
-    // Element references - CORRECTED IDs
-    const tbodyTA = document.getElementById("mSidangTA");
-    const tbodySem = document.getElementById("mSidangSem");
-    const dropdownButton = document.getElementById("ddMSidang");
-    // Added a search input for demonstration. You can add this HTML input:
-    // <input type="text" class="form-control search-input" placeholder="Cari..." aria-label="Cari">
-    const searchInput = document.querySelector('.search-input'); // Corrected selector
-    const paginationControls = document.getElementById("pagination-controls");
+            // Element references
+            const mainTableBody = document.getElementById("mSidangTableBody");
+            const dropdownButton = document.getElementById("ddMSidang");
+            const paginationControls = document.getElementById("pagination-controls");
 
-    let currentData = []; // Initialize with an empty array
-    let currentActiveTbody = tbodyTA; // Track which tbody is currently active
-    let currentPage = 1;
-    const rowsPerPage = 10;
+            let currentFilteredData = []; // Data yang sedang ditampilkan setelah filter
+            let currentPage = 1;
+            const rowsPerPage = 10;
 
-    // Render table
-    function renderTable(data, tbody) {
-        // Clear both tables before rendering to prevent duplicate entries when switching
-        tbodyTA.innerHTML = '';
-        tbodySem.innerHTML = '';
+            // Render table
+            function renderTable(dataToRender) {
+                if (!mainTableBody) {
+                    console.error("Main table body element not found!");
+                    return;
+                }
+                mainTableBody.innerHTML = ''; // Bersihkan isi tabel
 
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        const pageData = data.slice(start, end);
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+                const pageData = dataToRender.slice(start, end);
 
-        if (tbody) { // Ensure tbody is not null before attempting to modify innerHTML
-            pageData.forEach((item, index) => {
-                const globalIndex = start + index;
-                tbody.innerHTML += `
-                    <tr class="isiTabel jadiBiru">
-                        <td>${globalIndex + 1}</td>
-                        <td>${item.judul}</td>
-                        <td>${item.matkul}</td>
-                        <td>${item.dosen}</td>
-                        <td>
-                            <i class="fa-solid fa-file-signature" style="cursor: pointer;" onclick="editData(${globalIndex}, '${tbody.id}', '${item.judul}', '${item.matkul}')"></i>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-    }
+                if (pageData.length === 0) {
+                    mainTableBody.innerHTML = `
+                        <tr class="isiTabel">
+                            <td colspan="5" class="text-center py-4">Tidak ada data untuk ditampilkan.</td>
+                        </tr>
+                    `;
+                } else {
+                    pageData.forEach((item, index) => {
+                        const globalIndex = start + index;
+                        mainTableBody.innerHTML += `
+                            <tr class="isiTabel jadiBiru">
+                                <td>${globalIndex + 1}</td>
+                                <td>${item.judul}</td>
+                                <td>${item.matkul}</td>
+                                <td>${item.dosen}</td>
+                                <td>
+                                    <i class="bi bi-pencil-square" style="cursor: pointer;" onclick="editData(${globalIndex}, '${item.matkul}', '${item.judul}')"></i>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            }
 
-    // Pagination
-    function setupPagination() {
-        paginationControls.innerHTML = '';
-        const pageCount = Math.ceil(currentData.length / rowsPerPage);
-        if (pageCount <= 1) return;
+            // Pagination
+            function setupPagination() {
+                paginationControls.innerHTML = '';
+                const pageCount = Math.ceil(currentFilteredData.length / rowsPerPage);
+                
+                // If there's no data or only one page, hide pagination or show only page 1
+                if (currentFilteredData.length === 0) {
+                    return; // Don't show pagination if no data
+                }
+                if (pageCount <= 1) {
+                    const li = document.createElement("li");
+                    li.className = `page-item active`;
+                    li.innerHTML = `<a class="page-link" href="#">1</a>`;
+                    paginationControls.appendChild(li);
+                    return;
+                }
 
-        const createBtn = (label, disabled, onClick) => {
-            const li = document.createElement("li");
-            li.className = `page-item ${disabled ? "disabled" : ""}`;
-            li.innerHTML = `<a class="page-link" href="#">${label}</a>`;
-            li.onclick = (e) => {
-                e.preventDefault();
-                if (!disabled) onClick();
+
+                const createBtn = (label, disabled, onClick, isActive = false) => {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${disabled ? "disabled" : ""} ${isActive ? "active" : ""}`;
+                    li.innerHTML = `<a class="page-link" href="#">${label}</a>`;
+                    li.onclick = (e) => {
+                        e.preventDefault();
+                        if (!disabled) onClick();
+                    };
+                    return li;
+                };
+
+                // Previous button
+                paginationControls.appendChild(createBtn("«", currentPage === 1, () => changePage(currentPage - 1)));
+
+                // Page numbers
+                let startPage = Math.max(1, currentPage - 1);
+                let endPage = Math.min(pageCount, currentPage + 1);
+
+                if (currentPage === 1) {
+                    endPage = Math.min(pageCount, 3);
+                } else if (currentPage === pageCount) {
+                    startPage = Math.max(1, pageCount - 2);
+                }
+
+                if (startPage > 1) {
+                    paginationControls.appendChild(createBtn(1, false, () => changePage(1), 1 === currentPage));
+                    if (startPage > 2) {
+                        const li = document.createElement("li");
+                        li.className = "page-item disabled";
+                        li.innerHTML = `<span class="page-link">...</span>`;
+                        paginationControls.appendChild(li);
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationControls.appendChild(createBtn(i, false, () => changePage(i), i === currentPage));
+                }
+
+                if (endPage < pageCount) {
+                    if (endPage < pageCount - 1) {
+                        const li = document.createElement("li");
+                        li.className = "page-item disabled";
+                        li.innerHTML = `<span class="page-link">...</span>`;
+                        paginationControls.appendChild(li);
+                    }
+                    paginationControls.appendChild(createBtn(pageCount, false, () => changePage(pageCount), pageCount === currentPage));
+                }
+
+                // Next button
+                paginationControls.appendChild(createBtn("»", currentPage === pageCount, () => changePage(currentPage + 1)));
+            }
+
+            function changePage(page) {
+                currentPage = page;
+                renderTable(currentFilteredData);
+                setupPagination();
+            }
+
+            // Dropdown handler
+            window.switchDdaftarPengajuan = function (tipe) {
+                if (tipe === 'TA') {
+                    currentFilteredData = dataTA;
+                    dropdownButton.textContent = 'Sidang TA';
+                } else if (tipe === 'Semester') {
+                    currentFilteredData = dataSemester;
+                    dropdownButton.textContent = 'Sidang Semester';
+                } else { // Semua
+                    currentFilteredData = dataTA.concat(dataSemester); // Gabungkan semua data
+                    dropdownButton.textContent = 'Semua';
+                }
+
+                currentPage = 1; // Reset halaman ke 1 setiap kali filter berubah
+                renderTable(currentFilteredData);
+                setupPagination();
             };
-            return li;
-        };
 
-        paginationControls.appendChild(createBtn("«", currentPage === 1, () => changePage(currentPage - 1)));
+            // Edit dan Tambah
+            window.editData = function (index, matkul, judul) {
+                // `index` di sini adalah index pada data yang sedang DIFILTER.
+                // Jika Anda ingin mengedit data asli, Anda perlu mencari indeks asli atau
+                // meneruskan lebih banyak informasi. Untuk saat ini, ini akan berfungsi
+                // untuk demo pengiriman data ke halaman lain.
+                window.location.href = `mEditPengajuan.php?index=${index}&matkul=${encodeURIComponent(matkul)}&judul=${encodeURIComponent(judul)}`;
+            };
 
-        // Display fewer page numbers for mobile responsiveness
-        let startPage = Math.max(1, currentPage - 1);
-        let endPage = Math.min(pageCount, currentPage + 1);
+            window.tambahData = function () {
+                window.location.href = 'mEditPengajuan.php';
+            };
 
-        if (currentPage === 1) {
-            endPage = Math.min(pageCount, 3);
-        } else if (currentPage === pageCount) {
-            startPage = Math.max(1, pageCount - 2);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            const li = createBtn(i, false, () => changePage(i));
-            if (i === currentPage) li.classList.add("active");
-            paginationControls.appendChild(li);
-        }
-
-        // Add ellipses if there are more pages
-        if (endPage < pageCount) {
-            if (endPage < pageCount - 1) { // Add ellipses if not just next to the last page
-                const li = document.createElement("li");
-                li.className = "page-item disabled";
-                li.innerHTML = `<a class="page-link" href="#">...</a>`;
-                paginationControls.appendChild(li);
-            }
-            if (endPage < pageCount) { // Always show the last page number
-                const lastPageLi = createBtn(pageCount, false, () => changePage(pageCount));
-                if (pageCount === currentPage) lastPageLi.classList.add("active");
-                paginationControls.appendChild(lastPageLi);
-            }
-        }
-
-        // Add first page number if not already shown
-        if (startPage > 1) {
-            if (startPage > 2) { // Add ellipses if not just next to the first page
-                const li = document.createElement("li");
-                li.className = "page-item disabled";
-                li.innerHTML = `<a class="page-link" href="#">...</a>`;
-                paginationControls.prepend(li);
-            }
-            const firstPageLi = createBtn(1, false, () => changePage(1));
-            if (1 === currentPage) firstPageLi.classList.add("active");
-            paginationControls.prepend(firstPageLi);
-        }
-
-
-        paginationControls.appendChild(createBtn("»", currentPage === pageCount, () => changePage(currentPage + 1)));
-    }
-
-    function changePage(page) {
-        currentPage = page;
-        renderTable(currentData, currentActiveTbody); // Render with the currently active tbody
-        setupPagination();
-    }
-
-    // Dropdown handler
-    window.switchDdaftarPengajuan = function (tipe) {
-        if (tipe === 'TA') {
-            tbodyTA.style.display = '';
-            tbodySem.style.display = 'none';
-            dropdownButton.textContent = 'Sidang TA';
-            currentData = dataTA;
-            currentActiveTbody = tbodyTA; // Set active tbody
-        } else if (tipe === 'Semester') {
-            tbodyTA.style.display = 'none';
-            tbodySem.style.display = '';
-            dropdownButton.textContent = 'Sidang Semester';
-            currentData = dataSemester;
-            currentActiveTbody = tbodySem; // Set active tbody
-        } else { // Semua
-            tbodyTA.style.display = '';
-            tbodySem.style.display = 'none'; // Only one tbody should display content for 'Semua'
-            dropdownButton.textContent = 'Semua';
-            currentData = dataTA.concat(dataSemester);
-            currentActiveTbody = tbodyTA; // Use tbodyTA to display combined data
-        }
-        currentPage = 1;
-        renderTable(currentData, currentActiveTbody); // Render with the newly set active tbody
-        setupPagination();
-    };
-
-    // Search
-    if (searchInput) { // Check if searchInput exists
-        searchInput.addEventListener("keyup", function () {
-            const query = searchInput.value.toLowerCase();
-            const filtered = currentData.filter(item =>
-                item.judul.toLowerCase().includes(query) ||
-                item.matkul.toLowerCase().includes(query) ||
-                item.dosen.toLowerCase().includes(query)
-            );
-            currentPage = 1;
-            renderTable(filtered, currentActiveTbody); // Render filtered data to the active tbody
-            setupPagination();
+            // Initial load: Display "Semua" data
+            // Panggil switchDdaftarPengajuan('Semua') untuk inisialisasi tabel dengan semua data
+            switchDdaftarPengajuan('Semua');
         });
-    }
-
-    // Edit dan Tambah
-    window.editData = function (index, jenis, judul, matkul) {
-        // `jenis` now correctly refers to the `tbody.id` (e.g., "mSidangTA" or "mSidangSem")
-        // You might want to adjust how `jenis` is used in mEditPengajuan.php
-        window.location.href = `mEditPengajuan.php?index=${index}&jenis=${jenis}&judul=${encodeURIComponent(judul)}&matkul=${encodeURIComponent(matkul)}`;
-    };
-
-    window.tambahData = function () {
-        window.location.href = 'mEditPengajuan.php';
-    };
-
-    // Load awal
-    // Initialize currentData and currentActiveTbody correctly at the start
-    currentData = dataTA;
-    currentActiveTbody = tbodyTA;
-    renderTable(currentData, currentActiveTbody);
-    setupPagination();
-});
-</script>
+    </script>
 
 </body>
 
