@@ -225,7 +225,7 @@ $role = "dosen";
                             class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
                             id="username"
                             name="username"
-                            placeholder="NIM"
+                            placeholder="NIP"
                             value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
                         <?php if ($error === 'empty'): ?>
                             <small class="text-danger">NIM dan Kata Sandi harus diisi!</small>

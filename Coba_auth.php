@@ -1,9 +1,6 @@
 <?php
-// File: Coba_auth.php
 
 session_start();
-
-// Ganti dengan detail koneksi server Anda
 $serverName = "LAPTOP-7POM2U9J\\SQLEXPRESS"; 
 $connectionOptions = [
     "Database" => "ZIa",

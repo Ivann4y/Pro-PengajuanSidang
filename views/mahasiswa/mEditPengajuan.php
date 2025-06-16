@@ -18,6 +18,64 @@
 </head>
 
 <style>
+  @media (max-width: 700px) {
+    .NavSide__sidebar {
+      width: 50%;
+      transform: translateX(-100%);
+      border-left-width: 0;
+    }
+
+    .NavSide__sidebar.NavSide__sidebar--active-mobile {
+      transform: translateX(0);
+      box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .NavSide__sidebar-brand {
+      padding: 20px 10px 30px 10px;
+    }
+
+    .NavSide__sidebar-brand img {
+      width: 90%;
+    }
+
+    .NavSide__sidebar-nav {
+      padding-top: 20%;
+    }
+
+    .NavSide__sidebar-item a {
+      padding: 12% 10%;
+      height: auto;
+    }
+
+    .NavSide__main-content {
+      margin-left: 0;
+      padding: 15px;
+      padding-top: 75px;
+    }
+
+    .NavSide__toggle {
+      display: flex;
+      position: relative;
+      top: auto;
+      background-color: transparent;
+      box-shadow: none;
+      left: 0;
+    }
+
+    .NavSide__toggle i.bi.open {
+      display: block;
+    }
+
+    .NavSide__toggle.NavSide__toggle--active {
+      left: calc(50% + 10px);
+      background-color: aliceblue;
+    }
+
+    .NavSide__topbar {
+      display: flex;
+    }
+  }
+
   body {
     font-family: "Poppins", sans-serif;
   }
@@ -145,7 +203,7 @@
         </li>
         <li class="NavSide__sidebar-item">
           <b></b><b></b>
-          <a href="logout.html"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
         </li>
       </ul>
     </div>
@@ -190,14 +248,71 @@
                                               echo ' selected';
                                             }
                                             ?>>Tugas Akhir</option>
-                <option value="Pemrograman 2" <?php if ($matkul == 'Pemrograman 2') {
-                                                echo ' selected';
-                                              }
-                                              ?>>Pemrograman 2</option>
+                <option value="Pemrograman Web" <?php if ($matkul == 'Pemrograman Web') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Pemrograman Web</option>
                 <option value="Sistem Operasi" <?php if ($matkul == 'Sistem Operasi') {
                                                   echo ' selected';
                                                 }
                                                 ?>>Sistem Operasi</option>
+                <option value="Basis Data Lanjut" <?php if ($matkul == 'Basis Data Lanjut') {
+                                                    echo ' selected';
+                                                  }
+                                                  ?>>Basis Data Lanjut</option>
+                <option value="Struktur Data" <?php if ($matkul == 'Struktur Data') {
+                                                echo ' selected';
+                                              }
+                                              ?>>Struktur Data</option>
+                <option value="Kecerdasan Buatan" <?php if ($matkul == 'Kecerdasan Buatan') {
+                                                    echo ' selected';
+                                                  }
+                                                  ?>>Kecerdasan Buatan</option>
+                <option value="Sistem Terdistribusi" <?php if ($matkul == 'Sistem Terdistribusi') {
+                                                        echo ' selected';
+                                                      }
+                                                      ?>>Sistem Terdistribusi</option>
+                <option value="Jaringan Komputer" <?php if ($matkul == 'Jaringan Komputer') {
+                                                    echo ' selected';
+                                                  }
+                                                  ?>>Jaringan Komputer</option>
+                <option value="Komputasi Awan" <?php if ($matkul == 'Komputasi Awan') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Komputasi Awan</option>
+                <option value="Pemrograman Mobile" <?php if ($matkul == 'Pemrograman Mobile') {
+                                                      echo ' selected';
+                                                    }
+                                                    ?>>Pemrograman Mobile</option>
+                <option value="Analisis Data" <?php if ($matkul == 'Analisis Data') {
+                                                echo ' selected';
+                                              }
+                                              ?>>Analisis Data</option>
+                <option value="Interaksi Manusia Komputer" <?php if ($matkul == 'Interaksi Manusia Komputer') {
+                                                              echo ' selected';
+                                                            }
+                                                            ?>>Interaksi Manusia Komputer</option>
+                <option value="Pengujian Perangkat Lunak" <?php if ($matkul == 'Pengujian Perangkat Lunak') {
+                                                            echo ' selected';
+                                                          }
+                                                          ?>>Pengujian Perangkat Lunak</option>
+                <option value="Pengolahan Citra" <?php if ($matkul == 'Pengolahan Citra') {
+                                                    echo ' selected';
+                                                  }
+                                                  ?>>Pengolahan Citra</option>
+                <option value="Pemrograman Jaringan" <?php if ($matkul == 'Pemrograman Jaringan') {
+                                                        echo ' selected';
+                                                      }
+                                                      ?>>Pemrograman Jaringan</option>
+                <option value="Sistem Tertanam" <?php if ($matkul == 'Sistem Tertanam') {
+                                                  echo ' selected';
+                                                }
+                                                ?>>Sistem Tertanam</option>
+                <option value="Analisis Big Data" <?php if ($matkul == 'Analisis Big Data') {
+                                                    echo ' selected';
+                                                  }
+                                                  ?>>Analisis Big Data</option>
+
               </select>
             </div>
 
@@ -216,7 +331,7 @@
                           <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z" />
                           <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z" />
                         </svg>
-                        <p class="mt-2 text-muted small" id="DokumenLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
+                        <p class="mt-2 text-muted small DokumenLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
                       </div>
                     </label>
                   </div>
@@ -267,6 +382,26 @@
               </div>
             </div>
           </form>
+        </div>
+
+        <!-- Modal keluar-->
+        <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div style="background-color: rgb(67, 54, 240);">
+                <div class="modal-header">
+                  <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                </div>
+              </div>
+              <div class="modal-body mx-auto">
+                Apakah anda yakin ingin keluar?
+              </div>
+              <div class="modal-footer justify-content-center border-0">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>

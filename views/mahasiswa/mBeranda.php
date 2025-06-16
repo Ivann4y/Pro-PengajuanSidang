@@ -24,7 +24,13 @@ if ($_SESSION['role'] !== 'mahasiswa') {
             <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"></div>
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item">
+                    <b></b>
+                    <b></b>
+                    <a href="mPengajuan.php">
+                        <span class="NavSide__sidebar-title fw-semibold">Pengajuan</span>
+                    </a>
+                </li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a></li>
             </ul>
