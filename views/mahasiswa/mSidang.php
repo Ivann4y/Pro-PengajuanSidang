@@ -1,16 +1,18 @@
 <?php
-$serverName = "BALTO\\SQLEXPRESS";
-$connectionOptions = [
-    "Database" => "SistemSidang",
-    "TrustServerCertificate" => true,
-];
 
-// Attempt to connect
-$conn = sqlsrv_connect($serverName, $connectionOptions);
-if ($conn === false) {
-    echo "Koneksi Gagal:<br>";
-    die(print_r(sqlsrv_errors(), true));
-}
+require "../../koneksi.php";
+// $serverName = "DESKTOP-M7H7C9C\SQLEXPRESS01";
+// $connectionOptions = [
+//     "Database" => "SistemSidang",
+//     "TrustServerCertificate" => true,
+// ];
+
+// // Attempt to connect
+// $conn = sqlsrv_connect($serverName, $connectionOptions);
+// if ($conn === false) {
+//     echo "Koneksi Gagal:<br>";
+//     die(print_r(sqlsrv_errors(), true));
+// }
 // If connection is successful
 // echo "Koneksi Berhasil!<br>";
 
