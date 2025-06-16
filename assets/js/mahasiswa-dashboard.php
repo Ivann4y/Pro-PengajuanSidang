@@ -24,14 +24,14 @@ $tugas_list = [
 ];
 
 $sidang_mendatang = [
-    ['tanggal_sidang' => '2025-06-02', 'judul' => 'Sistem Pengajuan Skripsi', 'link_detail' => 'mdetailsidangta.php'],
-    ['tanggal_sidang' => '2025-06-05', 'judul' => 'Revisi Proposal KP', 'link_detail' => 'mdetailsidangta.php'],
-    ['tanggal_sidang' => '2025-06-10', 'judul' => 'Sidang Akhir TA', 'link_detail' => 'mdetailsidangta.php'],
-    ['tanggal_sidang' => '2025-06-15', 'judul' => 'Presentasi Proyek', 'link_detail' => 'mdetailsidangta.php'],
+    ['tanggal_sidang' => '2025-06-18', 'judul' => 'Sistem Pengajuan Skripsi', 'link_detail' => 'mdetailsidangta.php'],
+    ['tanggal_sidang' => '2025-06-20', 'judul' => 'Revisi Proposal KP', 'link_detail' => 'mdetailsidangta.php'],
+    ['tanggal_sidang' => '2025-06-24', 'judul' => 'Sidang Akhir TA', 'link_detail' => 'mdetailsidangta.php'],
+    ['tanggal_sidang' => '2025-06-30', 'judul' => 'Presentasi Proyek', 'link_detail' => 'mdetailsidangta.php'],
     ['tanggal_sidang' => '2025-07-02', 'judul' => 'Pengumpulan Laporan', 'link_detail' => 'mdetailsidangta.php'],
 ];
 
-// Convert PHP arrays to JSON for JavaScript
+// Mengubah data PHP ke JSON untuk digunakan di JavaScript
 $mahasiswa_info_json = json_encode($mahasiswa_info);
 $card_dashboard_json = json_encode($card_dashboard);
 $tugas_list_json = json_encode($tugas_list);
@@ -40,9 +40,7 @@ $sidang_mendatang_json = json_encode($sidang_mendatang);
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // =========================
-    // Sidebar Toggle Logic
-    // =========================
+    // Logika untuk toggle sidebar pada halaman dibawah 700px
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
 
@@ -52,20 +50,18 @@ document.addEventListener("DOMContentLoaded", function() {
         sidebar.classList.toggle("NavSide__sidebar--active-mobile");
     };
 
-    // =========================
-    // Data from PHP
-    // =========================
+    // Mengambil data dari PHP 
     const mahasiswaInfo = <?php echo $mahasiswa_info_json; ?>;
     const cardDashboard = <?php echo $card_dashboard_json; ?>;
     const tugasList = <?php echo $tugas_list_json; ?>;
     const sidangData = <?php echo $sidang_mendatang_json; ?>;
     const sidangDates = sidangData.map(item => item.tanggal_sidang);
 
-    // Update dashboard numbers
+    // Mengisi data pada card dashboard
     document.querySelector('.sidang-status-card .number').textContent = cardDashboard.sidang_berlangsung;
     document.querySelector('.penilaian-status-card .number').textContent = cardDashboard.menunggu_penilaian;
 
-    // Update welcome text
+    // Update nama pada welcome text
     document.querySelector('.welcome-text').textContent = `Selamat Datang, ${mahasiswaInfo.nama}!`;
 
     // Render tugas list
@@ -81,9 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // =========================
-    // Kalender Interaktif
-    // =========================
+    // Kalender Real-time
     const calendarTableBody = document.querySelector("#calendarTable tbody");
     const currentMonthYearHeader = document.getElementById("currentMonthYear");
     const prevMonthBtn = document.getElementById("prevMonth");
