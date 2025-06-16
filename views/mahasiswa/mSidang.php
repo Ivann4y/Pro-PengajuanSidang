@@ -64,6 +64,11 @@ if ($result === false) {
     <link rel="stylesheet" href="../../assets/css/msidang.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 
 <body>
