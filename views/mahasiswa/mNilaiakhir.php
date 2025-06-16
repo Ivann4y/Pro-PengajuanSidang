@@ -255,7 +255,7 @@
         <div class="row mb-4 title-container">
             <div class="col-12">
                 <h2 class="main-title">
-                    Mahasiswa / Detail Evaluasi - Sistem Pengajuan Sidang
+                    Detail Evaluasi - Sistem Pengajuan Sidang
                 </h2>
             </div>
         </div>
