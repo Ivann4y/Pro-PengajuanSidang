@@ -1,5 +1,4 @@
 <?php
-session_start();
 $role = $_GET['role'] ?? 'guest';
 
 switch ($role) {
@@ -240,7 +239,6 @@ switch ($role) {
             <div class="log">
                 <?php
                 $error = $_GET['error'] ?? '';
-                $success = $_GET['success'] ?? '';
                 ?>
                 <form action="authEmail.php" method="POST">
                     <h2 class="fs-2 fw-bold text-center"><?= $judul ?></h2>
@@ -256,17 +254,12 @@ switch ($role) {
                     <?php elseif ($error === 'email'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Email tidak ditemukan!</div>
-                    <?php elseif ($error === 'mail'): ?>
-                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
-                        <div class="text-danger">Gagal mengirim email reset password. Silakan coba lagi!</div>
-                    <?php elseif ($success === '1'): ?>
-                        <input type="text" class="form-control form-control-lg border border-success" id="emailAstra" name="emailAstra" value="<?= htmlspecialchars($_SESSION['reset_email']) ?>" readonly>
-                        <div class="text-success">Email reset password telah dikirim. Silakan cek email Anda!</div>
                     <?php else: ?>
-                        <input type="text" class="form-control form-control-lg" id="emailAstra" name="emailAstra">
+                        <input type="text" class="form-control form-control-lg border border-dark" id="emailAstra" name="emailAstra">
                     <?php endif; ?>
 
-                    <button class="btn btn-setujui float-end mt-2" id="btnKirim" <?= ($success === '1') ? 'disabled' : '' ?>>
+                    <!-- <button type="submit" class="btnKirim btn btn-success w-25 mt-2 float-end fw-medium rounded rounded-5">Kirim</button> -->
+                    <button class="btn btn-setujui float-end mt-2" id="btnKirim">
                         Kirim
                     </button>
                 </form>

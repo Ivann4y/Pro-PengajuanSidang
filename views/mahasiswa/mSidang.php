@@ -189,7 +189,7 @@ $result = sqlsrv_query($conn, $query);
                 display: none;
             }
         }
-        /* Original mSidang table structural styles - END */
+        
     </style>
 </head>
 

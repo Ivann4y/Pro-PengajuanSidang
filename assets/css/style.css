@@ -77,16 +77,6 @@ body {
     margin-left: 0;
     width: 100%;
   }
-  /* .text-heading {
-    font-size: large;
-  }
-  .dropdown-toggle,
-  .dropdown-menu {
-    font-size: small !important;
-  }
-  table {
-    font-size: small;
-  } */
 
   thead th:nth-child(1),
   thead th:nth-child(5) {
@@ -394,12 +384,12 @@ body {
   }
 
   .text-heading {
-    display: none;
+    font-size:30px;
   }
 
   .text-heading-mobile {
-    color: #4b68fb;
     font-weight: 550;
+    
     margin: auto;
   }
 }
