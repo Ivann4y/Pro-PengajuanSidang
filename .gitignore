@@ -2,4 +2,7 @@
 *.dll
 *.obj
 *.pdb
+*.env
+.env
 
+/vendor/

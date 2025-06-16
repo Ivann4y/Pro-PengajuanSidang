@@ -188,12 +188,3 @@ function sendResetPasswordEmail($recipientEmail, $recipientName) {
         ];
     }
 }
-
-// Example usage:
-// $result = sendResetPasswordEmail($_POST['email'], $_POST['name']);
-// if ($result['success']) {
-//     echo $result['message'];
-// } else {
-//     http_response_code(400);
-//     echo $result['message'];
-// }

@@ -168,6 +168,107 @@ $role = "mahasiswa";
             background-color: #3a53c3;
             color: white;
         }
+
+        @media (max-width: 700px) {
+            .fullscreen {
+                flex-direction: column;
+                height: auto;
+                width: 100vw;
+            }
+
+            .bgBiru {
+                width: 100%;
+                height: auto;
+                padding: 5vh 5vw;
+                box-sizing: border-box;
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* .bgBiru img.background-awan {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                z-index: -1;
+            } */
+
+            .bgBiru img.background-awan {
+                position: absolute;
+                width: 150vw !important;
+                height: 67vh !important;
+                object-fit: cover;
+            }
+
+            .bgBiru .position-absolute {
+                position: absolute;
+                width: 150vw !important;
+                height: 67vh !important;
+                object-fit: cover;
+            }
+
+            .log {
+                width: 90%;
+                height: auto;
+                background-color: #ffffff;
+                border-radius: 8vw 8vw 0 0;
+                margin-top: -5vh;
+                z-index: 10;
+                padding: 6vh 5vw;
+                margin: auto;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #carouselExampleAutoplaying {
+                width: 45vw;
+                height: 45vw;
+                max-width: 220px;
+                max-height: 220px;
+                border-radius: 50%;
+                overflow: hidden;
+                margin: 3vh auto;
+                position: relative;
+                z-index: 2;
+            }
+
+            .carousel-inner,
+            .carousel-item {
+                width: 100%;
+                height: 100%;
+            }
+
+            .carousel-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .log .col-md-7,
+            form,
+            .back-button-container {
+                width: 100%;
+                max-width: 400%;
+                margin-top: 0 !important;
+                padding: 0;
+            }
+
+            .back-button-container {
+                margin-top: 3vh !important;
+            }
+
+            .btn-kembali {
+                background-color: #f0f0f0;
+                color: #333;
+            }
+        }
     </style>
 </head>
 
@@ -175,7 +276,7 @@ $role = "mahasiswa";
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
             <img src="../../assets/img/awan.png"
-                class="position-absolute"
+                class="background-awan position-absolute"
                 style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
                 alt="Background">
             <div class="position-absolute"

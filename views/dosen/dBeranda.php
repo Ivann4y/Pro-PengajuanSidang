@@ -18,10 +18,10 @@ if ($_SESSION['role'] !== 'dosen') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../../assets/css/style.css"/>
     <link rel="stylesheet" href="../../extra/style.css">
- 
+
     <style>
 
-        /* Ikon Header untuk Desktop (Profil) */
+        /* Ikon Header untuk Desktop (Notifikasi & Profil) */
         .NavSide__main-content .header-icons-desktop {
             position: absolute;
             top: 30px;
@@ -31,9 +31,16 @@ if ($_SESSION['role'] !== 'dosen') {
             gap: 20px;
             z-index: 10;
         }
+
+        .NavSide__main-content .header-icons-desktop .notification-icon {
+            font-size: 1.5rem;
+            color: #1F2937;
+            cursor: pointer;
+        }
+
         .NavSide__main-content .header-icons-desktop .profile-icon-desktop {
-            width: 48px; /* Ukuran ikon profil sesuai gambar */
-            height: 48px;
+            width: 40px; 
+            height: 40px;
             background-color: #1F2937; 
             border-radius: 50%;
             display: flex;
@@ -42,6 +49,16 @@ if ($_SESSION['role'] !== 'dosen') {
             color: white; 
             font-size: 1.5rem; 
         }
+
+        .NavSide__topbar .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 0px; 
+        }
+        .NavSide__topbar .header-icons .notification-icon i {
+             color: #1F2937; 
+        }
+
         /* "Beranda" */
         .dashboardTitle { 
             color: #1F2937; 
@@ -54,7 +71,7 @@ if ($_SESSION['role'] !== 'dosen') {
             color: #1F2937;
             font-size: 2.5rem; 
             font-weight: 700; 
-            margin-bottom: 2rem; /  * Jarak bawah lebih besar */
+            margin-bottom: 2rem; /   
         }
 
         .hover-effect-card { /* Kelas baru untuk card yang bisa dihover */
@@ -131,12 +148,12 @@ if ($_SESSION['role'] !== 'dosen') {
 
         .card-perbaikan.status-card-common .text-content .title,
         .card-penilaian.status-card-common .text-content .title {
-            color: #4B5563; /* Warna title abu-abu */
+            color: #4B5563; 
         }
 
         .card-perbaikan.status-card-common .text-content .description,
         .card-penilaian.status-card-common .text-content .description {
-            color: #1F2937; /* Warna description gelap */
+            color: #1F2937; 
         }
 
         .dashboard-card { /* Tambahan untuk styling dasar kartu dashboard */
@@ -244,25 +261,25 @@ if ($_SESSION['role'] !== 'dosen') {
         .calendar-card .calendar-day:hover:not(.current-day) {
             background-color: rgba(255, 255, 255, 0.2);
         }
-        .calendar-card .calendar-day.other-month { /* Untuk tanggal dari bulan lain */
+        .calendar-card .calendar-day.other-month { 
             color: #A5B4FC;
             cursor: default;
         }
         .calendar-card .calendar-day.other-month:hover {
             background-color: transparent;
         }
-       
+        
         .sidang-mendatang-card {
             background-color: #F3F4F6;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            max-height: 450px; 
+            max-height: 57vh; 
             overflow-y: auto; 
             padding-bottom: 1.25rem; 
         }
         
-        .sidang-mendatang-card .section-title { /* Judul "Sidang Mendatang" */
+        .sidang-mendatang-card .section-title { 
             position: sticky;
             top: -1.25rem; 
             background-color: #F3F4F6;
@@ -358,19 +375,24 @@ if ($_SESSION['role'] !== 'dosen') {
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
+                 <a href="#" class="notification-icon" title="Notifikasi">
+                    <i class="bi bi-bell-fill fs-5"></i>
+                </a>
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i>
                 </div>
             </div>
-        </div>
+            </div>
 
         <div class="NavSide__main-content" id="mainContent">
-            <div class="header-icons-desktop">
+            <div class="header-icons-desktop d-none d-lg-flex">
+                <a href="#" class="notification-icon" title="Notifikasi">
+                    <i class="bi bi-bell-fill"></i>
+                </a>
                 <div class="profile-icon-desktop">
                     <i class="bi bi-person-fill"></i>
                 </div>
             </div>
-
             <div class="dashboardTitle">Beranda Dosen</div>
             <h2 class="welcomeText">Selamat Datang, Evan Wahyu!</h2>
 
@@ -451,16 +473,23 @@ if ($_SESSION['role'] !== 'dosen') {
                         <table class="calendar" id="calendarTable">
                             <thead>
                                 <tr>
-                                    <th>Min</th><th>Sen</th><th>Sel</th><th>Rab</th><th>Kam</th><th>Jum</th><th>Sab</th>
+                                    <th>Min</th>
+                                    <th>Sen</th>
+                                    <th>Sel</th>
+                                    <th>Rab</th>
+                                    <th>Kam</th>
+                                    <th>Jum</th>
+                                    <th>Sab</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Calendar will be rendered by JavaScript -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
     
      <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -483,6 +512,9 @@ if ($_SESSION['role'] !== 'dosen') {
     </div>
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/dashboard.js"></script>
+    <script>
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // --- Toggle Sidebar ---
@@ -495,69 +527,69 @@ if ($_SESSION['role'] !== 'dosen') {
                 });
             }
 
-            // --- Real-time Calendar Functionality ---
-            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            const currentMonthYearEl = document.getElementById('currentMonthYear');
-            const calendarTableBody = document.querySelector('#calendarTable tbody');
-            const prevMonthBtn = document.getElementById('prevMonth');
-            const nextMonthBtn = document.getElementById('nextMonth');
+            // // --- Real-time Calendar Functionality ---
+            // const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            // const currentMonthYearEl = document.getElementById('currentMonthYear');
+            // const calendarTableBody = document.querySelector('#calendarTable tbody');
+            // const prevMonthBtn = document.getElementById('prevMonth');
+            // const nextMonthBtn = document.getElementById('nextMonth');
 
-            let today = new Date(); 
-            let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            // let today = new Date(); 
+            // let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
 
-            function renderCalendar() {
-                calendarTableBody.innerHTML = "";
-                currentMonthYearEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            // function renderCalendar() {
+            //     calendarTableBody.innerHTML = "";
+            //     currentMonthYearEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
 
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth();
+            //     const year = currentDate.getFullYear();
+            //     const month = currentDate.getMonth();
 
-                const firstDayOfMonth = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
+            //     const firstDayOfMonth = new Date(year, month, 1).getDay();
+            //     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-                let date = 1;
-                for (let i = 0; i < 6; i++) {
-                    const row = document.createElement("tr");
+            //     let date = 1;
+            //     for (let i = 0; i < 6; i++) {
+            //         const row = document.createElement("tr");
 
-                    for (let j = 0; j < 7; j++) {
-                        const cell = document.createElement("td");
-                        if (i === 0 && j < firstDayOfMonth) {
-                            cell.innerHTML = "";
-                        } else if (date > daysInMonth) {
-                            cell.innerHTML = "";
-                        } else {
-                            const daySpan = document.createElement("span");
-                            daySpan.classList.add("calendar-day");
-                            daySpan.textContent = date;
+            //         for (let j = 0; j < 7; j++) {
+            //             const cell = document.createElement("td");
+            //             if (i === 0 && j < firstDayOfMonth) {
+            //                 cell.innerHTML = "";
+            //             } else if (date > daysInMonth) {
+            //                 cell.innerHTML = "";
+            //             } else {
+            //                 const daySpan = document.createElement("span");
+            //                 daySpan.classList.add("calendar-day");
+            //                 daySpan.textContent = date;
 
-                            if (date === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                                daySpan.classList.add("current-day");
-                            }
-                            cell.appendChild(daySpan);
-                            date++;
-                        }
-                        row.appendChild(cell);
-                    }
-                    calendarTableBody.appendChild(row);
-                }
-            }
+            //                 if (date === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+            //                     daySpan.classList.add("current-day");
+            //                 }
+            //                 cell.appendChild(daySpan);
+            //                 date++;
+            //             }
+            //             row.appendChild(cell);
+            //         }
+            //         calendarTableBody.appendChild(row);
+            //     }
+            // }
 
-            if (prevMonthBtn) {
-                prevMonthBtn.addEventListener('click', () => {
-                    currentDate.setMonth(currentDate.getMonth() - 1);
-                    renderCalendar();
-                });
-            }
+            // if (prevMonthBtn) {
+            //     prevMonthBtn.addEventListener('click', () => {
+            //         currentDate.setMonth(currentDate.getMonth() - 1);
+            //         renderCalendar();
+            //     });
+            // }
 
-            if (nextMonthBtn) {
-                nextMonthBtn.addEventListener('click', () => {
-                    currentDate.setMonth(currentDate.getMonth() + 1);
-                    renderCalendar();
-                });
-            }
+            // if (nextMonthBtn) {
+            //     nextMonthBtn.addEventListener('click', () => {
+            //         currentDate.setMonth(currentDate.getMonth() + 1);
+            //         renderCalendar();
+            //     });
+            // }
 
-            // Initial render of the calendar
-            renderCalendar(); 
+            // // Initial render of the calendar
+            // renderCalendar(); 
         });
 
         // Fungsi notifikasi (jika masih digunakan)

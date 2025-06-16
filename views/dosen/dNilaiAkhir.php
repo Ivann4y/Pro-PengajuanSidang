@@ -76,7 +76,6 @@
            <div class="row mb-3">
       <div class="col-12">
         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-        <!--<p class="page-nama">M. Harris Nur S</p>-->
       </div>
     </div>
     <br>
@@ -152,8 +151,7 @@
         
           <div class="col-12 mb-4 d-flex">
             <div class="card flex-fill" id="carddetailPenilaian">
-        <!-- GUNAKAN KODE BARU INI -->
-<!-- STRUKTUR HTML YANG BENAR -->
+
 <div class="card-body" id="card-penilaian-body">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>

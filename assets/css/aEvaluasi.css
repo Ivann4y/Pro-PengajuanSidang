@@ -147,9 +147,8 @@ body {
 
 .card-comment:hover {
 
-  background-color:   #007bff !important;
 
-  background-color: #4b68fb;
+  background-color: #4b68fb !important;
 
   color: #fff;
 }
