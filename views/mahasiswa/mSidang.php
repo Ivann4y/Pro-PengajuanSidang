@@ -16,8 +16,21 @@ require "../../koneksi.php";
 // If connection is successful
 // echo "Koneksi Berhasil!<br>";
 
-$query = "SELECT s.id_sidang, s.judul, m.nama_matkul, MIN(d.nama_dosen) AS dosen FROM Sidang s, MataKuliah m, Dosen d, Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang AND ds.id_matkul = m.id_matkul AND ds.nomor_Dsn = d.nomor_dosen GROUP BY s.id_sidang, s.judul, m.nama_matkul ORDER BY s.id_sidang";
+$query = "SELECT s.id_sidang, s.judul, m.nama_matkul, MIN(d.nama_dosen) AS dosen FROM Sidang s, MataKuliah m, Dosen d, Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang AND ds.id_matkul = m.id_matkul AND ds.nomor_dosen = d.nomor_dosen GROUP BY s.id_sidang, s.judul, m.nama_matkul ORDER BY s.id_sidang";
 $result = sqlsrv_query($conn, $query);
+
+if ($result === false) {
+    echo "Terjadi kesalahan saat mengeksekusi query:<br>";
+    // Menampilkan detail error dari SQL Server
+    if (($errors = sqlsrv_errors()) != null) {
+        foreach ($errors as $error) {
+            echo "SQLSTATE: " . $error['SQLSTATE'] . "<br>";
+            echo "Code: " . $error['code'] . "<br>";
+            echo "Message: " . $error['message'] . "<br>";
+        }
+    }
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
