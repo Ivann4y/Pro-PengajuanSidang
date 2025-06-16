@@ -16,7 +16,7 @@ require "../../koneksi.php";
 // If connection is successful
 // echo "Koneksi Berhasil!<br>";
 
-$query = "SELECT s.id_sidang, s.judul, m.nama_matkul, MIN(d.nama_dosen) AS dosen FROM Sidang s, MataKuliah m, Dosen d, Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang AND ds.id_matkul = m.id_matkul AND ds.nomor_Dsn = d.nomor_dosen GROUP BY s.id_sidang, s.judul, m.nama_matkul ORDER BY s.id_sidang";
+$query = "SELECT s.id_sidang, s.judul, m.nama_matkul, MIN(d.nama_dosen) AS dosen FROM Sidang s, MataKuliah m, Dosen d, Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang AND ds.id_matkul = m.id_matkul AND ds.nomor_dosen = d.nomor_dosen GROUP BY s.id_sidang, s.judul, m.nama_matkul ORDER BY s.id_sidang";
 $result = sqlsrv_query($conn, $query);
 ?>
 
