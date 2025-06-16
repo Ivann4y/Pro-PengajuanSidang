@@ -1,3 +1,38 @@
+<?php
+
+require "../../koneksi.php";
+// $serverName = "DESKTOP-M7H7C9C\SQLEXPRESS01";
+// $connectionOptions = [
+//     "Database" => "SistemSidang",
+//     "TrustServerCertificate" => true,
+// ];
+
+// // Attempt to connect
+// $conn = sqlsrv_connect($serverName, $connectionOptions);
+// if ($conn === false) {
+//     echo "Koneksi Gagal:<br>";
+//     die(print_r(sqlsrv_errors(), true));
+// }
+// If connection is successful
+// echo "Koneksi Berhasil!<br>";
+
+$query = "SELECT s.id_sidang, s.judul, m.nama_matkul, MIN(d.nama_dosen) AS dosen FROM Sidang s, MataKuliah m, Dosen d, Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang AND ds.id_matkul = m.id_matkul AND ds.nomor_dosen = d.nomor_dosen GROUP BY s.id_sidang, s.judul, m.nama_matkul ORDER BY s.id_sidang";
+$result = sqlsrv_query($conn, $query);
+
+if ($result === false) {
+    echo "Terjadi kesalahan saat mengeksekusi query:<br>";
+    // Menampilkan detail error dari SQL Server
+    if (($errors = sqlsrv_errors()) != null) {
+        foreach ($errors as $error) {
+            echo "SQLSTATE: " . $error['SQLSTATE'] . "<br>";
+            echo "Code: " . $error['code'] . "<br>";
+            echo "Message: " . $error['message'] . "<br>";
+        }
+    }
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,12 +49,6 @@
         @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
         /* Original mSidang table structural styles - START */
-        .text-heading { 
-            font-size: 2.0rem;
-            font-weight: 600;
-            color: #4B68FB;
-            margin-bottom: 1.5rem; 
-        }
         table {
             border-spacing: 0 10px;
             border-collapse: separate;
@@ -55,7 +84,6 @@
 
         thead th:nth-child(5) {
             width: 10%;
-            text-align: center;
         }
 
         .isiTabel td { /* My explicit background-color and border are removed */
@@ -256,7 +284,21 @@
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="mSidangTA"></tbody>
+                        <tbody id="mSidangTA">
+                            <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+                                <tr class="isiTabel jadiBiru">
+                                    <td><?= $row['id_sidang'] ?></td>
+                                    <td><?= htmlspecialchars($row['judul']) ?></td>
+                                    <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
+                                    <td><?= htmlspecialchars($row['dosen']) ?></td>
+                                    <td>
+                                        <button class="detail-btn" onclick="location.href='mdetailSidangTA.php?id=<?= $row['id_sidang'] ?>';">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
                         <tbody id="mSidangSem" style="display: none;"></tbody>
                     </table>
                     <div class="pagination-container">
@@ -305,23 +347,23 @@
         }
 
         // Sample data with entries for each type
-        const dataTA = [
-            { judul: "Sistem Pengajuan Sidang", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-            { judul: "Pengembangan Aplikasi Mobile Learning", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-            { judul: "Sistem Manajemen Perpustakaan Digital", matkul: "Tugas Akhir", dosen: "Suhendra" },
-            { judul: "Aplikasi IoT untuk Smart Home", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-            { judul: "Sistem Informasi Akademik Terintegrasi", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-            { judul: "Platform E-Learning Adaptif", matkul: "Tugas Akhir", dosen: "Suhendra" },
-            { judul: "Sistem Keamanan Berbasis AI", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-            { judul: "Aplikasi Manajemen Proyek Agile", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-            { judul: "Sistem Monitoring Kesehatan IoT", matkul: "Tugas Akhir", dosen: "Suhendra" },
-            { judul: "Platform Social Learning", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-            { judul: "Sistem Analisis Data Pendidikan", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-            { judul: "Aplikasi AR untuk Pembelajaran", matkul: "Tugas Akhir", dosen: "Suhendra" },
-            { judul: "Sistem Manajemen Aset Digital", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-            { judul: "Platform Kolaborasi Online", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-            { judul: "Sistem Otomasi Smart Campus", matkul: "Tugas Akhir", dosen: "Suhendra" }
-        ];
+        // const dataTA = [
+        //     { judul: "Sistem Pengajuan Sidang", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+        //     { judul: "Pengembangan Aplikasi Mobile Learning", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+        //     { judul: "Sistem Manajemen Perpustakaan Digital", matkul: "Tugas Akhir", dosen: "Suhendra" },
+        //     { judul: "Aplikasi IoT untuk Smart Home", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+        //     { judul: "Sistem Informasi Akademik Terintegrasi", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+        //     { judul: "Platform E-Learning Adaptif", matkul: "Tugas Akhir", dosen: "Suhendra" },
+        //     { judul: "Sistem Keamanan Berbasis AI", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+        //     { judul: "Aplikasi Manajemen Proyek Agile", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+        //     { judul: "Sistem Monitoring Kesehatan IoT", matkul: "Tugas Akhir", dosen: "Suhendra" },
+        //     { judul: "Platform Social Learning", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+        //     { judul: "Sistem Analisis Data Pendidikan", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+        //     { judul: "Aplikasi AR untuk Pembelajaran", matkul: "Tugas Akhir", dosen: "Suhendra" },
+        //     { judul: "Sistem Manajemen Aset Digital", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
+        //     { judul: "Platform Kolaborasi Online", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
+        //     { judul: "Sistem Otomasi Smart Campus", matkul: "Tugas Akhir", dosen: "Suhendra" }
+        // ];
 
         const dataSemester = [
             { judul: "Implementasi Database NoSQL", matkul: "Basis Data Lanjut", dosen: "Timotius Victory" },

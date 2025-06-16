@@ -514,7 +514,7 @@
         <main class="NavSide__main-content" id="adminDaftarSidangContent">
             <div class="main-header">
                 <div class="header-left-panel">
-                    <h1 class="main-title">Daftar Pengajuan Sidang</h1>
+                    <h1 class="main-title">Daftar Sidang</h1>
                     <div class="filter-container">
                         <span class="filter-label fw-semibold">Filter:</span>
                         <div class="dropdown" id="switcherDropdownContainer">

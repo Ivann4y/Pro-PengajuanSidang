@@ -210,7 +210,7 @@ if ($_SESSION['role'] !== 'admin') {
             <!-- Kartu Penjadwalan -->
             <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit;">
                 <div class="dashboard-card penjadwalan-status-card">
-                    <div class="number">4</div>
+                    <div class="number">0</div>
                     <div class="text">
                         <span class="title">Penjadwalan</span>
                         <span class="description">Menunggu Dijadwalkan</span>
@@ -222,7 +222,7 @@ if ($_SESSION['role'] !== 'admin') {
             <!-- Kartu Pengajuan -->
             <a href="aPenjadwalan.php" style="text-decoration: none; color: inherit;">
                 <div class="dashboard-card pengajuan-status-card">
-                    <div class="number">2</div>
+                    <div class="number">0</div>
                     <div class="text">
                         <span class="title">Pengajuan</span>
                         <span class="description">Menunggu Persetujuan</span>
@@ -235,15 +235,7 @@ if ($_SESSION['role'] !== 'admin') {
         <!-- Card Tanggungan dengan style tugas-card -->
         <div class="dashboard-card content-card tugas-card">
             <h3 class="section-title">Tugas</h3>
-            <div class="tugas-item">Belum terjadwal Sidang PRG</div>
-            <div class="tugas-item">Belum terjadwal Sidang Basdat</div>
-            <div class="tugas-item">Belum terjadwal Sidang TA</div>
-            <div class="tugas-item">Belum terjadwal Sidang Orkom</div>
-            <div class="tugas-item">Belum terjadwal Sidang</div>
-            <div class="tugas-item">Belum terjadwal Sidang</div>
-            <div class="tugas-item">Belum terjadwal Sidang</div>
-            <div class="tugas-item">Belum terjadwal Sidang</div>
-            <div class="tugas-item">Belum terjadwal Sidang</div>
+            <!-- Generate/render oleh dashboard.js -->
         </div>
     </div>
 
@@ -279,46 +271,7 @@ if ($_SESSION['role'] !== 'admin') {
                     <div class="dashboard-card content-card sidang-mendatang-card">
                         <h3 class="section-title">Sidang Mendatang</h3>
                         <!-- Daftar sidang mendatang, setiap item berisi tanggal, bulan, info, dan ikon -->
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">02</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Sistem Pengajuan Skripsi</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">02</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Sistem Pengajuan Skripsi</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">02</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Sistem Pengajuan Skripsi</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">02</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Sistem Pengajuan Skripsi</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble">
-                                <span class="day">02</span>
-                                <span class="month">Jun</span>
-                            </div>
-                            <span class="info">Sistem Pengajuan Skripsi</span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
+                        
                         <!-- ...item lain... -->
                     </div>
                 </div>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -393,8 +394,9 @@
             font-size: 1.25rem; 
             margin-bottom: 20px;
             text-align: center;
-            color: rgb(51, 47, 47); /* Warna teks disesuaikan agar terlihat */
+            color: rgb(51, 47, 47);
         }
+
         .modal-body .form-group {
             display: flex;
             align-items: center;
@@ -411,18 +413,16 @@
         }
         .modal-body .form-group .input-with-buttons,
         .modal-body .form-group .time-input-range,
-        .modal-body .form-group > input[type="text"] {
+        .modal-body .form-group > input[type="text"]{
             flex-grow: 1; 
             height: 35px; 
             display: flex; 
             align-items: center;
-
-        
         }
 
         .modal-body .form-group > input[type="date"] {
             flex-grow: 1; 
-            height: 35px; 
+            height: 35px;
         }
 
         .modal-body .form-group input[type="text"],
@@ -442,73 +442,70 @@
             background-color: #f3f4f6;
             cursor: not-allowed;
         }
-        .modal-body .bobot-input-new { 
-            width: 30px; 
-            height: auto;
-            text-align: center;
-            border: none;
-            font-size: 16px;
-            color: #2d2d52;
-            background-color: transparent;
-            margin: 0 5px; 
-            
+
+        .input-with-percent {
+            position: relative;
+            width: 120px; /* Atur lebar textbox sesuai kebutuhan */
+            flex-shrink: 0; /* Mencegah textbox menyusut */
         }
-        .modal-body .bobot-input-new::-webkit-outer-spin-button,
-        .modal-body .bobot-input-new::-webkit-inner-spin-button {
+
+        .form-control-bobot {
+            width: 100%;
+            height: 35px;
+            padding: 0 15px;
+            padding-right: 30px; /* Beri ruang di kanan untuk simbol % */
+            text-align: right;   /* Agar angka menempel di kanan dekat simbol % */
+            border: 1px solid #D1D5DB;
+            border-radius: 26px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        /* Menghilangkan panah spinner pada input number */
+        .form-control-bobot::-webkit-outer-spin-button,
+        .form-control-bobot::-webkit-inner-spin-button {
             -webkit-appearance: none;
-            margin: 0; 
+            margin: 0;
         }
+        .form-control-bobot {
+            -moz-appearance: textfield;
+        }
+
+        .percent-sign {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            pointer-events: none; /* Agar bisa diklik tembus */
+        }
+
         .modal-body .input-with-buttons {
             display: flex;
-            align-items: center;
-            gap: 10px; 
+            align-items: center; /* Diubah ke center agar sejajar dengan textbox bobot */
+            gap: 15px; 
             width: 100%; 
         }
         .modal-body .input-with-buttons input[type="text"] { 
             flex-grow: 1; 
         }
-        .modal-body .bobot-nilai-input-group {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background-color: #F9FAFB;
-            border-radius: 35px;
-            padding: 4px 10px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-            height: 35px;
-            flex-shrink: 0;
-        }
-        .modal-body .btn-bobot-new { 
-            width: 28px; 
-            height: 28px; 
-            background-color: transparent; 
-            border: none;
-            color: #2d2d52;
-            font-size: 16px; 
-            font-weight: bold;
-            cursor: pointer; 
-            display: flex; 
-            align-items: center;
-            justify-content: center; 
-            padding: 0;
-            border-radius: 50%;
-            transition: background-color 0.2s ease;
-            flex-shrink: 0;
-        }
-        .modal-body .btn-bobot-new:hover {
-            background-color:rgba(0, 0, 0, 0.05); 
-        }
+
         .modal-body .time-input-range { 
+            display: flex; /* Ditambahkan agar gap berfungsi */
             gap: 10px; 
             width: 100%; 
         }
+
         .modal-body .form-actions {
             display: flex; 
             justify-content: flex-end; 
             margin-top: 25px; 
             padding-left: calc(160px + 15px); 
         }
+
+/* Sisa CSS lainnya tetap sama */
+/* ... (sisa CSS untuk .btn-batal, .btn-submit, h2, modal-dialog, dll.) ... */
         .modal-body .form-actions .btn-batal { 
             background-color: #ff5f5f; 
             color:rgb(255, 255, 255); 
@@ -748,32 +745,57 @@
                            </div>
                 
                         
-                         <div id="pengampu-wrapper">
-                          <div class="form-group" id="pengampu-form-1">
-                            <label for="modal_pengampu1">Pengampu 1</label>
-                            <div class="input-with-buttons">
-                              <input type="text" id="modal_pengampu1" name="pengampu_nama[]" placeholder="Nama Pengampu 1" />
+                         <div id="penguji-wrapper">
+                            <div class="form-group" id="penguji-form-1">
+                                <label for="modal_penguji1">Pengampu 1</label>
+                                <div class="input-with-buttons">
+                                   
+                            
+                                <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Pengampu 1" />
+                                    
+                                   
+                                <div class="input-with-percent">
+    
+                                    <input 
+                                        type="number" 
+                                        id="modal_qty_penguji1" 
+                                        name="penguji_bobot[]" 
+                                        class="form-control-bobot" 
+                                        min="0"
+                                        placeholder="Bobot" 
+                                    />
+                                    <span class="percent-sign">%</span>
 
-                              <div class="bobot-nilai-input-group">
-                                <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_pengampu1')">-</button>
-                                <input type="number" id="modal_qty_pengampu1" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Pengampu 1" />
-                                <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_pengampu1')">+</button>
+                                </div>
                               </div>
+
                             </div>
-                          </div>
-                     
-                          <div class="form-group" id="pengampu-form-2">
-                            <label for="modal_pengampu2">Pengampu 2</label>
-                            <div class="input-with-buttons">
-                              <input type="text" id="modal_pengampu2" name="pengampu_nama[]" placeholder="Nama Pengampu 2" />
-                              <div class="bobot-nilai-input-group">
-                                <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_pengampu2')">-</button>
-                                <input type="number" id="modal_qty_pengampu2" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Pengampu 2" />
-                                <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_pengampu2')">+</button>
+
+                            <div class="form-group" id="penguji-form-2">
+                                <label for="modal_penguji1">Pengampu 2</label>
+                                <div class="input-with-buttons">
+                                   
+                            
+                                <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Pengampu 2" />
+                                    
+                                   
+                                <div class="input-with-percent">
+    
+                                    <input 
+                                        type="number" 
+                                        id="modal_qty_penguji1" 
+                                        name="penguji_bobot[]" 
+                                        class="form-control-bobot" 
+                                        min="0"
+                                        placeholder="Bobot" 
+                                    />
+                                    <span class="percent-sign">%</span>
+
+                                </div>
                               </div>
+
                             </div>
-                          </div>
-                        </div>
+                        </div> 
 
                        
                         
@@ -820,7 +842,7 @@
 
                         <div class="form-actions"> 
                           <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
-                          <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
+                          <button type="submit" class="btn btn-submit">Ubah Penjadwalan</button>
                         </div>
                       </form>
                     </div>

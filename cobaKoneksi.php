@@ -1,10 +1,10 @@
 <?php
-$serverName = "sidangdevenv.database.windows.net";
+$serverName = "LAPTOP-7POM2U9J\\SQLEXPRESS"; 
 $connectionOptions = [
-    "Database" => "SistemSidang",
-    "Uid" => "SSidangDeveloper",  
-    "PWD" => "timDeveloperSidang1",  
-    "TrustServerCertificate" => true,
+    "Database" => "ZIa", 
+    "Uid" => "sa",
+    "PWD" => "mantap",
+    "TrustServerCertificate" => true
 ];
 
 // Attempt to connect
@@ -14,5 +14,5 @@ if ($conn === false) {
     die(print_r(sqlsrv_errors(), true));
 }
 // If connection is successful
-// echo "Koneksi Berhasil!<br>";
+echo "Koneksi Berhasil!<br>";
 ?>

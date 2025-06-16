@@ -40,8 +40,8 @@ body {
 }
 
 .text-heading {
-  color: #4b68fb;
-  font-weight: 550;
+  font-size: 2.5rem;
+  font-weight: 700;
 }
 
 .jadiBiru {
@@ -730,6 +730,16 @@ button.btn-kembali:hover .icon-circle i.fa-arrow-left {
   color: #c7d2fe;
   text-transform: uppercase;
   padding: 0.3rem 0.25rem;
+}
+
+.calendar-card .calendar-day.has-sidang {
+  background-color: rgba(255, 255, 255, 0.25);
+  font-weight: 600;
+}
+
+.calendar-card .calendar-day.has-sidang:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
 }
 
 .calendar-card .calendar-day {
