@@ -477,7 +477,7 @@
                                 <div class="modal-header">
                                     <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                                 </div>
-                            </div>
+            \                </div>
                             <div class="modal-body mx-auto">
                                 Apakah anda yakin ingin keluar?
                             </div>
