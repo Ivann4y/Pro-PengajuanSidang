@@ -19,62 +19,62 @@
 
 <style>
   @media (max-width: 700px) {
-            .NavSide__sidebar {
-                width: 50%;
-                transform: translateX(-100%);
-                border-left-width: 0;
-            }
+    .NavSide__sidebar {
+      width: 50%;
+      transform: translateX(-100%);
+      border-left-width: 0;
+    }
 
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
-            }
+    .NavSide__sidebar.NavSide__sidebar--active-mobile {
+      transform: translateX(0);
+      box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+    }
 
-            .NavSide__sidebar-brand {
-                padding: 20px 10px 30px 10px;
-            }
+    .NavSide__sidebar-brand {
+      padding: 20px 10px 30px 10px;
+    }
 
-            .NavSide__sidebar-brand img {
-                width: 90%;
-            }
+    .NavSide__sidebar-brand img {
+      width: 90%;
+    }
 
-            .NavSide__sidebar-nav {
-                padding-top: 20%;
-            }
+    .NavSide__sidebar-nav {
+      padding-top: 20%;
+    }
 
-            .NavSide__sidebar-item a {
-                padding: 12% 10%;
-                height: auto;
-            }
+    .NavSide__sidebar-item a {
+      padding: 12% 10%;
+      height: auto;
+    }
 
-            .NavSide__main-content {
-                margin-left: 0;
-                padding: 15px;
-                padding-top: 75px;
-            }
+    .NavSide__main-content {
+      margin-left: 0;
+      padding: 15px;
+      padding-top: 75px;
+    }
 
-            .NavSide__toggle {
-                display: flex;
-                position: relative;
-                top: auto;
-                background-color: transparent;
-                box-shadow: none;
-                left: 0;
-            }
+    .NavSide__toggle {
+      display: flex;
+      position: relative;
+      top: auto;
+      background-color: transparent;
+      box-shadow: none;
+      left: 0;
+    }
 
-            .NavSide__toggle i.bi.open {
-                display: block;
-            }
+    .NavSide__toggle i.bi.open {
+      display: block;
+    }
 
-            .NavSide__toggle.NavSide__toggle--active {
-                left: calc(50% + 10px); 
-                background-color: aliceblue;
-            }
+    .NavSide__toggle.NavSide__toggle--active {
+      left: calc(50% + 10px);
+      background-color: aliceblue;
+    }
 
-            .NavSide__topbar {
-                display: flex;
-            }
-        }
+    .NavSide__topbar {
+      display: flex;
+    }
+  }
 
   body {
     font-family: "Poppins", sans-serif;
