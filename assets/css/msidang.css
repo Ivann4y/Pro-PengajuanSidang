@@ -1,0 +1,158 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+        /* Original mSidang table structural styles - START */
+        table {
+            border-spacing: 0 10px;
+            border-collapse: separate;
+            width: 100%;
+        }
+
+        thead {
+            border-bottom: 2px solid rgb(0, 0, 0) !important;
+        }
+
+        thead th {
+            padding: 12px 15px;
+            text-align: left;
+            /* font-family: "Poppins"; Will be inherited or set by external CSS */
+        }
+
+        thead th:nth-child(1) {
+            text-align: center;
+            width: 5%;
+        }
+
+        thead th:nth-child(2) {
+            width: 35%;
+        }
+
+        thead th:nth-child(3) {
+            width: 25%;
+        }
+
+        thead th:nth-child(4) {
+            width: 25%; 
+        }
+
+        thead th:nth-child(5) {
+            width: 10%;
+        }
+
+        .isiTabel td { /* My explicit background-color and border are removed */
+            padding: 12px 15px;
+            font-family: "Poppins"; /* Restored original font-family from mSidang.php */
+            font-weight: 400;
+            vertical-align: middle;
+        }
+
+        .isiTabel td:nth-child(1) {
+            border-radius: 20px 0 0 20px;
+            text-align: center;
+        }
+
+        .isiTabel td:nth-child(5) { 
+            border-radius: 0 20px 20px 0;
+        }
+        .btn-primary { 
+            /* font-family: "Poppins", sans-serif; Inherited */
+            background-color: rgb(67, 54, 240);
+            border-color: rgb(67, 54, 240);
+        }
+        .btn-primary:hover {
+            background-color: rgb(57, 44, 210);
+            border-color: rgb(57, 44, 210);
+        }
+        .dropdown-menu .dropdown-item {
+            font-family: "Poppins", sans-serif;
+        }
+
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
+        }
+        .detail-btn {
+            border: none !important;
+            background-color: transparent !important;
+            color: #4B68FB; 
+            padding: 0.25rem 0.5rem; 
+        }
+        
+
+        /* Efek saat hover pada tombol */
+        .detail-btn:hover {
+            opacity: 0.7;
+        }
+
+        .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+            color: #FFFFFF;
+            opacity: 1;
+        }
+
+        tr.jadiBiru:hover .detail-btn i {
+            color: white !important;
+        }
+
+        /* Pagination styles */
+        .pagination-container {
+            margin-top: 2rem;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #4B68FB;
+            border-color: #4B68FB;
+            color: white;
+            z-index: 2;
+        }
+
+        .pagination .page-link {
+            color: #4B68FB;
+        }
+        .pagination .page-link:hover {
+            color: #2c45c9;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 0;
+                padding: 0 10px;
+            }
+
+            table {
+                min-width: 800px;
+                width: 100%;
+            }
+
+            .pagination-container {
+                overflow-x: hidden;
+                margin-top: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            table {
+                min-width: 700px;
+            }
+
+            .pagination .page-item .page-link {
+                padding: 0.35rem 0.65rem;
+                min-width: 32px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .pagination .page-item:not(:first-child):not(:last-child):not(.active) {
+                display: none;
+            }
+        }
