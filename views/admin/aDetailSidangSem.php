@@ -1,4 +1,8 @@
 
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1040,7 +1044,7 @@
           console.log("Form valid, data siap dikirim.");
           Swal.fire({
           title: 'Berhasil',
-          text: 'Jadwal Berhasil Dibuat.',
+          text: 'Jadwal Berhasil Diubah.',
           icon: 'success',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
