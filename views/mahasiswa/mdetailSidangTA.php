@@ -648,7 +648,7 @@
                 </div>
                 
                <!-- Back button -->
-               <button class="btn-kembali" onclick="location.href='mSidang.php'">
+               <button type="button" class="btn-kembali" onclick="location.href='mSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
