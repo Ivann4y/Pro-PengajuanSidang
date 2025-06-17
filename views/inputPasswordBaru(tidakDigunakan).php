@@ -1,22 +1,64 @@
 <?php
 session_start();
-$role = $_GET['role'] ?? 'guest';
+require_once '../../koneksi.php';
 
+$success = '';
+$errorType = '';
+$judul = '';
+$token = $_GET['token'] ?? '';
+// Role akan terisi dari tabel password_resets jika token valid
+$role = '';
+// $role = $_GET['role'] ?? $_POST['role'] ?? '';
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $newPassword = $_POST['newPassword'] ?? '';
+    $confirmPassword = $_POST['confirmPassword'] ?? '';
+
+    // Validasi jika password kosong
+    if (empty($newPassword) || empty($confirmPassword)) {
+        header("Location: inputPasswordBaru.php?error=empty&role=$role");
+        exit;
+        // Validasi jika password kurang dari 8 karakter
+    } elseif (strlen($newPassword) < 8) {
+        header("Location: inputPasswordBaru.php?error=short&role=$role");
+        exit;
+        // Validasi jika password dan konfirmasi tidak cocok
+    } elseif ($newPassword !== $confirmPassword) {
+        header("Location: inputPasswordBaru.php?error=mismatch&role=$role");
+        exit;
+    } else {
+        // Simpan password baru ke session atau database
+        $_SESSION['reset_user']['password'] = $newPassword;
+        header("Location: inputPasswordBaru.php?success=1&role=$role");
+        exit;
+    }
+}
+
+// Cek apakah ada pesan sukses
+if (isset($_GET['success'])) {
+    $success = "Kata sandi berhasil diubah!";
+}
+
+// Cek apakah ada error
+$errorType = $_GET['error'] ?? '';
+
+// Tentukan judul berdasarkan role
 switch ($role) {
-    case 'Mahasiswa':
-        $judul = 'Lupa Kata Sandi Mahasiswa';
+    case 'mahasiswa':
+        $judul = 'Ubah Kata Sandi Mahasiswa';
         break;
-    case 'Dosen':
-        $judul = 'Lupa Kata Sandi Dosen';
+    case 'dosen':
+        $judul = 'Ubah Kata Sandi Dosen';
         break;
-    case 'Admin':
-        $judul = 'Lupa Kata Sandi Admin';
+    case 'admin':
+        $judul = 'Ubah Kata Sandi Admin';
         break;
     default:
-        $judul = '#'; // Atau bisa diarahkan ke halaman error
+        $judul = 'Ubah Kata Sandi';
         break;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -75,7 +117,7 @@ switch ($role) {
             width: 25vw;
         }
 
-        .back-button-container {
+        .button-container {
             padding-left: 2vw;
             padding-bottom: 3vh;
         }
@@ -112,11 +154,30 @@ switch ($role) {
             pointer-events: auto;
         }
 
-        /* .btnKirim:hover {
+        .btnKirim:hover {
             background-color: white;
             color: green;
             stroke: green;
-        } */
+        }
+
+        .btn {
+            border: none;
+            border-radius: 20px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            text-decoration: none;
+            font-family: "Poppins", sans-serif;
+            color: white;
+            /* Default text color for all buttons */
+        }
 
         .btn-kembali {
             background-color: #4B68FB;
@@ -163,25 +224,6 @@ switch ($role) {
 
         .btn-kembali:hover .icon-circle i {
             color: white;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 45px;
-            text-decoration: none;
-            font-family: "Poppins", sans-serif;
-            color: white;
-            /* Default text color for all buttons */
         }
 
         .btn-setujui {
@@ -238,71 +280,67 @@ switch ($role) {
 
         <div class="right-column-wrapper">
             <div class="log">
-                <?php
-                $error = $_GET['error'] ?? '';
-                $success = $_GET['success'] ?? '';
-                ?>
-                <form action="authEmail.php" method="POST">
-                    <h2 class="fs-2 fw-bold text-center"><?= $judul ?></h2>
-                    <label for="emailAstra" class="mt-3">Masukkan Email Politeknik Astra</label>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+                    <div class="text-center pt-5 mb-4">
+                        <h2 class="fs-2 fw-bold"><?= $judul ?></h2>
+                        <?php if (!empty($success)): ?>
+                            <div class="alert alert-success mt-3">
+                                <?= $success ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                     <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
-        
-                    <?php if ($error === 'empty'): ?>
-                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
-                        <div class="text-danger">Email harus diisi!</div>
-                    <?php elseif ($error === 'invalid'): ?>
-                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
-                        <div class="text-danger">Format email tidak valid!</div>
-                    <?php elseif ($error === 'email'): ?>
-                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
-                        <div class="text-danger">Email tidak ditemukan!</div>
-                    <?php elseif ($error === 'mail'): ?>
-                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
-                        <div class="text-danger">Gagal mengirim email reset password. Silakan coba lagi!</div>
-                    <?php elseif ($success === '1'): ?>
-                        <input type="text" class="form-control form-control-lg border border-success" id="emailAstra" name="emailAstra" value="<?= htmlspecialchars($_SESSION['reset_email']) ?>" readonly>
-                        <div class="text-success">Email reset password telah dikirim. Silakan cek email Anda!</div>
-                    <?php else: ?>
-                        <input type="text" class="form-control form-control-lg" id="emailAstra" name="emailAstra">
-                    <?php endif; ?>
 
-                    <button class="btn btn-setujui float-end mt-2" id="btnKirim" <?= ($success === '1') ? 'disabled' : '' ?>>
-                        Kirim
-                    </button>
-                </form>
+                    <div class="mb-3">
+                        <label for="">Masukkan Kata Sandi Baru</label>
+                        <input type="password"
+                            class="form-control form-control-lg <?= in_array($errorType, ['empty', 'short']) ? 'border border-danger' : 'border border-dark' ?>"
+                            name="newPassword">
+                        <?php if ($errorType === 'empty'): ?>
+                            <div class="text-danger">Kata sandi tidak boleh kosong.</div>
+                        <?php elseif ($errorType === 'short'): ?>
+                            <div class="text-danger">Kata sandi minimal 2 karakter.</div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="">Konfirmasi Kata Sandi Baru</label>
+                        <input type="password"
+                            class="form-control form-control-lg <?= in_array($errorType, ['empty', 'mismatch']) ? 'border border-danger' : 'border border-dark' ?>"
+                            name="confirmPassword">
+                        <?php if ($errorType === 'empty'): ?>
+                            <div class="text-danger">Konfirmasi kata sandi tidak boleh kosong.</div>
+                        <?php elseif ($errorType === 'mismatch'): ?>
+                            <div class="text-danger">Kata sandi dan konfirmasi tidak cocok.</div>
+                        <?php endif; ?>
+                    </div>
             </div>
 
-            <div class="back-button-container">
-                <button type="submit" class="btn btn-kembali" onclick="kembaliKeLogin()">
+            <div class="button-container d-flex justify-content-between">
+                <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
                 </button>
+                <button type="submit" class="btn btn-setujui me-4" id="btnKirim">
+                    Kirim
+                </button>
             </div>
+            </form>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <?php if (!empty($success)): ?>
+        <script>
+            setTimeout(() => {
+                window.location.href = '../index.php';
+            }, 2000);
+        </script>
+    <?php endif; ?>
     <script>
-        function kembaliKeLogin() {
-            let role = "<?= htmlspecialchars($role) ?>";
-            let url = "";
-
-            switch (role) {
-                case 'Mahasiswa':
-                    url = 'mahasiswa/mLogin.php';
-                    break;
-                case 'Dosen':
-                    url = 'dosen/dLogin.php';
-                    break;
-                case 'Admin':
-                    url = 'admin/aLogin.php';
-                    break;
-                default:
-                    url = '../index.php'; // Atau halaman error
-            }
-
-            window.location.href = url;
+        function kembaliKeLupaPassword() {
+            window.location.href = `lupaPassword.php?role=<?= htmlspecialchars($role) ?>`;
         }
     </script>
 </body>

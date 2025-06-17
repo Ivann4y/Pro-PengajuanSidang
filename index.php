@@ -7,13 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['role'] = $role;
 
     switch ($role) {
-        case 'dosen':
+        case 'Dosen':
             header('Location: views/dosen/dLogin.php');
             break;
-        case 'admin':
+        case 'Admin':
             header('Location: views/admin/aLogin.php');
             break;
-        case 'mahasiswa':
+        case 'Mahasiswa':
             header('Location: views/mahasiswa/mLogin.php');
             break;
         default:
@@ -177,13 +177,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <form method="POST">
                             <div class="role-button d-grid gap-3 mb-4 p-2">
                                 <div>
-                                    <button name="role" value="dosen" class="w-75 p-2 fw-bold fs-5">Dosen</button>
+                                    <button name="role" value="Dosen" class="w-75 p-2 fw-bold fs-5">Dosen</button>
                                 </div>
                                 <div>
-                                    <button name="role" value="admin" class="w-75 p-2 fw-bold fs-5">Admin</button>
+                                    <button name="role" value="Admin" class="w-75 p-2 fw-bold fs-5">Admin</button>
                                 </div>
                                 <div>
-                                    <button name="role" value="mahasiswa" class="w-75 p-2 fw-bold fs-5">Mahasiswa</button>
+                                    <button name="role" value="Mahasiswa" class="w-75 p-2 fw-bold fs-5">Mahasiswa</button>
                                 </div>
                             </div>
                         </form>
