@@ -164,7 +164,7 @@
       background-color: rgb(235, 238, 245);
 
     }
-      
+
     #catatan {
       width: 100%;
       height: 150px;
@@ -260,7 +260,7 @@
       </div>
       <ul class="NavSide__sidebar-nav">
         <li class="NavSide__sidebar-item">
-          <a href="aDetailSidang.php">
+          <a href="aDetailSidangTA.php">
             <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
           </a>
         </li>
