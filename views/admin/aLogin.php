@@ -1,11 +1,11 @@
 <?php
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
     header('Location: ../../index.php');
     exit();
 }
 
-$role = "admin";
+$role = "Admin";
 ?>
 
 <!DOCTYPE html>
