@@ -57,7 +57,7 @@
 
           <div class="d-flex justify-content-between align-items-center">
       <div>
-         <h2 class="text-heading text-black mb-3" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+         <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
         
  <ul class="nav nav-tabs">
   <li class="nav-item">
