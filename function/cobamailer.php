@@ -54,7 +54,7 @@ function sendResetPasswordEmail($recipientEmail, $recipientName) {
         };
 
         // Recipients
-        $mail->setFrom('vprasetya79@gmail.com', 'Admin Pengajuan');
+        $mail->setFrom('sidangastra@gmail.com', 'Admin Pengajuan');
         $mail->addAddress($recipientEmail, $recipientName);
 
         // Embed image
