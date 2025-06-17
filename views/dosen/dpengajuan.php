@@ -214,8 +214,6 @@
                     <a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-person-fill fs-5"></i>
                     </a>
-
-                    
                 </div>
             </div>
         </div>

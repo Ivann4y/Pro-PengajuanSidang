@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="../../extra/style.css">
   <title>Detail Pengajuan</title>
@@ -258,6 +259,21 @@
             color: white;
         }
 
+         .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header .bodyHeading {
+            font-weight: bold;
+            font-size: 40px;
+            margin: 0;
+            color: #1a1a1a;
+        }
+
 
   </style>
 </head>
@@ -283,7 +299,7 @@
         </li>
         <li class="NavSide__sidebar-item">
           <b></b><b></b>
-          <a href="logout.html" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
         </li>
       </ul>
     </div>
@@ -293,19 +309,13 @@
         <i class="bi bi-list open"></i>
         <i class="bi bi-x-lg close"></i>
       </div>
-      <div class="header-icons">
-        <i class="bi bi-bell-fill"></i>
-        <!-- <div class="profile-icon">
-          <i class="bi bi-person-fill fs-5"></i>
-        </div> -->
+      <div class="header-icons d-flex d-md-none">
+        <!-- <i class="bi bi-bell-fill"></i> -->
       </div>
     </div>
     <main class="NavSide__main-content" id="dPengajuan">
       <div class="dashboard-header">
         <div class="header-icons d-none d-md-flex"> <i class="bi bi-bell-fill"></i>
-          <!-- <div class="profile-icon">
-            <i class="bi bi-person-fill fs-5"></i>
-          </div> -->
         </div>
      </div>
 
@@ -405,63 +415,90 @@
   </div>
 </div>
 
-<script>
-  const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
-  const modalTolak = new bootstrap.Modal(document.getElementById('modalTolak'));
+    <!-- Modal keluar-->
+    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div style="background-color: rgb(67, 54, 240);">
+            <div class="modal-header">
+              <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+            </div>
+          </div>
+          <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
+          <div class="modal-footer justify-content-center border-0">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+          <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  // Buka modal konfirmasi ketika klik tombol Setujui
-  document.getElementById('btnSetujui').addEventListener('click', function () {
-    modalKonfirmasi.show();
-  });
+<script> 
+    const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
+    const modalTolak = new bootstrap.Modal(document.getElementById('modalTolak'));
 
-  // Buka modal tolak ketika klik tombol Tolak
-  document.getElementById('btnTolak').addEventListener('click', function () {
-    modalTolak.show();
-  });
+    // Buka modal konfirmasi ketika klik tombol Setujui
+    document.getElementById('btnSetujui').addEventListener('click', function () {
+      modalKonfirmasi.show();
+    });
 
-  // Jika tekan "Lanjutkan" di modal Setujui
-  document.getElementById('submitBtn').addEventListener('click', function () {
+    // Buka modal tolak ketika klik tombol Tolak
+    document.getElementById('btnTolak').addEventListener('click', function () {
+      modalTolak.show();
+    });
+
+    // Jika tekan "Lanjutkan" di modal Setujui
+    document.getElementById('submitBtn').addEventListener('click', function () {
+      Swal.fire({
+        title: 'Pengajuan Berhasil Dikirim!',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          history.back(); 
+        }
+      });
+    });
+
+    document.getElementById('tolakBtn').addEventListener('click', function () {
+    const alasan = document.getElementById('alasanTolak').value.trim();
+
+    if (alasan === '') {
+      Swal.fire({
+        title: 'Gagal',
+        text: 'Silakan isi alasan penolakan terlebih dahulu.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      });
+      return;
+    }
+
     Swal.fire({
-      title: 'Pengajuan Berhasil Dikirim!',
+      title: 'Pengajuan Ditolak',
+      text: 'Pengajuan sidang berhasil ditolak.',
       icon: 'success',
       confirmButtonText: 'OK',
       confirmButtonColor: '#4B68FB'
     }).then((result) => {
       if (result.isConfirmed) {
-        history.back(); 
+        console.log("Alasan penolakan:", alasan);
+        history.back();
       }
     });
   });
 
- document.getElementById('tolakBtn').addEventListener('click', function () {
-  const alasan = document.getElementById('alasanTolak').value.trim();
+  // Sidebar Toggle Logic
+    let menuToggle = document.querySelector(".NavSide__toggle");
+    let sidebar = document.getElementById("main-sidebar");
 
-  if (alasan === '') {
-    Swal.fire({
-      title: 'Gagal',
-      text: 'Silakan isi alasan penolakan terlebih dahulu.',
-      icon: 'warning',
-      confirmButtonText: 'OK',
-      confirmButtonColor: '#4B68FB'
-    });
-    return;
-  }
-
-  Swal.fire({
-    title: 'Pengajuan Ditolak',
-    text: 'Pengajuan sidang berhasil ditolak.',
-    icon: 'success',
-    confirmButtonText: 'OK',
-    confirmButtonColor: '#4B68FB'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      console.log("Alasan penolakan:", alasan);
-      history.back();
-    }
-  });
-});
-
+    menuToggle.onclick = function() {
+      menuToggle.classList.toggle("NavSide__toggle--active");
+      sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+    };
 </script>
+<script src="../../assets/js/main.js"></script>
 </body>
 
 </html>
