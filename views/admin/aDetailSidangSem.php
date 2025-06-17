@@ -801,8 +801,6 @@
                             </div>
                         </div> 
 
-                       
-                        
                         
                         <div class="form-group">
                           <label for="modal_prodi">Prodi</label>
