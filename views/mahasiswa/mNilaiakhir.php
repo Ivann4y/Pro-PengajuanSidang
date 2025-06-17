@@ -1,11 +1,6 @@
 <!-- Argha arybawa pasha -->
  
-<?php
-session_start();
-if(isset($_SESSION['display'])){
-    exit();
-}
-?>
+
 
 <!DOCTYPE html> <!-- Mendeklarasikan bahwa dokumen ini adalah HTML5 -->
 <html lang="en"> <!-- Elemen root dari halaman HTML, dengan atribut bahasa "English" -->
@@ -53,18 +48,23 @@ if(isset($_SESSION['display'])){
 <style>
     /* Mengatur font default dan warna teks untuk elemen-elemen utama di halaman. */
     /* '!important' digunakan untuk memastikan style ini mengalahkan style lain (misal dari Bootstrap). */
-    body,
-    .card,
-    .form-control,
-    h1, h2, h3, h4, h5, h6 {
-        font-family: "Poppins", sans-serif !important;
-        color: #464869;
+
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
     }
+
+    body {
+        font-family: "Poppins", sans-serif !important;
+        background-color: #ffffff !important; /* Background body putih bersih */
+     }
 
 </style>
   </head>
   <body>
-    <!-- Container utama untuk layout sidebar dan konten -->
+    <!-- Container utama untuk layout sidebar tdan konten -->
     <div id="NavSide">
         <!-- === SIDEBAR NAVIGASI KIRI === -->
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -88,6 +88,11 @@ if(isset($_SESSION['display'])){
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Kelas '...--active' menandakan halaman ini yang sedang dibuka -->
                     <b></b><b></b>
                     <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                </li>
+
+                <li class="NavSide__sidebar-item"> <!-- Kelas '...--active' menandakan halaman ini yang sedang dibuka -->
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
                 </li>
             </ul>
         </div>
@@ -189,7 +194,6 @@ if(isset($_SESSION['display'])){
             </div>
         </div>
 
-
         <!-- Baris untuk kartu catatan yang read catatan -->
         <div class="row mt-5 ">
             <div class="col-12">
@@ -204,18 +208,7 @@ if(isset($_SESSION['display'])){
             </div>
         </div>
         
-        <!-- Baris untuk tombol "Kembali" -->
-        <div class="row mt-5">
-            <div class="col-auto"> 
-                <!-- Tombol yang saat diklik akan mengarahkan ke halaman 'mSidang.php'' -->
-                <button class="btn-kembali" onclick="location.href='mSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i> <!-- Ikon panah kiri -->
-                    </span>
-                    Kembali
-                </button>
-            </div>
-        </div>
+
     </div>
 </main>
     

@@ -1,8 +1,7 @@
-
     /* Style untuk judul utama halaman */
     .main-title {
         font-weight: 700 !important; /* Ketebalan font tebal */
-        color: #343a40; /* Warna teks gelap */
+        color: #000000; /* Warna teks gelap */
         margin-bottom: 0.5rem; 
         margin-left: 10px;
     }
@@ -137,6 +136,13 @@
         color: white; /* Warna ikon menjadi putih */
     }
 
+        .NavSide__main-content {
+        background-color: #ffffff !important; /* Background konten utama putih bersih */
+    }
+    
+    .container-fluid {
+        background-color: #ffffff !important; /* Background container putih bersih */
+    }
     /* === NAVBAR SIDEBAR HOVER EFFECTS === */
     /* Efek hover untuk item navigasi yang AKTIF (yang berwarna putih dengan background biru) */
     .NavSide__sidebar-item.NavSide__sidebar-item--active a:hover {
@@ -154,3 +160,5 @@
         transition: color 0.3s ease;
     }
     */
+
+    
