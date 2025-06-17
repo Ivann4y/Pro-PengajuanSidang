@@ -100,11 +100,14 @@
     #cardNilai {
       background-color: rgb(235, 238, 245);
       border-radius: 50px;
+      border: none !important;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       width: 100%;
       margin-left: 0;
     }
+
     #carddataMahasiswa {
+      border: none !important;
       background-color: rgb(235, 238, 245);
       border-radius: 50px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -140,6 +143,7 @@
 
 
     #carddetailPenilaian {
+      border: none !important;
       width: 100%;
       margin-left: 0;
       background-color: rgb(235, 238, 245);
@@ -148,6 +152,7 @@
     }
 
     #cardcatatan {
+      border: none !important;
       background-color: rgb(235, 238, 245);
       border-radius: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -159,7 +164,7 @@
       background-color: rgb(235, 238, 245);
 
     }
-
+      
     #catatan {
       width: 100%;
       height: 150px;
