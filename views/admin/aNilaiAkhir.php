@@ -100,11 +100,14 @@
     #cardNilai {
       background-color: rgb(235, 238, 245);
       border-radius: 50px;
+      border: none !important;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       width: 100%;
       margin-left: 0;
     }
+
     #carddataMahasiswa {
+      border: none !important;
       background-color: rgb(235, 238, 245);
       border-radius: 50px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -140,6 +143,7 @@
 
 
     #carddetailPenilaian {
+      border: none !important;
       width: 100%;
       margin-left: 0;
       background-color: rgb(235, 238, 245);
@@ -148,6 +152,7 @@
     }
 
     #cardcatatan {
+      border: none !important;
       background-color: rgb(235, 238, 245);
       border-radius: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -255,7 +260,7 @@
       </div>
       <ul class="NavSide__sidebar-nav">
         <li class="NavSide__sidebar-item">
-          <a href="aDetailSidang.php">
+          <a href="aDetailSidangTA.php">
             <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
           </a>
         </li>

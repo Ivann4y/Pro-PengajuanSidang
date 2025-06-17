@@ -2,21 +2,45 @@
 
 require "../../koneksi.php";
 
-// Get filter type from URL parameter
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 
-// Get current page from URL parameter
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $rowsPerPage = 10;
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
+               FROM Sidang s
+               JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang 
+               JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
+               JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen";
 
-// Base query
+if ($filter === 'ta') {
+    $countQuery .= " AND s.jenis_sidang = 0";
+} elseif ($filter === 'semester') {
+    $countQuery .= " AND s.jenis_sidang = 1";
+}
+
+$countResult = sqlsrv_query($conn, $countQuery);
+
+if ($countResult === false) {
+    echo "Terjadi kesalahan saat mengeksekusi countQuery:<br>";
+    if (($errors = sqlsrv_errors()) != null) {
+        foreach ($errors as $error) {
+            echo "SQLSTATE: " . $error['SQLSTATE'] . "<br>";
+            echo "Code: " . $error['code'] . "<br>";
+            echo "Message: " . $error['message'] . "<br>";
+        }
+    }
+    exit();
+}
+
+$totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
+$totalPages = ceil($totalRecords / $rowsPerPage);
+
 $query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul, MIN(d.nama_dosen) AS dosen 
-          FROM Sidang s, MataKuliah m, Dosen d, Detail_Sidang ds 
-          WHERE ds.id_sidang = s.id_sidang 
-          AND ds.id_matkul = m.id_matkul 
-          AND ds.nomor_dosen = d.nomor_dosen";
+          FROM Sidang s
+          JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang 
+          JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
+          JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen";
 
-// Add filter condition
 if ($filter === 'ta') {
     $query .= " AND s.jenis_sidang = 0";
 } elseif ($filter === 'semester') {
@@ -25,20 +49,13 @@ if ($filter === 'ta') {
 
 $query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul ORDER BY s.id_sidang";
 
-// Get total records for pagination
-$countQuery = str_replace("SELECT s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul, MIN(d.nama_dosen) AS dosen", 
-                         "SELECT COUNT(DISTINCT s.id_sidang) as total", $query);
-$countResult = sqlsrv_query($conn, $countQuery);
-$totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
-$totalPages = ceil($totalRecords / $rowsPerPage);
-
-// Add pagination to main query
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
+
 
 $result = sqlsrv_query($conn, $query);
 
 if ($result === false) {
-    echo "Terjadi kesalahan saat mengeksekusi query:<br>";
+    echo "Terjadi kesalahan saat mengeksekusi main query:<br>";
     if (($errors = sqlsrv_errors()) != null) {
         foreach ($errors as $error) {
             echo "SQLSTATE: " . $error['SQLSTATE'] . "<br>";
