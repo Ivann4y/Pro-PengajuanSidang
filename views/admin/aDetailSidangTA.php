@@ -694,92 +694,96 @@
                 </button>
 
 
-               <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content modal-content-custom-form">
-            <div class="modal-body">
-                <h2>Penjadwalan Sidang</h2>
-                <div class="form-container"> 
-                    <form id="formDalamModal" novalidate>
-                        
-                        <div class="form-group">
-                            <label for="modal_nim">NIM</label>
-                            <p>0920240033</p>
-                        </div>
-                        <div class="form-group">
-                            <label for="modal_judul_sidang">Judul Sidang</label>
-                            <p>Sistem Pengajuan Sidang</p>
-                        </div>
-                         <div class="form-group">
-                            <label for="modal_prodi">Prodi</label>
-                            <p>Teknik Rekayasa Perangkat Lunak</p>
-                        </div>
-                        <div class="form-group">
-                            <label for="modal_pembimbing">Pembimbing</label>
-                            <p>Rida Indah Fariani</p>
-                        </div>
-                        
-                        <div id="penguji-wrapper">
-                            <div class="form-group" id="penguji-form-1">
-                                <label for="modal_penguji1">Penguji 1</label>
-                                <div class="input-with-buttons">
-                                   
-                            
-                                <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+             <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content modal-content-custom-form">
+                        <div class="modal-body">
+                            <h2>Penjadwalan Sidang</h2>
+                            <div class="form-container"> 
+                                <form id="formDalamModal" novalidate>
                                     
-                                   
-                                <div class="input-with-percent">
-    
-                                    <input 
-                                        type="number" 
-                                        id="modal_qty_penguji1" 
-                                        name="penguji_bobot[]" 
-                                        class="form-control-bobot" 
-                                        min="0"
-                                        placeholder="Bobot" 
-                                    />
-                                    <span class="percent-sign">%</span>
+                                    <div class="form-group">
+                                        <label for="modal_nim">NIM</label>
+                                        <p>0920240033</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_judul_sidang">Judul Sidang</label>
+                                        <p>Sistem Pengajuan Sidang</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_prodi">Prodi</label>
+                                        <p>Teknik Rekayasa Perangkat Lunak</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_pembimbing">Pembimbing</label>
+                                        <p>Rida Indah Fariani</p>
+                                    </div>
+                                    
+                                    <div id="penguji-wrapper">
+                                        <div class="form-group" id="penguji-form-1">
+                                            <label for="modal_penguji1">Penguji 1</label>
+                                            <div class="input-with-buttons">
+                                            
+                                        
+                                            <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+                                                
+                                            
+                                            <div class="input-with-percent">
+                
+                                                <input 
+                                                    type="number" 
+                                                    id="modal_qty_penguji1" 
+                                                    name="penguji_bobot[]" 
+                                                    class="form-control-bobot" 
+                                                    min="0"
+                                                    placeholder="Bobot" 
+                                                />
+                                                <span class="percent-sign">%</span>
 
-                                </div>
-                              </div>
+                                            </div>
+                                        </div>
 
-                            </div>
+                                        </div>
+                                    </div> 
+                                    <div class="form-toggle-buttons">
+                                        <button type="button" class="btn-tambah-penguji" onclick="addPenguji()">
+                                            <i class="fa-solid fa-plus"></i> Tambah Penguji
+                                        </button>
+                                        <button type="button" class="btn-hapus-penguji" onclick="removePenguji()">
+                                            <i class="fa-solid fa-minus"></i> Hapus Penguji
+                                        </button>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="modal_ruangan">Ruangan</label>
+                                        <input type="text" id="modal_ruangan" name="ruangan"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_tanggal">Tanggal</label>
+                                        <input type="date" id="modal_tanggal" name="tanggal"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_jam_awal">Jam</label>
+                                        <div class="time-input-range">
+                                            <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal"/>
+                                            <span class="time-separator">-</span>
+                                            <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
+                                        </div>
+                                    </div>
+
+                                    <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
+                                    <div class="form-actions"> 
+                                        <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
+                                        <button type="submit" class="btn btn-submit">Ubah Penjadwalan</button>
+                                    </div>
+
+                                </form> 
+                            </div> 
                         </div> 
-                        <div class="form-toggle-buttons">
-                            <button type="button" class="btn-tambah-penguji" onclick="addPenguji()">
-                                <i class="fa-solid fa-plus"></i> Tambah Penguji
-                            </button>
-                            <button type="button" class="btn-hapus-penguji" onclick="removePenguji()">
-                                <i class="fa-solid fa-minus"></i> Hapus Penguji
-                            </button>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="modal_ruangan">Ruangan</label>
-                            <input type="text" id="modal_ruangan" name="ruangan"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="modal_tanggal">Tanggal</label>
-                            <input type="date" id="modal_tanggal" name="tanggal"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="modal_jam_awal">Jam</label>
-                            <div class="time-input-range">
-                                <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal"/>
-                                <span class="time-separator">-</span>
-                                <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
-                            </div>
-                        </div>
-
-                        <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
-                        <div class="form-actions"> 
-                            <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
-                            <button type="submit" class="btn btn-submit">Ubah Penjadwalan</button>
-                        </div>
-
-                    </form> </div> </div> </div> </div> </div> 
-
-
+                    </div> 
+                </div> 
+            </div> 
+            
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
