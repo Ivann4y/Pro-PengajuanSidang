@@ -77,6 +77,19 @@
       <div class="col-12">
         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
       </div>
+      <div class="col-12">
+        <ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="page" href="#">Mahasiswa 1</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Mahasiswa 2</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Mahasiswa 3</a>
+  </li>
+</ul>
+      </div>
     </div>
     <br>
         <div class="row align-items-stretch">

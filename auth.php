@@ -1,6 +1,13 @@
 <?php
+
 session_start();
-require 'users.php';
+$serverName = "sidangdevenv.database.windows.net"; 
+$connectionOptions = [
+    "Database" => "SistemSidang",
+    "TrustServerCertificate" => true
+];
+
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'];
