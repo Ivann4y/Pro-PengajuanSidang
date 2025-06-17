@@ -94,12 +94,13 @@
       border-radius: 50px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       width: 100%;
+      margin-left : 1vh;
     }
     .nilai-mahasiswa-display { /* Menggunakan class agar tidak bentrok ID */
       font-size: 9.5rem !important;
       font-weight: bold;
       text-align: center;
-      border-radius: 30px;
+      border-radius: 50px;
       width: 100%;
       margin-left: 23px;
       height: 40px;
@@ -123,16 +124,16 @@
       width: 100%;
       margin-left: 0;
       background-color: rgb(235, 238, 245);
-      border-radius: 20px;
+      border-radius: 50px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     #cardcatatan {
       border: none !important;
       background-color: rgb(235, 238, 245);
-      border-radius: 20px;
+      border-radius: 50px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       width: 100%;
-      margin-left: 0;
+      margin-left: 1vh;
     }
     .form-control {
       background-color: rgb(235, 238, 245);
@@ -140,7 +141,7 @@
     .catatan-textarea { /* Menggunakan class agar tidak bentrok ID */
       width: 100%;
       height: 150px;
-      border-radius: 30px;
+      border-radius: 50px;
       font-size: 1rem;
       margin-top: 20px;
       pointer-events: none;
@@ -234,7 +235,7 @@
       <div class="dashboard-header p-3">
         <!-- GROUP 1: Title and Tabs (aligned to the left) -->
         <div>
-          <h2 class="text-heading text-black mb-3" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+          <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
           <!-- Navigasi Tab -->
           <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
@@ -261,9 +262,9 @@
       <!-- WADAH KONTEN UTAMA UNTUK SEMUA TAB -->
       <div class="tab-content" id="myTabContent">
 
-        <!-- ============================ -->
+       
         <!-- == KONTEN UNTUK MAHASISWA 1 == -->
-        <!-- ============================ -->
+        
         <div class="tab-pane fade show active" id="mahasiswa1-tab-pane" role="tabpanel" aria-labelledby="mahasiswa1-tab" tabindex="0">
           <div class="row align-items-stretch mb-4 p-2">
             <div class="col-lg-6 mb-3 d-flex">
@@ -271,7 +272,7 @@
                 <div class="card-body card-soft px-4 py-3">
                   <h3 class="card-title text-black mb-4 text-center" style="padding:10px;">Data Mahasiswa</h3>
                   <div class="d-flex flex-wrap gap-1 px-4 py-3">
-                    <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
+                    <div class="section" style="flex: 1 1 100px; margin-left:5px; margin-top:25px; color: #333;">
                       <div class="info-group mb-3"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div><div class="value-row text-secondary fw-bold">0920240033</div></div>
                       <div class="info-group mb-3  section-bawah" style="margin-top:45px;"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span></div><div class="value-row text-secondary fw-bold ">Nayakan Ivanna</div></div>
                     </div>
@@ -315,9 +316,9 @@
           </div>
         </div>
 
-        <!-- ============================ -->
+       
         <!-- == KONTEN UNTUK MAHASISWA 2 == -->
-        <!-- ============================ -->
+     
         <div class="tab-pane fade" id="mahasiswa2-tab-pane" role="tabpanel" aria-labelledby="mahasiswa2-tab" tabindex="0">
           <div class="row align-items-stretch mb-4 p-2">
             <div class="col-lg-6 mb-3 d-flex">
@@ -369,9 +370,9 @@
           </div>
         </div>
 
-        <!-- ============================ -->
+        
         <!-- == KONTEN UNTUK MAHASISWA 3 == -->
-        <!-- ============================ -->
+        
         <div class="tab-pane fade" id="mahasiswa3-tab-pane" role="tabpanel" aria-labelledby="mahasiswa3-tab" tabindex="0">
           <div class="p-5 text-center">
             <h3>Konten untuk Mahasiswa 3</h3>

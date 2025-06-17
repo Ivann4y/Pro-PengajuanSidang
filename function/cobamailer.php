@@ -6,8 +6,8 @@ require_once __DIR__ . '/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-function sendResetPasswordEmail($recipientEmail, $recipientName) {
-    // Validate inputs
+function sendResetPasswordEmail($recipientEmail, $recipientName, $token) {
+    // Validasi input jika email kosong 
     if (empty($recipientEmail)) {
         return [
             'success' => false,
@@ -15,6 +15,7 @@ function sendResetPasswordEmail($recipientEmail, $recipientName) {
         ];
     }
 
+    // Validasi input jika email tidak valid
     if (!filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
         return [
             'success' => false,
@@ -23,7 +24,7 @@ function sendResetPasswordEmail($recipientEmail, $recipientName) {
     }
 
     // Create reset password link
-    $resetLink = '../views/inputPasswordBaru.php?email=' . urlencode($recipientEmail);
+    $resetLink = 'http://localhost/PRG2/Pro-PengajuanSidang/views/inputPasswordBaru.php?token=' . urlencode($token);
 
     $mail = new PHPMailer(true);
 
@@ -54,7 +55,7 @@ function sendResetPasswordEmail($recipientEmail, $recipientName) {
         };
 
         // Recipients
-        $mail->setFrom('vprasetya79@gmail.com', 'Admin Pengajuan');
+        $mail->setFrom('sidangastra@gmail.com', 'Admin Pengajuan');
         $mail->addAddress($recipientEmail, $recipientName);
 
         // Embed image
