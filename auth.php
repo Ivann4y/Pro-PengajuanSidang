@@ -1,6 +1,13 @@
 <?php
+
 session_start();
-require 'users.php';
+$serverName = "sidangdevenv.database.windows.net"; 
+$connectionOptions = [
+    "Database" => "SistemSidang",
+    "TrustServerCertificate" => true
+];
+
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'];
@@ -29,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
         }
     }
-
+ 
     if ($found) {
         header("Location: views/$role/{$role[0]}Beranda.php");
         exit();

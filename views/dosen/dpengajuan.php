@@ -1,3 +1,11 @@
+<?php
+session_start();
+if ($_SESSION['role'] !== 'dosen') {
+    header("Location: ../../index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -214,8 +222,6 @@
                     <a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-person-fill fs-5"></i>
                     </a>
-
-                    
                 </div>
             </div>
         </div>
