@@ -1,6 +1,8 @@
 <?php
+
 session_start();
-require 'users.php';
+require "koneksi.php";
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = $_POST['role'];

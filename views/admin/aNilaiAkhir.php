@@ -15,11 +15,8 @@
   />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
-    rel="stylesheet"
-  />
-
+  
+  <!-- FONT POPPINS GANDA DIHAPUS, CUKUP SATU INI YANG LENGKAP -->
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet"
@@ -31,6 +28,8 @@
 
   
   <title>Admin - Nilai Akhir</title>
+  
+  <!-- BAGIAN STYLE CSS INI TIDAK DIUBAH SAMA SEKALI, SESUAI PERMINTAANMU -->
   <style>
     /* ... CSS seperti semula, tanpa perubahan untuk carddetailPenilaian dan cardcatatan (pastikan width dan margin-left di-set ke 100% / 0) ... */
     #NavSide {
@@ -38,10 +37,12 @@
       min-height: 100vh;
       position: relative;
     }
+
     /* (semua CSS NavSide dan styling lain dipertahankan) */
      .label-row i {
-  font-size: 1.5rem;    /* Perbesar icon */
-}
+      font-size: 1.5rem;    /* Perbesar icon */
+    }
+
     body,
     .card,
     .form-control,
@@ -131,7 +132,6 @@
       margin-top: 20px;
       margin-right: 15px;
       font-weight: 550;
-
     }
 
     #detailpenilaian {
@@ -162,7 +162,6 @@
 
     .form-control {
       background-color: rgb(235, 238, 245);
-
     }
 
     #catatan {
@@ -195,7 +194,6 @@
       #cardcatatan {
         width: 100% !important;
         margin-left: 0 !important;
-        
       }
       #cardNilai {
         width: 100% !important;
@@ -290,14 +288,48 @@
     <!-- Top bar desktop -->
       
             <div class="dashboard-header p-3">
-                <h2 class="text-heading text-black walcomeText" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-                <div class="header-icons d-none d-md-flex">
-                    <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
-                    <div class="profile-icon">
-                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
-                    </div>
-                </div>
-              </div>
+        <!-- GROUP 1: Title and Tabs (aligned to the left) -->
+        <div>
+          <!-- The class causing the large gap has been removed and replaced with mb-3 -->
+          <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+
+          <!-- STEP 1: Update the Navigation Tabs -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="mahasiswa1-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa1-tab-pane" role="tab" aria-controls="mahasiswa1-tab-pane" aria-selected="true" href="#">mahasiswa1</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" id="mahasiswa2-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa2-tab-pane" role="tab" aria-controls="mahasiswa2-tab-pane" aria-selected="false" href="#">mahasiswa2</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" id="mahasiswa3-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa3-tab-pane" role="tab" aria-controls="mahasiswa3-tab-pane" aria-selected="false" href="#">mahasiswa3</a>
+              </li>
+            </ul>
+        </div>
+
+
+        <!-- GROUP 2: Icons (aligned to the right) -->
+        <div class="header-icons d-none d-md-flex">
+            <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+            <div class="profile-icon">
+              <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+            </div>
+          </div>
+        </div>
+
+  <script>
+      document.addEventListener("DOMContentLoaded", function () {
+                const navLinks = document.querySelectorAll(".nav-link");
+
+                navLinks.forEach(function (link) {
+                  link.addEventListener("click", function (e) {
+                    e.preventDefault(); // biar gak reload
+                    navLinks.forEach(l => l.classList.remove("active")); // hapus semua active
+                    this.classList.add("active"); // tambahkan ke yang diklik
+                  });
+                });
+              });
+</script>
 
 
         <!-- Baris Nilai & Data Mahasiswa -->
@@ -384,8 +416,9 @@
                   <div class="col d-flex align-items-center">
                     <label for="nilaiLaporan" class="text-black me-2 mb-2">Nilai laporan</label>
                     <label class="colon1 me-2 mb-2">:</label>
+                    <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
                     <input
-                      type="type"
+                      type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="nilaiLaporan"
                       id="detailpenilaian"
@@ -396,8 +429,9 @@
                   <div class="col d-flex align-items-center">
                     <label for="MateriPresentasi" class="text-black me-2 mb-2">Materi Presentasi</label>
                     <label class="colon2 me-2 mb-2">:</label>
+                    <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
                     <input
-                      type="type"
+                      type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="MateriPresentasi"
                       id="detailpenilaian"
@@ -408,8 +442,9 @@
                   <div class="col d-flex align-items-center">
                     <label for="Penyampaian" class="text-black me-2 mb-2">Penyampaian</label>
                     <label class="colon3 me-2 mb-2">:</label>
+                    <!-- Typo diperbaiki: dari type="tyep" jadi type="text" -->
                     <input
-                      type="tyep"
+                      type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="Penyampaian"
                       id="detailpenilaian"
@@ -420,8 +455,9 @@
                   <div class="col d-flex align-items-center">
                     <label for="NilaiProyek" class="text-black me-2 mb-2">Nilai Proyek</label>
                     <label class="colon4 me-2 mb-2">:</label>
+                    <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
                     <input
-                      type="type"
+                      type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="NilaiProyek"
                       id="detailpenilaian"
@@ -533,7 +569,6 @@
         }
       };
     }
-
 
 
     // Fungsi untuk tombol kembali (tetap dipertahankan)
