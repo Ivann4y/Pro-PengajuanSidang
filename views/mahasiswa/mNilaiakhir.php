@@ -1,18 +1,5 @@
 <!-- Argha arybawa pasha -->
  
-<?php
-    // --- BLOK PHP ---
-    // Kode PHP dieksekusi di server sebelum halaman dikirim ke browser.
-
-    // Membuat sebuah array asosiatif untuk menyimpan data mahasiswa sebagai placeholder.
-    // Dalam aplikasi nyata, data ini biasanya akan diambil dari database.
-    $mahasiswa = [
-        'nama'  => 'M. Haaris Nur S.', // Kunci 'nama' dengan nilai string nama mahasiswa
-        'nim'   => '0920240033',       // Kunci 'nim' dengan nilai string NIM mahasiswa
-        'prodi' => 'Teknik Informatika' // Kunci 'prodi' dengan nilai string program studi
-    ];
-?>
-
 <!DOCTYPE html> <!-- Mendeklarasikan bahwa dokumen ini adalah HTML5 -->
 <html lang="en"> <!-- Elemen root dari halaman HTML, dengan atribut bahasa "English" -->
   <head>
@@ -71,6 +58,7 @@
         font-weight: 700 !important; /* Ketebalan font tebal */
         color: #343a40; /* Warna teks gelap */
         margin-bottom: 0.5rem; 
+        margin-left: 10px;
     }
     
     /* Style untuk teks informasi mahasiswa (seperti nama, nim, dll) */
@@ -95,6 +83,8 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 100%;
         margin-left: 10px;
+        margin-right: -10px;
+
     }
     
     /* Style untuk kartu data mahasiswa */
@@ -255,7 +245,7 @@
         <div class="row mb-4 title-container">
             <div class="col-12">
                 <h2 class="main-title">
-                    Mahasiswa / Detail Evaluasi - Sistem Pengajuan Sidang
+                    Detail Evaluasi - Sistem Pengajuan Sidang
                 </h2>
             </div>
         </div>
@@ -358,6 +348,7 @@
     </div>
 </main>
     
+
     <!-- Memuat jQuery dari CDN. Diperlukan untuk beberapa fungsionalitas Bootstrap dan script custom. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
