@@ -3,10 +3,10 @@ session_start();
 $role = $_GET['role'] ?? 'guest';
 
 switch ($role) {
-    case 'Mahasiswa':
+    case 'mahasiswa':
         $judul = 'Lupa Kata Sandi Mahasiswa';
         break;
-    case 'Dosen':
+    case 'dosen':
         $judul = 'Lupa Kata Sandi Dosen';
         break;
     case 'Admin':
@@ -253,10 +253,10 @@ switch ($role) {
                     <?php elseif ($error === 'invalid'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Format email tidak valid!</div>
-                    <?php elseif ($error === 'mail'): ?>
+                    <?php elseif ($error === 'notfound'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Email tidak ditemukan!</div>
-                    <?php elseif ($error === 'notfound'): ?>
+                    <?php elseif ($error === 'mail'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Gagal mengirim email reset password. Silakan coba lagi!</div>
                     <?php elseif ($success === '1'): ?>
@@ -289,13 +289,13 @@ switch ($role) {
             let url = "";
 
             switch (role) {
-                case 'Mahasiswa':
+                case 'mahasiswa':
                     url = 'mahasiswa/mLogin.php';
                     break;
-                case 'Dosen':
+                case 'dosen':
                     url = 'dosen/dLogin.php';
                     break;
-                case 'Admin':
+                case 'admin':
                     url = 'admin/aLogin.php';
                     break;
                 default:
