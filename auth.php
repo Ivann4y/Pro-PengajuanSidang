@@ -1,12 +1,7 @@
 <?php
 
 session_start();
-$serverName = "sidangdevenv.database.windows.net"; 
-$connectionOptions = [
-    "Database" => "SistemSidang",
-    "TrustServerCertificate" => true
-];
-
+require "koneksi.php";
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

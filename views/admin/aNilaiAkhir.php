@@ -291,7 +291,7 @@
         <!-- GROUP 1: Title and Tabs (aligned to the left) -->
         <div>
           <!-- The class causing the large gap has been removed and replaced with mb-3 -->
-          <h2 class="text-heading text-black mb-3" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+          <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
 
           <!-- STEP 1: Update the Navigation Tabs -->
             <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -307,15 +307,17 @@
             </ul>
         </div>
 
+
         <!-- GROUP 2: Icons (aligned to the right) -->
         <div class="header-icons d-none d-md-flex">
-          <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
-          <div class="profile-icon">
-            <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+            <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+            <div class="profile-icon">
+              <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+            </div>
           </div>
         </div>
-      </div>
-<script>
+
+  <script>
       document.addEventListener("DOMContentLoaded", function () {
                 const navLinks = document.querySelectorAll(".nav-link");
 
@@ -567,7 +569,6 @@
         }
       };
     }
-
 
 
     // Fungsi untuk tombol kembali (tetap dipertahankan)
