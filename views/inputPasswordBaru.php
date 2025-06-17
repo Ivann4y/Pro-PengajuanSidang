@@ -1,50 +1,82 @@
 <?php
 session_start();
+require_once '../koneksi.php';
 
 $success = '';
 $errorType = '';
 $judul = '';
-$role = $_GET['role'] ?? $_POST['role'] ?? '';
+$token = $_GET['token'] ?? '';
+$role = ''; // Akan diisi dari tabel password_resets jika token valid
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+// Validasi token di database
+$reset = null;
+if ($token) {
+  $stmt = sqlsrv_query($conn, "SELECT * FROM password_resets WHERE token=? AND used=0", [$token]);
+$reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+
+  if ($reset) {
+    date_default_timezone_set('Asia/Jakarta');
+    $now = date('Y-m-d H:i:s');
+    if ($reset['expires_at'] > $now) {
+        // Token masih berlaku
+        $role = $reset['role'];
+    } else {
+        // Token expired
+        $reset = null;
+    }
+}
+}
+
+
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
     $newPassword = $_POST['newPassword'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';
 
+    // Validasi jika password kosong
     if (empty($newPassword) || empty($confirmPassword)) {
-        header("Location: inputPasswordBaru.php?error=empty&role=$role");
+        header("Location: inputPasswordBaru.php?token=$token&error=empty");
         exit;
-    } elseif (strlen($newPassword) < 2) {
-        header("Location: inputPasswordBaru.php?error=short&role=$role");
+    } elseif (strlen($newPassword) < 8) {
+        header("Location: inputPasswordBaru.php?token=$token&error=short");
         exit;
     } elseif ($newPassword !== $confirmPassword) {
-        header("Location: inputPasswordBaru.php?error=mismatch&role=$role");
+        header("Location: inputPasswordBaru.php?token=$token&error=mismatch");
         exit;
     } else {
-        $_SESSION['reset_user']['password'] = $newPassword;
-        header("Location: inputPasswordBaru.php?success=1&role=$role");
-        exit;
+        // Hash password baru dan update ke database
+        $hash = password_hash($newPassword, PASSWORD_DEFAULT);
+        sqlsrv_query($conn, "UPDATE users SET password_hash=? WHERE email=? AND role=?", [$hash, $reset['email'], $reset['role']]);
+        sqlsrv_query($conn, "UPDATE password_resets SET used=1 WHERE token=?", [$token]);
+//         if ($result === false) {
+//     die(print_r(sqlsrv_errors(), true));
+// }
+         // Hapus semua reset password yang sudah digunakan atau kadaluarsa
+       sqlsrv_query($conn, "DELETE FROM password_resets WHERE (used=1 OR expires_at < GETDATE()) AND email=?", [$reset['email']]);
+        $success = "Kata sandi berhasil diubah!";
+     
+       
     }
 }
 
+// ...HTML... Jika token tidak valid atau sudah kadaluarsa, tampilkan pesan error
+if (!$reset) {
+    echo '<div class="alert alert-danger">Token tidak valid atau sudah kadaluarsa.</div>';
+}
+
+
+// Cek pesan sukses/error
 if (isset($_GET['success'])) {
     $success = "Kata sandi berhasil diubah!";
 }
-
 $errorType = $_GET['error'] ?? '';
 
+// Judul berdasarkan role
 switch ($role) {
-    case 'mahasiswa':
-        $judul = 'Ubah Kata Sandi Mahasiswa';
-        break;
-    case 'dosen':
-        $judul = 'Ubah Kata Sandi Dosen';
-        break;
-    case 'admin':
-        $judul = 'Ubah Kata Sandi Admin';
-        break;
-    default:
-        $judul = 'Ubah Kata Sandi';
-        break;
+    case 'mahasiswa': $judul = 'Ubah Kata Sandi Mahasiswa'; break;
+    case 'dosen': $judul = 'Ubah Kata Sandi Dosen'; break;
+    case 'admin': $judul = 'Ubah Kata Sandi Admin'; break;
+    default: $judul = 'Ubah Kata Sandi'; break;
 }
 ?>
 
@@ -269,7 +301,8 @@ switch ($role) {
 
         <div class="right-column-wrapper">
             <div class="log">
-                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+                <?php if ($reset): ?>
+              <form action="inputPasswordBaru.php?token=<?= htmlspecialchars($token) ?>" method="POST">
                     <div class="text-center pt-5 mb-4">
                         <h2 class="fs-2 fw-bold"><?= $judul ?></h2>
                         <?php if (!empty($success)): ?>
@@ -288,7 +321,7 @@ switch ($role) {
                         <?php if ($errorType === 'empty'): ?>
                             <div class="text-danger">Kata sandi tidak boleh kosong.</div>
                         <?php elseif ($errorType === 'short'): ?>
-                            <div class="text-danger">Kata sandi minimal 2 karakter.</div>
+                            <div class="text-danger">Kata sandi minimal 8 karakter.</div>
                         <?php endif; ?>
                     </div>
 
@@ -317,6 +350,7 @@ switch ($role) {
                 </button>
             </div>
             </form>
+            <?php endif; ?>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>

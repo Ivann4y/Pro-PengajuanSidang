@@ -1,15 +1,60 @@
 <?php
-// 1. --- PHP LOGIC UPDATED ---
-// Default to 'semua' if not set
-$selectedTipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'semua';
-$selectedStatus = isset($_GET['status']) ? $_GET['status'] : 'semua';
+require "../../koneksi.php";
 
-// Load data
-$jsonPath = __DIR__ . '/data_sidang.json'; 
-$jsonData = file_exists($jsonPath) ? file_get_contents($jsonPath) : '[]';
-$data = json_decode($jsonData, true);
-if (!is_array($data)) {
-    $data = [];
+$selectedTipe = $_GET['tipe'] ?? 'semua';
+$selectedStatus = $_GET['status'] ?? 'semua';
+
+$query = "SELECT 
+    s.id_sidang AS id,
+    m.nim,
+    m.nama_mhs AS nama,
+    m.prodi,
+    s.judul AS judulSidang,
+    mk.nama_matkul AS mataKuliah,
+    CASE 
+        WHEN s.jenis_sidang = 0x00 THEN 'TA'
+        WHEN s.jenis_sidang = 0x01 THEN 'Semester'
+    END AS tipeSidang,
+    CASE 
+        WHEN s.status_ajuan = 0x01 THEN 1
+        ELSE 0
+    END AS statusPersetujuan,
+    d_pembimbing.nama_dosen AS pembimbing,
+    COALESCE(d_pengampu.dosen_list, '') AS dosenPengampuList
+    FROM Sidang s
+    INNER JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+    INNER JOIN Mahasiswa m ON km.nim = m.nim
+
+    LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND s.jenis_sidang = 0x00
+    LEFT JOIN Dosen d_pembimbing ON b.nomor_dosen = d_pembimbing.nomor_dosen
+
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang AND s.jenis_sidang = 0x01
+    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+
+    LEFT JOIN (
+        SELECT 
+            pk.id_matkul, 
+            STRING_AGG(d.nama_dosen, ', ') AS dosen_list
+        FROM Pengampu_Kelas pk
+        INNER JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
+        GROUP BY pk.id_matkul
+    ) d_pengampu ON ds.id_matkul = d_pengampu.id_matkul";
+
+$result = sqlsrv_query($conn, $query);
+if ($result === false) {
+    die(print_r(sqlsrv_errors(), true));
+}
+
+$data = [];
+while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+    // Convert dosen list to array
+    $row['dosenPengampu'] = !empty($row['dosenPengampuList']) ? 
+        explode(', ', $row['dosenPengampuList']) : [];
+    
+    // Convert status to boolean
+    $row['statusPersetujuan'] = (bool)$row['statusPersetujuan'];
+    
+    $data[] = $row;
 }
 
 // New flexible filtering logic
@@ -27,6 +72,7 @@ $filteredData = array_filter($data, function($entry) use ($selectedTipe, $select
 
     return $tipeMatch && $statusMatch;
 });
+
 
 // 2. --- VARIABLES FOR BUTTON TEXT ---
 $tipeButtonText = 'Semua Tipe';
