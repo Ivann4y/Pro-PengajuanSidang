@@ -253,10 +253,10 @@ switch ($role) {
                     <?php elseif ($error === 'invalid'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Format email tidak valid!</div>
-                    <?php elseif ($error === 'email'): ?>
+                    <?php elseif ($error === 'mail'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Email tidak ditemukan!</div>
-                    <?php elseif ($error === 'mail'): ?>
+                    <?php elseif ($error === 'notfound'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Gagal mengirim email reset password. Silakan coba lagi!</div>
                     <?php elseif ($success === '1'): ?>
