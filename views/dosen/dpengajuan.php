@@ -4,6 +4,7 @@ if ($_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit();
 }
+include '../../koneksi.php';
 ?>
 
 <!DOCTYPE html>
