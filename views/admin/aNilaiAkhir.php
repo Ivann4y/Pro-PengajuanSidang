@@ -309,13 +309,14 @@
 
         <!-- GROUP 2: Icons (aligned to the right) -->
         <div class="header-icons d-none d-md-flex">
-          <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
-          <div class="profile-icon">
-            <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+            <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+            <div class="profile-icon">
+              <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+            </div>
           </div>
         </div>
-      </div>
-<script>
+
+  <script>
       document.addEventListener("DOMContentLoaded", function () {
                 const navLinks = document.querySelectorAll(".nav-link");
 
@@ -567,7 +568,6 @@
         }
       };
     }
-
 
 
     // Fungsi untuk tombol kembali (tetap dipertahankan)
