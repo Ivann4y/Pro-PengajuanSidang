@@ -115,7 +115,7 @@ if ($_SESSION['role'] !== 'mahasiswa') {
         </main>
     </div>
 
-    <!-- Modal and JS remain the same -->
+<!-- Modal exit -->
     <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
