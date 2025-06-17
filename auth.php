@@ -15,33 +15,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Validasi jika role tidak sesuai
-    if (!isset($users[$role])) {
-           header("Location: views/$role/{$role[0]}Login.php?error=role");
-        exit();
+    $sql = "SELECT username, role, password_hash FROM users WHERE username = ? AND role = ?";
+    $params = [$username, $role];
+
+    $stmt = sqlsrv_query($conn, $sql, $params);
+    if ($stmt === false) {
+        // Error handling jika query gagal
+        die(print_r(sqlsrv_errors(), true));
     }
 
-    $found = false;
-    foreach ($users[$role] as $user) {
-        if ($user['username'] === $username && $user['password'] === $password) {
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = $role;
-            $_SESSION['login'] = true;
-            $found = true;
-            break;
-        }
-    }
- 
-    if ($found) {
-        header("Location: views/$role/{$role[0]}Beranda.php");
+    $user = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+
+    // Cek apakah user ditemukan DAN apakah password yang diinput cocok dengan hash di database
+    if ($user && password_verify($password, $user['password_hash'])) {
+        // Jika berhasil:
+        // Set session
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['login'] = true;
+
+        // Arahkan ke halaman beranda sesuai role
+        header("Location: views/{$user['role']}/{$user['role'][0]}Beranda.php");
         exit();
+
     } else {
-        // Validasi jika username atau password salah atau tidak ditemukan
-        header("Location: views/$role/{$role[0]}Login.php?error=1&username=" . urlencode($username));
+        // Jika gagal (username/password/role salah):
+        // Kembalikan ke halaman login dengan pesan error
+        header("Location: views/$role/{$role[0]}Login.php?error=invalid&username=" . urlencode($username));
         exit();
     }
 }
-
 // Jika data mengambil dari database
 
 // <?php
