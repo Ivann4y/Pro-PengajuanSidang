@@ -3,13 +3,13 @@ session_start();
 $role = $_GET['role'] ?? 'guest';
 
 switch ($role) {
-    case 'mahasiswa':
+    case 'Mahasiswa':
         $judul = 'Lupa Kata Sandi Mahasiswa';
         break;
-    case 'dosen':
+    case 'Dosen':
         $judul = 'Lupa Kata Sandi Dosen';
         break;
-    case 'admin':
+    case 'Admin':
         $judul = 'Lupa Kata Sandi Admin';
         break;
     default:
@@ -289,13 +289,13 @@ switch ($role) {
             let url = "";
 
             switch (role) {
-                case 'mahasiswa':
+                case 'Mahasiswa':
                     url = 'mahasiswa/mLogin.php';
                     break;
-                case 'dosen':
+                case 'Dosen':
                     url = 'dosen/dLogin.php';
                     break;
-                case 'admin':
+                case 'Admin':
                     url = 'admin/aLogin.php';
                     break;
                 default:
