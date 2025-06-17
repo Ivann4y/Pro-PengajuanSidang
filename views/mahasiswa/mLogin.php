@@ -1,6 +1,9 @@
 <?php
+
+require "../../koneksi.php";
+
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Mahasiswa') {
     header('Location: ../../index.php');
     exit();
 }
@@ -314,12 +317,13 @@ $role = "mahasiswa";
             $error = $_GET['error'] ?? '';
             ?>
             <div class="col-md-7 d-flex justify-content-center align-items-center mt-5">
-
+                <!-- Mengecek autentikasi login -->
                 <form action="../../auth.php" method="POST" novalidate>
                     <div class="text-center pt-5 mb-4">
                         <h2><strong>Masuk Akun</strong></h2>
                         <h2><strong>Mahasiswa</strong></h2>
                     </div>
+                    <!-- Tanda input selain text -->
                     <input type="hidden" name="role" value="<?= $role ?>">
 
                     <div class="mb-3">
@@ -338,6 +342,7 @@ $role = "mahasiswa";
                     </div>
 
                     <div class="mb-3">
+                        <!-- Tanda input selain text -->
                         <input
                             type="password"
                             class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
