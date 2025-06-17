@@ -315,7 +315,8 @@
     </div>
     <main class="NavSide__main-content" id="dPengajuan">
       <div class="dashboard-header">
-        <div class="header-icons d-none d-md-flex"> <i class="bi bi-bell-fill"></i>
+        <div class="header-icons d-none d-md-flex"> 
+          <!-- <i class="bi bi-bell-fill"></i> -->
         </div>
      </div>
 
