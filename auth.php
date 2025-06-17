@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
         }
     }
-
+ 
     if ($found) {
         header("Location: views/$role/{$role[0]}Beranda.php");
         exit();

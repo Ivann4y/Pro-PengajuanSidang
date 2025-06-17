@@ -963,7 +963,7 @@
                 <!-- Button group at the bottom of the page -->
                 <div class="button-group-bottom">
                     <!-- 'Kembali' (Back) button -->
-                    <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
+                    <button type="button" class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
                         <span class="icon-circle">
                             <i class="fa-solid fa-arrow-left"></i>
                         </span>

@@ -33,8 +33,8 @@ function sendResetPasswordEmail($recipientEmail, $recipientName) {
         $mail->isSMTP();                           // Send using SMTP
         $mail->Host       = 'smtp.gmail.com';      // Set the SMTP server to send through
         $mail->SMTPAuth   = true;                  // Enable SMTP authentication
-        $mail->Username   = 'vprasetya79@gmail.com'; // SMTP username
-        $mail->Password   = 'yzze xvvu zlqy itwj'; // SMTP password (App Password)
+        $mail->Username   = 'sidangastra@gmail.com'; // SMTP username
+        $mail->Password   = 'zluj wque lzod wxbv'; // SMTP password (App Password)
         $mail->SMTPSecure = 'tls';                 // Enable TLS encryption
         $mail->Port       = 587;                   // TCP port to connect to
         $mail->CharSet    = 'UTF-8';               // Set charset to UTF-8
@@ -171,7 +171,7 @@ function sendResetPasswordEmail($recipientEmail, $recipientName) {
 
         // Content
         $mail->isHTML(true);
-        $mail->Subject = 'Reset Password - Sistem Admin Pengajuan';
+        $mail->Subject = 'Reset Password - Sistem Pengajuan Sidang';
         $mail->Body    = $htmlMessage;
         $mail->AltBody = strip_tags(str_replace(['<br>', '</p>'], "\n", $htmlMessage));
 
