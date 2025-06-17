@@ -215,7 +215,7 @@
             <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
           </a>
         </li>
-        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+        <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
           <a href="aNilaiAkhir.php">
             <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
           </a>
