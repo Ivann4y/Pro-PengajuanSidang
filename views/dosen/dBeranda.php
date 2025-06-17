@@ -269,6 +269,16 @@ if ($_SESSION['role'] !== 'dosen') {
             background-color: transparent;
         }
         
+        .calendar-card .calendar-day.has-sidang {
+            background-color: rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+        }
+
+        .calendar-card .calendar-day.has-sidang:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
         .sidang-mendatang-card {
             background-color: #F3F4F6;
             display: flex;
@@ -489,7 +499,7 @@ if ($_SESSION['role'] !== 'dosen') {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
     
      <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -517,79 +527,105 @@ if ($_SESSION['role'] !== 'dosen') {
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Toggle Sidebar ---
-            const sidebarToggle = document.getElementById('sidebarToggleMobile');
-            const sidebar = document.getElementById('main-sidebar');
-            if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('NavSide__sidebar--active-mobile');
-                    sidebarToggle.classList.toggle('NavSide__toggle--active');
+            // Logika untuk toggle sidebar pada halaman dibawah 700px
+            let menuToggle = document.querySelector(".NavSide__toggle");
+            let sidebar = document.getElementById("main-sidebar");
+
+            // Toggle sidebar untuk mobile
+            menuToggle.onclick = function() {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
+
+            const jadwalSidang = [
+                '2025-04-22', // Nayaka Ivana Putra
+                '2025-05-29', // Zahrah Imelda Asari
+                '2025-08-17', // Mnur
+                '2025-09-12', // Naufal Abdirrahman Faiz
+                '2025-09-27'  // Ezra
+            ];
+            // Di aplikasi nyata, data ini biasanya diambil dari database.
+
+            // Elemen-elemen kalender
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const currentMonthYearEl = document.getElementById('currentMonthYear');
+            const calendarTableBody = document.querySelector('#calendarTable tbody');
+            const prevMonthBtn = document.getElementById('prevMonth');
+            const nextMonthBtn = document.getElementById('nextMonth');
+
+            if (currentMonthYearEl && calendarTableBody && prevMonthBtn && nextMonthBtn) {
+                
+                const today = new Date(); 
+                let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
+
+                function renderCalendar() {
+                    calendarTableBody.innerHTML = "";
+                    currentMonthYearEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
+                    const year = currentDate.getFullYear();
+                    const month = currentDate.getMonth();
+
+                    const firstDayOfMonth = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                    let date = 1;
+                    for (let i = 0; i < 6; i++) {
+                        const row = document.createElement("tr");
+
+                        for (let j = 0; j < 7; j++) {
+                            const cell = document.createElement("td");
+                            if ((i === 0 && j < firstDayOfMonth) || date > daysInMonth) {
+                                // Sel kosong
+                            } else {
+                                const daySpan = document.createElement("span");
+                                daySpan.classList.add("calendar-day");
+                                daySpan.textContent = date;
+
+                                if (date === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                                    daySpan.classList.add("current-day");
+                                }
+
+                                // ===================================================================
+                                // LANGKAH 2: TAMBAHKAN KELAS .has-sidang JIKA TANGGAL SESUAI
+                                // ===================================================================
+                                // Buat string tanggal dengan format YYYY-MM-DD
+                                const currentDayString = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                                
+                                // Periksa apakah tanggal ini ada di dalam array jadwalSidang
+                                if (jadwalSidang.includes(currentDayString)) {
+                                    daySpan.classList.add('has-sidang');
+                                    // Tambahan: Buat tanggalnya bisa diklik untuk menampilkan info
+                                    daySpan.style.cursor = "pointer";
+                                    daySpan.title = "Ada jadwal sidang di tanggal ini";
+                                    daySpan.addEventListener('click', function() {
+                                        alert(`Detail sidang untuk tanggal ${this.textContent} ${monthNames[month]} ${year}`);
+                                    });
+                                }
+                                // ===================================================================
+
+                                cell.appendChild(daySpan);
+                                date++;
+                            }
+                            row.appendChild(cell);
+                        }
+                        calendarTableBody.appendChild(row);
+                        if (date > daysInMonth) break;
+                    }
+                }
+
+                prevMonthBtn.addEventListener('click', () => {
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                    renderCalendar();
                 });
+
+                nextMonthBtn.addEventListener('click', () => {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    renderCalendar();
+                });
+
+                renderCalendar(); 
             }
-
-            // // --- Real-time Calendar Functionality ---
-            // const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            // const currentMonthYearEl = document.getElementById('currentMonthYear');
-            // const calendarTableBody = document.querySelector('#calendarTable tbody');
-            // const prevMonthBtn = document.getElementById('prevMonth');
-            // const nextMonthBtn = document.getElementById('nextMonth');
-
-            // let today = new Date(); 
-            // let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
-
-            // function renderCalendar() {
-            //     calendarTableBody.innerHTML = "";
-            //     currentMonthYearEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-
-            //     const year = currentDate.getFullYear();
-            //     const month = currentDate.getMonth();
-
-            //     const firstDayOfMonth = new Date(year, month, 1).getDay();
-            //     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            //     let date = 1;
-            //     for (let i = 0; i < 6; i++) {
-            //         const row = document.createElement("tr");
-
-            //         for (let j = 0; j < 7; j++) {
-            //             const cell = document.createElement("td");
-            //             if (i === 0 && j < firstDayOfMonth) {
-            //                 cell.innerHTML = "";
-            //             } else if (date > daysInMonth) {
-            //                 cell.innerHTML = "";
-            //             } else {
-            //                 const daySpan = document.createElement("span");
-            //                 daySpan.classList.add("calendar-day");
-            //                 daySpan.textContent = date;
-
-            //                 if (date === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-            //                     daySpan.classList.add("current-day");
-            //                 }
-            //                 cell.appendChild(daySpan);
-            //                 date++;
-            //             }
-            //             row.appendChild(cell);
-            //         }
-            //         calendarTableBody.appendChild(row);
-            //     }
-            // }
-
-            // if (prevMonthBtn) {
-            //     prevMonthBtn.addEventListener('click', () => {
-            //         currentDate.setMonth(currentDate.getMonth() - 1);
-            //         renderCalendar();
-            //     });
-            // }
-
-            // if (nextMonthBtn) {
-            //     nextMonthBtn.addEventListener('click', () => {
-            //         currentDate.setMonth(currentDate.getMonth() + 1);
-            //         renderCalendar();
-            //     });
-            // }
-
-            // // Initial render of the calendar
-            // renderCalendar(); 
+            
         });
 
         // Fungsi notifikasi (jika masih digunakan)
