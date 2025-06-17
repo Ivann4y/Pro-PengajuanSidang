@@ -540,13 +540,6 @@ if ($_SESSION['role'] !== 'dosen') {
             
         });
 
-        // Fungsi notifikasi (jika masih digunakan)
-        function markAllRead() {
-            // Logika Anda
-        }
-        function markOneRead(el) {
-            // Logika Anda
-        }
     </script>
 </body>
 </html>

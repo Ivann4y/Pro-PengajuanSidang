@@ -1,65 +1,4 @@
-<?php
-// Langkah 1: Mulai session di baris paling pertama
-session_start();
 
-// Langkah 3: Cek apakah ada pesan dari proses sebelumnya, lalu hapus.
-$pesan = '';
-if (isset($_SESSION['pesan'])) {
-    $pesan = $_SESSION['pesan'];
-    unset($_SESSION['pesan']); // Hapus pesan dari session agar tidak muncul lagi saat di-refresh
-}
-
-// Cek apakah form telah disubmit menggunakan metode POST
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // Cek apakah ada file yang di-upload melalui input bernama 'fileInput'
-    if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
-        
-        $folder_target = "uploads/";
-        if (!file_exists($folder_target)) {
-            mkdir($folder_target, 0777, true);
-        }
-
-        $file_asli = basename($_FILES["fileInput"]["name"]);
-        $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
-        $file_unik = uniqid('revisi_', true) . '.' . $ekstensi_file;
-        $path_target = $folder_target . $file_unik;
-        
-        $ekstensi_diizinkan = array("pdf", "docx", "pptx", "zip");
-        if (!in_array($ekstensi_file, $ekstensi_diizinkan)) {
-            // Untuk pesan error, kita langsung tampilkan saja tanpa redirect
-            $pesan = "Error: Format file tidak diizinkan. Hanya .pdf, .docx, .pptx, dan .zip yang boleh diunggah.";
-        }
-        
-        elseif ($_FILES["fileInput"]["size"] > 5242880) {
-            $pesan = "Error: Ukuran file terlalu besar. Maksimal 5 MB.";
-        }
-        
-        else {
-            if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
-                
-                // Langkah 2: Jika SUKSES, simpan pesan ke session dan lakukan redirect
-                $_SESSION['pesan'] = "Sukses: File ". htmlspecialchars($file_asli) . " berhasil diunggah.";
-                header("Location: index.php"); // Perintahkan browser untuk redirect
-                exit(); // Hentikan eksekusi script setelah redirect
-
-            } else {
-                $pesan = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
-            }
-        }
-
-    } elseif (isset($_FILES["fileInput"])) {
-        switch ($_FILES["fileInput"]["error"]) {
-            case UPLOAD_ERR_NO_FILE:
-                $pesan = "Error: Tidak ada file yang dipilih.";
-                break;
-            default:
-                $pesan = "Error: Terjadi kesalahan saat mengunggah.";
-                break;
-        }
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -118,8 +57,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
           <div class="d-flex justify-content-between align-items-center">
       <div>
-         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-        <h5 class="mt-3">Catatan Perbaikan</h5>
+         <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+        
+ <ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" href="#">mahasiswa1</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">mahasiswa2</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">mahasiswa3</a>
+  </li>
+</ul>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const navLinks = document.querySelectorAll(".nav-link");
+
+    navLinks.forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault(); // biar gak reload
+        navLinks.forEach(l => l.classList.remove("active")); // hapus semua active
+        this.classList.add("active"); // tambahkan ke yang diklik
+      });
+    });
+  });
+</script>
+
+
+
+        <h5 class="mt-5">Catatan Perbaikan</h5>
       </div>
       <span class="badge-custom">Status Revisi : Disetujui</span>
     </div>
@@ -166,6 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.707 0H9.293zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 10.5a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 12a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/></svg>    
     <p class="text-center text-muted small mt-2" style="margin-top: 2rem " id="upload-prompt-text">Unduh berkas revisi dengan format pdf, docx, pptx, dan zip</p>
     </a>
+    
 
 
 
@@ -173,20 +142,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   </div>
  <br/>
-      <div class="d-flex justify-content-end mt-4">
-          <a href="aEvaluasi.php" class="btn-custom-primaryUnd" id="btnUnduh" download>
-              Unduh
-          </a>
-      </div>
+ <!-- HTML kosong -->
+<div id="downloadContainer"></div>
+
+<script>
+    // Buat elemen div dengan class bootstrap
+    const containerDiv = document.createElement("div");
+    containerDiv.className = "d-flex justify-content-end mt-4";
+
+    // Buat elemen a (link unduhan)
+    const downloadLink = document.createElement("a");
+    downloadLink.href = "aNilaiAkhir.php";
+    downloadLink.className = "btn-custom-primaryUnd";
+    downloadLink.id = "btnUnduh";
+    downloadLink.setAttribute("download", ""); // penting! agar jadi tombol unduh
+    downloadLink.textContent = "Unduh";
+
+    // Masukkan link ke dalam div
+    containerDiv.appendChild(downloadLink);
+
+    // Tambahkan div ke elemen di halaman (misal ke <div id="downloadContainer">)
+    document.getElementById("downloadContainer").appendChild(containerDiv);
+</script>
 
 
+<!-- 
 </div>
             <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
           
             
 
             <div class="text-center mt-3"><p id="fileNameDisplay" class="fw-bold mb-0"></p></div>
-          
+           -->
 
       
              <!-- <div class="mt-4">
@@ -278,6 +265,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       });
   </script>
   <?php endif; ?>
+
+
+  
   
 </body>
 </html>
