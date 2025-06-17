@@ -291,7 +291,7 @@
         <!-- GROUP 1: Title and Tabs (aligned to the left) -->
         <div>
           <!-- The class causing the large gap has been removed and replaced with mb-3 -->
-          <h2 class="text-heading text-black mb-3" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+          <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
 
           <!-- STEP 1: Update the Navigation Tabs -->
             <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -306,6 +306,7 @@
               </li>
             </ul>
         </div>
+
 
         <!-- GROUP 2: Icons (aligned to the right) -->
         <div class="header-icons d-none d-md-flex">
