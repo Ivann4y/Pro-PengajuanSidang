@@ -1,6 +1,100 @@
+<?php
+require "../../koneksi.php";
 
+// 1. Ambil ID dari URL
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("Error: ID Sidang tidak valid.");
+}
+$id_sidang = (int)$_GET['id'];
 
+// Variabel penampung
+$data_nim = [];
+$nama_prodi = 'N/A';
+$data_sidang = [];
+$data_mahasiswa = [];
+$dosen_pembimbing = null;
+$dosen_penguji = [];
+$dosen_pengampu = [];
+$data_matkul = null;
 
+// 2. Query utama dengan CAST untuk jenis_sidang
+$sql_utama = "SELECT 
+                s.id_sidang, s.judul, 
+                CASE 
+                    WHEN s.status_sidang = 1 THEN 'Disetujui'
+                    WHEN s.status_sidang = 0 THEN 'Ditolak'
+                    ELSE 'Menunggu'
+                END AS status_sidang_text, 
+                CAST(s.jenis_sidang AS INT) AS jenis_sidang, -- Mengubah binary ke integer
+                s.id_kelompok
+              FROM Sidang s
+              WHERE s.id_sidang = ?";
+$params_utama = array($id_sidang);
+$stmt_utama = sqlsrv_query($conn, $sql_utama, $params_utama);
+if ($stmt_utama === false) { die("Error pada query utama: " . print_r(sqlsrv_errors(), true)); }
+$data_sidang = sqlsrv_fetch_array($stmt_utama, SQLSRV_FETCH_ASSOC);
+if (!$data_sidang) { die("Error: Data Sidang dengan ID $id_sidang tidak ditemukan."); }
+
+// --- Query Terpisah untuk Jadwal (lebih aman dari NULL) ---
+$sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang, jam_selesai FROM Jadwal WHERE id_sidang = ?";
+$stmt_jadwal = sqlsrv_query($conn, $sql_jadwal, array($id_sidang));
+$data_jadwal = sqlsrv_fetch_array($stmt_jadwal, SQLSRV_FETCH_ASSOC);
+if (!$data_jadwal) { $data_jadwal = []; } // Jika tidak ada jadwal, buat array kosong
+
+// 3. Query mahasiswa
+$id_kelompok = $data_sidang['id_kelompok'];
+$sql_mahasiswa = "SELECT m.nim, m.nama_mhs, p.nama_prodi 
+                  FROM Mahasiswa m
+                  JOIN Kelompok_Mahasiswa km ON m.nim = km.nim
+                  LEFT JOIN Prodi p ON m.id_prodi = p.id_prodi
+                  WHERE km.id_kelompok = ?";
+$params_mahasiswa = array($id_kelompok);
+$stmt_mahasiswa = sqlsrv_query($conn, $sql_mahasiswa, $params_mahasiswa);
+if ($stmt_mahasiswa === false) { die("Error pada query mahasiswa: " . print_r(sqlsrv_errors(), true)); }
+while ($row = sqlsrv_fetch_array($stmt_mahasiswa, SQLSRV_FETCH_ASSOC)) {
+    $data_mahasiswa[] = $row['nama_mhs'];
+    $data_nim[] = $row['nim']; // <- BARU
+    if ($nama_prodi === 'N/A' && !empty($row['nama_prodi'])) { // <- BARU
+        $nama_prodi = $row['nama_prodi'];
+    }
+}
+$nim_str = implode(', ', $data_nim);
+
+// 4. Logika kondisional
+if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
+    // Ambil Dosen Pembimbing
+    $sql_pembimbing = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
+    $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, array($id_kelompok));
+    if ($stmt_pembimbing) { $dosen_pembimbing = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC); }
+
+    // Ambil Dosen Penguji
+    $sql_penguji = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ?";
+    $stmt_penguji = sqlsrv_query($conn, $sql_penguji, array($id_sidang));
+    if ($stmt_penguji) {
+        while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
+            $dosen_penguji[] = $row['nama_dosen'];
+        }
+    }
+} elseif ($data_sidang['jenis_sidang'] == 1) { // Asumsi 1 = Semester
+    // [FIX] Menggunakan TOP 1
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk
+                   JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul
+                   WHERE ds.id_sidang = ?";
+    $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
+    if ($stmt_matkul) { $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); }
+
+    if ($data_matkul) {
+        $id_matkul = $data_matkul['id_matkul'];
+        $sql_pengampu = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
+        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
+        if ($stmt_pengampu) {
+            while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
+                $dosen_pengampu[] = $row['nama_dosen'];
+            }
+        }
+    }
+}
+?>
 
 
 <!DOCTYPE html>
@@ -14,8 +108,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-     <link rel="stylesheet" href="../../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../../assets/css/style.css">
 
     <style>
         * {
@@ -181,9 +275,12 @@
         .NavSide__main-content h2 {
             margin-bottom: 1.2cm; /* Menyamakan margin-bottom */
             font-weight: 700;     /* Menyamakan ketebalan font */
-            margin-left: 30px;
-            /* Ukuran font (font-size) dihapus agar mengikuti default browser atau Bootstrap yg lebih responsif */
+            margin-left: 30px; 
+            
+           
         }
+
+        
         
         .NavSide__toggle {
             width: 40px;
@@ -312,7 +409,7 @@
         .info-card:hover .section i{
             color: white;
         }
-
+    
         .btn-ubah {
             background-color: #4B68FB;
             color: white;
@@ -348,8 +445,9 @@
             transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
             display: inline-flex; 
             align-items: center; 
-            margin-top: 3.5cm;
+            margin-top: 3cm;
             margin-left: 30px;
+            
         }
         .btn-kembali:hover {
             position: relative;
@@ -382,7 +480,6 @@
         .btn-kembali:hover .icon-circle i {
             color: white;
         }
-
 
         
         /* Sisa CSS untuk modal dan lainnya dipertahankan seperti aslinya */
@@ -449,8 +546,8 @@
 
         .input-with-percent {
             position: relative;
-            width: 120px; /* Atur lebar textbox sesuai kebutuhan */
-            flex-shrink: 0; /* Mencegah textbox menyusut */
+            width: 120px; 
+            flex-shrink: 0;
         }
 
         .form-control-bobot {
@@ -466,7 +563,6 @@
             color: #374151;
         }
 
-        /* Menghilangkan panah spinner pada input number */
         .form-control-bobot::-webkit-outer-spin-button,
         .form-control-bobot::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -508,8 +604,6 @@
             padding-left: calc(160px + 15px); 
         }
 
-/* Sisa CSS lainnya tetap sama */
-/* ... (sisa CSS untuk .btn-batal, .btn-submit, h2, modal-dialog, dll.) ... */
         .modal-body .form-actions .btn-batal { 
             background-color: #ff5f5f; 
             color:rgb(255, 255, 255); 
@@ -531,6 +625,7 @@
         .modal-body .form-actions .btn-submit:hover { 
             background-color: rgb(106, 95, 255); 
         }
+
         .modal-body > h2 {
             font-size: 30px; 
             color: #374151;
@@ -538,92 +633,59 @@
             margin-bottom: 10px;
             margin-left: 10px;
         }
+       
         #penjadwalanSidangModal .modal-dialog {
             max-width: 600px;
         }
         .modal-body .form-toggle-buttons {
             display: inline-flex;
-            gap: 5px;
-            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            padding-left: 175px;
         }
         .modal-body .form-toggle-buttons button {
-            width: 30px;
-            height: 30px;
-            font-size: 18px;
-            border-radius: 50%; /* Dibuat bulat */
+            width: 175.5px;
+            height: 35px;
+            padding: 8px 15px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 35px; 
             border: 1px solid #ccc;
             cursor: pointer;
             background-color: white;
+            transition: background-color 0.2s ease;
         }
         .modal-body .form-toggle-buttons button:hover {
             background-color: #ddd;
         }
 
+        .page-nama {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: -35px;
+            margin-bottom: 20px;
+            margin-left: 30px;
 
-        .modal-body .form-group select {
-          width: 100%;
-          height: 35px;
-          padding: 0 15px;
-          border: 1px solid #D1D5DB;
-          background-color: rgb(255, 255, 255);
-          box-sizing: border-box;
-          font-size: 14px;
-          color: #374151;
-          border-radius: 26px;
-          appearance: none; /* hilangkan style default browser */
-          -webkit-appearance: none;
-          -moz-appearance: none;
-       }
+        }
+
+        .mt-4 {
+            margin-left: 30px;
+        }
         
-       .page-nama {
-           font-size: 1.3rem;
-           font-weight: 600;
-           margin-top: -35px;
-           margin-bottom: 20px;
-           margin-left: 30px;
-       }
-
-       .mt-4 {
-           margin-left: 30px;
-       }
-
-       .select-wrapper {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .select-wrapper select {
-            width: 100%;
-            padding-right: 30px; /* space for icon */
-            appearance: none; /* remove default arrow */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-        }
-
-        .select-wrapper .dropdown-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none; /* biar nggak ganggu klik */
-            color:rgb(24, 25, 26);
-            margin-right: 10px;
-            margin-top: -2px;
-        }
-
+       
+        
 
 @media (max-width: 768px) {
 
-    /* 1. Ubah layout utama form group menjadi vertikal (atas-bawah) */
-    /* Aturan ini akan berlaku untuk 'Ruangan', 'Tanggal', 'Jam' dan juga 'Penguji' */
+    
     .modal-body .form-group {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    /* 2. Buat label menjadi lebar penuh dan beri jarak bawah */
-    /* Aturan ini juga berlaku untuk semua label */
     .modal-body .form-group label {
         width: 100%;
         margin-right: 0;
@@ -631,18 +693,13 @@
         text-align: left;
     }
 
-    /* BAGIAN UNTUK PENGUJI TELAH DIHAPUS DARI SINI, 
-       sehingga `.input-with-buttons` akan kembali ke gaya desktopnya (menyamping).
-    */
-
-    /* 4. Hapus padding kiri agar tombol Tambah/Hapus rata kiri */
+    
     .modal-body .form-toggle-buttons {
         padding-left: 0;
         justify-content: center;
         width: 100%;
     }
 
-    /* 5. Buat tombol submit (Batalkan & Buat) menjadi lebar penuh dan tersusun ke bawah */
     .modal-body .form-actions {
         flex-direction: column;
         padding-left: 0;
@@ -655,46 +712,47 @@
         margin-right: 0;
     }
 
-     .info-card {
+    .info-card {
         padding-right: 80px;
         box-sizing: border-box;
     }
 
+     .modal-body .form-toggle-buttons button {
+        font-size: 12px;
+        padding: 6px 10px;
+        gap: 5px;
+        
+    }
 }
+        
+       
 
+        
 
-    </style>
+</style>
 </head>
 <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
-                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /> </div>
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <b></b>
-                    <b></b>
-                    <a href="aDetailSidangSem.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
-                    </a>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="aDetailSidangTA.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
-                    <a href="aEvaluasi.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
-                    </a>
+                    <b></b><b></b>
+                    <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
-                    <a href="aNilaiAkhir.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-                    </a>
+                    <b></b><b></b>
+                    <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
                 </li>
             </ul>
         </div>
 
-        
         <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
             <div class="NavSide__topbar">
                 <div class="NavSide__toggle">
@@ -703,34 +761,176 @@
                 </div>
             </div>
 
-        <main class="NavSide__main-content">
-            <h2>Detail Sidang - Pemrograman 2</h2>
-            <p class="page-nama">Nayaka Ivanna</p> 
+            <main class="NavSide__main-content">
+                <h2>Detail Sidang - 
+             <?php 
+                if ($data_sidang['jenis_sidang'] == 0) {
+                    echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Tugas Akhir';
+                } elseif ($data_sidang['jenis_sidang'] == 1 && !empty($data_matkul)) {
+                    echo htmlspecialchars($data_matkul['nama_matkul']);
+                }
+            ?></h2>
+                <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['id_kelompok']); ?></p>
 
-            <div class="status-badge">Status Pengajuan : Disetujui</div>
-            <div class="info-card">
-                <div class="section">
-                    <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br>Basis Data 1</p>
-                    <br>
-                    <p><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>Timotius Victory, S.Kom, M.Kom<br>Yosep Setiawan, S.Kom, M.Kom</p>
+                <div class="status-badge">Status Pengajuan : <?php echo htmlspecialchars($data_sidang['status_sidang_text']); ?></div>
+                <div class="info-card">
+                    <div class="section">
+                           <!-- Tampilan akan dirender berdasarkan kondisi IF -->
+                <?php if ($data_sidang['jenis_sidang'] == 0): ?>
+                    <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Belum ada judul'; ?></p>
+                    <p><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br><?php echo !empty($dosen_pembimbing['nama_dosen']) ? htmlspecialchars($dosen_pembimbing['nama_dosen']) : 'Belum ditentukan'; ?></p>
+                    <p><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>
+                        <?php 
+                        if (!empty($dosen_penguji)) {
+                            echo implode('<br>', array_map('htmlspecialchars', $dosen_penguji));
+                        } else {
+                            echo 'Belum ditentukan';
+                        }
+                    ?></p>
+                 <?php elseif ($data_sidang['jenis_sidang'] == 1): ?>
+                    <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'N/A'; ?></p>
+                    <p><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>
+                        <?php 
+                        if (!empty($dosen_pengampu)) {
+                            echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu));
+                        } else {
+                            echo 'Belum ditentukan';
+                        }
+                    ?></p>
+                <?php else: ?>
+                    <!-- Ini akan muncul jika jenis_sidang bukan 0 atau 1 -->
+                    <p>Jenis sidang tidak dikenali.</p>
+                <?php endif; ?>
+                    </div>
+                     <div class="section">
+            <p><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br><?php echo !empty($data_jadwal['ruang_sidang']) ? htmlspecialchars($data_jadwal['ruang_sidang']) : 'Belum Dijadwalkan'; ?></p>
+                
+                <p><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>
+                    <?php 
+                        if (!empty($data_jadwal['tanggal_sidang']) && $data_jadwal['tanggal_sidang'] instanceof DateTime) {
+                            setlocale(LC_TIME, 'id_ID.utf8');
+                            echo $data_jadwal['tanggal_sidang']->format('l, d F Y');
+                        } else {
+                            echo 'Belum Dijadwalkan';
+                        }
+                    ?>
+                </p>
+
+                <p><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>
+                    <?php 
+                        if (!empty($data_jadwal['jam_sidang']) && $data_jadwal['jam_sidang'] instanceof DateTime) {
+                            echo $data_jadwal['jam_sidang']->format('H.i');
+                            if (!empty($data_jadwal['jam_selesai']) && $data_jadwal['jam_selesai'] instanceof DateTime) {
+                                echo ' - ' . $data_jadwal['jam_selesai']->format('H.i');
+                            }
+                        } else {
+                            echo 'Belum Dijadwalkan';
+                        }
+                    ?>
+            </p>
+        </div>
                 </div>
-                <div class="section">
-                    <p><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br>CB101 - RPL 1B</p>
-                    <p><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>Selasa, 22 April 2025</p>
-                    <p><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>09.00 - 10.00</p>
-                </div>
-            </div>
-            
-            <h5 class="mt-4">Aksi</h5>
-            <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
-            <br><br>
-            <button class="btn-kembali" onclick="location.href='aDaftarSidang.php'">
+                
+                <h5 class="mt-4">Aksi</h5>
+                <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
+                <br><br>
+                <button class="btn-kembali" onclick="location.href='aDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
                 </button>
 
+
+             <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content modal-content-custom-form">
+                        <div class="modal-body">
+                            <h2>Penjadwalan Sidang</h2>
+                            <div class="form-container"> 
+                                <form id="formDalamModal" novalidate>
+                                    
+                                    <div class="form-group">
+                                        <label for="modal_nim">Kelompok</label>
+                                        <p>0920240033</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_judul_sidang">Judul Sidang</label>
+                                        <p>Sistem Pengajuan Sidang</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_prodi">Prodi</label>
+                                        <p>Teknik Rekayasa Perangkat Lunak</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_pembimbing">Pembimbing</label>
+                                        <p>Rida Indah Fariani</p>
+                                    </div>
+                                    
+                                    <div id="penguji-wrapper">
+                                        <div class="form-group" id="penguji-form-1">
+                                            <label for="modal_penguji1">Penguji 1</label>
+                                            <div class="input-with-buttons">
+                                            
+                                        
+                                            <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
+                                                
+                                            
+                                            <div class="input-with-percent">
+                
+                                                <input 
+                                                    type="number" 
+                                                    id="modal_qty_penguji1" 
+                                                    name="penguji_bobot[]" 
+                                                    class="form-control-bobot" 
+                                                    min="0"
+                                                    placeholder="Bobot" 
+                                                />
+                                                <span class="percent-sign">%</span>
+
+                                            </div>
+                                        </div>
+
+                                        </div>
+                                    </div> 
+                                    <div class="form-toggle-buttons">
+                                        <button type="button" class="btn-tambah-penguji" onclick="addPenguji()">
+                                            <i class="fa-solid fa-plus"></i> Tambah Penguji
+                                        </button>
+                                        <button type="button" class="btn-hapus-penguji" onclick="removePenguji()">
+                                            <i class="fa-solid fa-minus"></i> Hapus Penguji
+                                        </button>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="modal_ruangan">Ruangan</label>
+                                        <input type="text" id="modal_ruangan" name="ruangan"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_tanggal">Tanggal</label>
+                                        <input type="date" id="modal_tanggal" name="tanggal"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modal_jam_awal">Jam</label>
+                                        <div class="time-input-range">
+                                            <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal"/>
+                                            <span class="time-separator">-</span>
+                                            <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
+                                        </div>
+                                    </div>
+
+                                    <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
+                                    <div class="form-actions"> 
+                                        <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
+                                        <button type="submit" class="btn btn-submit">Ubah Penjadwalan</button>
+                                    </div>
+
+                                </form> 
+                            </div> 
+                        </div> 
+                    </div> 
+                </div> 
+            </div> 
 
             <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -740,7 +940,7 @@
                     <h2>Penjadwalan Sidang</h2>
                     <div class="form-container"> 
                      <div class="form-group">
-                          <label for="modal_nim">NIM</label>
+                          <label for="modal_nim">Kelompok</label>
                           <p>0920240033</p>
                         </div>
                         <div class="form-group">
@@ -856,8 +1056,8 @@
         </div>
       </main>
     </div>
-
-
+            
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -886,59 +1086,69 @@
       } 
 
 
-      let pengujiCount = 1;
+        let pengujiCount = 1;
 
-  function addPenguji() {
-    pengujiCount++;
-    const wrapper = document.getElementById('penguji-wrapper');
+        function addPenguji() {
+            pengujiCount++;
+            const wrapper = document.getElementById('penguji-wrapper');
 
-    const div = document.createElement('div');
-    div.className = 'form-group';
-    div.id = `penguji-form-${pengujiCount}`;
-    div.innerHTML = `
-      <label for="modal_penguji${pengujiCount}">Penguji ${pengujiCount}</label>
-      <div class="input-with-buttons">
-        <input type="text" id="modal_penguji${pengujiCount}" name="penguji_nama[]" placeholder="Nama Penguji ${pengujiCount}" />
-        <div class="bobot-nilai-input-group">
-          <button type="button" class="btn-bobot-new btn-decrement-new" onclick="decrementValue('modal_qty_penguji${pengujiCount}')">-</button>
-          <input type="number" id="modal_qty_penguji${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" aria-label="Bobot Penguji ${pengujiCount}" />
-          <button type="button" class="btn-bobot-new btn-increment-new" onclick="incrementValue('modal_qty_penguji${pengujiCount}')">+</button>
-        </div>
-      </div>
-    `;
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.id = `penguji-form-${pengujiCount}`;
 
-    wrapper.appendChild(div);
-  }
+            // Perhatikan perubahan di dalam `innerHTML` ini
+            div.innerHTML = `
+                <label for="modal_penguji${pengujiCount}">Penguji ${pengujiCount}</label>
+                <div class="input-with-buttons">
+                    <input type="text" id="modal_penguji${pengujiCount}" name="penguji_nama[]" placeholder="Nama Penguji ${pengujiCount}" />
+                    
+                    <div class="input-with-percent">
+                        <input 
+                            type="number" 
+                            id="modal_qty_penguji${pengujiCount}" 
+                            name="penguji_bobot[]" 
+                            class="form-control-bobot"  
+                            min="0"
+                            placeholder="Bobot"
+                        />
+                        <span class="percent-sign">%</span>
+                    </div>
+                    </div>
+            `;
 
-  function removePenguji() {
-    if (pengujiCount > 1) {
-      const wrapper = document.getElementById('penguji-wrapper');
-      const lastForm = document.getElementById(`penguji-form-${pengujiCount}`);
-      if (lastForm) {
-        wrapper.removeChild(lastForm);
-        pengujiCount--;
+            wrapper.appendChild(div);
+        }
+
+// Pastikan Anda juga memiliki fungsi removePenguji
+        function removePenguji() {
+            if (pengujiCount > 1) {
+                const wrapper = document.getElementById('penguji-wrapper');
+                const lastPengujiForm = document.getElementById(`penguji-form-${pengujiCount}`);
+                if (lastPengujiForm) {
+                    wrapper.removeChild(lastPengujiForm);
+                    pengujiCount--;
+                }
+            }
+        }
+
+      function incrementValue(inputId) {
+        const inputElement = document.getElementById(inputId);
+        if (inputElement) {
+          let currentValue = parseInt(inputElement.value, 10);
+          if (isNaN(currentValue)) currentValue = 0;
+          inputElement.value = currentValue + 1;
+        }
       }
-    }
-  }
 
-  function incrementValue(inputId) {
-    const inputElement = document.getElementById(inputId);
-    if (inputElement) {
-      let currentValue = parseInt(inputElement.value, 10);
-      if (isNaN(currentValue)) currentValue = 0;
-      inputElement.value = currentValue + 1;
-    }
-  }
-
-  function decrementValue(inputId) {
-    const inputElement = document.getElementById(inputId);
-    if (inputElement) {
-      let currentValue = parseInt(inputElement.value, 10);
-      if (isNaN(currentValue)) currentValue = 0;
-      const minValue = parseInt(inputElement.min, 10);
-      inputElement.value = Math.max(minValue || 0, currentValue - 1);
-    }
-  }
+      function decrementValue(inputId) {
+        const inputElement = document.getElementById(inputId);
+        if (inputElement) {
+          let currentValue = parseInt(inputElement.value, 10);
+          if (isNaN(currentValue)) currentValue = 0;
+          const minValue = parseInt(inputElement.min, 10);
+          inputElement.value = Math.max(minValue || 0, currentValue - 1);
+        }
+      }
 
 
       // --- FUNGSI UNTUK MEMBUKA MODAL ---
@@ -954,102 +1164,60 @@
         }
       }
 
-      // --- FUNGSI UNTUK KONTROL BOBOT NILAI ---
-      function incrementValue(inputId) {
-          const inputElement = document.getElementById(inputId);
-          if (inputElement) {
-              let currentValue = parseInt(inputElement.value, 10);
-              if (isNaN(currentValue)) { currentValue = 0; }
-              currentValue++;
-              inputElement.value = currentValue;
-          }
-      }
+      // --- Skrip Validasi Form ---
+      document.getElementById('formDalamModal').addEventListener('submit', function(event) {
+          event.preventDefault(); 
 
-      function decrementValue(inputId) {
-          const inputElement = document.getElementById(inputId);
-          if (inputElement) {
-              let currentValue = parseInt(inputElement.value, 10);
-              if (isNaN(currentValue)) { currentValue = 0; }
-              const minValue = parseInt(inputElement.min, 10);
-              if (!isNaN(minValue)) {
-                  if (currentValue > minValue) {
-                      currentValue--;
-                  } else {
-                      currentValue = minValue;
-                  }
-              } else { 
-                  if (currentValue > 0) {
-                      currentValue--;
-                  } else {
-                      currentValue = 0; 
-                  }
-              }
-              inputElement.value = currentValue;
-          }
-      }
-
-  
-       document.getElementById('formDalamModal').addEventListener('submit', function(event) {
-            event.preventDefault(); 
-
-            const errorBox = document.getElementById("form-error");
-            errorBox.textContent = ""; 
-            
-
-            let isValid = true;
-            let errorMessage = "";
-
-            
-            const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
-            pengujiInputs.forEach((input, index) => {
-                if (input.value.trim() === "") {
-                    errorMessage = `Nama penguji ${index + 1} tidak boleh kosong!!`;
-                    isValid = false;
-                    return; 
-                }
-            });
-             if (!isValid) {
-                errorBox.textContent = errorMessage;
-                return;
-            }
-
-
-            const ruangan = document.getElementById("modal_ruangan").value.trim();
-            const tanggal = document.getElementById("modal_tanggal").value;
-            const jamAwal = document.getElementById("modal_jam_awal").value;
-            const jamAkhir = document.getElementById("modal_jam_akhir").value;
-
-            if (ruangan === "") {
-                errorMessage = "Ruangan harus diisi!!";
-                isValid = false;
-            } else if (tanggal === "") {
-                errorMessage = "Tanggal harus dipilih!!";
-                isValid = false;
-            } else if (jamAwal === "" || jamAkhir === "") {
-                errorMessage = "Jam awal dan jam akhir harus diisi!!";
-                isValid = false;
-            } else if (jamAkhir <= jamAwal) {
-                errorMessage = "Jam akhir harus setelah jam awal!!";
-                isValid = false;
-            }
-
-            if (!isValid) {
-                errorBox.textContent = errorMessage;
-                return;
-            }
-
-            
-          console.log("Form valid, data siap dikirim.");
-          Swal.fire({
-          title: 'Berhasil',
-          text: 'Jadwal Berhasil Diubah.',
-          icon: 'success',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        });
-           
+          const errorBox = document.getElementById("form-error");
+          errorBox.textContent = ""; 
           
-            
+          let isValid = true;
+          let errorMessage = "";
+
+          const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
+          pengujiInputs.forEach((input, index) => {
+              if (isValid && input.value.trim() === "") {
+                  errorMessage = `Nama penguji ${index + 1} tidak boleh kosong!!`;
+                  isValid = false;
+              }
+          });
+
+          const ruangan = document.getElementById("modal_ruangan").value.trim();
+          const tanggal = document.getElementById("modal_tanggal").value;
+          const jamAwal = document.getElementById("modal_jam_awal").value;
+          const jamAkhir = document.getElementById("modal_jam_akhir").value;
+
+          if (isValid && ruangan === "") {
+              errorMessage = "Ruangan harus diisi!!";
+              isValid = false;
+          } else if (isValid && tanggal === "") {
+              errorMessage = "Tanggal harus dipilih!!";
+              isValid = false;
+          } else if (isValid && (jamAwal === "" || jamAkhir === "")) {
+              errorMessage = "Jam awal dan jam akhir harus diisi!!";
+              isValid = false;
+          } else if (isValid && jamAkhir <= jamAwal) {
+              errorMessage = "Jam akhir harus setelah jam awal!!";
+              isValid = false;
+          }
+
+          if (!isValid) {
+              errorBox.textContent = errorMessage;
+              return;
+          }
+          
+          console.log("Form valid, data siap dikirim.");
+          var myModalEl = document.getElementById('penjadwalanSidangModal');
+          var modal = bootstrap.Modal.getInstance(myModalEl);
+          modal.hide();
+
+          Swal.fire({
+            title: 'Berhasil',
+            text: 'Jadwal Berhasil Diubah.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4B68FB'
+          });
       });
     </script>
 </body>
