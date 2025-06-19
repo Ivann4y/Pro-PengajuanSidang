@@ -1,4 +1,6 @@
-//NAUFAL AF
+<?php 
+ include '../../koneksi.php';
+ ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -337,7 +339,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="bintangMerah">
                 <p>* : wajib diisi</p>
               </div>
@@ -377,8 +378,8 @@
 
               <!-- Tombol Simpan & Kirim -->
               <div class="d-flex gap-2">
-                <button type="button" class="btn btn-secondary" id="btnSimpan">Simpan</button>
-                <button type="button" class="btn-setuju" id="btnKirim">Kirim</button>
+                <button type="submit" name="aksi" value="Simpan" class="btn btn-secondary" id="btnSimpan">Simpan</button>
+                <button type="submit" name="aksi" value="Kirim" class="btn-setuju" id="btnKirim">Kirim</button>
               </div>
             </div>
           </form>
