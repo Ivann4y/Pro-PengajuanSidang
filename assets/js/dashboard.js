@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Render angka jumlah pengajuan
   function renderAngkaJumlahPengajuan(jumlah) {
-    const card = document.querySelector(".card-pengajuan");
+    const card = document.querySelector(".pengajuan-status-card");
     if (!card) return;
     // Cari elemen .number di dalam card
     let numberDiv = card.querySelector(".number");
@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   function renderAngkaJumlahPenjadwalan(jumlah) {
-    const card = document.querySelector(".card-perbaikan");
+    const card = document.querySelector(".penjadwalan-status-card");
     if (!card) return;
     // Cari elemen .number di dalam card
     let numberDiv = card.querySelector(".number");
