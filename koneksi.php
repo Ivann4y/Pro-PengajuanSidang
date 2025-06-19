@@ -1,10 +1,10 @@
 <?php
 // Kredentsial koneksi ke database
-$serverName = "sidangdevenv.database.windows.net";
+$serverName = "sidang5.database.windows.net";
 $connectionOptions = [
     "Database" => "SistemSidang",
-    "Uid" => "SSidangDeveloper",  
-    "PWD" => "timDeveloperSidang1",  
+    "Uid" => "sqladmin",  
+    "PWD" => "RPLsidang5",  
     "TrustServerCertificate" => true,
 ];
 
