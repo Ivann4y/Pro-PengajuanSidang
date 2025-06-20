@@ -35,7 +35,6 @@ if (!empty($whereClause)) {
 // 5. QUERY UNTUK MENGHITUNG TOTAL DATA (DENGAN FILTER)
 $countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
                FROM Sidang s
-<<<<<<< HEAD
                JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok -- Jembatan ke-1
                JOIN Mahasiswa m ON km.nim = m.nim"; // Jembatan ke-2
 
@@ -44,10 +43,6 @@ if ($filter === 'ta') {
 } elseif ($filter === 'semester') {
     $countQuery .= " WHERE s.jenis_sidang = 1";
 }
-=======
-               JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-               JOIN Mahasiswa ma ON km.nim = ma.nim" . $whereSql;
->>>>>>> 956844bed77e97f6728654849ff854ae97e102e7
 
 $countResult = sqlsrv_query($conn, $countQuery);
 if ($countResult === false) { die("Error di countQuery: " . print_r(sqlsrv_errors(), true)); }
@@ -55,7 +50,6 @@ $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
 
-<<<<<<< HEAD
 // --- PERBAIKAN QUERY UTAMA PENGAMBILAN DATA ---
 $query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, s.id_kelompok, 
                  m.nama_matkul, 
@@ -82,20 +76,6 @@ if (!empty($whereClause)) {
 // Menyesuaikan GROUP BY dengan semua kolom yang dibutuhkan
 $query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, s.id_kelompok, m.nama_matkul 
             ORDER BY s.id_sidang";
-=======
-// 6. QUERY UTAMA UNTUK MENGAMBIL DATA PER HALAMAN (DENGAN FILTER)
-$query = "SELECT s.id_sidang, s.id_kelompok, s.judul, CAST(s.jenis_sidang AS INT) AS jenis_sidang,
-                 m.nama_matkul, 
-                 MIN(d.nama_dosen) AS dosen 
-          FROM Sidang s
-          JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-          JOIN Mahasiswa ma ON km.nim = ma.nim
-          JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-          JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
-          JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen" . $whereSql;
-
-$query .= " GROUP BY s.id_sidang, s.id_kelompok, s.judul, s.jenis_sidang, m.nama_matkul ORDER BY s.id_sidang";
->>>>>>> 956844bed77e97f6728654849ff854ae97e102e7
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
 
 $result = sqlsrv_query($conn, $query);
@@ -178,7 +158,6 @@ if ($result === false) { die("Error di main query: " . print_r(sqlsrv_errors(), 
                     <thead>
                         <tr>
                             <th scope="col">Nomor</th>
-<<<<<<< HEAD
                             <th scope="col">Kelompok</th>
                             <th scope="col" id="thDynamicHeader">
                                 <?php
@@ -186,11 +165,6 @@ if ($result === false) { die("Error di main query: " . print_r(sqlsrv_errors(), 
                                 elseif ($filter === 'semester') echo "Mata Kuliah";
                                 else echo "Judul/Mata Kuliah";
                                 ?>
-=======
-                            <th scope="col">ID Kelompok</th>
-                            <th scope="col">
-                                <?= $filter === 'ta' ? "Judul Sidang" : ($filter === 'semester' ? "Mata Kuliah" : "Judul/Mata Kuliah") ?>
->>>>>>> 956844bed77e97f6728654849ff854ae97e102e7
                             </th>
                             <th scope="col">Pembimbing</th>
                             <th scope="col" style="text-align: center;">Aksi</th>
@@ -204,26 +178,16 @@ if ($result === false) { die("Error di main query: " . print_r(sqlsrv_errors(), 
                             ?>
                                 <tr class="isiTabel">
                                     <td data-label="Nomor"><?= $counter ?></td>
-<<<<<<< HEAD
                                     <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
-=======
-                                    <td data-label="ID Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
->>>>>>> 956844bed77e97f6728654849ff854ae97e102e7
                                     <td data-label="Judul/MK">
                                         <?= htmlspecialchars(($row['jenis_sidang'] == 0) ? $row['judul'] : $row['nama_matkul']) ?>
                                     </td>
                                     <td data-label="Pembimbing"><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td data-label="Aksi">
-<<<<<<< HEAD
-                                    <button type="button" class="btn detail-btn" onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
-                                    <i class="fa-solid fa-file-signature"></i>
-                                    </button>
-=======
                                         <?php $detailPage = ($row['jenis_sidang'] == 0) ? 'aDetailSidangTA.php' : 'aDetailSidangSem.php'; ?>
                                         <button type="button" class="btn detail-btn" onclick="window.location.href='<?= $detailPage ?>?id=<?= $row['id_sidang'] ?>'">
                                             <i class="fa-solid fa-file-signature"></i>
                                         </button>
->>>>>>> 956844bed77e97f6728654849ff854ae97e102e7
                                     </td>
                                 </tr>
                             <?php 
@@ -275,7 +239,6 @@ if ($result === false) { die("Error di main query: " . print_r(sqlsrv_errors(), 
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<<<<<<< HEAD
     <script>
         // JS untuk sidebar toggle
         document.addEventListener('DOMContentLoaded', function () {
@@ -301,8 +264,5 @@ if ($result === false) { die("Error di main query: " . print_r(sqlsrv_errors(), 
         });
         
     </script>
-=======
-    <script src="../../assets/js/aDaftarSidang.js"></script>
->>>>>>> 956844bed77e97f6728654849ff854ae97e102e7
 </body>
 </html>
