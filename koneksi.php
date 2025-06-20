@@ -1,5 +1,4 @@
 <?php
-// Kredentsial koneksi ke database
 $serverName = "sidang5.database.windows.net";
 $connectionOptions = [
     "Database" => "SistemSidang1",

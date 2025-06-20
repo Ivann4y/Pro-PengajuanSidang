@@ -180,10 +180,9 @@ $nomor = $offset + 1;
                                             }
                                             ?>
                                         </td>
-
                                         <td><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
                                         <td style="text-align: center;">
-                                            <a href="dDetailSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn">
+                                            <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn">
                                                 <i class="fa-solid fa-file-signature"></i>
                                             </a>
                                         </td>
@@ -218,8 +217,25 @@ $nomor = $offset + 1;
             </div>
         </main>
     </div>
-    <!-- MODAL ANDA TETAP SAMA -->
-    <div class="modal fade" id="logout" ...></div>
+<!-- Modal keluar-->
+            <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div style="background-color: rgb(67, 54, 240);">
+                            <div class="modal-header">
+                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                            </div>
+                        </div>
+                        <div class="modal-body mx-auto">
+                            Apakah anda yakin ingin keluar?
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
     <script>
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
