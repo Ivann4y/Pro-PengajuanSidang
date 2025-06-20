@@ -43,20 +43,15 @@ if (!$data_jadwal) { $data_jadwal = []; } // Jika tidak ada jadwal, buat array k
 
 // 3. Query mahasiswa
 $id_kelompok = $data_sidang['id_kelompok'];
-$sql_mahasiswa = "SELECT m.nim, m.nama_mhs, p.nama_prodi 
-                  FROM Mahasiswa m
+$sql_mahasiswa = "SELECT m.prodi FROM Mahasiswa m
                   JOIN Kelompok_Mahasiswa km ON m.nim = km.nim
-                  LEFT JOIN Prodi p ON m.id_prodi = p.id_prodi
-                  WHERE km.id_kelompok = ?";
+                  WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
 $params_mahasiswa = array($id_kelompok);
 $stmt_mahasiswa = sqlsrv_query($conn, $sql_mahasiswa, $params_mahasiswa);
 if ($stmt_mahasiswa === false) { die("Error pada query mahasiswa: " . print_r(sqlsrv_errors(), true)); }
-while ($row = sqlsrv_fetch_array($stmt_mahasiswa, SQLSRV_FETCH_ASSOC)) {
-    $data_mahasiswa[] = $row['nama_mhs'];
-    $data_nim[] = $row['nim']; // <- BARU
-    if ($nama_prodi === 'N/A' && !empty($row['nama_prodi'])) { // <- BARU
-        $nama_prodi = $row['nama_prodi'];
-    }
+// Ambil nama prodi dari baris pertama, karena semua anggota kelompok prodinya sama
+if ($row = sqlsrv_fetch_array($stmt_mahasiswa, SQLSRV_FETCH_ASSOC)) {
+    $nama_prodi = $row['prodi'];
 }
 $nim_str = implode(', ', $data_nim);
 
@@ -846,212 +841,110 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content modal-content-custom-form">
                         <div class="modal-body">
-                            <h2>Penjadwalan Sidang</h2>
-                            <div class="form-container"> 
-                                <form id="formDalamModal" novalidate>
-                                    
-                                    <div class="form-group">
-                                        <label for="modal_nim">Kelompok</label>
-                                        <p>0920240033</p>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="modal_judul_sidang">Judul Sidang</label>
-                                        <p>Sistem Pengajuan Sidang</p>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="modal_prodi">Prodi</label>
-                                        <p>Teknik Rekayasa Perangkat Lunak</p>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="modal_pembimbing">Pembimbing</label>
-                                        <p>Rida Indah Fariani</p>
-                                    </div>
-                                    
-                                    <div id="penguji-wrapper">
-                                        <div class="form-group" id="penguji-form-1">
-                                            <label for="modal_penguji1">Penguji 1</label>
-                                            <div class="input-with-buttons">
-                                            
-                                        
-                                            <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Penguji 1" />
-                                                
-                                            
-                                            <div class="input-with-percent">
-                
-                                                <input 
-                                                    type="number" 
-                                                    id="modal_qty_penguji1" 
-                                                    name="penguji_bobot[]" 
-                                                    class="form-control-bobot" 
-                                                    min="0"
-                                                    placeholder="Bobot" 
-                                                />
-                                                <span class="percent-sign">%</span>
+                           <h2>Penjadwalan Sidang</h2>
+                <div class="form-container"> 
+                    <form id="formDalamModal" novalidate>
+                        
+                        <!-- ====================================== -->
+                        <!--      FIELD UMUM UNTUK SEMUA JENIS      -->
+                        <!-- ====================================== -->
+                        <div class="form-group">
+                            <label>ID Kelompok</label>
+                            <p><?php echo htmlspecialchars($data_sidang['id_kelompok']); ?></p>
+                        </div>
+                        <div class="form-group">
+                            <label>Prodi</label>
+                            <p><?php echo htmlspecialchars($nama_prodi); ?></p>
+                        </div>
+                        <div class="form-group">
+                            <label><?php echo ($data_sidang['jenis_sidang'] == 0) ? 'Judul Sidang' : 'Mata Kuliah'; ?></label>
+                            <p><?php echo htmlspecialchars(($data_sidang['jenis_sidang'] == 0) ? $data_sidang['judul'] : ($data_matkul['nama_matkul'] ?? 'N/A')); ?></p>
+                        </div>
 
-                                            </div>
-                                        </div>
-
-                                        </div>
-                                    </div> 
-                                    <div class="form-toggle-buttons">
-                                        <button type="button" class="btn-tambah-penguji" onclick="addPenguji()">
-                                            <i class="fa-solid fa-plus"></i> Tambah Penguji
-                                        </button>
-                                        <button type="button" class="btn-hapus-penguji" onclick="removePenguji()">
-                                            <i class="fa-solid fa-minus"></i> Hapus Penguji
-                                        </button>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="modal_ruangan">Ruangan</label>
-                                        <input type="text" id="modal_ruangan" name="ruangan"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="modal_tanggal">Tanggal</label>
-                                        <input type="date" id="modal_tanggal" name="tanggal"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="modal_jam_awal">Jam</label>
-                                        <div class="time-input-range">
-                                            <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal"/>
-                                            <span class="time-separator">-</span>
-                                            <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
+                        <!-- ====================================== -->
+                        <!--        KONTEN KHUSUS SIDANG TA         -->
+                        <!-- ====================================== -->
+                        <?php if ($data_sidang['jenis_sidang'] == 0): ?>
+                            <div class="form-group">
+                                <label>Pembimbing</label>
+                                <p><?php echo htmlspecialchars($dosen_pembimbing['nama_dosen'] ?? 'Belum ada'); ?></p>
+                            </div>
+                            <hr>
+                            <div id="penguji-wrapper">
+                                <?php
+                                $penguji_list = !empty($dosen_penguji) ? $dosen_penguji : ['']; // Jika kosong, buat 1 form
+                                foreach ($penguji_list as $index => $nama_penguji):
+                                ?>
+                                <div class="form-group" id="penguji-form-<?php echo $index + 1; ?>">
+                                    <label for="modal_penguji<?php echo $index + 1; ?>">Penguji <?php echo $index + 1; ?></label>
+                                    <div class="input-with-buttons">
+                                        <input type="text" id="modal_penguji<?php echo $index + 1; ?>" name="penguji_nama[]" placeholder="Nama Penguji <?php echo $index + 1; ?>" value="<?php echo htmlspecialchars($nama_penguji); ?>">
+                                        <div class="input-with-percent">
+                                            <input type="number" name="penguji_bobot[]" class="form-control-bobot" min="0" placeholder="Bobot">
+                                            <span class="percent-sign">%</span>
                                         </div>
                                     </div>
-
-                                    <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
-                                    <div class="form-actions"> 
-                                        <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
-                                        <button type="submit" class="btn btn-submit">Ubah Penjadwalan</button>
-                                    </div>
-
-                                </form> 
+                                </div>
+                                <?php endforeach; ?>
                             </div> 
+                            <div class="form-toggle-buttons">
+                                <button type="button" class="btn-tambah-penguji" onclick="addPenguji()"><i class="fa-solid fa-plus"></i> Tambah Penguji</button>
+                                <button type="button" class="btn-hapus-penguji" onclick="removePenguji()"><i class="fa-solid fa-minus"></i> Hapus Penguji</button>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- ====================================== -->
+                        <!--      KONTEN KHUSUS SIDANG SEMESTER     -->
+                        <!-- ====================================== -->
+                        <?php if ($data_sidang['jenis_sidang'] == 1): ?>
+                            <hr>
+                            <div id="pengampu-wrapper">
+                                <?php if (!empty($dosen_pengampu)): ?>
+                                    <?php foreach ($dosen_pengampu as $index => $nama_pengampu): ?>
+                                    <div class="form-group">
+                                        <label>Pengampu <?php echo $index + 1; ?></label>
+                                        <p><?php echo htmlspecialchars($nama_pengampu); ?></p>
+                                    </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>Tidak ada dosen pengampu terdaftar.</p>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- ====================================== -->
+                        <!--      FIELD JADWAL (UNTUK SEMUA)        -->
+                        <!-- ====================================== -->
+                        <hr>
+                        <div class="form-group">
+                            <label for="modal_ruangan">Ruangan</label>
+                            <input type="text" id="modal_ruangan" name="ruangan" value="<?php echo htmlspecialchars($data_jadwal['ruang_sidang'] ?? ''); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_tanggal">Tanggal</label>
+                            <input type="date" id="modal_tanggal" name="tanggal" value="<?php echo !empty($data_jadwal['tanggal_sidang']) ? $data_jadwal['tanggal_sidang']->format('Y-m-d') : ''; ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_jam_awal">Jam</label>
+                            <div class="time-input-range">
+                                <input type="time" id="modal_jam_awal" name="jam_awal" value="<?php echo !empty($data_jadwal['jam_sidang']) ? $data_jadwal['jam_sidang']->format('H:i') : ''; ?>">
+                                <span class="time-separator">-</span>
+                                <input type="time" id="modal_jam_akhir" name="jam_akhir" value="<?php echo !empty($data_jadwal['jam_selesai']) ? $data_jadwal['jam_selesai']->format('H:i') : ''; ?>">
+                            </div>
+                        </div>
+
+                        <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
+                        <div class="form-actions"> 
+                            <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="submit" class="btn btn-submit">Ubah Penjadwalan</button>
+                        </div>
+                    </form> 
+                </div>
                         </div> 
                     </div> 
                 </div> 
             </div> 
 
-            <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content modal-content-custom-form">
-                  
-                  <div class="modal-body">
-                    <h2>Penjadwalan Sidang</h2>
-                    <div class="form-container"> 
-                     <div class="form-group">
-                          <label for="modal_nim">Kelompok</label>
-                          <p>0920240033</p>
-                        </div>
-                        <div class="form-group">
-                          <label for="modal_judul_sidang">Mata Kuliah</label>
-                          <p>Pemrograman 2</p>
-                           </div>
-                
-                        
-                         <div id="penguji-wrapper">
-                            <div class="form-group" id="penguji-form-1">
-                                <label for="modal_penguji1">Pengampu 1</label>
-                                <div class="input-with-buttons">
-                                   
-                            
-                                <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Pengampu 1" />
-                                    
-                                   
-                                <div class="input-with-percent">
-    
-                                    <input 
-                                        type="number" 
-                                        id="modal_qty_penguji1" 
-                                        name="penguji_bobot[]" 
-                                        class="form-control-bobot" 
-                                        min="0"
-                                        placeholder="Bobot" 
-                                    />
-                                    <span class="percent-sign">%</span>
-
-                                </div>
-                              </div>
-
-                            </div>
-
-                            <div class="form-group" id="penguji-form-2">
-                                <label for="modal_penguji1">Pengampu 2</label>
-                                <div class="input-with-buttons">
-                                   
-                            
-                                <input type="text" id="modal_penguji1" name="penguji_nama[]" placeholder="Nama Pengampu 2" />
-                                    
-                                   
-                                <div class="input-with-percent">
-    
-                                    <input 
-                                        type="number" 
-                                        id="modal_qty_penguji1" 
-                                        name="penguji_bobot[]" 
-                                        class="form-control-bobot" 
-                                        min="0"
-                                        placeholder="Bobot" 
-                                    />
-                                    <span class="percent-sign">%</span>
-
-                                </div>
-                              </div>
-
-                            </div>
-                        </div> 
-
-                        
-                        <div class="form-group">
-                          <label for="modal_prodi">Prodi</label>
-
-                          <div class="select-wrapper">                          
-                            <select id="modal_prodi" name="prodi" class="form-control">
-                              <option value="">-- Pilih Prodi --</option>
-                              <option value="TRPL">TRPL</option>
-                              <option value="MI">MI</option>
-                              <option value="MK">MK</option>
-                              <option value="MO">MO</option>
-                              <option value="TRL">TRL</option>
-                              <option value="TAB">TAB</option>
-                              <option value="P4">P4</option>
-                              <option value="TKBG">TKBG</option>
-                              <option value="TPM">TPM</option>
-                            </select>
-                           <i class="fa-solid fa-sort-down dropdown-icon"></i>
-                          </div>
-                        </div>
-                       
-
-                        <div class="form-group">
-                          <label for="modal_ruangan">Ruangan</label>
-                          <input type="text" id="modal_ruangan" name="ruangan"/>
-                          </div>
-                        <div class="form-group">
-                          <label for="modal_tanggal">Tanggal</label>
-                          <input type="date"id="modal_tanggal" name="tanggal" class=/>
-                          </div>
-                        <div class="form-group">
-                          <label for="modal_jam_awal">Jam</label>
-                          <div class="time-input-range">
-                            <input type="time" id="modal_jam_awal" name="jam_awal" aria-label="Jam Awal"/>
-                            <span class="time-separator">-</span>
-                            <input type="time" id="modal_jam_akhir" name="jam_akhir" aria-label="Jam Akhir"/>
-                            </div>
-                        </div>
-                        <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
-                        <form id ="formDalamModal" novalidate>
-
-                        <div class="form-actions"> 
-                          <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
-                          <button type="submit" class="btn btn-submit">Ubah Penjadwalan</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>
@@ -1062,6 +955,7 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="text/javascript">
+        
       // Skrip untuk toggle sidebar dan active menu item
       let menuToggle = document.querySelector(".NavSide__toggle");
       let sidebar = document.getElementById("main-sidebar");
@@ -1088,48 +982,82 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
 
         let pengujiCount = 1;
 
-        function addPenguji() {
-            pengujiCount++;
-            const wrapper = document.getElementById('penguji-wrapper');
+        // --- FUNGSI BARU UNTUK PENGUJI DINAMIS (PENDEKATAN GLOBAL) ---
 
-            const div = document.createElement('div');
-            div.className = 'form-group';
-            div.id = `penguji-form-${pengujiCount}`;
+// Fungsi untuk menata ulang nomor urut semua elemen penguji
+function reorderPenguji() {
+    const wrapper = document.getElementById('penguji-wrapper');
+    const allPengujiForms = wrapper.querySelectorAll('.form-group'); // Target semua .form-group di dalam wrapper
 
-            // Perhatikan perubahan di dalam `innerHTML` ini
-            div.innerHTML = `
-                <label for="modal_penguji${pengujiCount}">Penguji ${pengujiCount}</label>
-                <div class="input-with-buttons">
-                    <input type="text" id="modal_penguji${pengujiCount}" name="penguji_nama[]" placeholder="Nama Penguji ${pengujiCount}" />
-                    
-                    <div class="input-with-percent">
-                        <input 
-                            type="number" 
-                            id="modal_qty_penguji${pengujiCount}" 
-                            name="penguji_bobot[]" 
-                            class="form-control-bobot"  
-                            min="0"
-                            placeholder="Bobot"
-                        />
-                        <span class="percent-sign">%</span>
-                    </div>
-                    </div>
-            `;
+    allPengujiForms.forEach((form, index) => {
+        const newNumber = index + 1;
+        
+        // Perbarui ID dari form-group itu sendiri
+        form.id = `penguji-form-${newNumber}`;
 
-            wrapper.appendChild(div);
+        // Perbarui label
+        const label = form.querySelector('label');
+        if (label) {
+            label.htmlFor = `modal_penguji${newNumber}`;
+            label.textContent = `Penguji ${newNumber}`;
         }
 
-// Pastikan Anda juga memiliki fungsi removePenguji
-        function removePenguji() {
-            if (pengujiCount > 1) {
-                const wrapper = document.getElementById('penguji-wrapper');
-                const lastPengujiForm = document.getElementById(`penguji-form-${pengujiCount}`);
-                if (lastPengujiForm) {
-                    wrapper.removeChild(lastPengujiForm);
-                    pengujiCount--;
-                }
-            }
+        // Perbarui input nama
+        const inputNama = form.querySelector('input[name="penguji_nama[]"]');
+        if (inputNama) {
+            inputNama.id = `modal_penguji${newNumber}`;
+            inputNama.placeholder = `Nama Penguji ${newNumber}`;
         }
+    });
+}
+
+// Fungsi untuk menambah baris penguji baru
+function addPenguji() {
+    const wrapper = document.getElementById('penguji-wrapper');
+    const newPengujiDiv = document.createElement('div');
+    newPengujiDiv.className = 'form-group';
+    
+    const newIndex = wrapper.children.length + 1; // Hitung elemen berikutnya
+
+    // Template HTML untuk baris baru
+    newPengujiDiv.innerHTML = `
+        <label for="modal_penguji${newIndex}">Penguji ${newIndex}</label>
+        <div class="input-with-buttons">
+            <input type="text" id="modal_penguji${newIndex}" name="penguji_nama[]" placeholder="Nama Penguji ${newIndex}" />
+            <div class="input-with-percent">
+                <input type="number" name="penguji_bobot[]" class="form-control-bobot" min="0" placeholder="Bobot" />
+                <span class="percent-sign">%</span>
+            </div>
+        </div>
+    `;
+    wrapper.appendChild(newPengujiDiv);
+    
+    // Tidak perlu panggil reorder di sini karena kita sudah menghitung index yang benar
+}
+
+// Fungsi untuk menghapus baris penguji TERAKHIR
+function removePenguji() {
+    const wrapper = document.getElementById('penguji-wrapper');
+    // Cek jika ada lebih dari satu elemen penguji
+    if (wrapper.children.length > 1) {
+        // Hapus elemen terakhir dari wrapper
+        wrapper.lastElementChild.remove();
+    } else {
+        // Jika hanya sisa satu, jangan dihapus, tapi kosongkan nilainya
+        const lastForm = wrapper.firstElementChild;
+        if (lastForm) {
+            const inputNama = lastForm.querySelector('input[name="penguji_nama[]"]');
+            const inputBobot = lastForm.querySelector('input[name="penguji_bobot[]"]');
+            if (inputNama) inputNama.value = '';
+            if (inputBobot) inputBobot.value = '';
+        }
+    }
+}
+
+// Panggil reorder saat halaman pertama kali dimuat untuk memastikan penomoran awal sudah benar
+document.addEventListener('DOMContentLoaded', function() {
+    reorderPenguji();
+});
 
       function incrementValue(inputId) {
         const inputElement = document.getElementById(inputId);
