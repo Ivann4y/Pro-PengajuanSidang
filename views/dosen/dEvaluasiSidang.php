@@ -1,3 +1,104 @@
+<?php
+require "../../koneksi.php"; // Ini sudah benar, jangan diubah
+
+// --- Inisialisasi Variabel untuk Menampung Data ---
+$judul = 'Data tidak ditemukan';
+$ruangan = '-';
+$tanggal_formatted = '-';
+$jam = '-';
+$dosenPembimbing = [];
+$dosenPenguji = [];
+
+// --- Ambil NIM dari URL ---
+if (isset($_GET['nim']) && !empty($_GET['nim'])) {
+    $nim = $_GET['nim'];
+
+    // --- PERBAIKAN PADA QUERY ---
+    $sql = "SELECT s.Judul, d.nama_dosen, d.isPembimbing, d.isPenguji, j.ruang_sidang, j.tanggal_sidang, j.jam_sidang
+            FROM Sidang s
+            -- TAMBAHKAN JOIN INI UNTUK MENGHUBUNGKAN KE MAHASISWA --
+            JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+            JOIN Mahasiswa ma ON km.nim = ma.nim
+            -----------------------------------------------------------
+            JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+            JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+            JOIN Jadwal j ON s.id_sidang = j.id_sidang
+            WHERE ma.nim = ?"; // UBAH s.nim MENJADI ma.nim
+
+    // Bagian eksekusi query tidak perlu diubah
+    $params = array($nim);
+    $result = sqlsrv_query($conn, $sql, $params);
+
+    if ($result === false) {
+        die("Error saat menjalankan query: " . print_r(sqlsrv_errors(), true));
+    }
+
+    while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+        $judul = $row['Judul'];
+        $ruangan = $row['ruang_sidang'];
+        $jam = isset($row['jam_sidang']) ? $row['jam_sidang'] : '-';
+
+        if ($row['tanggal_sidang'] instanceof DateTime) {
+            setlocale(LC_TIME, 'id_ID.UTF-8', 'Indonesian');
+            $tanggal_formatted = strftime('%A, %d %B %Y', $row['tanggal_sidang']->getTimestamp());
+        }
+
+        if ($row['isPembimbing'] == 1) {
+            if (!in_array($row['nama_dosen'], $dosenPembimbing)) {
+                $dosenPembimbing[] = $row['nama_dosen'];
+            }
+        }
+        if ($row['isPenguji'] == 1) {
+            if (!in_array($row['nama_dosen'], $dosenPenguji)) {
+                $dosenPenguji[] = $row['nama_dosen'];
+            }
+        }
+    }
+    
+    sqlsrv_free_stmt($result);
+}
+
+sqlsrv_close($conn);
+
+$namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', $dosenPembimbing) : 'Belum ditentukan';
+$namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', $dosenPenguji) : 'Belum ditentukan';
+
+
+
+if (isset($_POST['submit'])) {
+    $id_sidang = $_POST['id_sidang'];
+    $nim = $_POST['nim'];
+    $nomor_dosen = $_POST['nomor_dosen'];
+    
+    $p_dokumen = $_POST['p_dokumen'];
+    $p_presentasi = $_POST['p_presentasi'];
+    $p_penyampaian = $_POST['p_penyampaian'];
+    $p_proyek = $_POST['p_proyek'];
+    $catatan = $_POST['catatan'];
+    
+    // Kamu bisa atur bobot atau hitung nilai akhir nanti
+    $bobot_penilaian = ($p_dokumen + $p_presentasi + $p_penyampaian + $p_proyek) / 4;
+
+    // Simpan ke tabel Penilaian
+    $sql = "INSERT INTO Penilaian 
+        (id_sidang, nim, nomor_dosen, p_dokumen, p_presentasi, p_penyampaian, p_proyek, bobot_penilaian) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "issiiiii", $id_sidang, $nim, $nomor_dosen, $p_dokumen, $p_presentasi, $p_penyampaian, $p_proyek, $bobot_penilaian);
+    
+    if (mysqli_stmt_execute($stmt)) {
+        echo "<script>alert('Nilai berhasil disimpan!'); window.location.href='dEvaluasiSidang.php';</script>";
+    } else {
+        echo "Gagal simpan data: " . mysqli_error($conn);
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -836,67 +937,66 @@
                 <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
 
                 <!-- Info card displaying sidang details -->
-                <div class="info-card">
-                    <div class="section">
-                        <!-- Sidang Title information group -->
-                        <div class="info-group">
-                            <div class="label-row">
-                                <i class="fa-solid fa-file-invoice"></i>
-                                <span class="fw-bold">Judul Sidang</span>
-                            </div>
-                            <div class="value-row">Struktur Data</div>
-                        </div>
+            <!-- Info card displaying sidang details -->
+<div class="info-card">
+    <div class="section">
+        <!-- Sidang Title information group -->
+        <div class="info-group">
+            <div class="label-row">
+                <i class="fa-solid fa-file-invoice"></i>
+                <span class="fw-bold">Judul Sidang</span>
+            </div>
+           <div class="value-row"><?php echo htmlspecialchars($judul); ?></div>
+        </div>
 
-                        <!-- Supervising Lecturer information group -->
-                        <div class="info-group">
-                            <div class="label-row">
-                                <i class="fa-solid fa-user-tie"></i>
-                                <span class="fw-bold">Dosen Pembimbing</span>
-                            </div>
-                            <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div>
-                        </div>
+        <!-- Supervising Lecturer information group -->
+        <div class="info-group">
+            <div class="label-row">
+                <i class="fa-solid fa-user-tie"></i>
+                <span class="fw-bold">Dosen Pembimbing</span>
+            </div>
+            <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
+        </div>
 
-                        <!-- Examining Lecturers information group -->
-                        <div class="info-group">
-                            <div class="label-row">
-                                <i class="fa-solid fa-user-group"></i>
-                                <span class="fw-bold">Dosen Penguji</span>
-                            </div>
-                            <div class="value-row">
-                                Timotius Victory, S.Kom, M.Kom<br>
-                                Ning Ratwasturi, S.T, M.Eng
-                            </div>
-                        </div>
-                    </div>
-                    <div class="section">
-                        <!-- Room information group -->
-                        <div class="info-group">
-                            <div class="label-row">
-                                <i class="fa-solid fa-door-open"></i>
-                                <span class="fw-bold">Ruangan</span>
-                            </div>
-                            <div class="value-row">CB101 - RPL 1B</div>
-                        </div>
+        <!-- Examining Lecturers information group -->
+        <div class="info-group">
+            <div class="label-row">
+                <i class="fa-solid fa-user-group"></i>
+                <span class="fw-bold">Dosen Penguji</span>
+            </div>
+            <div class="value-row"><?php echo $namaPenguji_html; ?></div>
+        </div>
+    </div> <!-- <<<<<<< PERBAIKAN: TAMBAHKAN TAG PENUTUP DIV INI -->
 
-                        <!-- Date information group -->
-                        <div class="info-group">
-                            <div class="label-row">
-                                <i class="fa-solid fa-calendar-days"></i>
-                                <span class="fw-bold">Tanggal</span>
-                            </div>
-                            <div class="value-row">Selasa, 22 April 2025</div>
-                        </div>
+    <div class="section">
+        <!-- Room information group -->
+        <div class="info-group">
+            <div class="label-row">
+                <i class="fa-solid fa-door-open"></i>
+                <span class="fw-bold">Ruangan</span>
+            </div>
+            <div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div>
+        </div>
 
-                        <!-- Time information group -->
-                        <div class="info-group">
-                            <div class="label-row">
-                                <i class="fa-solid fa-clock"></i>
-                                <span class="fw-bold">Jam</span>
-                            </div>
-                            <div class="value-row">09.00 - 10.00</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Date information group -->
+        <div class="info-group">
+            <div class="label-row">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span class="fw-bold">Tanggal</span>
+            </div>
+             <div class="value-row"><?php echo htmlspecialchars($tanggal_formatted); ?></div>
+        </div>
+
+        <!-- Time information group -->
+        <div class="info-group">
+            <div class="label-row">
+                <i class="fa-solid fa-clock"></i>
+                <span class="fw-bold">Jam</span>
+            </div>
+           <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
+        </div>
+    </div>
+</div>
 
                 <h3>Nilai Sidang (Sementara)</h3>
                 <!-- Form card for score input -->
