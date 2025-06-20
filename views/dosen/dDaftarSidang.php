@@ -1,11 +1,72 @@
 <?php
-session_start();
-if ($_SESSION['role'] !== 'dosen') {
-    header("Location: ../../index.php");
-    exit();
+// 1. INISIALISASI DAN KONEKSI
+require "../../koneksi.php"; // Pastikan path ini benar
+
+// 2. PERSIAPAN VARIABEL FILTER DAN PAGINASI
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+$prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all';
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$rowsPerPage = 10;
+
+// 3. AMBIL DAFTAR PRODI UNTUK DROPDOWN
+$prodiListQuery = "SELECT DISTINCT prodi FROM Mahasiswa WHERE prodi IS NOT NULL AND prodi != '' ORDER BY prodi ASC";
+$prodiListResult = sqlsrv_query($conn, $prodiListQuery);
+$prodiList = [];
+if ($prodiListResult) {
+    while ($row = sqlsrv_fetch_array($prodiListResult, SQLSRV_FETCH_ASSOC)) {
+        $prodiList[] = $row['prodi'];
+    }
 }
- include '../../koneksi.php';
-?>  
+
+// 4. MEMBUAT KLAUSA WHERE DINAMIS
+$whereClause = [];
+if ($filter !== 'all') {
+    $whereClause[] = "s.jenis_sidang = " . ($filter === 'ta' ? 0 : 1);
+}
+if ($prodiFilter !== 'all') {
+    $cleanedProdi = str_replace("'", "''", $prodiFilter); // Escaping sederhana untuk SQL Server
+    $whereClause[] = "ma.prodi = '" . $cleanedProdi . "'";
+}
+$whereSql = "";
+if (!empty($whereClause)) {
+    $whereSql = " WHERE " . implode(' AND ', $whereClause);
+}
+
+// 5. QUERY UNTUK MENGHITUNG TOTAL DATA (DENGAN FILTER)
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
+               FROM Sidang s
+               JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+               JOIN Mahasiswa ma ON km.nim = ma.nim" . $whereSql;
+
+$countResult = sqlsrv_query($conn, $countQuery);
+if ($countResult === false) { 
+    die("Error di countQuery: " . print_r(sqlsrv_errors(), true)); 
+}
+$totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
+$totalPages = ceil($totalRecords / $rowsPerPage);
+
+// 6. QUERY UTAMA UNTUK MENGAMBIL DATA PER HALAMAN (DENGAN FILTER)
+// Perbaikan: Mengambil data mahasiswa melalui join yang benar
+$query = "SELECT s.id_sidang, s.id_kelompok, s.judul, CAST(s.jenis_sidang AS INT) AS jenis_sidang,
+                 m.nama_matkul, 
+                 ma.nim, ma.nama AS nama_mahasiswa, ma.prodi,
+                 MIN(d.nama_dosen) AS dosen 
+          FROM Sidang s
+          JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+          JOIN Mahasiswa ma ON km.nim = ma.nim
+          JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+          JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
+          JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen" . $whereSql;
+
+$query .= " GROUP BY s.id_sidang, s.id_kelompok, s.judul, s.jenis_sidang, m.nama_matkul, ma.nim, ma.nama, ma.prodi 
+            ORDER BY s.id_sidang";
+$query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
+
+$result = sqlsrv_query($conn, $query);
+if ($result === false) { 
+    die("Error di main query: " . print_r(sqlsrv_errors(), true)); 
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +84,7 @@ if ($_SESSION['role'] !== 'dosen') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
-    <title>Dosen - Daftar Sidang</title>
+    <title>Admin - Daftar Sidang</title>
     <style>
         table {
             border-spacing: 0 10px;
@@ -46,7 +107,7 @@ if ($_SESSION['role'] !== 'dosen') {
         }
 
         thead th:nth-child(2) {
-            width: 20%;
+            width: 15%;
         }
 
         thead th:nth-child(3) {
@@ -54,7 +115,7 @@ if ($_SESSION['role'] !== 'dosen') {
         }
 
         thead th:nth-child(4) {
-            width: 20%;
+            width: 15%;
         }
 
         thead th:nth-child(5) {
@@ -62,8 +123,12 @@ if ($_SESSION['role'] !== 'dosen') {
         }
 
         thead th:nth-child(6) {
+            width: 15%;
+        }
+
+        thead th:nth-child(7) {
             text-align: center;
-            width: 20%;
+            width: 10%;
         }
 
         .isiTabel td {
@@ -78,11 +143,10 @@ if ($_SESSION['role'] !== 'dosen') {
             text-align: center;
         }
 
-        .isiTabel td:nth-child(6) {
+        .isiTabel td:nth-child(7) {
             border-radius: 0 20px 20px 0;
         }
 
-         /* CSS BARU untuk tombol tanpa border */
         .detail-btn {
             border: none !important;
             background-color: transparent !important;
@@ -90,12 +154,10 @@ if ($_SESSION['role'] !== 'dosen') {
             padding: 0.25rem 0.5rem; 
         }
 
-        /* Efek saat hover pada tombol */
         .detail-btn:hover {
             opacity: 0.7;
         }
 
-        /* Memastikan warna ikon menjadi putih saat baris di-hover */
         .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
             color: #FFFFFF;
             opacity: 1;
@@ -106,7 +168,6 @@ if ($_SESSION['role'] !== 'dosen') {
             color: white;
         }
 
-        /* Saat baris di-hover, ubah warna ikon di tombol aksi */
         tr.jadiBiru:hover .detail-btn i {
             color: white !important;
         }
@@ -137,52 +198,52 @@ if ($_SESSION['role'] !== 'dosen') {
             border-color: #4FD382;
         }
 
-         .search-input-group {
-        background-color: #F3F4F6;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        width: 250px; /* Standardize width as seen in aDaftarSidang.php */
-        margin-top: 0.19vh -1px;
-        margin-right : 1vh;
-    }
+        .search-input-group {
+            background-color: #F3F4F6;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            width: 250px;
+            margin-top: 0.19vh -1px;
+            margin-right: 1vh;
+        }
 
         .search-input-group input.form-control {
             background-color: transparent;
             border: none;
             box-shadow: none;
-            padding-left: 1rem; /* Adjust padding as search icon is inside span */
+            padding-left: 1rem;
         }
 
         .search-input-group .input-group-text {
             background-color: transparent;
             border: none;
-            padding-right: 0; /* No padding on right as input has left padding */
+            padding-right: 0;
         }
         
         .pagination-container {
-        margin-top: 2rem;
-    }
+            margin-top: 2rem;
+        }
 
-    .pagination .page-item.active .page-link {
-        background-color: #4B68FB;
-        border-color: #4B68FB;
-        color: white;
-        z-index: 2;
-    }
+        .pagination .page-item.active .page-link {
+            background-color: #4B68FB;
+            border-color: #4B68FB;
+            color: white;
+            z-index: 2;
+        }
 
-    .pagination .page-link {
-        color: #4B68FB;
-    }
-    .pagination .page-link:hover {
-        color: #2c45c9;
-    }
-    .pagination .page-item.disabled .page-link {
-        color: #6c757d;
-    }
+        .pagination .page-link {
+            color: #4B68FB;
+        }
+        .pagination .page-link:hover {
+            color: #2c45c9;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
     </style>
 </head>
 
-<body onload="switchDdaftarSidang('Semua')">
+<body>
 
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -192,15 +253,11 @@ if ($_SESSION['role'] !== 'dosen') {
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
-                </li>
-                <li class="NavSide__sidebar-item ">
-                    <b></b><b></b>
-                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                    <a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
+                    <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -215,11 +272,11 @@ if ($_SESSION['role'] !== 'dosen') {
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons d-flex d-md-none">
-                <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                     <i class="bi bi-bell-fill"></i>
                 </a>
                 <div class="profile-icon">
-                    <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
+                    <a href="aProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-person-fill fs-5"></i>
                     </a>
                 </div>
@@ -230,9 +287,9 @@ if ($_SESSION['role'] !== 'dosen') {
             <div class="dashboard-header">
                 <h2 class="bodyHeading">Daftar Sidang</h2>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
-                         <a href="mProfil.php" title="Profil">
+                         <a href="aProfil.php" title="Profil">
                             <i class="bi bi-person-fill fs-5" style="color: white"></i>
                         </a>
                     </div>
@@ -247,20 +304,32 @@ if ($_SESSION['role'] !== 'dosen') {
                         <div class="d-flex align-items-center gap-2">
                             <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
                             <div class="dropdown">
-                                <div class="dropdown">
-                                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                        Semua
-                                    </button>
-                                    <ul class="dropdown-menu rounded shadow">
-                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semua')">Semua</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('TA')">Sidang TA</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="switchDdaftarSidang('Semester')">Sidang Semester</a></li>
-                                    </ul>
-                                </div>
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <?= $filter === 'ta' ? 'Sidang TA' : ($filter === 'semester' ? 'Sidang Semester' : 'Semua') ?>
+                                </button>
+                                <ul class="dropdown-menu rounded shadow">
+                                    <li><a class="dropdown-item" href="?filter=all&prodi=<?= $prodiFilter ?>&page=1">Semua</a></li>
+                                    <li><a class="dropdown-item" href="?filter=ta&prodi=<?= $prodiFilter ?>&page=1">Sidang TA</a></li>
+                                    <li><a class="dropdown-item" href="?filter=semester&prodi=<?= $prodiFilter ?>&page=1">Sidang Semester</a></li>
+                                </ul>
                             </div>
+                            
+                            <label for="ddProdi" class="fw-semibold mb-0 ms-3">Prodi:</label>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <?= $prodiFilter === 'all' ? 'Semua Prodi' : htmlspecialchars($prodiFilter) ?>
+                                </button>
+                                <ul class="dropdown-menu rounded shadow">
+                                    <li><a class="dropdown-item" href="?filter=<?= $filter ?>&prodi=all&page=1">Semua Prodi</a></li>
+                                    <?php foreach ($prodiList as $prodi): ?>
+                                        <li><a class="dropdown-item" href="?filter=<?= $filter ?>&prodi=<?= urlencode($prodi) ?>&page=1"><?= htmlspecialchars($prodi) ?></a></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                            
                             <div class="search-input-group ms-auto d-flex align-items-center">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari">
+                                <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari" id="searchInput">
                             </div>
                         </div>
                     </div><br><br>
@@ -271,285 +340,60 @@ if ($_SESSION['role'] !== 'dosen') {
                                     <th scope="col">No</th>
                                     <th scope="col">NIM</th>
                                     <th scope="col">Nama</th>
+                                    <th scope="col">Prodi</th>
                                     <th scope="col">Mata Kuliah</th>
                                     <th scope="col">Dosen Pembimbing</th>
                                     <th scope="col">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="dPengajuanTA">
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240033', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                
-                                <tr class="isiTabel jadiBiru">
-                                    <td>2</td>
-                                    <td>0920240053</td>
-                                    <td>Nayaka Ivanna</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240053', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tbody id="dPengajuanSem" style="display: none;">
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td> 
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'TA')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                
-                                <tr class="isiTabel jadiBiru">
-                                    <td>2</td>
-                                    <td>0920240053</td>
-                                    <td>Nayaka Ivanna</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240053', 'Semester')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru" >
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToEvaluasi('0920240055', 'Semester')">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                            <tbody>
+                                <?php if (sqlsrv_has_rows($result)): ?>
+                                    <?php 
+                                    $counter = ($currentPage - 1) * $rowsPerPage + 1;
+                                    while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): 
+                                    ?>
+                                        <tr class="isiTabel jadiBiru">
+                                            <td><?= $counter ?></td>
+                                            <td><?= htmlspecialchars($row['nim']) ?></td>
+                                            <td><?= htmlspecialchars($row['nama_mahasiswa']) ?></td>
+                                            <td><?= htmlspecialchars($row['prodi']) ?></td>
+                                            <td><?= htmlspecialchars(($row['jenis_sidang'] == 0) ? 'Tugas Akhir' : $row['nama_matkul']) ?></td>
+                                            <td><?= htmlspecialchars($row['dosen']) ?></td>
+                                            <td style="text-align: center;">
+                                                <button class="detail-btn" onclick="viewDetails('<?= $row['id_sidang'] ?>')">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <?php 
+                                        $counter++;
+                                    endwhile; 
+                                    ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="7" style="text-align: center;">Tidak ada data untuk ditampilkan.</td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
+                        
                         <div class="pagination-container">
                             <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-center" id="pagination-controls"></ul>
+                                <ul class="pagination justify-content-center">
+                                    <?php if ($totalPages > 1): ?>
+                                        <li class="page-item <?= $currentPage == 1 ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?filter=<?= $filter ?>&prodi=<?= $prodiFilter ?>&page=<?= $currentPage - 1 ?>">&laquo;</a>
+                                        </li>
+                                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                            <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
+                                                <a class="page-link" href="?filter=<?= $filter ?>&prodi=<?= $prodiFilter ?>&page=<?= $i ?>"><?= $i ?></a>
+                                            </li>
+                                        <?php endfor; ?>
+                                        <li class="page-item <?= $currentPage == $totalPages ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?filter=<?= $filter ?>&prodi=<?= $prodiFilter ?>&page=<?= $currentPage + 1 ?>">&raquo;</a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
                             </nav>
                         </div>
                     </div>
@@ -575,177 +419,52 @@ if ($_SESSION['role'] !== 'dosen') {
                     </div>
                 </div>
             </div>
+            
             <script>
-                // js buat search
-                 document.addEventListener("DOMContentLoaded", function () {
-                    const searchInput = document.querySelector('.search-input-group input');
-                    const tbodyTA = document.getElementById("dPengajuanTA");
-                    const tbodySem = document.getElementById("dPengajuanSem");
-                    const paginationControls = document.getElementById('pagination-controls');
-                    const dropdownButton = document.getElementById('ddMSidang');
+                // JavaScript untuk search dengan client-side filtering
+                document.addEventListener("DOMContentLoaded", function () {
+                    const searchInput = document.getElementById('searchInput');
+                    const tableRows = document.querySelectorAll('tbody tr.isiTabel');
 
-                    let currentPage = 1;
-                    const rowsPerPage = 10;
-                    let activeRows = [];
-
-                    function getAllRows() {
-                        const rowsTA = Array.from(tbodyTA.querySelectorAll('tr'));
-                        const rowsSem = Array.from(tbodySem.querySelectorAll('tr'));
-
-                        if (tbodyTA.style.display !== 'none' && tbodySem.style.display === 'none') {
-                            return rowsTA;
-                        } else if (tbodySem.style.display !== 'none' && tbodyTA.style.display === 'none') {
-                            return rowsSem;
-                        } else {
-                            return rowsTA.concat(rowsSem);
-                        }
-                    }
-
-                    function displayPage(rows, page) {
-                        const start = (page - 1) * rowsPerPage;
-                        const end = start + rowsPerPage;
-
-                        rows.forEach((row, index) => {
-                            row.style.display = (index >= start && index < end) ? '' : 'none';
-                        });
-                    }
-
-                    function setupPagination(rows) {
-                        paginationControls.innerHTML = '';
-                        const pageCount = Math.ceil(rows.length / rowsPerPage);
-
-                        if (pageCount <= 1) {
-                            paginationControls.style.display = 'none';
-                            return;
-                        }
-
-                        paginationControls.style.display = 'flex';
-
-                        // Previous
-                        const prevButton = document.createElement('li');
-                        prevButton.className = 'page-item';
-                        prevButton.innerHTML = `<a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>`;
-                        prevButton.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            if (currentPage > 1) {
-                                currentPage--;
-                                displayPage(rows, currentPage);
-                                updatePaginationButtons(pageCount);
-                            }
-                        });
-                        paginationControls.appendChild(prevButton);
-
-                        // Number buttons
-                        for (let i = 1; i <= pageCount; i++) {
-                            const pageButton = document.createElement('li');
-                            pageButton.className = 'page-item';
-                            pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-                            pageButton.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                currentPage = i;
-                                displayPage(rows, currentPage);
-                                updatePaginationButtons(pageCount);
-                            });
-                            paginationControls.appendChild(pageButton);
-                        }
-
-                        // Next
-                        const nextButton = document.createElement('li');
-                        nextButton.className = 'page-item';
-                        nextButton.innerHTML = `<a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>`;
-                        nextButton.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            if (currentPage < pageCount) {
-                                currentPage++;
-                                displayPage(rows, currentPage);
-                                updatePaginationButtons(pageCount);
-                            }
-                        });
-                        paginationControls.appendChild(nextButton);
-
-                        updatePaginationButtons(pageCount);
-                    }
-
-                    function updatePaginationButtons(pageCount) {
-                        const pageItems = paginationControls.querySelectorAll('.page-item');
-                        pageItems.forEach((item, index) => {
-                            item.classList.remove('active', 'disabled');
-
-                            if (index === 0 && currentPage === 1) {
-                                item.classList.add('disabled');
-                            } else if (index === pageItems.length - 1 && currentPage === pageCount) {
-                                item.classList.add('disabled');
-                            } else if (index === currentPage) {
-                                item.classList.add('active');
-                            }
-                        });
-                    }
-
-                    function refreshTable() {
-                        displayPage(activeRows, currentPage);
-                        setupPagination(activeRows);
-                    }
-
-                    function searchTable(query) {
-                        const allRows = getAllRows();
-                        activeRows = [];
-
-                        allRows.forEach(row => {
-                            const namaCell = row.children[2];
+                    searchInput.addEventListener("keyup", function () {
+                        const query = searchInput.value.toLowerCase();
+                        
+                        tableRows.forEach(row => {
+                            const namaCell = row.children[2]; // Kolom nama (index 2)
                             const namaText = namaCell.textContent.toLowerCase();
-
+                            
                             if (namaText.includes(query)) {
                                 row.style.display = '';
-                                activeRows.push(row);
                             } else {
                                 row.style.display = 'none';
                             }
                         });
-
-                        currentPage = 1;
-                        refreshTable();
-                    }
-
-                    searchInput.addEventListener("keyup", function () {
-                        const query = searchInput.value.toLowerCase();
-                        searchTable(query);
                     });
-
-                    // GABUNGAN filter + update dropdown label
-                    window.switchDdaftarSidang = function (tipe) {
-                        if (tipe === 'TA') {
-                            tbodyTA.style.display = '';
-                            tbodySem.style.display = 'none';
-                            dropdownButton.textContent = 'Sidang TA';
-                        } else if (tipe === 'Semester') {
-                            tbodyTA.style.display = 'none';
-                            tbodySem.style.display = '';
-                            dropdownButton.textContent = 'Sidang Semester';
-                        } else {
-                            tbodyTA.style.display = '';
-                            tbodySem.style.display = '';
-                            dropdownButton.textContent = 'Semua';
-                        }
-
-                        searchInput.value = '';
-                        activeRows = getAllRows();
-                        currentPage = 1;
-                        refreshTable();
-                    };
-
-                    // Load awal
-                    activeRows = getAllRows();
-                    refreshTable();
                 });
+
+                function viewDetails(idSidang) {
+                    // Implementasi untuk melihat detail sidang
+                    console.log('View details for sidang ID:', idSidang);
+                    // window.location.href = 'path/to/detail/page.php?id=' + idSidang;
+                }
                 
                 let menuToggle = document.querySelector(".NavSide__toggle");
                 let sidebar = document.getElementById("main-sidebar");
 
-                    menuToggle.onclick = function() {
-                        menuToggle.classList.toggle("NavSide__toggle--active");
-                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                    };
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
             </script>
             <script src="../../assets/js/main.js"></script>
+        </main>
+    </div>
 </body>
 </html>
+
+<?php
+// Tutup koneksi database
+if ($conn) {
+    sqlsrv_close($conn);
+}
+?>
