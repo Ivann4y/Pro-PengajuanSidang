@@ -1,4 +1,202 @@
 <?php
+include '../../koneksi.php';
+
+// Get parameters
+$id_sidang = isset($_GET['id_sidang']) ? $_GET['id_sidang'] : null;
+
+// Initialize variables
+$sidang = [];
+$detail_sidang = [];
+$dosen_penguji = [];
+$revisions = [];
+$all_approved = false;
+
+// Fetch submission details
+if ($id_sidang) {
+    // Get main submission data
+    $sql = "SELECT * FROM Sidang WHERE id_sidang = ?";
+    $params = array($id_sidang);
+    $stmt = sqlsrv_query($conn, $sql, $params);
+    
+    if ($stmt === false) {
+        die(print_r(sqlsrv_errors(), true));
+    }
+    
+    $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    
+    // Get detail/revision data
+    $sql = "SELECT ds.*, d.nama_dosen 
+            FROM Detail_Sidang ds
+            JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+            WHERE ds.id_sidang = ?";
+    $stmt = sqlsrv_query($conn, $sql, $params);
+    
+    if ($stmt !== false) {
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            $detail_sidang[] = $row;
+            // Collect revisions
+            if (!empty($row['dok_revisi'])) {
+                $revisions[] = [
+                    'dokumen' => $row['dok_revisi'],
+                    'dosen' => $row['nama_dosen'],
+                    'catatan' => $row['catatan_sidang'],
+                    'status' => $row['status_revisi']
+                ];
+            }
+        }
+    }
+    
+    // Check if all panelists have approved
+    $sql = "SELECT COUNT(*) as total, 
+                   SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved
+            FROM Persetujuan_Sidang 
+            WHERE id_sidang = ?";
+    $stmt = sqlsrv_query($conn, $sql, $params);
+    
+    if ($stmt !== false) {
+        $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+        $all_approved = ($row['total'] > 0 && $row['approved'] == $row['total']);
+        
+        // Update revision status if all approved
+        if ($all_approved) {
+            $sql = "UPDATE Detail_Sidang 
+                    SET status_revisi = 'Approved' 
+                    WHERE id_sidang = ?";
+            sqlsrv_query($conn, $sql, $params);
+        }
+    }
+
+    // Handle Approval/Rejection (add to top of file)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['nomor_dosen'])) {
+    $nomor_dosen = $_SESSION['nomor_dosen'];
+    
+    // APPROVE action
+    if (isset($_POST['approve'])) {
+        $sql = "UPDATE Detail_Sidang 
+                SET status_revisi = 'Approved' 
+                WHERE id_sidang = ? AND nomor_dosen = ?";
+        $params = [$id_sidang, $nomor_dosen];
+        sqlsrv_query($conn, $sql, $params);
+        
+        $_SESSION['alert'] = "Sidang disetujui!";
+    }
+    
+    // REJECT action
+    elseif (isset($_POST['reject']) && !empty($_POST['catatan'])) {
+        $sql = "UPDATE Detail_Sidang 
+                SET status_revisi = 'Rejected', 
+                    catatan_sidang = ? 
+                WHERE id_sidang = ? AND nomor_dosen = ?";
+        $params = [$_POST['catatan'], $id_sidang, $nomor_dosen];
+        sqlsrv_query($conn, $sql, $params);
+        
+        $_SESSION['alert'] = "Revisi diminta. Catatan telah disimpan.";
+    }
+    
+    header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang);
+    exit();
+}
+}
+
+// Handle approval/rejection
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['nomor_dosen'])) {
+    $nomor_dosen = $_SESSION['nomor_dosen'];
+    
+    if (isset($_POST['approve'])) {
+        // Check if already approved/rejected by this panelist
+        $sql = "SELECT id FROM Persetujuan_Sidang 
+                WHERE id_sidang = ? AND nomor_dosen = ?";
+        $params = array($id_sidang, $nomor_dosen);
+        $stmt = sqlsrv_query($conn, $sql, $params);
+        
+        if (sqlsrv_has_rows($stmt)) {
+            // Update existing approval
+            $sql = "UPDATE Persetujuan_Sidang 
+                    SET status = 'Approved', catatan = NULL 
+                    WHERE id_sidang = ? AND nomor_dosen = ?";
+        } else {
+            // Create new approval
+            $sql = "INSERT INTO Persetujuan_Sidang 
+                    (id_sidang, nomor_dosen, status) 
+                    VALUES (?, ?, 'Approved')";
+        }
+        
+        $stmt = sqlsrv_query($conn, $sql, $params);
+        
+        $_SESSION['success'] = "Sidang berhasil disetujui";
+        header("Location: ".$_SERVER['PHP_SELF']."?id_sidang=".$id_sidang);
+        exit();
+        
+    } elseif (isset($_POST['reject'])) {
+        $catatan = $_POST['catatan'] ?? '';
+        
+        if (empty($catatan)) {
+            $_SESSION['error'] = "Silakan isi catatan penolakan";
+        } else {
+            // Check if already approved/rejected by this panelist
+            $sql = "SELECT id FROM Persetujuan_Sidang 
+                    WHERE id_sidang = ? AND nomor_dosen = ?";
+            $params = array($id_sidang, $nomor_dosen);
+            $stmt = sqlsrv_query($conn, $sql, $params);
+            
+            if (sqlsrv_has_rows($stmt)) {
+                // Update existing approval
+                $sql = "UPDATE Persetujuan_Sidang 
+                        SET status = 'Rejected', catatan = ? 
+                        WHERE id_sidang = ? AND nomor_dosen = ?";
+            } else {
+                // Create new approval
+                $sql = "INSERT INTO Persetujuan_Sidang 
+                        (id_sidang, nomor_dosen, status, catatan) 
+                        VALUES (?, ?, 'Rejected', ?)";
+            }
+            
+            $params = array($catatan, $id_sidang, $nomor_dosen);
+            $stmt = sqlsrv_query($conn, $sql, $params);
+            
+            $_SESSION['success'] = "Sidang berhasil ditolak";
+            header("Location: ".$_SERVER['PHP_SELF']."?id_sidang=".$id_sidang);
+            exit();
+        }
+    }
+}
+
+// Handle document download
+if (isset($_GET['download'])) {
+    $doc_type = $_GET['download'];
+    
+    if ($doc_type === 'main' && !empty($sidang['dokumen_path'])) {
+        $filepath = '../../' . $sidang['dokumen_path'];
+        $filename = basename($filepath);
+    } elseif (is_numeric($doc_type)) {
+        // Find the specific revision
+        foreach ($revisions as $rev) {
+            if ($rev['id'] == $doc_type) {
+                $filepath = '../../' . $rev['dokumen'];
+                $filename = basename($filepath);
+                break;
+            }
+        }
+    }
+    
+    if (isset($filepath) && file_exists($filepath)) {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($filepath));
+        readfile($filepath);
+        exit;
+    } else {
+        die("File not found");
+    }
+}
+?>
+
+
+<?php
     // Ambil parameter dari URL
     $nim = isset($_GET['nim']) ? $_GET['nim'] : 'N/A';
     $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : 'N/A';
@@ -351,21 +549,30 @@
 <div class="card mb-3 dokumen-sidang position-relative">
   <h5 class="fw-semibold">Dokumen Sidang</h5>
   <div class="mt-2">
-    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
-      <i class="fa-solid fa-file-lines"></i> berkas_laporan_kel-1.pdf
+    <?php if (!empty($sidang['dokumen_path'])): ?>
+      <a class="file-pill text-decoration-none file-link dokumen-sidang" href="../../<?php echo htmlspecialchars($sidang['dokumen_path']); ?>" download>
+        <i class="fa-solid fa-file-lines"></i> <?php echo htmlspecialchars(basename($sidang['dokumen_path'])); ?>
+      </a>
+    <?php endif; ?>
+
+    <?php foreach ($revisions as $rev): ?>
+    <a class="file-pill text-decoration-none file-link berkas-laporan" href="?id_sidang=<?= $id_siang ?>&download=<?= $rev['id'] ?>" download>
+      <i class="fa-solid fa-file-lines"></i> Revisi: <?= basename ($rev['dokumen']) ?>
     </a>
-    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
-      <i class="fa-solid fa-file-zipper"></i> dokumen_pendukung_kel-1.zip
-    </a>
+    <?php endforeach; ?>
   </div>
 </div> 
 
 <div class="d-flex justify-content-between">
   <button class="btn-kembali" onclick="location.href='dpengajuan.php'">
     <span class="icon-circle"> <i class="fa-solid fa-arrow-left"></i></span>Kembali</button>
+  <?php if (isset($_SESSION['nomor_dosen'])): ?>
   <div class="d-flex justify-content-between ">
-    <button class="btn btn-danger btn-circle me-2" id="btnTolak">Tolak</button>
-    <button class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
+
+    <button class="btn btn-danger btn-circle me-2" id="btnTolak" data-bs-toggle="#modalTolak">Tolak</button>
+    <form method="POST" style="display: inline;">
+    <button type="submit" name="approve" class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
+    </form>
   </div>
 </div>
 
@@ -373,10 +580,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center p-4">
         <img src="../../assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
-        <h5 class="modal-title fw-bold" id="notifModalLabel"></h5>
+        <h5 class="modal-title fw-bold" id="notifModalLabel">Alasan Penolakan</h5>
         </div>
     </div>
   </div>
+  <?php endif; ?>
 
   <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered">

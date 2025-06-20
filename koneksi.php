@@ -1,5 +1,5 @@
 <?php
-$serverName = "sidang5.database.windows.net ";
+$serverName = "sidang5.database.windows.net";
 $connectionOptions = [
     "Database" => "SistemSidang1",
     "Uid" => "sqladmin",  
@@ -7,11 +7,7 @@ $connectionOptions = [
     "TrustServerCertificate" => true,
 ];
 
-
-
-
-
-
+// Menjalankan koneksi ke database
 $conn = sqlsrv_connect($serverName, $connectionOptions);
 if ($conn === false) {
     echo "Koneksi Gagal:<br>";
