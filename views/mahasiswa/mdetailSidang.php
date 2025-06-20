@@ -132,7 +132,6 @@ sqlsrv_close($conn);
                 
                 <div class="info-card">
                     <div class="section">
-                        <!-- Course Title -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-book"></i>
@@ -142,11 +141,7 @@ sqlsrv_close($conn);
                                 <?= htmlspecialchars($sidang_data['judul']) ?>
                             </div>
                         </div>
-
-                        <!-- Spacer to push Lecturer info down -->
                         <div class="spacer"></div>
-
-                        <!-- Lecturers -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-user-group"></i> 
@@ -158,7 +153,6 @@ sqlsrv_close($conn);
                         </div>
                     </div>
                     <div class="section">
-                        <!-- Room -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-door-open"></i>
@@ -168,8 +162,6 @@ sqlsrv_close($conn);
                                 <?= htmlspecialchars($sidang_data['ruang_sidang']) ?>
                             </div>
                         </div>
-
-                        <!-- Date -->
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-calendar-days"></i>
@@ -179,8 +171,67 @@ sqlsrv_close($conn);
                                 <?= htmlspecialchars($tanggal_sidang_formatted) ?>
                             </div>
                         </div>
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-clock"></i>
+                                <span class="fw-bold">Jam</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($jam_sidang_formatted) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Time -->
+                <div class="info-card">
+                    <div class="section">
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-file-invoice"></i> 
+                                <span class="fw-bold">Judul Sidang</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($sidang_data['judul']) ?>
+                            </div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-user-tie"></i> 
+                                <span class="fw-bold">Dosen Pembimbing</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($sidang_data['dosen_pengampu']) ?>
+                            </div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-user-group"></i>
+                                <span class="fw-bold">Dosen Penguji</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($sidang_data['dosen_pengampu']) ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-door-open"></i>
+                                <span class="fw-bold">Ruangan</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($sidang_data['ruang_sidang']) ?>  
+                            </div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <span class="fw-bold">Tanggal</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($tanggal_sidang_formatted) ?>
+                            </div>
+                        </div>
                         <div class="info-group">
                             <div class="label-row">
                                 <i class="fa-solid fa-clock"></i>
