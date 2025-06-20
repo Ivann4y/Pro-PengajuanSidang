@@ -934,7 +934,7 @@ if (isset($_POST['submit'])) {
 
             <!-- Main content area of the page -->
             <main class="NavSide__main-content">
-                <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
+                <h2>Detail Evaluasi - Sistem Evaluasi Sidang</h2>
 
                 <!-- Info card displaying sidang details -->
             <!-- Info card displaying sidang details -->
