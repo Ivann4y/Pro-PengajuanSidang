@@ -180,6 +180,7 @@ $nomor = $offset + 1;
                                             }
                                             ?>
                                         </td>
+
                                         <td><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
                                         <td style="text-align: center;">
                                             <a href="dDetailSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn">
