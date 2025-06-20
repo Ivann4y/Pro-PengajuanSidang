@@ -844,6 +844,7 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
                            <h2>Penjadwalan Sidang</h2>
                 <div class="form-container"> 
                     <form id="formDalamModal" novalidate>
+                         <input type="hidden" name="id_sidang" value="<?php echo $id_sidang; ?>">
                         
                         <!-- ====================================== -->
                         <!--      FIELD UMUM UNTUK SEMUA JENIS      -->
@@ -1093,60 +1094,115 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       // --- Skrip Validasi Form ---
-      document.getElementById('formDalamModal').addEventListener('submit', function(event) {
-          event.preventDefault(); 
+      // Ganti seluruh blok addEventListener Anda dengan ini
 
-          const errorBox = document.getElementById("form-error");
-          errorBox.textContent = ""; 
-          
-          let isValid = true;
-          let errorMessage = "";
+document.getElementById('formDalamModal').addEventListener('submit', function(event) {
+    event.preventDefault(); 
 
-          const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
-          pengujiInputs.forEach((input, index) => {
-              if (isValid && input.value.trim() === "") {
-                  errorMessage = `Nama penguji ${index + 1} tidak boleh kosong!!`;
-                  isValid = false;
-              }
-          });
+    const errorBox = document.getElementById("form-error");
+    errorBox.textContent = ""; 
+    
+    let isValid = true;
+    let errorMessage = "";
 
-          const ruangan = document.getElementById("modal_ruangan").value.trim();
-          const tanggal = document.getElementById("modal_tanggal").value;
-          const jamAwal = document.getElementById("modal_jam_awal").value;
-          const jamAkhir = document.getElementById("modal_jam_akhir").value;
+    // ... (kode validasi Anda tetap di sini, tidak perlu diubah) ...
+    const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
+    const isSidangTA = <?php echo ($data_sidang['jenis_sidang'] == 0) ? 'true' : 'false'; ?>;
 
-          if (isValid && ruangan === "") {
-              errorMessage = "Ruangan harus diisi!!";
-              isValid = false;
-          } else if (isValid && tanggal === "") {
-              errorMessage = "Tanggal harus dipilih!!";
-              isValid = false;
-          } else if (isValid && (jamAwal === "" || jamAkhir === "")) {
-              errorMessage = "Jam awal dan jam akhir harus diisi!!";
-              isValid = false;
-          } else if (isValid && jamAkhir <= jamAwal) {
-              errorMessage = "Jam akhir harus setelah jam awal!!";
-              isValid = false;
-          }
+    // Validasi penguji hanya untuk sidang TA
+    if (isSidangTA) {
+        pengujiInputs.forEach((input, index) => {
+            if (isValid && input.value.trim() === "") {
+                errorMessage = `Nama penguji ${index + 1} tidak boleh kosong!`;
+                isValid = false;
+            }
+        });
+    }
 
-          if (!isValid) {
-              errorBox.textContent = errorMessage;
-              return;
-          }
-          
-          console.log("Form valid, data siap dikirim.");
-          var myModalEl = document.getElementById('penjadwalanSidangModal');
-          var modal = bootstrap.Modal.getInstance(myModalEl);
-          modal.hide();
+    const ruangan = document.getElementById("modal_ruangan").value.trim();
+    const tanggal = document.getElementById("modal_tanggal").value;
+    const jamAwal = document.getElementById("modal_jam_awal").value;
+    const jamAkhir = document.getElementById("modal_jam_akhir").value;
 
-          Swal.fire({
-            title: 'Berhasil',
-            text: 'Jadwal Berhasil Diubah.',
-            icon: 'success',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#4B68FB'
-          });
-      });
+    if (isValid && ruangan === "") {
+        errorMessage = "Ruangan harus diisi!";
+        isValid = false;
+    } else if (isValid && tanggal === "") {
+        errorMessage = "Tanggal harus dipilih!";
+        isValid = false;
+    } else if (isValid && (jamAwal === "" || jamAkhir === "")) {
+        errorMessage = "Jam awal dan jam akhir harus diisi!";
+        isValid = false;
+    } else if (isValid && jamAkhir <= jamAwal) {
+        errorMessage = "Jam akhir harus setelah jam awal!";
+        isValid = false;
+    }
+
+    if (!isValid) {
+        errorBox.textContent = errorMessage;
+        return;
+    }
+    
+    // --- BAGIAN BARU: MENGIRIM DATA DENGAN AJAX (FETCH) ---
+
+    // Kumpulkan semua data dari form
+    const formData = new FormData(this);
+    const submitButton = this.querySelector('button[type="submit"]');
+    
+    // Nonaktifkan tombol saat proses pengiriman
+    submitButton.disabled = true;
+    submitButton.textContent = 'Menyimpan...';
+
+    fetch('proses_ubah_jadwal.php', { // Target ke file PHP baru
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json()) // Ubah response menjadi JSON
+    .then(data => {
+        // Sembunyikan modal
+        var myModalEl = document.getElementById('penjadwalanSidangModal');
+        var modal = bootstrap.Modal.getInstance(myModalEl);
+        modal.hide();
+
+        if (data.status === 'success') {
+            // Tampilkan notifikasi sukses yang sesungguhnya
+            Swal.fire({
+                title: 'Berhasil!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload(); // Muat ulang halaman untuk melihat perubahan
+                }
+            });
+        } else {
+            // Tampilkan notifikasi error dari server
+            Swal.fire({
+                title: 'Gagal!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#ff5f5f'
+            });
+        }
+    })
+    .catch(error => {
+        // Tangani error koneksi atau parsing JSON
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Oops!',
+            text: 'Terjadi kesalahan saat menghubungi server.',
+            icon: 'error'
+        });
+    })
+    .finally(() => {
+        // Aktifkan kembali tombolnya setelah selesai
+        submitButton.disabled = false;
+        submitButton.textContent = 'Ubah Penjadwalan';
+    });
+});
     </script>
 </body>
 </html>
