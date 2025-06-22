@@ -42,7 +42,7 @@
 //dosen
 // echo password_hash("dsn123", PASSWORD_DEFAULT);
 
-
+// echo password_hash("adm123", PASSWORD_DEFAULT);
 ?>
 
 
