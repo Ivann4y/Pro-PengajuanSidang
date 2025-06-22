@@ -183,3 +183,44 @@ body {
   margin: 0;
   color: #1a1a1a;
 }
+
+    .dokumen-sidang {
+      background-color: #ebeef5;
+      color: #212529;
+      border-radius: 20px;
+    }
+
+    .dokumen-sidang h5 {
+      margin-bottom: 12px;
+    }
+
+    .file-link {
+      display: inline-block;
+      align-items: center;
+      gap: 8px;
+      padding:12px 20px;
+      border: 1px solid #212529;  /* border hitam default */
+      border-radius: 20px;
+      background-color: transparent;
+      color: #212529;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      cursor: pointer;
+      margin-right: 30px;
+      margin-bottom: 10px;
+    }
+
+    .file-link i {
+      transition: color 0.3s ease;
+      color: inherit;
+    }
+
+    .file-link:hover {
+      background-color: #0d6efd;
+      color: #fff;
+      border-color: #0d6efd;
+    }
+
+    .file-link:hover i {
+      color: #fff;
+    }
