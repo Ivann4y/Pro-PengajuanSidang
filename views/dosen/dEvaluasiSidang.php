@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 require "../../koneksi.php"; // Pastikan path ini benar
 
 // ===================================================================================
@@ -7,15 +7,16 @@ require "../../koneksi.php"; // Pastikan path ini benar
 // ===================================================================================
 
 // Pastikan dosen sudah login dan ID SIDANG ada di URL
-if (!isset($_SESSION['user']['nomor_dosen'])) {
-    die("Akses ditolak. Silakan login sebagai dosen.");
-}
+// if (!isset($_SESSION['user']['nomor_dosen'])) {
+//     die("Akses ditolak. Silakan login sebagai dosen.");
+// }
 // PERUBAHAN: Cek 'id_sidang' bukan 'nim'
 if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
     die("ID Sidang tidak valid atau tidak ditemukan.");
 }
 
-$nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
+// $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
+$nomor_dosen_login = '12345678';
 $id_sidang = (int)$_GET['id_sidang']; // Ambil id_sidang dari URL
 
 // Variabel untuk menampung data yang akan ditampilkan
@@ -973,66 +974,35 @@ sqlsrv_close($conn);
             <!-- Main content area of the page -->
             <main class="NavSide__main-content">
                 <h2>Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+                <br>
+                <br>
+                 <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="mahasiswa1-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa1-tab-pane" role="tab" aria-controls="mahasiswa1-tab-pane" aria-selected="true" href="#">mahasiswa1</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" id="mahasiswa2-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa2-tab-pane" role="tab" aria-controls="mahasiswa2-tab-pane" aria-selected="false" href="#">mahasiswa2</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" id="mahasiswa3-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa3-tab-pane" role="tab" aria-controls="mahasiswa3-tab-pane" aria-selected="false" href="#">mahasiswa3</a>
+              </li>
+            </ul>
 
                 <!-- Info card displaying sidang details -->
             <!-- Info card displaying sidang details -->
 <div class="info-card">
     <div class="section">
         <!-- Sidang Title information group -->
-        <div class="info-group">
-            <div class="label-row">
-                <i class="fa-solid fa-file-invoice"></i>
-                <span class="fw-bold">Judul Sidang</span>
-            </div>
-           <div class="value-row"><?php echo htmlspecialchars($judul); ?></div>
-        </div>
-
-        <!-- Supervising Lecturer information group -->
-        <div class="info-group">
-            <div class="label-row">
-                <i class="fa-solid fa-user-tie"></i>
-                <span class="fw-bold">Dosen Pembimbing</span>
-            </div>
-            <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
-        </div>
-
-        <!-- Examining Lecturers information group -->
-        <div class="info-group">
-            <div class="label-row">
-                <i class="fa-solid fa-user-group"></i>
-                <span class="fw-bold">Dosen Penguji</span>
-            </div>
-            <div class="value-row"><?php echo $namaPenguji_html; ?></div>
-        </div>
+        <div class="info-group"><div class="label-row"><i class="fa-solid fa-file-invoice me-2"></i><strong>Judul Sidang</strong></div><div class="value-row"><?php echo htmlspecialchars($judul); ?></div></div>
+                    <div class="info-group"><div class="label-row"><i class="fa-solid fa-user-tie me-2"></i><strong>Dosen Pembimbing</strong></div><div class="value-row"><?php echo $namaPembimbing_html; ?></div></div>
+                    <div class="info-group"><div class="label-row"><i class="fa-solid fa-user-group me-2"></i><strong>Dosen Penguji</strong></div><div class="value-row"><?php echo $namaPenguji_html; ?></div></div>
     </div> <!-- <<<<<<< PERBAIKAN: TAMBAHKAN TAG PENUTUP DIV INI -->
 
     <div class="section">
         <!-- Room information group -->
-        <div class="info-group">
-            <div class="label-row">
-                <i class="fa-solid fa-door-open"></i>
-                <span class="fw-bold">Ruangan</span>
-            </div>
-            <div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div>
-        </div>
-
-        <!-- Date information group -->
-        <div class="info-group">
-            <div class="label-row">
-                <i class="fa-solid fa-calendar-days"></i>
-                <span class="fw-bold">Tanggal</span>
-            </div>
-             <div class="value-row"><?php echo htmlspecialchars($tanggal_formatted); ?></div>
-        </div>
-
-        <!-- Time information group -->
-        <div class="info-group">
-            <div class="label-row">
-                <i class="fa-solid fa-clock"></i>
-                <span class="fw-bold">Jam</span>
-            </div>
-           <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
-        </div>
+         <div class="info-group"><div class="label-row"><i class="fa-solid fa-door-open me-2"></i><strong>Ruangan</strong></div><div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div></div>
+                    <div class="info-group"><div class="label-row"><i class="fa-solid fa-calendar-days me-2"></i><strong>Tanggal</strong></div><div class="value-row"><?php echo htmlspecialchars($tanggal_formatted); ?></div></div>
+                    <div class="info-group"><div class="label-row"><i class="fa-solid fa-clock me-2"></i><strong>Jam</strong></div><div class="value-row"><?php echo htmlspecialchars($jam); ?></div></div>
     </div>
 </div>
 
@@ -1061,13 +1031,14 @@ sqlsrv_close($conn);
                     </div>
                     <div class="form-group-custom">
                         <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-                        <textarea id="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."></textarea>
+                        <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Masukan Catata0n Evaluasi"><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
                     </div>
                     <!-- Error message for evaluation notes -->
                     <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                 </div>
 
                 <!-- Button group at the bottom of the page -->
+                
                 <div class="button-group-bottom">
                     <!-- 'Kembali' (Back) button -->
                     <button type="button" class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
@@ -1076,11 +1047,14 @@ sqlsrv_close($conn);
                         </span>
                         Kembali
                     </button>
+                     <form id="formEvaluasi" action="dEvaluasiSidang.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>" method="POST">
                     <!-- 'Kirim' (Submit) button -->
                     <button class="btn-kirim" id="btnKirim">
                         Kirim
                     </button>
+                      </form>
                 </div>
+  
             </main>
         </div>
     </div>
@@ -1225,11 +1199,15 @@ sqlsrv_close($conn);
 
             // Event listener for the 'Kirimkan' (Confirm Submit) button in the modal
             btnKonfirmasiKirim.addEventListener('click', function() {
+
+                 document.getElementById('formEvaluasi').submit();
                 // Hide the confirmation modal
                 const confirmationKirimModalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
                 if (confirmationKirimModalInstance) {
                     confirmationKirimModalInstance.hide();
+
                 }
+                
 
                 // Display success SweetAlert
                 Swal.fire({
