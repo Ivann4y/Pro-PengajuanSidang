@@ -37,7 +37,7 @@ switch ($role) {
         $redirectPath = 'views/admin/aBeranda.php';
         break;
     default:
-        header("Location: views/{$role}/login.php?username=" . urlencode($username));
+        header("Location: views/{$role}/Login.php?username=" . urlencode($username));
         exit();
 }
 
@@ -80,14 +80,14 @@ try {
     // Jika user tidak ditemukan ATAU password salah, gagalkan login
     $_SESSION['login_error'] = 'Username atau Password salah!';
     // Redirect kembali ke halaman login yang sesuai
-    header("Location: views/{$role}/login.php?username=" . urlencode($username));
+    header("Location: views/{$role}/Login.php?username=" . urlencode($username));
     exit();
 
 } catch (Exception $e) {
     // Tangani error server
     $_SESSION['login_error'] = 'Terjadi kesalahan pada sistem. Silakan coba lagi.';
     error_log($e->getMessage()); // Catat error ke log server untuk di-debug
-    header("Location: views/{$role}/login.php?username=" . urlencode($username));
+    header("Location: views/{$role}/Login.php?username=" . urlencode($username));
     exit();
 }
 ?>

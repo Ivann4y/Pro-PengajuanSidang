@@ -10,103 +10,11 @@
    <link rel="stylesheet" href="../../assets/css/style.css" />
   <link rel="stylesheet" href="../../extra/style.css">
   <link rel="stylesheet" href="../../css/button-styles.css">
+  <link rel="stylesheet" href="../../assets/css/mNotifikasi.css">
+  
   <title>Mahasiswa - Notifikasi</title>
   <style>
-    table {
-      width: 100%;
-      border-spacing: 0 10px;
-      border-collapse: separate;
-    }
-
-    th {
-      border-bottom: black 2px solid;
-      border-radius: 0px 0px 0px 0px;
-    }
-
-    th,
-    td {
-      padding: 12px 25px;
-      font-family: "Poppins";
-      font-weight: 400;
-      vertical-align: middle;
-    }
-
-    tr.isiTabel {
-      background-color: #F1F1F1;
-      border-color: #F1F1F1;
-      border-radius: 10px;
-    }
-
-    
-
-   
-
-    #tidakbacabutton:hover,
-    #bacabutton:hover {
-      opacity: 0.8;
-    }
-
-    #tidakbacabutton:hover {
-      background-color: #FD7D7D;
-      /* Red */
-      border-color: #FD7D7D;
-      color: white;
-    }
-
-    .modal-header {
-      justify-content: center;
-      border-bottom: none !important;
-    }
-
-    .modal-header .modal-title {
-      width: 100%;
-      text-align: center;
-    }
-
-    
-
-    th:nth-child(1) {
-      width: 20%;
-      text-align: center;
-    }
-
-    th:nth-child(5) {
-      width: 10%;
-      text-align: center;
-    }
-
-    td:nth-child(1) {
-      width: 20%;
-      text-align: center;
-      border-radius: 20px 0px 0px 20px;
-    }
-
-    th:nth-child(2),
-    td:nth-child(2) {
-      width: 30%;
-      text-align: center;
-    }
-
-    th:nth-child(3),
-    td:nth-child(3) {
-      width: 20%;
-      text-align: center;
-    }
-
-    th:nth-child(4),
-    td:nth-child(4) {
-      width: 20%;
-      text-align: center;
-    }
-
-    td:nth-child(5) {
-      width: 10%;
-      text-align: center;
-      border-radius: 0px 20px 20px 0px;
-    }
-    #BelumDibaca td span {
-  cursor: pointer;
-    }
+  
   </style>
 </head>
 
@@ -217,7 +125,7 @@
     </div>
     </main>
     <!-- Modal Konfirmasi -->
-     <div class="modal fade" id="konfirmasiModalnotifikai" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+     <div class="modal fade" id="konfirmasiModalnotifikasi" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
       <div class="modal-header border-0 justify-content-center">
@@ -254,83 +162,10 @@
 
   </div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script type="text/javascript">
-    let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
-
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-
-    // Active menu item highlighting
-     let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function() {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
-    let rowToUpdate = null;
-
-    function bacaModal(spanElem) {
-      // Simpan referensi baris (tr) yang akan diubah
-      rowToUpdate = spanElem.closest('tr');
-      const modal = new bootstrap.Modal(document.getElementById("konfirmasiModalnotifikai"));
-      modal.show();
-    }
-
-    function lanjutkanAksi() {
-      // Cek apakah rowToUpdate sudah di-set
-
-      document.getElementById("bacabutton")
-      if (rowToUpdate) {
-        // Ubah status pada kolom ke-4 dan hapus tombol span
-        rowToUpdate.cells[3].innerText = "Sudah Dibaca";
-        rowToUpdate.cells[4].innerHTML = ""; // Hapus span
-        // Hapus class jadiBiru
-        rowToUpdate.classList.remove("jadiBiru");
-        // Pindahkan row ke tbody SudahDibaca
-        document.getElementById("SudahDibaca").appendChild(rowToUpdate);
-        rowToUpdate = null;
-      }
-      // Tutup modal
-      bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikai")).hide();
-    };
-
-    document.getElementById("tidakbacabutton").onclick = function() {
-      // Tutup modal tanpa mengubah apapun
-      bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikai")).hide();
-    };
-
-    function switchMNotifikasi() {
-      const mnotif = document.getElementById("BelumDibaca");
-      const mnotif2 = document.getElementById("SudahDibaca");
-      const mnotifButton = document.getElementById("ddMBelumDibaca");
-      const mnotifmenu = document.getElementById("ddMSudahDibaca");
-      if (mnotif && mnotif2) {
-        if (
-          mnotif.style.display === "none" ||
-          getComputedStyle(mnotif).display === "none"
-        ) {
-          mnotif.style.display = "table-row-group";
-          mnotif2.style.display = "none";
-          mnotifButton.innerText = "Belum Dibaca";
-          mnotifmenu.innerText = "Sudah Dibaca";
-        } else {
-          mnotif.style.display = "none";
-          mnotif2.style.display = "table-row-group";
-          mnotifButton.innerText = "Sudah Dibaca";
-          mnotifmenu.innerText = "Belum Dibaca";
-        }
-      }
-    }
-  </script>
+  <scrip src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  
+    <script src="../../assets/js/mNotifikasi.js"></script>
+  
 </body>
 
 </html>
