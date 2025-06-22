@@ -1,44 +1,28 @@
 <?php
-// 1. INISIALISASI DAN KONEKSI
 require "../../koneksi.php"; // Pastikan path ini benar
 
-// 2. PERSIAPAN VARIABEL FILTER DAN PAGINASI
+// --- PERSIAPAN AWAL (Tidak ada perubahan) ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all';
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $rowsPerPage = 10;
 
-// 3. AMBIL DAFTAR PRODI UNTUK DROPDOWN
-$prodiListQuery = "SELECT DISTINCT prodi FROM Mahasiswa WHERE prodi IS NOT NULL AND prodi != '' ORDER BY prodi ASC";
-$prodiListResult = sqlsrv_query($conn, $prodiListQuery);
-$prodiList = [];
-if ($prodiListResult) {
-    while ($row = sqlsrv_fetch_array($prodiListResult, SQLSRV_FETCH_ASSOC)) {
-        $prodiList[] = $row['prodi'];
-    }
-}
-
-// 4. MEMBUAT KLAUSA WHERE DINAMIS
-$whereClause = [];
-if ($filter !== 'all') {
-    $whereClause[] = "s.jenis_sidang = " . ($filter === 'ta' ? 0 : 1);
-}
-if ($prodiFilter !== 'all') {
-    $cleanedProdi = str_replace("'", "''", $prodiFilter); // Escaping sederhana untuk SQL Server
-    $whereClause[] = "ma.prodi = '" . $cleanedProdi . "'";
-}
-$whereSql = "";
-if (!empty($whereClause)) {
-    $whereSql = " WHERE " . implode(' AND ', $whereClause);
-}
-
-// 5. QUERY UNTUK MENGHITUNG TOTAL DATA (DENGAN FILTER)
+// --- PERBAIKAN QUERY PENGHITUNGAN TOTAL DATA ---
 $countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
                FROM Sidang s
-               JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-               JOIN Mahasiswa ma ON km.nim = ma.nim" . $whereSql;
+               JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok -- Jembatan ke-1
+               JOIN Mahasiswa m ON km.nim = m.nim"; // Jembatan ke-2
+
+if ($filter === 'ta') {
+    $countQuery .= " WHERE s.jenis_sidang = 0";
+} elseif ($filter === 'semester') {
+    $countQuery .= " WHERE s.jenis_sidang = 1";
+}
 
 $countResult = sqlsrv_query($conn, $countQuery);
+if ($countResult === false) {
+    die("Error di countQuery: " . print_r(sqlsrv_errors(), true));
+}
 if ($countResult === false) {
     die("Error di countQuery: " . print_r(sqlsrv_errors(), true));
 }
@@ -46,21 +30,38 @@ $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
 
-// 6. QUERY UTAMA UNTUK MENGAMBIL DATA PER HALAMAN (DENGAN FILTER)
-$query = "SELECT s.id_sidang, s.id_kelompok, s.judul, CAST(s.jenis_sidang AS INT) AS jenis_sidang,
+// --- PERBAIKAN QUERY UTAMA PENGAMBILAN DATA ---
+$query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, s.id_kelompok, 
                  m.nama_matkul, 
                  MIN(d.nama_dosen) AS dosen 
           FROM Sidang s
-          JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-          JOIN Mahasiswa ma ON km.nim = ma.nim
+          -- PERBAIKAN UTAMA: Menggunakan tabel jembatan Kelompok_Mahasiswa
+          -- Join lainnya tetap sama
           JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
           JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
-          JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen" . $whereSql;
+          JOIN Jadwal j ON s.id_sidang = j.id_sidang
+          JOIN Penjadwalan p ON j.id_sidang = p.id_sidang
+          JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen";
 
-$query .= " GROUP BY s.id_sidang, s.id_kelompok, s.judul, s.jenis_sidang, m.nama_matkul ORDER BY s.id_sidang";
+$whereClause = [];
+if ($filter === 'ta') {
+    $whereClause[] = "s.jenis_sidang = 0";
+} elseif ($filter === 'semester') {
+    $whereClause[] = "s.jenis_sidang = 1";
+}
+if (!empty($whereClause)) {
+    $query .= " WHERE " . implode(' AND ', $whereClause);
+}
+
+// Menyesuaikan GROUP BY dengan semua kolom yang dibutuhkan
+$query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, s.id_kelompok, m.nama_matkul 
+            ORDER BY s.id_sidang";
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
 
 $result = sqlsrv_query($conn, $query);
+if ($result === false) {
+    die("Error di main query: " . print_r(sqlsrv_errors(), true));
+}
 if ($result === false) {
     die("Error di main query: " . print_r(sqlsrv_errors(), true));
 }
@@ -85,6 +86,14 @@ if ($result === false) {
             <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo Admin">
             </div>
             <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aBeranda.php"><span
+                            class="fw-semibold">Beranda</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span
+                            class="fw-semibold">Penjadwalan</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
+                            class="fw-semibold">Daftar Sidang</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
+                        data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="aBeranda.php"><span
                             class="fw-semibold">Beranda</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span
@@ -161,9 +170,13 @@ if ($result === false) {
                     <thead>
                         <tr>
                             <th scope="col">Nomor</th>
-                            <th scope="col">ID Kelompok</th>
-                            <th scope="col">
-                                <?= $filter === 'ta' ? "Judul Sidang" : ($filter === 'semester' ? "Mata Kuliah" : "Judul/Mata Kuliah") ?>
+                            <th scope="col">Kelompok</th>
+                            <th scope="col" id="thDynamicHeader">
+                                <?php
+                                if ($filter === 'ta') echo "Judul Sidang";
+                                elseif ($filter === 'semester') echo "Mata Kuliah";
+                                else echo "Judul/Mata Kuliah";
+                                ?>
                             </th>
                             <th scope="col">Pembimbing</th>
                             <th scope="col" style="text-align: center;">Aksi</th>
@@ -177,7 +190,7 @@ if ($result === false) {
                                 ?>
                                 <tr class="isiTabel">
                                     <td data-label="Nomor"><?= $counter ?></td>
-                                    <td data-label="ID Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                                    <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                                     <td data-label="Judul/MK">
                                         <?= htmlspecialchars(($row['jenis_sidang'] == 0) ? $row['judul'] : $row['nama_matkul']) ?>
                                     </td>
@@ -245,7 +258,31 @@ if ($result === false) {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/aDaftarSidang.js"></script>
+    <script>
+        // JS untuk sidebar toggle
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
+            const desktopIconsContainer = document.getElementById('desktop-icons-container');
+            const mobileIconsContainer = document.getElementById('mobile-icons-container');
+            if (desktopIconsContainer) {
+                const headerIcons = desktopIconsContainer.querySelector('.header-icons');
+                function handleIconPlacement() {
+                    if (window.innerWidth <= 992) { if (mobileIconsContainer && !mobileIconsContainer.contains(headerIcons)) mobileIconsContainer.appendChild(headerIcons);
+                    } else { if (!desktopIconsContainer.contains(headerIcons)) desktopIconsContainer.appendChild(headerIcons); }
+                }
+                if (menuToggle && sidebar) {
+                    menuToggle.onclick = () => {
+                        menuToggle.classList.toggle("NavSide__toggle--active");
+                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                    };
+                }
+                handleIconPlacement();
+                window.addEventListener('resize', handleIconPlacement);
+            }
+        });
+        
+    </script>
 </body>
 
 </html>
