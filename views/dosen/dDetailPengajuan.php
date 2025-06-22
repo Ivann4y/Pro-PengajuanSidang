@@ -4,9 +4,9 @@ include '../../koneksi.php';
 
 <?php
 
-if ($modeTesting && isset($_POST['approve'])) {
-  echo "<div class='alert alert-success'>TEST: Sidang disetujui (DB tidak diupdate di mode testing)</div>";
-}
+// if ($modeTesting && isset($_POST['approve'])) {
+//   echo "<div class='alert alert-success'>TEST: Sidang disetujui (DB tidak diupdate di mode testing)</div>";
+// }
 
 // Get parameters
 $id_sidang = isset($_GET['id_sidang']) ? $_GET['id_sidang'] : null;
