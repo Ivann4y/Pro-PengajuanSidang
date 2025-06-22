@@ -36,6 +36,12 @@
 // echo password_hash('12345678', PASSWORD_DEFAULT);
 
 
+//mahasiswa
+// echo password_hash("mhs123", PASSWORD_DEFAULT);
+
+//dosen
+// echo password_hash("dsn123", PASSWORD_DEFAULT);
+
 
 ?>
 
