@@ -251,6 +251,247 @@ if ($tipe === 'TA') {
   <link rel="stylesheet" href="../../extra/style.css">
   <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css">
   <title>Detail Pengajuan</title>
+  <style>
+    body {
+      font-family: 'Poppins';
+    }
+
+    .btn-circle {
+      border-radius: 12px;
+      padding: 6px 24px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      margin-top: 1cm;
+    }
+
+    .btn-danger.btn-circle {
+      background-color: #FD7D7D;
+      color: white;
+      border: 2px solid #FD7D7D;
+    }
+
+    .btn-danger.btn-circle:hover {
+      background-color: transparent;
+      color: #e56a6a;
+      border: 2px solid #e56a6a;
+    }
+
+    .btn-success.btn-circle {
+      background-color: #4FD382;
+      color: white;
+      border: 2px solid #4FD382;
+    }
+
+    .btn-success.btn-circle:hover {
+      background-color: transparent;
+      color: #3ab070;
+      border: 2px solid #3ab070;
+    }
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 24px;
+    }
+
+    .btn-circle {
+      border-radius: 12px;
+      padding: 6px 24px;
+      font-weight: 500;
+    }
+
+    
+    .info-p {
+      background-color: #efefef; /* default card bg */
+      color: #212529;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    
+    .info-p:hover {
+      background-color: #4B68FB; /* biru Bootstrap */
+      color: #fff;
+    }
+    
+    .info-p:hover p,
+    .info-p:hover h5 {
+      color: #fff;
+    }
+
+    
+    .dokumen-sidang {
+      background-color: #ebeef5; /* default */
+      color: #212529;        
+      transition: background-color 0.3s ease, color 0.3s ease;
+      
+    }
+
+    .dokumen-sidang:hover {
+      background-color: #0d6efd; /* biru saat hover */
+      color: #fff;
+    }
+
+    .dokumen-sidang:hover h5,
+    .dokumen-sidang:hover .file-link { 
+      border-color: #fff;
+      color: #fff
+    }
+
+    .file-link {
+      display: inline-block;
+      align-items: center;
+      gap: 8px;
+      padding:12px 12px;
+      border: 1px solid #212529;  /* border hitam default */
+      border-radius: 20px;
+      background-color: transparent;
+      color: #212529;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      cursor: pointer;
+      margin-right: 30px;
+      margin-bottom: 10px;
+    }
+
+    .file-link i {
+      transition: color 0.3s ease;
+      color: inherit;
+    }
+
+    .file-link.berkas-laporan:hover {
+      background-color: #fff;
+      border-color: #fff;  
+      color: #0d6efd;          
+    }
+
+    .file-link.berkas-laporan:hover i {
+      color: #0d6efd; 
+    }
+
+    .dokumen-sidang:hover .file-link:hover {
+      background-color: #fff;
+      color: #0d6efd;
+    }
+
+    .btn-kembali {
+            background-color: #4B68FB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: inline-flex; 
+            align-items: center; 
+            margin-top: 1cm;
+        }
+        .btn-kembali:hover {
+            position: relative;
+            background-color: white;
+            color: #4B68FB;
+        }
+        
+        .btn-kembali .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 25px; 
+            height: 25px; 
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 10px; 
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle {
+            background-color: #4B68FB;
+        }
+
+        .btn-kembali .icon-circle i {
+            color: #4B68FB;
+            font-size: 1rem; 
+            transition: color 0.3s ease;
+        }
+
+        .btn-kembali:hover .icon-circle i {
+            color: white;
+        }
+
+        .info-pengajuan {
+            position: relative;
+            background: rgb(235, 238, 245); 
+            border-radius: 30px; 
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: background-color 0.4s ease;
+            /* margin-right: 8px;
+            margin-left: 8px; */
+        }
+
+        .info-pengajuan::after { 
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px; 
+            height: 100%;
+            background-color: #4B68FB;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: width 0.4s ease;
+            z-index: 0;
+        }
+
+        .info-pengajuan:hover::after {
+            width: 100%;
+            border-radius: 20px;
+        }
+
+        .info-pengajuan .section {
+            z-index: 1;
+            color: #333;
+            transition: color 0.4s ease;
+        }
+
+        .info-pengajuan:hover .section {
+            color: white;
+        }
+
+        .info-pengajuan .section i {
+            margin-right: 10px; 
+            color: rgb(70, 70, 70);
+            transition: color 0.4s ease;
+            width: 20px; 
+            text-align: center;
+        }
+
+        .info-pengajuan:hover .section i{
+            color: white;
+        }
+
+         .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header .bodyHeading {
+            font-weight: bold;
+            font-size: 40px;
+            margin: 0;
+            color: #1a1a1a;
+        }
+
+
+  </style>
 </head>
 
 <body class="p-4">
@@ -323,7 +564,7 @@ if ($tipe === 'TA') {
         </div>
       </div>
 
-      <div class="card mb-3 position-relative">
+      <div class="card mb-3 dokumen-sidang position-relative">
         <h5 class="fw-semibold">Dokumen Sidang</h5>
         <div class="mt-2">
           <?php if (!empty($sidang['dokumen_path'])): ?>
