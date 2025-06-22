@@ -318,28 +318,20 @@ if ($tipe === 'TA') {
 
     
     .dokumen-sidang {
-      background-color: #ebeef5; /* default */
-      color: #212529;        
-      transition: background-color 0.3s ease, color 0.3s ease;
-      
+      background-color: #ebeef5;
+      color: #212529;
+      border-radius: 20px;
     }
 
-    .dokumen-sidang:hover {
-      background-color: #0d6efd; /* biru saat hover */
-      color: #fff;
-    }
-
-    .dokumen-sidang:hover h5,
-    .dokumen-sidang:hover .file-link { 
-      border-color: #fff;
-      color: #fff
+    .dokumen-sidang h5 {
+      margin-bottom: 12px;
     }
 
     .file-link {
       display: inline-block;
       align-items: center;
       gap: 8px;
-      padding:12px 12px;
+      padding:12px 20px;
       border: 1px solid #212529;  /* border hitam default */
       border-radius: 20px;
       background-color: transparent;
@@ -356,20 +348,15 @@ if ($tipe === 'TA') {
       color: inherit;
     }
 
-    .file-link.berkas-laporan:hover {
-      background-color: #fff;
-      border-color: #fff;  
-      color: #0d6efd;          
+    .file-link:hover {
+      background-color: #0d6efd;
+      color: #fff;
+      border-color: #0d6efd;
     }
 
-    .file-link.berkas-laporan:hover i {
-      color: #0d6efd; 
-    }
-
-    .dokumen-sidang:hover .file-link:hover {
-      background-color: #fff;
-      color: #0d6efd;
-    }
+    .file-link:hover i {
+      color: #fff;
+    }
 
     .btn-kembali {
             background-color: #4B68FB;
@@ -564,7 +551,7 @@ if ($tipe === 'TA') {
         </div>
       </div>
 
-      <div class="card mb-3 position-relative">
+      <div class="card mb-3 dokumen-sidang position-relative">
         <h5 class="fw-semibold">Dokumen Sidang</h5>
           <div class="mt-2">
             <?php if (!empty($sidang['dokumen_path'])): ?>
