@@ -181,26 +181,26 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     /* Style untuk link (tag <a>) di dalam item menu */
     .NavSide__sidebar-item a { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; text-decoration: none; color: rgb(252, 252, 252); height: 60px; box-sizing: border-box; }
     /* Memastikan link yang tidak aktif tetap berwarna putih */
-    .NavSide_sidebar-item:not(.NavSide_sidebar-item--active) a { color: rgb(252, 252, 252); }
-    .NavSide_sidebar-item:not(.NavSide_sidebar-item--active) a:hover { color: rgb(252, 252, 252); }
+    .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a { color: rgb(252, 252, 252); }
+    .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a:hover { color: rgb(252, 252, 252); }
     /* Style untuk judul/teks di dalam link menu */
     .NavSide__sidebar-title { white-space: normal; text-align: center; line-height: 1.5; }
     /* Style untuk item menu yang sedang aktif (warna latar menjadi putih) */
-    .NavSide_sidebar-item.NavSide_sidebar-item--active { background: #ffffff; }
+    .NavSide__sidebar-item.NavSide__sidebar-item--active { background: #ffffff; }
     /* Warna teks untuk link yang aktif menjadi biru */
-    .NavSide_sidebar-item.NavSide_sidebar-item--active a { color: #4B68FB !important; }
+    .NavSide__sidebar-item.NavSide__sidebar-item--active a { color: #4B68FB !important; }
     
     /* Efek Sudut Melengkung pada Item Aktif (trik dengan elemen 'b') */
     /* Elemen 'b' ini digunakan untuk membuat ilusi lengkungan di atas dan bawah item aktif */
-    .NavSide_sidebar-item b:nth-child(1), .NavSide_sidebar-item b:nth-child(2) { position: absolute; height: 20px; width: 100%; background: rgb(255, 255, 255); display: none; }
+    .NavSide__sidebar-item b:nth-child(1), .NavSide__sidebar-item b:nth-child(2) { position: absolute; height: 20px; width: 100%; background: rgb(255, 255, 255); display: none; }
     .NavSide__sidebar-item b:nth-child(1) { top: -20px; } /* Posisi lengkungan atas */
     .NavSide__sidebar-item b:nth-child(2) { bottom: -20px; } /* Posisi lengkungan bawah */
     /* Pseudo-elemen '::before' untuk menciptakan bentuk lengkungannya dengan border-radius */
-    .NavSide_sidebar-item b:nth-child(1)::before, .NavSide_sidebar-item b:nth-child(2)::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #4B68FB; display: block; }
+    .NavSide__sidebar-item b:nth-child(1)::before, .NavSide__sidebar-item b:nth-child(2)::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #4B68FB; display: block; }
     .NavSide__sidebar-item b:nth-child(1)::before { border-bottom-right-radius: 20px; }
     .NavSide__sidebar-item b:nth-child(2)::before { border-top-right-radius: 20px; }
     /* Menampilkan elemen 'b' (lengkungan) hanya pada item yang aktif */
-    .NavSide_sidebar-item.NavSidesidebar-item--active b:nth-child(1), .NavSidesidebar-item.NavSide_sidebar-item--active b:nth-child(2) { display: block; }
+    .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1), .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) { display: block; }
 
     /* --- KONTEN UTAMA & KOMPONENNYA --- */
     /* Kontainer untuk konten utama halaman */
@@ -301,14 +301,14 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     @media (max-width: 700px) {
         /* Sidebar menjadi slide-in menu (tersembunyi secara default) */
         .NavSide__sidebar { width: 280px; transform: translateX(-280px); border-left-width: 0; z-index: 1040; padding-top: 35px; }
-        .NavSide_sidebar.NavSide_sidebar--active-mobile { transform: translateX(0); box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); }
+        .NavSide__sidebar.NavSide__sidebar--active-mobile { transform: translateX(0); box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); }
         .NavSide__sidebar-brand { padding: 10% 5% 50% 5%; }
         .NavSide__sidebar-brand img { width: 90%; }
         .NavSide__sidebar-nav { padding-top: 3%; }
         .NavSide__sidebar-item a { height: 50px; }
         /* Tombol Toggle (hamburger menu) ditampilkan */
         .NavSide__toggle { display: block; }
-        .NavSide_toggle.NavSide_toggle--active { transform: translateX(280px); }
+        .NavSide__toggle.NavSide__toggle--active { transform: translateX(280px); }
         /* Konten utama memenuhi seluruh layar */
         #page-content-wrapper { margin-left: 0; }
         /* Topbar ditampilkan di mobile */
@@ -334,9 +334,9 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /></div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide_sidebar-item NavSidesidebar-item--active"><b></b><b></b><a href="dEvaluasiSidang.php"><span class="fw-semibold NavSide_sidebar-title">Evaluasi</span></a></li>
-                <li class="NavSide_sidebar-item"><b></b><b></b><a href="dDokumenRevisi.php"><span class="fw-semibold NavSide_sidebar-title">Dokumen</span></a></li>
-                <li class="NavSide_sidebar-item"><b></b><b></b><a href="dNilaiAkhir.php"><span class="fw-semibold NavSide_sidebar-title">Nilai Akhir</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="dEvaluasiSidang.php"><span class="fw-semibold NavSide__sidebar-title">Evaluasi</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="dDokumenRevisi.php"><span class="fw-semibold NavSide__sidebar-title">Dokumen</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="dNilaiAkhir.php"><span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span></a></li>
             </ul>
         </div>
         <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
