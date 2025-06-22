@@ -4,7 +4,7 @@ require "../../koneksi.php";
 // 1. Ambil ID dari URL
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("Error: ID Sidang tidak valid.");
-}
+} 
 $id_sidang = (int)$_GET['id'];
 
 // Variabel penampung
@@ -781,7 +781,7 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="aDetailSidangTA.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+                    <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>

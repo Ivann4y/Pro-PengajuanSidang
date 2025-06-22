@@ -1,0 +1,95 @@
+  table {
+      width: 100%;
+      border-spacing: 0 10px;
+      border-collapse: separate;
+    }
+
+    th {
+      border-bottom: black 2px solid;
+      border-radius: 0px 0px 0px 0px;
+    }
+
+    th,
+    td {
+      padding: 12px 25px;
+      font-family: "Poppins";
+      font-weight: 400;
+      vertical-align: middle;
+    }
+
+    tr.isiTabel {
+      background-color: #F1F1F1;
+      border-color: #F1F1F1;
+      border-radius: 10px;
+    }
+
+    
+
+   
+
+    #tidakbacabutton:hover,
+    #bacabutton:hover {
+      opacity: 0.8;
+    }
+
+    #tidakbacabutton:hover {
+      background-color: #FD7D7D;
+      /* Red */
+      border-color: #FD7D7D;
+      color: white;
+    }
+
+    .modal-header {
+      justify-content: center;
+      border-bottom: none !important;
+    }
+
+    .modal-header .modal-title {
+      width: 100%;
+      text-align: center;
+    }
+
+    
+
+    th:nth-child(1) {
+      width: 20%;
+      text-align: center;
+    }
+
+    th:nth-child(5) {
+      width: 10%;
+      text-align: center;
+    }
+
+    td:nth-child(1) {
+      width: 20%;
+      text-align: center;
+      border-radius: 20px 0px 0px 20px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 30%;
+      text-align: center;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 20%;
+      text-align: center;
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 20%;
+      text-align: center;
+    }
+
+    td:nth-child(5) {
+      width: 10%;
+      text-align: center;
+      border-radius: 0px 20px 20px 0px;
+    }
+    #BelumDibaca td span {
+  cursor: pointer;
+    }

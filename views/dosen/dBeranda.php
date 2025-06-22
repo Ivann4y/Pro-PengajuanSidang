@@ -1,9 +1,9 @@
 <?php
-session_start();
-if ($_SESSION['role'] !== 'dosen') {
-    header("Location: ../../index.php");
-    exit();
-}
+// session_start();
+// if ($_SESSION['role'] !== 'dosen') {
+//     header("Location: ../../index.php");
+//     exit();
+// }
 ?>
 
 <!DOCTYPE html>
@@ -284,7 +284,7 @@ if ($_SESSION['role'] !== 'dosen') {
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            max-height: 57vh; 
+            max-height: 52vh; 
             overflow-y: auto; 
             padding-bottom: 1.25rem; 
         }

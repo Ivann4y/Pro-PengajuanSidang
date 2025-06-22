@@ -1,0 +1,294 @@
+/* General styles for the page */
+       table {
+            border-spacing: 0 10px;
+            border-collapse: separate;
+            width: 100%;
+        }
+
+        thead {
+            border-bottom: 2px solid rgb(0, 0, 0) !important;
+        }
+
+        thead th {
+            padding: 12px 15px;
+            text-align: left;
+        }
+        thead th:nth-child(1) {
+            text-align: center;
+            width: 5%;
+        }
+
+        thead th:nth-child(2) {
+            width: 30%;
+        }
+
+        thead th:nth-child(3) {
+            width: 20%;
+        }
+
+        thead th:nth-child(4) {
+            width: 20%;
+        }
+
+        thead th:nth-child(5) {
+            width: 5%;
+            text-align: center;
+        }
+
+        .isiTabel td {
+            padding: 12px 15px;
+            font-weight: 400;
+            vertical-align: middle;
+        }
+
+        .isiTabel td:nth-child(1) {
+            border-radius: 20px 0 0 20px;
+            -moz-border-radius: 20px 0 0 20px;
+            text-align: center;
+        }
+
+        .isiTabel td:nth-child(5) {
+            border-radius: 0 20px 20px 0;
+            -moz-border-radius: 0 20px 20px 0;
+            text-align: center;
+        }
+
+        /* Add jadiBiru class styling */
+        .jadiBiru {
+            background-color: rgb(235, 238, 245);
+            transition: all 0.3s ease;
+        }
+
+        .jadiBiru:hover {
+            background-color: #4B68FB;
+            color: white;
+            cursor: pointer;
+        }
+
+        .action-column {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            padding-right: 15px;
+        }
+
+        .tambah-sidang-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 25px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            -moz-border-radius: 20px;
+            background-color: rgb(67, 54, 240); 
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: auto;
+            min-width: 160px;
+        }
+
+        .tambah-sidang-btn:hover {
+            background-color: rgb(57, 44, 210);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .action-column {
+                display: none;
+            }
+
+            .mobile-add-button-container {
+                display: block;
+                margin: 15px 0;
+                padding: 0 15px;
+            }
+
+            .mobile-add-button-container .tambah-sidang-btn {
+                width: fit-content;
+            }
+
+            .header-icons .tambah-sidang-btn {
+                display: none;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-add-button-container {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .table-responsive {
+                padding: 0 5px;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            .isiTabel td {
+                font-size: 0.85rem;
+                padding: 10px 12px;
+            }
+        }
+
+        @media (max-width: 375px) {
+            table {
+                min-width: 650px;
+            }
+
+            .isiTabel td {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+        }
+
+        .btn-primary { 
+            background-color: rgb(67, 54, 240);
+            border-color: rgb(67, 54, 240);
+        }
+
+        .btn-primary:hover {
+            background-color: rgb(57, 44, 210);
+            border-color: rgb(57, 44, 210);
+        }
+
+        .dropdown-menu .dropdown-item {
+            font-family: "Poppins", sans-serif; 
+        }
+
+        /* Edit icon styling */
+        /* Menggunakan Font Awesome sekarang */
+        .fa-file-signature {
+            color: rgb(67, 54, 240);
+            transition: color 0.3s ease;
+        }
+
+        tr.jadiBiru:hover .fa-file-signature {
+            color: white;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icons a {
+            color: #333;
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+
+        .header-icons a:hover {
+            color: rgb(67, 54, 240);
+        }
+
+        .header-icons .tambah-sidang-btn {
+            padding: 6px 15px;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+
+        .modal-footer .btn-danger {
+            background-color: #FD7D7D;
+            border-color: #FD7D7D;
+        }
+
+        .modal-footer .btn-success {
+            background-color: #4FD382;
+            border-color: #4FD382;
+        }
+
+        h1.page-title {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: black;
+        }
+
+        .pagination-container {
+            margin-top: 2rem;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .pagination {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #4B68FB;
+            border-color: #4B68FB;
+            color: white;
+            z-index: 2;
+        }
+
+        .pagination .page-link {
+            color: #4B68FB;
+        }
+
+        .pagination .page-link:hover {
+            color: #2c45c9;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 0;
+                padding: 0 10px;
+            }
+
+            .pagination-container {
+                position: sticky;
+                left: 0;
+                right: 0;
+                background: white;
+                z-index: 1;
+                padding: 10px 0;
+            }
+
+            .pagination {
+                position: relative;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            table {
+                min-width: 700px;
+            }
+
+            .pagination .page-item .page-link {
+                padding: 0.35rem 0.65rem;
+                min-width: 32px;
+                font-size: 0.9rem;
+            }
+
+            .tambah-sidang-btn {
+                width: 100%;
+                margin-bottom: 0px;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .pagination .page-item:not(:first-child):not(:last-child):not(.active) {
+                display: none;
+            }
+        }
