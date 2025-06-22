@@ -8,7 +8,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
     exit();
 }
 
-$role = "Admin";
+$role = "admin";
 ?>
 
 <!DOCTYPE html>
