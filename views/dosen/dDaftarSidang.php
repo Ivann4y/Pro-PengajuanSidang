@@ -1,6 +1,6 @@
 <?php
 // <-- TETAP SAMA -->
-// session_start();
+session_start();
 include "../../koneksi.php";
 
 if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
