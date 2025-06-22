@@ -1,4 +1,3 @@
-
 <?php
 include '../../koneksi.php';
 ?>
@@ -247,251 +246,11 @@ if ($tipe === 'TA') {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-      <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css" />
+  <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css" />
   <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="../../extra/style.css">
+  <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css">
   <title>Detail Pengajuan</title>
-  <style>
-    body {
-      font-family: 'Poppins';
-    }
-
-    .btn-circle {
-      border-radius: 12px;
-      padding: 6px 24px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      margin-top: 1cm;
-    }
-
-    .btn-danger.btn-circle {
-      background-color: #FD7D7D;
-      color: white;
-      border: 2px solid #FD7D7D;
-    }
-
-    .btn-danger.btn-circle:hover {
-      background-color: transparent;
-      color: #e56a6a;
-      border: 2px solid #e56a6a;
-    }
-
-    .btn-success.btn-circle {
-      background-color: #4FD382;
-      color: white;
-      border: 2px solid #4FD382;
-    }
-
-    .btn-success.btn-circle:hover {
-      background-color: transparent;
-      color: #3ab070;
-      border: 2px solid #3ab070;
-    }
-    .card {
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      padding: 24px;
-    }
-
-    .btn-circle {
-      border-radius: 12px;
-      padding: 6px 24px;
-      font-weight: 500;
-    }
-
-    
-    .info-p {
-      background-color: #efefef; /* default card bg */
-      color: #212529;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    
-    .info-p:hover {
-      background-color: #4B68FB; /* biru Bootstrap */
-      color: #fff;
-    }
-    
-    .info-p:hover p,
-    .info-p:hover h5 {
-      color: #fff;
-    }
-
-    
-    .dokumen-sidang {
-      background-color: #ebeef5; /* default */
-      color: #212529;        
-      transition: background-color 0.3s ease, color 0.3s ease;
-      
-    }
-
-    .dokumen-sidang:hover {
-      background-color: #0d6efd; /* biru saat hover */
-      color: #fff;
-    }
-
-    .dokumen-sidang:hover h5,
-    .dokumen-sidang:hover .file-link { 
-      border-color: #fff;
-      color: #fff
-    }
-
-    .file-link {
-      display: inline-block;
-      align-items: center;
-      gap: 8px;
-      padding:12px 12px;
-      border: 1px solid #212529;  /* border hitam default */
-      border-radius: 20px;
-      background-color: transparent;
-      color: #212529;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      cursor: pointer;
-      margin-right: 30px;
-      margin-bottom: 10px;
-    }
-
-    .file-link i {
-      transition: color 0.3s ease;
-      color: inherit;
-    }
-
-    .file-link.berkas-laporan:hover {
-      background-color: #fff;
-      border-color: #fff;  
-      color: #0d6efd;          
-    }
-
-    .file-link.berkas-laporan:hover i {
-      color: #0d6efd; 
-    }
-
-    .dokumen-sidang:hover .file-link:hover {
-      background-color: #fff;
-      color: #0d6efd;
-    }
-
-    .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: inline-flex; 
-            align-items: center; 
-            margin-top: 1cm;
-        }
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-        
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 25px; 
-            height: 25px; 
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px; 
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-            font-size: 1rem; 
-            transition: color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
-
-        .info-pengajuan {
-            position: relative;
-            background: rgb(235, 238, 245); 
-            border-radius: 30px; 
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-            overflow: hidden;
-            transition: background-color 0.4s ease;
-            /* margin-right: 8px;
-            margin-left: 8px; */
-        }
-
-        .info-pengajuan::after { 
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px; 
-            height: 100%;
-            background-color: #4B68FB;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-            transition: width 0.4s ease;
-            z-index: 0;
-        }
-
-        .info-pengajuan:hover::after {
-            width: 100%;
-            border-radius: 20px;
-        }
-
-        .info-pengajuan .section {
-            z-index: 1;
-            color: #333;
-            transition: color 0.4s ease;
-        }
-
-        .info-pengajuan:hover .section {
-            color: white;
-        }
-
-        .info-pengajuan .section i {
-            margin-right: 10px; 
-            color: rgb(70, 70, 70);
-            transition: color 0.4s ease;
-            width: 20px; 
-            text-align: center;
-        }
-
-        .info-pengajuan:hover .section i{
-            color: white;
-        }
-
-         .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-            margin-bottom: 30px;
-        }
-
-        .dashboard-header .bodyHeading {
-            font-weight: bold;
-            font-size: 40px;
-            margin: 0;
-            color: #1a1a1a;
-        }
-
-
-  </style>
 </head>
 
 <body class="p-4">
@@ -566,162 +325,162 @@ if ($tipe === 'TA') {
 
       <div class="card mb-3 position-relative">
         <h5 class="fw-semibold">Dokumen Sidang</h5>
-          <div class="mt-2">
-            <?php if (!empty($sidang['dokumen_path'])): ?>
-              <a href="../../uploadtesting<?php echo htmlspecialchars($sidang['dokumen_path']); ?>" download
-                class="file-pill text-decoration-none berkas-laporan file-link">
-                <i class="fa-solid fa-file-lines"></i>
-                <?php echo htmlspecialchars(basename($sidang['dokumen_path'])); ?>
-              </a>
-            <?php endif; ?>
+        <div class="mt-2">
+          <?php if (!empty($sidang['dokumen_path'])): ?>
+            <a class="text-decoration-none base-tombol berkas-laporan"
+              href="../../uploadtesting<?php echo htmlspecialchars($sidang['dokumen_path']); ?>" download>
+              <i class="fa-solid fa-file-lines"></i>
+              <?php echo htmlspecialchars(basename($sidang['dokumen_path'])); ?>
+            </a>
+          <?php endif; ?>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <button class="btn-kembali" onclick="location.href='dpengajuan.php'">
+          <span class="icon-circle"> <i class="fa-solid fa-arrow-left"></i></span>Kembali</button>
+        <?php if (isset($_SESSION['nomor_dosen'])): ?>
+          <div class="d-flex justify-content-between ">
+
+            <button class="btn btn-danger btn-circle me-2" id="btnTolak" data-bs-toggle="#modalTolak">Tolak</button>
+            <form method="POST" style="display: inline;">
+              <button type="submit" name="approve" class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
+            </form>
+          </div>
+      </div>
+
+      <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content text-center p-4">
+            <img src="../../assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
+            <h5 class="modal-title fw-bold" id="notifModalLabel">Alasan Penolakan</h5>
           </div>
         </div>
+      </div>
+    <?php endif; ?>
 
-          <div class="d-flex justify-content-between">
-            <button class="btn-kembali" onclick="location.href='dpengajuan.php'">
-              <span class="icon-circle"> <i class="fa-solid fa-arrow-left"></i></span>Kembali</button>
-            <?php if (isset($_SESSION['nomor_dosen'])): ?>
-              <div class="d-flex justify-content-between ">
-
-                <button class="btn btn-danger btn-circle me-2" id="btnTolak" data-bs-toggle="#modalTolak">Tolak</button>
-                <form method="POST" style="display: inline;">
-                  <button type="submit" name="approve" class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
-                </form>
-              </div>
+    <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+          <div class="modal-header border-0 justify-content-center">
+            <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
           </div>
-
-          <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content text-center p-4">
-                <img src="../../assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
-                <h5 class="modal-title fw-bold" id="notifModalLabel">Alasan Penolakan</h5>
-              </div>
-            </div>
-          </div>
-        <?php endif; ?>
-
-        <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-              <div class="modal-header border-0 justify-content-center">
-                <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
-              </div>
-              <div class="modal-body">
-                <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menyetujui?</p>
-                <div class="d-flex justify-content-between px-5">
-                  <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
-                  <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn">Lanjutkan</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal fade" id="modalTolak" tabindex="-1" aria-labelledby="modalTolakLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-              <div class="modal-header border-0 justify-content-center">
-                <h4 class="modal-title fw-bold" id="modalTolakLabel" style="font-size: 24px;">Perhatian</h4>
-              </div>
-              <div class="modal-body">
-                <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menolak?</p>
-                <div class="mb-4 px-3">
-                  <textarea id="alasanTolak" class="form-control mb-4" placeholder="Masukkan alasan penolakan" rows="3"></textarea>
-                  <small id="errorAlasan" class="text-danger d-none">Silakan isi alasan terlebih dahulu.</small>
-                </div>
-                <div class="d-flex justify-content-between px-5">
-                  <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
-                  <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="tolakBtn">Lanjutkan</button>
-                </div>
-              </div>
+          <div class="modal-body">
+            <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menyetujui?</p>
+            <div class="d-flex justify-content-between px-5">
+              <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+              <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn">Lanjutkan</button>
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Modal keluar-->
-        <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div style="background-color: rgb(67, 54, 240);">
-                <div class="modal-header">
-                  <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                </div>
-              </div>
-              <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
-              <div class="modal-footer justify-content-center border-0">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-              </div>
+    <div class="modal fade" id="modalTolak" tabindex="-1" aria-labelledby="modalTolakLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+          <div class="modal-header border-0 justify-content-center">
+            <h4 class="modal-title fw-bold" id="modalTolakLabel" style="font-size: 24px;">Perhatian</h4>
+          </div>
+          <div class="modal-body">
+            <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menolak?</p>
+            <div class="mb-4 px-3">
+              <textarea id="alasanTolak" class="form-control mb-4" placeholder="Masukkan alasan penolakan" rows="3"></textarea>
+              <small id="errorAlasan" class="text-danger d-none">Silakan isi alasan terlebih dahulu.</small>
+            </div>
+            <div class="d-flex justify-content-between px-5">
+              <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+              <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="tolakBtn">Lanjutkan</button>
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <script>
-          const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
-          const modalTolak = new bootstrap.Modal(document.getElementById('modalTolak'));
+    <!-- Modal keluar-->
+    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div style="background-color: rgb(67, 54, 240);">
+            <div class="modal-header">
+              <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+            </div>
+          </div>
+          <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
+          <div class="modal-footer justify-content-center border-0">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-          // Buka modal konfirmasi ketika klik tombol Setujui
-          document.getElementById('btnSetujui').addEventListener('click', function() {
-            modalKonfirmasi.show();
+    <script>
+      const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
+      const modalTolak = new bootstrap.Modal(document.getElementById('modalTolak'));
+
+      // Buka modal konfirmasi ketika klik tombol Setujui
+      document.getElementById('btnSetujui').addEventListener('click', function() {
+        modalKonfirmasi.show();
+      });
+
+      // Buka modal tolak ketika klik tombol Tolak
+      document.getElementById('btnTolak').addEventListener('click', function() {
+        modalTolak.show();
+      });
+
+      // Jika tekan "Lanjutkan" di modal Setujui
+      document.getElementById('submitBtn').addEventListener('click', function() {
+        Swal.fire({
+          title: 'Pengajuan Berhasil Dikirim!',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#4B68FB'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            history.back();
+          }
+        });
+      });
+
+      document.getElementById('tolakBtn').addEventListener('click', function() {
+        const alasan = document.getElementById('alasanTolak').value.trim();
+
+        if (alasan === '') {
+          Swal.fire({
+            title: 'Gagal',
+            text: 'Silakan isi alasan penolakan terlebih dahulu.',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4B68FB'
           });
+          return;
+        }
 
-          // Buka modal tolak ketika klik tombol Tolak
-          document.getElementById('btnTolak').addEventListener('click', function() {
-            modalTolak.show();
-          });
+        Swal.fire({
+          title: 'Pengajuan Ditolak',
+          text: 'Pengajuan sidang berhasil ditolak.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#4B68FB'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            console.log("Alasan penolakan:", alasan);
+            history.back();
+          }
+        });
+      });
 
-          // Jika tekan "Lanjutkan" di modal Setujui
-          document.getElementById('submitBtn').addEventListener('click', function() {
-            Swal.fire({
-              title: 'Pengajuan Berhasil Dikirim!',
-              icon: 'success',
-              confirmButtonText: 'OK',
-              confirmButtonColor: '#4B68FB'
-            }).then((result) => {
-              if (result.isConfirmed) {
-                history.back();
-              }
-            });
-          });
+      // Sidebar Toggle Logic
+      let menuToggle = document.querySelector(".NavSide__toggle");
+      let sidebar = document.getElementById("main-sidebar");
 
-          document.getElementById('tolakBtn').addEventListener('click', function() {
-            const alasan = document.getElementById('alasanTolak').value.trim();
-
-            if (alasan === '') {
-              Swal.fire({
-                title: 'Gagal',
-                text: 'Silakan isi alasan penolakan terlebih dahulu.',
-                icon: 'warning',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-              });
-              return;
-            }
-
-            Swal.fire({
-              title: 'Pengajuan Ditolak',
-              text: 'Pengajuan sidang berhasil ditolak.',
-              icon: 'success',
-              confirmButtonText: 'OK',
-              confirmButtonColor: '#4B68FB'
-            }).then((result) => {
-              if (result.isConfirmed) {
-                console.log("Alasan penolakan:", alasan);
-                history.back();
-              }
-            });
-          });
-
-          // Sidebar Toggle Logic
-          let menuToggle = document.querySelector(".NavSide__toggle");
-          let sidebar = document.getElementById("main-sidebar");
-
-          menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-          };
-        </script>
-        <script src="../../assets/js/main.js"></script>
+      menuToggle.onclick = function() {
+        menuToggle.classList.toggle("NavSide__toggle--active");
+        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+      };
+    </script>
+    <script src="../../assets/js/main.js"></script>
 </body>
 
 </html>

@@ -1,82 +1,5 @@
 body {
-  font-family: "Poppins";
-}
-
-/* File Button Styles */
-.file-button {
-  display: inline-flex;
-  align-items: center;
-  background-color: rgb(235, 238, 245);
-  border-radius: 20px;
-  padding: 12px 20px;
-  margin-right: 15px;
-  margin-bottom: 15px;
-  text-decoration: none;
-  color: #4b68fb;
-  font-weight: 500;
-  font-size: 1rem;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.file-button:hover {
-  background-color: #4b68fb;
-  color: white;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.file-button i {
-  font-size: 1.25rem;
-  margin-right: 10px;
-  color: #4b68fb;
-  transition: color 0.2s ease;
-}
-
-.file-button:hover i {
-  color: white;
-}
-
-/* Penyesuaian responsif untuk tombol berkas */
-@media (max-width: 576px) {
-  .file-button {
-    flex-basis: 100;
-    width: 100%;
-    display: flex;
-    margin-right: 0;
-  }
-}
-
-.btn-circle {
-  border-radius: 12px;
-  padding: 6px 24px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  margin-top: 1cm;
-}
-
-.btn-danger.btn-circle {
-  background-color: #fd7d7d;
-  color: white;
-  border: 2px solid #fd7d7d;
-}
-
-.btn-danger.btn-circle:hover {
-  background-color: transparent;
-  color: #e56a6a;
-  border: 2px solid #e56a6a;
-}
-
-.btn-success.btn-circle {
-  background-color: #4fd382;
-  color: white;
-  border: 2px solid #4fd382;
-}
-
-.btn-success.btn-circle:hover {
-  background-color: transparent;
-  color: #3ab070;
-  border: 2px solid #3ab070;
+  font-family: 'Poppins';
 }
 
 .card {
@@ -89,56 +12,33 @@ body {
   border-radius: 12px;
   padding: 6px 24px;
   font-weight: 500;
-}
-
-.info-p {
-  background-color: #efefef;
-  /* default card bg */
-  color: #212529;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.info-p:hover {
-  background-color: #4b68fb;
-  /* biru Bootstrap */
-  color: #fff;
-}
-
-.info-p:hover p,
-.info-p:hover h5 {
-  color: #fff;
-}
-
-/* Untuk semua tombol file-link */
-.file-link {
-  display: inline-block;
-  padding: 12px 12px;
-  border: 1px solid #212529;
-  border-radius: 20px;
-  background-color: transparent;
-  color: #212529;
+  margin-top: 1cm;
   transition: all 0.3s ease;
-  text-decoration: none;
-  cursor: pointer;
-  margin-right: 30px;
-  margin-bottom: 10px;
-  box-sizing: border-box;
 }
 
-/* Hover umum */
-.file-link:hover {
-  background-color: #fff;
-  color: #0d6efd;
-  outline: none;
+.btn-danger.btn-circle {
+  background-color: #fd7d7d;
+  color: white;
+  border: 2px solid #fd7d7d;
+}
+.btn-danger.btn-circle:hover {
+  background-color: transparent;
+  color: #e56a6a;
+  border: 2px solid #e56a6a;
 }
 
-/* Hover khusus berkas-laporan */
-.file-link.berkas-laporan:hover {
-  background-color: #0d6efd;
-  border-color: transparent;
-  color: #fff;
+.btn-success.btn-circle {
+  background-color: #4fd382;
+  color: white;
+  border: 2px solid #4fd382;
+}
+.btn-success.btn-circle:hover {
+  background-color: transparent;
+  color: #3ab070;
+  border: 2px solid #3ab070;
 }
 
+/* Tombol Kembali */
 .btn-kembali {
   background-color: #4b68fb;
   color: white;
@@ -154,13 +54,10 @@ body {
   align-items: center;
   margin-top: 1cm;
 }
-
 .btn-kembali:hover {
-  position: relative;
   background-color: white;
   color: #4b68fb;
 }
-
 .btn-kembali .icon-circle {
   display: inline-flex;
   align-items: center;
@@ -172,21 +69,57 @@ body {
   margin-right: 10px;
   transition: background-color 0.3s ease;
 }
-
 .btn-kembali:hover .icon-circle {
   background-color: #4b68fb;
 }
-
 .btn-kembali .icon-circle i {
   color: #4b68fb;
   font-size: 1rem;
   transition: color 0.3s ease;
 }
-
 .btn-kembali:hover .icon-circle i {
   color: white;
 }
 
+/* Tombol File (base-tombol) */
+.base-tombol {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 12px;
+  border: 1px solid #212529;
+  border-radius: 20px;
+  background-color: transparent;
+  color: #212529;
+  text-decoration: none;
+  cursor: pointer;
+  margin-right: 30px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+.base-tombol:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+.base-tombol i {
+  margin-right: 10px;
+  transition: color 0.3s ease;
+}
+.base-tombol:hover i {
+  color: #fff;
+}
+
+/* Responsif tombol */
+@media (max-width: 576px) {
+  .base-tombol {
+    width: 100%;
+    display: flex;
+    margin-right: 0;
+  }
+}
+
+/* Info Pengajuan */
 .info-pengajuan {
   position: relative;
   background: rgb(235, 238, 245);
@@ -199,10 +132,7 @@ body {
   margin-bottom: 25px;
   overflow: hidden;
   transition: background-color 0.4s ease;
-  /* margin-right: 8px;
-            margin-left: 8px; */
 }
-
 .info-pengajuan::after {
   content: "";
   position: absolute;
@@ -216,22 +146,18 @@ body {
   transition: width 0.4s ease;
   z-index: 0;
 }
-
 .info-pengajuan:hover::after {
   width: 100%;
   border-radius: 20px;
 }
-
 .info-pengajuan .section {
   z-index: 1;
   color: #333;
   transition: color 0.4s ease;
 }
-
 .info-pengajuan:hover .section {
   color: white;
 }
-
 .info-pengajuan .section i {
   margin-right: 10px;
   color: rgb(70, 70, 70);
@@ -239,11 +165,11 @@ body {
   width: 20px;
   text-align: center;
 }
-
 .info-pengajuan:hover .section i {
   color: white;
 }
 
+/* Header Halaman */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -251,7 +177,6 @@ body {
   padding: 0 15px;
   margin-bottom: 30px;
 }
-
 .dashboard-header .bodyHeading {
   font-weight: bold;
   font-size: 40px;
