@@ -398,7 +398,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                 <div class="form-card">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h4>Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
-=======
+
                 <form id="evaluasiForm" method="POST" action="dEvaluasiSidang.php?id_sidang=<?php echo $id_sidang; ?>">
                     <div class="info-card">
                         <div class="section">
@@ -429,7 +429,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                                 <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
                             </div>
                         </div>
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
+
                     </div>
                     <h3>Nilai Sidang (Sementara)</h3>
                     <div class="form-card">
@@ -455,40 +455,24 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                         </div>
                         <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                     </div>
-<<<<<<< HEAD
-                    <div class="form-group-custom">
-                        <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-                        <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Masukan Catata0n Evaluasi"><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
-                    </div>
+
+                    
                     <!-- Error message for evaluation notes -->
                     <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                 </div>
 
                 <!-- Button group at the bottom of the page -->
+
+                <!-- pp -->
                 
-                <div class="button-group-bottom">
-                    <!-- 'Kembali' (Back) button -->
-                    <button type="button" class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
-                        <span class="icon-circle">
-                            <i class="fa-solid fa-arrow-left"></i>
-                        </span>
-                        Kembali
-                    </button>
-                     <form id="formEvaluasi" action="dEvaluasiSidang.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>" method="POST">
-                    <!-- 'Kirim' (Submit) button -->
-                    <button class="btn-kirim" id="btnKirim">
-                        Kirim
-                    </button>
-                      </form>
-                </div>
   
-=======
+
                     <div class="button-group-bottom">
                         <button type="button" class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'"><span class="icon-circle"><i class="fa-solid fa-arrow-left"></i></span> Kembali</button>
                         <button type="button" class="btn-kirim" id="btnKirim">Kirim</button>
                     </div>
                 </form>
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
+
             </main>
         </div>
     </div>
@@ -506,127 +490,138 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            let menuToggle = document.querySelector(".NavSide__toggle");
-            let sidebar = document.getElementById("main-sidebar");
-            if (menuToggle && sidebar) {
-                menuToggle.onclick = function() {
-                    menuToggle.classList.toggle("NavSide__toggle--active");
-                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                };
-            }
-            let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-            if (listItems.length > 0) {
-                listItems.forEach(item => {
-                    item.addEventListener('click', function (event) { 
-                        listItems.forEach(innerItem => {
-                            innerItem.classList.remove("NavSide__sidebar-item--active");
-                        });
-                        this.classList.add("NavSide__sidebar-item--active");
-                    });
-                });
-                const currentPath = window.location.pathname.split('/').pop();
-                listItems.forEach(item => {
-                    const link = item.querySelector('a');
-                    if (link) {
-                        const linkHref = link.getAttribute('href'); 
-                        if (linkHref && linkHref.toLowerCase().includes(currentPath.toLowerCase())) {
-                            item.classList.add("NavSide__sidebar-item--active");
-                        }
-                    }
-                });
-            }
-            const btnKirim = document.getElementById('btnKirim');
-            const nilaiLaporan = document.getElementById('nilaiLaporan');
-            const materiPresentasi = document.getElementById('materiPresentasi');
-            const nilaiPenyampaian = document.getElementById('nilaiPenyampaian');
-            const nilaiProyek = document.getElementById('nilaiProyek');
-            const catatanEvaluasi = document.getElementById('catatanEvaluasi');
-            const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage');
-            const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage');
-            const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
-            if (confirmationKirimModalElement) {
-                const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
-                btnKirim.addEventListener('click', function(event) {
-                    let isValid = true;
-                    nilaiSidangError.style.display = 'none';
-                    catatanEvaluasiError.style.display = 'none';
-                    if (nilaiLaporan.value.trim() === '' || materiPresentasi.value.trim() === '' || nilaiPenyampaian.value.trim() === '' || nilaiProyek.value.trim() === '') {
-                        nilaiSidangError.style.display = 'block';
-                        isValid = false;
-                    }
-                    if (catatanEvaluasi.value.trim() === '') {
-                        catatanEvaluasiError.style.display = 'block';
-                        isValid = false;
-                    }
-                    if (!isValid) {
-                        event.preventDefault();
-                        Swal.fire({
-                            title: 'Harap mengisi kolom nilai dan catatan terlebih dahulu sebelum mengirim!',
-                            icon: 'error',
-                            confirmButtonText: 'OK',
-                            confirmButtonColor: '#4B68FB'
-                        });
-                    } else {
-                        const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
-                        confirmationKirimModal.show();
-                    }
-                });
-                btnKonfirmasiKirim.addEventListener('click', function() {
-                    const confirmationKirimModalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
-                    if (confirmationKirimModalInstance) {
-                        confirmationKirimModalInstance.hide();
-                    }
-                    Swal.fire({
-                        title: 'Evaluasi Sidang Berhasil Dikirim!',
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#4B68FB'
-                    }).then(() => {
-                        document.getElementById('evaluasiForm').submit();
-                    });
-<<<<<<< HEAD
-                } else {
-                    // If validation succeeds, show the confirmation modal
-                    const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
-                    confirmationKirimModal.show();
-                }
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+    // --- Bagian 1: Logika Sidebar (Tidak ada perubahan, sudah benar) ---
+    let menuToggle = document.querySelector(".NavSide__toggle");
+    let sidebar = document.getElementById("main-sidebar");
+    if (menuToggle && sidebar) {
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+    }
 
-            // Event listener for the 'Kirimkan' (Confirm Submit) button in the modal
-            btnKonfirmasiKirim.addEventListener('click', function() {
-
-                 document.getElementById('formEvaluasi').submit();
-                // Hide the confirmation modal
-                const confirmationKirimModalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
-                if (confirmationKirimModalInstance) {
-                    confirmationKirimModalInstance.hide();
-
-                }
-                
-
-                // Display success SweetAlert
-                Swal.fire({
-                    title: 'Evaluasi Sidang Berhasil Dikirim!',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                }).then(() => {
-                    // Redirect to the daftar sidang page after SweetAlert is closed
-                    window.location.href = 'dDaftarSidang.php';
-=======
+    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+    if (listItems.length > 0) {
+        // Menambahkan event listener untuk mengubah item aktif saat diklik
+        listItems.forEach(item => {
+            item.addEventListener('click', function(event) {
+                listItems.forEach(innerItem => {
+                    innerItem.classList.remove("NavSide__sidebar-item--active");
                 });
-            }
-            document.querySelectorAll('.input-nilai').forEach(function(input){
-                input.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.value.length > 3) this.value = this.value.slice(0, 3);
-                    if (this.value.length > 1 && this.value.startsWith('0')) this.value = this.value.replace(/^0+/, '');
-                    if (parseInt(this.value) > 100) this.value = '100';
-
-                });
+                this.classList.add("NavSide__sidebar-item--active");
             });
         });
+
+        // Mengatur item aktif berdasarkan URL saat halaman dimuat
+        const currentPath = window.location.pathname.split('/').pop();
+        listItems.forEach(item => {
+            const link = item.querySelector('a');
+            if (link) {
+                const linkHref = link.getAttribute('href');
+                // Membuat perbandingan tidak case-sensitive dan hanya memeriksa nama file
+                if (linkHref && currentPath && linkHref.toLowerCase().includes(currentPath.toLowerCase())) {
+                    // Hapus dulu semua class aktif untuk memastikan hanya satu yang aktif
+                    listItems.forEach(innerItem => innerItem.classList.remove("NavSide__sidebar-item--active"));
+                    // Tambahkan class aktif ke item yang cocok
+                    item.classList.add("NavSide__sidebar-item--active");
+                }
+            }
+        });
+    }
+
+    // --- Bagian 2: Logika Form Evaluasi (Bagian yang diperbaiki) ---
+    const btnKirim = document.getElementById('btnKirim');
+    const evaluasiForm = document.getElementById('evaluasiForm'); // Pastikan ID form Anda adalah 'evaluasiForm'
+    const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
+
+    // Hanya jalankan kode ini jika semua elemen yang dibutuhkan ada di halaman
+    if (btnKirim && evaluasiForm && confirmationKirimModalElement) {
+        const nilaiLaporan = document.getElementById('nilaiLaporan');
+        const materiPresentasi = document.getElementById('materiPresentasi');
+        const nilaiPenyampaian = document.getElementById('nilaiPenyampaian');
+        const nilaiProyek = document.getElementById('nilaiProyek');
+        const catatanEvaluasi = document.getElementById('catatanEvaluasi');
+        const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage');
+        const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage');
+        const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
+
+        // Inisialisasi modal Bootstrap sekali saja
+        const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
+
+        // Event listener untuk tombol 'Kirim' utama
+        btnKirim.addEventListener('click', function(event) {
+            // Selalu cegah form dari submit otomatis agar kita bisa validasi dulu
+            event.preventDefault(); 
+            
+            let isValid = true;
+            nilaiSidangError.style.display = 'none';
+            catatanEvaluasiError.style.display = 'none';
+
+            // Validasi input nilai
+            if (nilaiLaporan.value.trim() === '' || materiPresentasi.value.trim() === '' || nilaiPenyampaian.value.trim() === '' || nilaiProyek.value.trim() === '') {
+                nilaiSidangError.style.display = 'block';
+                isValid = false;
+            }
+            // Validasi catatan evaluasi
+            if (catatanEvaluasi.value.trim() === '') {
+                catatanEvaluasiError.style.display = 'block';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                // Jika tidak valid, tampilkan pesan error dengan SweetAlert
+                Swal.fire({
+                    title: 'Harap lengkapi semua kolom!',
+                    text: 'Kolom nilai dan catatan evaluasi wajib diisi sebelum mengirim.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4B68FB'
+                });
+            } else {
+                // Jika valid, tampilkan modal konfirmasi
+                confirmationKirimModal.show();
+            }
+        });
+
+        // Event listener untuk tombol 'Kirimkan' di dalam modal
+        btnKonfirmasiKirim.addEventListener('click', function() {
+            // Sembunyikan modal
+            confirmationKirimModal.hide();
+
+            // Tampilkan pesan sukses dengan SweetAlert
+            Swal.fire({
+                title: 'Evaluasi Sidang Berhasil Dikirim!',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB',
+                // Jangan izinkan pengguna menutup alert dengan klik di luar atau tombol escape
+                allowOutsideClick: false, 
+                allowEscapeKey: false
+            }).then((result) => {
+                // Setelah pengguna menekan OK, submit form-nya
+                if (result.isConfirmed) {
+                    evaluasiForm.submit();
+                }
+            });
+        });
+    }
+
+
+    // --- Bagian 3: Validasi Input Nilai (Tidak ada perubahan, sudah benar) ---
+    document.querySelectorAll('.input-nilai').forEach(function(input) {
+        input.addEventListener('input', function() {
+            // Hanya izinkan angka
+            this.value = this.value.replace(/[^0-9]/g, '');
+            // Batasi panjang maksimal 3 digit
+            if (this.value.length > 3) this.value = this.value.slice(0, 3);
+            // Hapus angka 0 di depan jika lebih dari 1 digit (misal: 09 menjadi 9)
+            if (this.value.length > 1 && this.value.startsWith('0')) this.value = this.value.replace(/^0+/, '');
+            // Batasi nilai maksimal 100
+            if (parseInt(this.value) > 100) this.value = '100';
+        });
+    });
+});
     </script>
 </body>
 </html>
