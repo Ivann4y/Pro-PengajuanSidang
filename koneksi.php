@@ -1,13 +1,13 @@
 <?php
-$serverName = "sidangdevenv.database.windows.net";
+$serverName = "sidang5.database.windows.net";
 $connectionOptions = [
-    "Database" => "SistemSidang",
-    "Uid" => "SSidangDeveloper",  
-    "PWD" => "timDeveloperSidang1",  
+    "Database" => "SistemSidang1",
+    "Uid" => "sqladmin",  
+    "PWD" => "RPLsidang5",  
     "TrustServerCertificate" => true,
 ];
 
-// Attempt to connect
+// Menjalankan koneksi ke database
 $conn = sqlsrv_connect($serverName, $connectionOptions);
 if ($conn === false) {
     echo "Koneksi Gagal:<br>";

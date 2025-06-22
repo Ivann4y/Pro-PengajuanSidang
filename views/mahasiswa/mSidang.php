@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require "../../koneksi.php";
 
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
@@ -51,7 +53,6 @@ $query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul ORDER B
 
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
 
-
 $result = sqlsrv_query($conn, $query);
 
 if ($result === false) {
@@ -65,7 +66,6 @@ if ($result === false) {
     }
     exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -188,9 +188,9 @@ if ($result === false) {
                                     <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
                                     <td><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td>
-                                        <button class="detail-btn" onclick="location.href='mdetailSidangTA.php?id=<?= $row['id_sidang'] ?>';">
+                                        <a href="set_sidang_session.php?id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
                                             <i class="bi bi-eye"></i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                             <?php 

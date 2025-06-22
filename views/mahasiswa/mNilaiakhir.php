@@ -1,5 +1,7 @@
 <!-- Argha arybawa pasha -->
  
+
+
 <!DOCTYPE html> <!-- Mendeklarasikan bahwa dokumen ini adalah HTML5 -->
 <html lang="en"> <!-- Elemen root dari halaman HTML, dengan atribut bahasa "English" -->
   <head>
@@ -34,6 +36,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Link ke stylesheet kustom lokal (style.css) -->
     <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/mNilaiakhir.css">
     <!-- Link ke stylesheet kustom lokal tambahan (extra/style.css) -->
     <link rel="stylesheet" href="../../extra/style.css" />
     <!-- Link ke stylesheet Font Awesome dari CDN untuk menggunakan library ikon yang lebih beragam -->
@@ -45,155 +48,23 @@
 <style>
     /* Mengatur font default dan warna teks untuk elemen-elemen utama di halaman. */
     /* '!important' digunakan untuk memastikan style ini mengalahkan style lain (misal dari Bootstrap). */
-    body,
-    .card,
-    .form-control,
-    h1, h2, h3, h4, h5, h6 {
-        font-family: "Poppins", sans-serif !important;
-        color: #464869;
-    }
 
-    /* Style untuk judul utama halaman */
-    .main-title {
-        font-weight: 700 !important; /* Ketebalan font tebal */
-        color: #343a40; /* Warna teks gelap */
-        margin-bottom: 0.5rem; 
-        margin-left: 10px;
-    }
-    
-    /* Style untuk teks informasi mahasiswa (seperti nama, nim, dll) */
-    .student-info {
-        font-size: 1rem;
-        color: #6c757d; /* Warna abu-abu */
-        font-weight: 500; /* Ketebalan medium */
-    }
-    
-    /* Style untuk kartu catatan */
-    #cardcatatan {
-        background-color: rgb(235, 238, 245); /* Warna latar belakang biru keabu-abuan muda */
-        border-radius: 20px; /* Sudut yang lebih tumpul */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Efek bayangan halus */
-        margin-left: 10px;
-    }
-
-    /* Style untuk kartu nilai */
-    #cardNilai {
-        background-color: rgb(235, 238, 245);
-        border-radius: 50px; /* Sudut sangat tumpul (membentuk kapsul jika tinggi) */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        margin-left: 10px;
-        margin-right: -10px;
-
-    }
-    
-    /* Style untuk kartu data mahasiswa */
-    #carddataMahasiswa {
-        background-color: rgb(235, 238, 245);
-        border-radius: 50px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        margin-left: 10px;
-    }
-
-    /* Memastikan kartu catatan memiliki lebar penuh */
-    #cardcatatan {
-        width: 100%;
-    }
-
-    /* Style untuk grup info (Label dan Value) di kartu data mahasiswa */
-    .info-group, .value-row {
-        font-size: 1rem;
-    }
-    
-    /* Utility class untuk membuat teks lebih tebal */
-    .fw-bold {
-        font-weight: 600 !important;
-    }
-    
-    /* Blok untuk styling responsif. Aturan di dalam sini hanya berlaku jika lebar layar 992px atau kurang. */
-    @media (max-width: 992px) {
-        /* (Kosong, bisa diisi style untuk tablet atau mobile) */
-    }
-    
-    /* Style untuk input yang menampilkan nilai huruf (A, B, C, dll) */
-    #nilaiMahasiswa {
-        font-size: 9.5rem !important; /* Ukuran font sangat besar */
-        font-weight: bold; /* Teks tebal */
-        text-align: center; /* Teks di tengah */
-        border-radius: 30px;
-        width: 90%;
-        /* Menghilangkan tampilan default dari input field */
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+        * {
+        margin: 0;
         padding: 0;
-    }
-    
-    /* Style untuk area konten di dalam kartu catatan */
-    #catatan-content {
-        padding: 1rem;
-        font-size: 1rem;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
     }
 
-    /* Style untuk tombol "Kembali" */
-    .btn-kembali {
-        background-color: #4B68FB; /* Warna latar biru */
-        color: white; /* Warna teks putih */
-        border: none; /* Tanpa border */
-        border-radius: 20px; /* Sudut tumpul */
-        padding: 10px 25px; /* Jarak dalam (atas/bawah, kiri/kanan) */
-        cursor: pointer; /* Mengubah kursor menjadi tangan saat dihover */
-        font-size: 0.95rem;
-        font-weight: 500;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; /* Efek transisi halus */
-        display: inline-flex; /* Membuat elemen berperilaku seperti inline tapi bisa diatur layout flexbox */
-        align-items: center; /* Menyelaraskan item di dalamnya secara vertikal */
-        margin-top: 1.2cm;
-        margin-left: 15px;
-    }
+    body {
+        font-family: "Poppins", sans-serif !important;
+        background-color: #ffffff !important; /* Background body putih bersih */
+     }
 
-    /* Style untuk tombol "Kembali" saat di-hover mouse */
-    .btn-kembali:hover {
-        position: relative;
-        background-color: white; /* Latar menjadi putih */
-        color: #4B68FB; /* Teks menjadi biru */
-    }
-    
-    /* Style untuk lingkaran ikon di dalam tombol */
-    .btn-kembali .icon-circle {
-        display: inline-flex;
-        align-items: center; /* Tengah vertikal */
-        justify-content: center; /* Tengah horizontal */
-        width: 30px; 
-        height: 30px; 
-        background-color: white; /* Latar putih */
-        border-radius: 50%; /* Bentuk lingkaran sempurna */
-        margin-right: 10px; /* Jarak dengan teks "Kembali" */
-        transition: background-color 0.3s ease;
-    }
-
-    /* Style untuk lingkaran ikon saat tombol di-hover */
-    .btn-kembali:hover .icon-circle {
-        background-color: #4B68FB; /* Latar menjadi biru */
-    }
-
-    /* Style untuk ikon di dalam lingkaran */
-    .btn-kembali .icon-circle i {
-        color: #4B68FB; /* Warna ikon biru */
-        font-size: 1rem; 
-        transition: color 0.3s ease;
-    }
-
-    /* Style untuk ikon saat tombol di-hover */
-    .btn-kembali:hover .icon-circle i {
-        color: white; /* Warna ikon menjadi putih */
-    }
 </style>
   </head>
   <body>
-    <!-- Container utama untuk layout sidebar dan konten -->
+    <!-- Container utama untuk layout sidebar tdan konten -->
     <div id="NavSide">
         <!-- === SIDEBAR NAVIGASI KIRI === -->
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -217,6 +88,11 @@
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Kelas '...--active' menandakan halaman ini yang sedang dibuka -->
                     <b></b><b></b>
                     <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                </li>
+
+                <li class="NavSide__sidebar-item"> <!-- Kelas '...--active' menandakan halaman ini yang sedang dibuka -->
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
                 </li>
             </ul>
         </div>
@@ -260,7 +136,7 @@
                   <!-- Baris di dalam kartu untuk membagi info jadi dua kolom -->
                   <div class="row">
                       <!-- Kolom kiri untuk NIM dan Nama -->
-                      <div class="col-sm-6">
+                      <div class="col-sm-6 text-black">
                            <!-- Info NIM -->
                           <div class="info-group mb-5">
                             <div class="label-row d-flex align-items-center gap-2 mb-1">
@@ -279,7 +155,7 @@
                           </div>
                       </div>
                       <!-- Kolom kanan untuk Mata Kuliah dan Dosen -->
-                      <div class="col-sm-6">
+                      <div class="col-sm-6 text-black">
                            <!-- Info Mata Kuliah -->
                           <div class="info-group mb-5">
                             <div class="label-row d-flex align-items-center gap-2 mb-1">
@@ -318,33 +194,21 @@
             </div>
         </div>
 
-
-        <!-- Baris untuk kartu catatan -->
+        <!-- Baris untuk kartu catatan yang read catatan -->
         <div class="row mt-5 ">
             <div class="col-12">
                 <div class="card" id="cardcatatan">
                     <div class="card-body">
-                        <h3 class="card-title text-dark" >Catatan:</h3>
+                        <h3 class="card-title text-dark" >Catatan :</h3>
                         <div class="text-dark" id="catatan-content">
-                            Tidak ada catatan. <!-- Teks catatan dari dosen -->
+                            Tidak ada catatan. <!-- Teks catatan dari Database yang dibuat oleh dosen   -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Baris untuk tombol "Kembali" -->
-        <div class="row mt-5">
-            <div class="col-auto"> 
-                <!-- Tombol yang saat diklik akan mengarahkan ke halaman 'mSidang.php'' -->
-                <button class="btn-kembali" onclick="location.href='mSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i> <!-- Ikon panah kiri -->
-                    </span>
-                    Kembali
-                </button>
-            </div>
-        </div>
+
     </div>
 </main>
     

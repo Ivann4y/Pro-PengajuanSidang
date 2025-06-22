@@ -10,7 +10,7 @@ $rowsPerPage = 10;
 $countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
                FROM Sidang s
                JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok -- Jembatan ke-1
-               JOIN Mahasiswa ma ON km.nim = ma.nim"; // Jembatan ke-2
+               JOIN Mahasiswa m ON km.nim = m.nim"; // Jembatan ke-2
 
 if ($filter === 'ta') {
     $countQuery .= " WHERE s.jenis_sidang = 0";
@@ -27,18 +27,17 @@ $totalPages = ceil($totalRecords / $rowsPerPage);
 
 
 // --- PERBAIKAN QUERY UTAMA PENGAMBILAN DATA ---
-$query = "SELECT s.id_sidang, s.judul, s.jenis_sidang,
-                 ma.nim, ma.nama_mhs, 
+$query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, s.id_kelompok, 
                  m.nama_matkul, 
                  MIN(d.nama_dosen) AS dosen 
           FROM Sidang s
           -- PERBAIKAN UTAMA: Menggunakan tabel jembatan Kelompok_Mahasiswa
-          JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-          JOIN Mahasiswa ma ON km.nim = ma.nim
           -- Join lainnya tetap sama
           JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
           JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
-          JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen";
+          JOIN Jadwal j ON s.id_sidang = j.id_sidang
+          JOIN Penjadwalan p ON j.id_sidang = p.id_sidang
+          JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen";
 
 $whereClause = [];
 if ($filter === 'ta') {
@@ -51,7 +50,8 @@ if (!empty($whereClause)) {
 }
 
 // Menyesuaikan GROUP BY dengan semua kolom yang dibutuhkan
-$query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, ma.nim, ma.nama_mhs, m.nama_matkul ORDER BY s.id_sidang";
+$query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, s.id_kelompok, m.nama_matkul 
+            ORDER BY s.id_sidang";
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
 
 $result = sqlsrv_query($conn, $query);
@@ -135,8 +135,7 @@ if ($result === false) {
                     <thead>
                         <tr>
                             <th scope="col">Nomor</th>
-                            <th scope="col">NIM</th>
-                            <th scope="col">Nama</th>
+                            <th scope="col">Kelompok</th>
                             <th scope="col" id="thDynamicHeader">
                                 <?php
                                 if ($filter === 'ta') echo "Judul Sidang";
@@ -156,19 +155,15 @@ if ($result === false) {
                         ?>
                                 <tr class="isiTabel">
                                     <td data-label="Nomor"><?= $counter ?></td>
-                                    <td data-label="NIM"><?= htmlspecialchars($row['nim']) ?></td>
-                                    <td data-label="Nama"><?= htmlspecialchars($row['nama_mhs']) ?></td>
+                                    <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                                     <td data-label="Judul/MK">
                                         <?= htmlspecialchars(($row['jenis_sidang'] == 0) ? $row['judul'] : $row['nama_matkul']) ?>
                                     </td>
                                     <td data-label="Pembimbing"><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td data-label="Aksi">
-                                        <?php
-                                        $detailPage = ($row['jenis_sidang'] == 0) ? 'aDetailSidangTA.php' : 'aDetailSidangSem.php';
-                                        ?>
-                                        <button type="button" class="btn detail-btn" onclick="window.location.href='<?= $detailPage ?>?id=<?= $row['id_sidang'] ?>'">
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
+                                    <button type="button" class="btn detail-btn" onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
+                                    <i class="fa-solid fa-file-signature"></i>
+                                    </button>
                                     </td>
                                 </tr>
                         <?php
@@ -240,6 +235,7 @@ if ($result === false) {
                 window.addEventListener('resize', handleIconPlacement);
             }
         });
+        
     </script>
 </body>
 </html>
