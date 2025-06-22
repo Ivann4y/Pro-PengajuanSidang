@@ -5,7 +5,7 @@ include "../../koneksi.php";
 
 if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
 
-// --- SIMULASI LOGIN (Ganti '1001' dengan nomor dosen yang valid untuk pengujian) ---
+// --- SIMULASI LOGIN (TETAP SAMA) ---
 $nomor_dosen_login = '1001'; 
 
 // --- LOGIKA FILTER & PAGINASI (TETAP SAMA) ---
@@ -16,15 +16,16 @@ $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
 // --- PERBAIKAN PADA BASEQUERY ---
-// Kondisi WHERE untuk dosen yang login dipindahkan keluar dari blok WITH
+// Mengadopsi prinsip "ambil data luas dulu".
+// JOIN ke Penjadwalan di sini dihapus agar tidak memfilter data terlalu dini.
+// Ini membuat base query lebih mirip dengan prinsip di aDaftarSidang.
 $baseQuery = "
     WITH FullSidangData AS (
         SELECT
             s.id_sidang,
             s.id_kelompok,
             s.judul,
-            s.jenis_sidang,
-            p_filter.nomor_dosen, -- Ambil kolom nomor_dosen untuk filtering
+            s.jenis_sidang, -- Dipertahankan jika masih ada kegunaan lain
             
             (SELECT TOP 1 mk.nama_matkul
              FROM [dbo].[Detail_Sidang] ds
@@ -42,46 +43,67 @@ $baseQuery = "
              WHERE p.id_sidang = s.id_sidang AND d.isPenguji = 0x01) AS penguji
              
         FROM [dbo].[Sidang] s
-        JOIN [dbo].[Penjadwalan] p_filter ON s.id_sidang = p_filter.id_sidang
     )
 ";
 
-// --- PERBAIKAN PADA KLAUSA WHERE DINAMIS ---
+// --- PENYESUAIAN KLAUSA WHERE DINAMIS (Mengikuti Prinsip aDaftarSidang) ---
 $whereConditions = [];
 $params = [];
 
-// Kondisi WAJIB: Dosen yang login harus terlibat
-$whereConditions[] = "nomor_dosen = ?";
-$params[] = $nomor_dosen_login;
+// 1. Tambahkan kondisi WAJIB terlebih dahulu (Fungsi yang tidak boleh hilang)
+//    Dosen yang login harus terlibat sebagai Pembimbing ATAU Penguji.
+$whereConditions[] = "
+    (
+        EXISTS (
+            SELECT 1 
+            FROM [dbo].[Bimbingan] b 
+            JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen
+            WHERE b.id_kelompok = FullSidangData.id_kelompok AND d.nomor_dosen = ?
+        )
+        OR
+        EXISTS (
+            SELECT 1 
+            FROM [dbo].[Penjadwalan] p 
+            WHERE p.id_sidang = FullSidangData.id_sidang AND p.nomor_dosen = ?
+        )
+    )";
+array_push($params, $nomor_dosen_login, $nomor_dosen_login);
 
-// Kondisi OPSIONAL: Filter berdasarkan jenis sidang
+// 2. Tambahkan kondisi OPSIONAL dari Dropdown (Logika disesuaikan agar benar)
+//    Ini meniru cara aDaftarSidang menambahkan WHERE, tapi dengan kondisi yang tepat.
 if ($filter === 'ta') {
-    $whereConditions[] = "jenis_sidang = 0x00";
+    // Tampilkan jika di kolom 'judul' ATAU 'nama_matkul' tertulis 'Tugas Akhir'.
+    $whereConditions[] = "(judul = ? OR nama_matkul = ?)";
+    array_push($params, 'Tugas Akhir', 'Tugas Akhir');
+
 } elseif ($filter === 'semester') {
-    $whereConditions[] = "jenis_sidang = 0x01";
+    // Tampilkan jika BUKAN 'Tugas Akhir' di kedua kolom.
+    $whereConditions[] = "(ISNULL(judul, '') != ? AND ISNULL(nama_matkul, '') != ?)";
+    array_push($params, 'Tugas Akhir', 'Tugas Akhir');
 }
+// Jika $filter = 'all', tidak ada kondisi yang ditambahkan, jadi semua jenis sidang ditampilkan.
 
-// Kondisi OPSIONAL: Filter berdasarkan pencarian
+
+// 3. Tambahkan kondisi OPSIONAL dari Search Box (Fungsi yang tidak boleh hilang)
 if (!empty($search)) {
-    $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR nama_matkul LIKE ? OR pembimbing LIKE ? OR penguji LIKE ?)";
+    $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR judul LIKE ? OR nama_matkul LIKE ? OR pembimbing LIKE ? OR penguji LIKE ?)";
     $likeParam = "%" . $search . "%";
-    array_push($params, $likeParam, $likeParam, $likeParam, $likeParam);
+    array_push($params, $likeParam, $likeParam, $likeParam, $likeParam, $likeParam);
 }
 
-// Gabungkan semua kondisi dengan 'AND'
-// Ini sekarang akan selalu dimulai dengan 'WHERE' yang benar
+// 4. Gabungkan semua kondisi menjadi satu klausa WHERE (Sama seperti aDaftarSidang)
 $whereClause = " WHERE " . implode(' AND ', $whereConditions);
 
-// --- QUERY PENGHITUNGAN TOTAL DATA ---
-$countQuery = $baseQuery . "SELECT COUNT(DISTINCT id_sidang) as total FROM FullSidangData" . $whereClause;
+// --- QUERY PENGHITUNGAN TOTAL DATA (TETAP SAMA) ---
+$countQuery = $baseQuery . "SELECT COUNT(id_sidang) as total FROM FullSidangData" . $whereClause;
 $countResult = sqlsrv_query($conn, $countQuery, $params);
 if ($countResult === false) { die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true)); }
 $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
-// --- QUERY UTAMA UNTUK MENGAMBIL DATA ---
-// Menggunakan DISTINCT untuk menghindari baris duplikat karena JOIN dengan Penjadwalan
-$mainQuery = $baseQuery . "SELECT DISTINCT id_sidang, id_kelompok, judul, jenis_sidang, nama_matkul, pembimbing, penguji FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+// --- QUERY UTAMA UNTUK MENGAMBIL DATA (TETAP SAMA) ---
+// DISTINCT tidak lagi diperlukan karena base query sudah benar
+$mainQuery = $baseQuery . "SELECT id_sidang, id_kelompok, judul, jenis_sidang, nama_matkul, pembimbing, penguji FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 $mainParams = array_merge($params, [$offset, $rowsPerPage]);
 $result = sqlsrv_query($conn, $mainQuery, $mainParams);
 if ($result === false) { die("Error pada query utama: " . print_r(sqlsrv_errors(), true)); }
@@ -89,8 +111,8 @@ if ($result === false) { die("Error pada query utama: " . print_r(sqlsrv_errors(
 $nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
-<html lang="en">
 <!-- KODE HTML LANJUTANNYA TETAP SAMA -->
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -167,12 +189,11 @@ $nomor = $offset + 1;
                                     <tr class="isiTabel jadiBiru">
                                         <td><?= $nomor++ ?></td>
                                         <td><?= htmlspecialchars($row['id_kelompok']) ?></td>
-                                        <td><?= htmlspecialchars(($row['jenis_sidang'] == '0x00') ? $row['judul'] : ($row['nama_matkul'] ?? $row['judul'])) ?></td>
+                                        <td><?= htmlspecialchars(($row['jenis_sidang'] == '0x00' || $row['judul'] == 'Tugas Akhir') ? $row['judul'] : ($row['nama_matkul'] ?? $row['judul'])) ?></td>
                                         <td><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
                                         <td><?= htmlspecialchars($row['penguji'] ?? 'Belum Ditentukan') ?></td>
                                         <td style="text-align: center;">
-
-                                        <a href="dEvaluasiSidang.php?id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
+                                            <a href="dEvaluasiSidang.php?id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
                                                 <i class="fa-solid fa-file-signature"></i>
                                             </a>
                                         </td>
