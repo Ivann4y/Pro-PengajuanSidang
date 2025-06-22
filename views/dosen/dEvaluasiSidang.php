@@ -1,11 +1,11 @@
 <?php
+// <-- BAGIAN AWAL TETAP SAMA -->
 // session_start(); // Dinonaktifkan untuk pengujian
 require "../../koneksi.php"; // Pastikan path ini benar
 
 // ===================================================================================
 // BAGIAN 1: KEAMANAN DAN INISIALISASI
 // ===================================================================================
-
 // --- SIMULASI LOGIN (TIDAK PERLU DIUBAH-UBAH, HANYA UNTUK QUERY NILAI/CATATAN) ---
 $nomor_dosen_login = '1001'; 
 
@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: dEvaluasiSidang.php?id_sidang=" . $id_sidang);
     exit();
 }
+// <-- AKHIR BAGIAN AWAL TETAP SAMA -->
 
 // ===================================================================================
 // BAGIAN 3: PENGAMBILAN DATA UNTUK DITAMPILKAN
@@ -93,9 +94,10 @@ if ($data_sidang) {
     $judul = $data_sidang['Judul'];
     $id_kelompok = $data_sidang['id_kelompok'];
 
-    // --- PERBAIKAN LOGIKA PENGAMBILAN DOSEN (SESUAI aDetailSidang.php) ---
+    // --- LOGIKA PENGAMBILAN DOSEN ---
     if ($id_kelompok) {
-        $sql_pembimbing = "SELECT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
+        // ### PERUBAHAN DI SINI: Ditambahkan DISTINCT untuk mencegah duplikasi ###
+        $sql_pembimbing = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
         $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, [$id_kelompok]);
         if ($stmt_pembimbing) {
             while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
@@ -103,17 +105,18 @@ if ($data_sidang) {
             }
         }
     }
-    $sql_penguji = "SELECT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
+    
+    // ### PERUBAHAN DI SINI: Ditambahkan DISTINCT untuk membuat query lebih aman ###
+    $sql_penguji = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
     $stmt_penguji = sqlsrv_query($conn, $sql_penguji, [$id_sidang]);
     if ($stmt_penguji) {
         while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
-            if (!in_array($row['nama_dosen'], $dosenPembimbing)) {
-                $dosenPenguji[] = $row['nama_dosen'];
-            }
+            $dosenPenguji[] = $row['nama_dosen'];
         }
     }
     // --- AKHIR PERBAIKAN ---
 
+    // <-- LANJUTAN KODE TETAP SAMA -->
     $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang FROM Jadwal WHERE id_sidang = ?";
     $result_jadwal = sqlsrv_query($conn, $sql_jadwal, [$id_sidang]);
     if ($result_jadwal && $data_jadwal = sqlsrv_fetch_array($result_jadwal, SQLSRV_FETCH_ASSOC)) {
@@ -141,6 +144,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 ?>
 <!DOCTYPE html>
 <html lang="id">
+<!-- KODE HTML LANJUTANNYA TETAP SAMA -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

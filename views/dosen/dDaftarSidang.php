@@ -1,4 +1,5 @@
 <?php
+// <-- TETAP SAMA -->
 // session_start();
 include "../../koneksi.php";
 
@@ -89,6 +90,7 @@ $nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
+<!-- KODE HTML LANJUTANNYA TETAP SAMA -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
