@@ -171,11 +171,8 @@ $nomor = $offset + 1;
                                         <td><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
                                         <td><?= htmlspecialchars($row['penguji'] ?? 'Belum Ditentukan') ?></td>
                                         <td style="text-align: center;">
-<<<<<<< HEAD
-                                            <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn">
-=======
-                                            <a href="dEvaluasiSidang.php?id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
+
+                                        <a href="dEvaluasiSidang.php?id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
                                                 <i class="fa-solid fa-file-signature"></i>
                                             </a>
                                         </td>

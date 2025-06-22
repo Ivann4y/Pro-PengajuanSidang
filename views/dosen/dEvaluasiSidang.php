@@ -1,10 +1,6 @@
 <?php
-<<<<<<< HEAD
-// session_start();
-=======
 // <-- BAGIAN AWAL TETAP SAMA -->
 // session_start(); // Dinonaktifkan untuk pengujian
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
 require "../../koneksi.php"; // Pastikan path ini benar
 
 // ===================================================================================
@@ -13,13 +9,6 @@ require "../../koneksi.php"; // Pastikan path ini benar
 // --- SIMULASI LOGIN (TIDAK PERLU DIUBAH-UBAH, HANYA UNTUK QUERY NILAI/CATATAN) ---
 $nomor_dosen_login = '1001'; 
 
-<<<<<<< HEAD
-// Pastikan dosen sudah login dan ID SIDANG ada di URL
-// if (!isset($_SESSION['user']['nomor_dosen'])) {
-//     die("Akses ditolak. Silakan login sebagai dosen.");
-// }
-// PERUBAHAN: Cek 'id_sidang' bukan 'nim'
-=======
 // Nonaktifkan pengecekan session yang asli
 /*
 if (!isset($_SESSION['user']['nomor_dosen'])) {
@@ -28,16 +17,10 @@ if (!isset($_SESSION['user']['nomor_dosen'])) {
 $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
 */
 
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
 if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
     die("ID Sidang tidak valid atau tidak ditemukan.");
 }
 
-<<<<<<< HEAD
-// $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
-$nomor_dosen_login = '12345678';
-=======
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
 $id_sidang = (int)$_GET['id_sidang']; // Ambil id_sidang dari URL
 
 // Variabel untuk menampung data yang akan ditampilkan
@@ -361,45 +344,6 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
                 <h2>Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-<<<<<<< HEAD
-                <br>
-                <br>
-                 <ul class="nav nav-tabs" id="myTab" role="tablist">
-              <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="mahasiswa1-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa1-tab-pane" role="tab" aria-controls="mahasiswa1-tab-pane" aria-selected="true" href="#">mahasiswa1</a>
-              </li>
-              <li class="nav-item" role="presentation">
-                <a class="nav-link" id="mahasiswa2-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa2-tab-pane" role="tab" aria-controls="mahasiswa2-tab-pane" aria-selected="false" href="#">mahasiswa2</a>
-              </li>
-              <li class="nav-item" role="presentation">
-                <a class="nav-link" id="mahasiswa3-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa3-tab-pane" role="tab" aria-controls="mahasiswa3-tab-pane" aria-selected="false" href="#">mahasiswa3</a>
-              </li>
-            </ul>
-
-                <!-- Info card displaying sidang details -->
-            <!-- Info card displaying sidang details -->
-<div class="info-card">
-    <div class="section">
-        <!-- Sidang Title information group -->
-        <div class="info-group"><div class="label-row"><i class="fa-solid fa-file-invoice me-2"></i><strong>Judul Sidang</strong></div><div class="value-row"><?php echo htmlspecialchars($judul); ?></div></div>
-                    <div class="info-group"><div class="label-row"><i class="fa-solid fa-user-tie me-2"></i><strong>Dosen Pembimbing</strong></div><div class="value-row"><?php echo $namaPembimbing_html; ?></div></div>
-                    <div class="info-group"><div class="label-row"><i class="fa-solid fa-user-group me-2"></i><strong>Dosen Penguji</strong></div><div class="value-row"><?php echo $namaPenguji_html; ?></div></div>
-    </div> <!-- <<<<<<< PERBAIKAN: TAMBAHKAN TAG PENUTUP DIV INI -->
-
-    <div class="section">
-        <!-- Room information group -->
-         <div class="info-group"><div class="label-row"><i class="fa-solid fa-door-open me-2"></i><strong>Ruangan</strong></div><div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div></div>
-                    <div class="info-group"><div class="label-row"><i class="fa-solid fa-calendar-days me-2"></i><strong>Tanggal</strong></div><div class="value-row"><?php echo htmlspecialchars($tanggal_formatted); ?></div></div>
-                    <div class="info-group"><div class="label-row"><i class="fa-solid fa-clock me-2"></i><strong>Jam</strong></div><div class="value-row"><?php echo htmlspecialchars($jam); ?></div></div>
-    </div>
-</div>
-
-                <h3>Nilai Sidang (Sementara)</h3>
-                <!-- Form card for score input -->
-                <div class="form-card">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4>Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
-=======
                 <form id="evaluasiForm" method="POST" action="dEvaluasiSidang.php?id_sidang=<?php echo $id_sidang; ?>">
                     <div class="info-card">
                         <div class="section">
@@ -430,7 +374,6 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                                 <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
                             </div>
                         </div>
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
                     </div>
                     <h3>Nilai Sidang (Sementara)</h3>
                     <div class="form-card">
@@ -456,40 +399,11 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                         </div>
                         <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                     </div>
-<<<<<<< HEAD
-                    <div class="form-group-custom">
-                        <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-                        <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Masukan Catata0n Evaluasi"><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
-                    </div>
-                    <!-- Error message for evaluation notes -->
-                    <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
-                </div>
-
-                <!-- Button group at the bottom of the page -->
-                
-                <div class="button-group-bottom">
-                    <!-- 'Kembali' (Back) button -->
-                    <button type="button" class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
-                        <span class="icon-circle">
-                            <i class="fa-solid fa-arrow-left"></i>
-                        </span>
-                        Kembali
-                    </button>
-                     <form id="formEvaluasi" action="dEvaluasiSidang.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>" method="POST">
-                    <!-- 'Kirim' (Submit) button -->
-                    <button class="btn-kirim" id="btnKirim">
-                        Kirim
-                    </button>
-                      </form>
-                </div>
-  
-=======
                     <div class="button-group-bottom">
                         <button type="button" class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'"><span class="icon-circle"><i class="fa-solid fa-arrow-left"></i></span> Kembali</button>
                         <button type="button" class="btn-kirim" id="btnKirim">Kirim</button>
                     </div>
                 </form>
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
             </main>
         </div>
     </div>
@@ -586,36 +500,6 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     }).then(() => {
                         document.getElementById('evaluasiForm').submit();
                     });
-<<<<<<< HEAD
-                } else {
-                    // If validation succeeds, show the confirmation modal
-                    const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
-                    confirmationKirimModal.show();
-                }
-            });
-
-            // Event listener for the 'Kirimkan' (Confirm Submit) button in the modal
-            btnKonfirmasiKirim.addEventListener('click', function() {
-
-                 document.getElementById('formEvaluasi').submit();
-                // Hide the confirmation modal
-                const confirmationKirimModalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
-                if (confirmationKirimModalInstance) {
-                    confirmationKirimModalInstance.hide();
-
-                }
-                
-
-                // Display success SweetAlert
-                Swal.fire({
-                    title: 'Evaluasi Sidang Berhasil Dikirim!',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                }).then(() => {
-                    // Redirect to the daftar sidang page after SweetAlert is closed
-                    window.location.href = 'dDaftarSidang.php';
-=======
                 });
             }
             document.querySelectorAll('.input-nilai').forEach(function(input){
@@ -624,7 +508,6 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     if (this.value.length > 3) this.value = this.value.slice(0, 3);
                     if (this.value.length > 1 && this.value.startsWith('0')) this.value = this.value.replace(/^0+/, '');
                     if (parseInt(this.value) > 100) this.value = '100';
->>>>>>> 83e5b9e001e47695c3a82bbd5229beacb4b8d552
                 });
             });
         });
