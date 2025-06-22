@@ -331,14 +331,34 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 </head>
 <body>
     <div id="NavSide">
-        <div id="main-sidebar" class="NavSide__sidebar">
-            <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /></div>
-            <ul class="NavSide__sidebar-nav">
-                <li class="NavSide_sidebar-item NavSidesidebar-item--active"><b></b><b></b><a href="dEvaluasiSidang.php"><span class="fw-semibold NavSide_sidebar-title">Evaluasi</span></a></li>
-                <li class="NavSide_sidebar-item"><b></b><b></b><a href="dDokumenRevisi.php"><span class="fw-semibold NavSide_sidebar-title">Dokumen</span></a></li>
-                <li class="NavSide_sidebar-item"><b></b><b></b><a href="dNilaiAkhir.php"><span class="fw-semibold NavSide_sidebar-title">Nilai Akhir</span></a></li>
-            </ul>
+      <div id="main-sidebar" class="NavSide__sidebar">
+        <div class="NavSide__sidebar-brand">
+          <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
         </div>
+        <ul class="NavSide__sidebar-nav">
+          <li class="NavSide__sidebar-item ">
+            <b></b>
+            <b></b>
+             <a href="dEvaluasiSidang.php">
+              <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item">
+            <b></b>
+            <b></b>
+            <a href="dDokumenRevisi.php">
+              <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
+            </a>
+          </li>
+          <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+            <b></b>
+            <b></b>
+            <a href="dNilaiAkhir.php">
+              <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+            </a>
+          </li>
+         </ul>
+      </div>
         <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
