@@ -11,6 +11,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/mEditPengajuan.css" />
   <link rel="stylesheet" href="../../assets/css/style.css" />
   <link rel="stylesheet" href="../../extra/style.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
@@ -18,170 +19,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <title>Edit Pengajuan Sidang</title>
 </head>
-
-<style>
-  @media (max-width: 700px) {
-    .NavSide__sidebar {
-      width: 50%;
-      transform: translateX(-100%);
-      border-left-width: 0;
-    }
-
-    .NavSide__sidebar.NavSide__sidebar--active-mobile {
-      transform: translateX(0);
-      box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .NavSide__sidebar-brand {
-      padding: 20px 10px 30px 10px;
-    }
-
-    .NavSide__sidebar-brand img {
-      width: 90%;
-    }
-
-    .NavSide__sidebar-nav {
-      padding-top: 20%;
-    }
-
-    .NavSide__sidebar-item a {
-      padding: 12% 10%;
-      height: auto;
-    }
-
-    .NavSide__main-content {
-      margin-left: 0;
-      padding: 15px;
-      padding-top: 75px;
-    }
-
-    .NavSide__toggle {
-      display: flex;
-      position: relative;
-      top: auto;
-      background-color: transparent;
-      box-shadow: none;
-      left: 0;
-    }
-
-    .NavSide__toggle i.bi.open {
-      display: block;
-    }
-
-    .NavSide__toggle.NavSide__toggle--active {
-      left: calc(50% + 10px);
-      background-color: aliceblue;
-    }
-
-    .NavSide__topbar {
-      display: flex;
-    }
-  }
-
-  body {
-    font-family: "Poppins", sans-serif;
-  }
-
-  label {
-    font-weight: 500;
-    margin-bottom: 5px;
-  }
-
-  input[type="file"] {
-    display: none;
-  }
-
-  .form-control,
-  .form-select {
-    font-family: "Poppins", sans-serif;
-    font-size: 16px;
-    padding: 12px 15px;
-    border-radius: 12px;
-
-  }
-
-  .upload-box {
-    background-color: #e9ecef;
-    border-radius: 16px;
-    padding: 40px 20px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  .upload-box:hover {
-    background-color: #dee2e6;
-  }
-
-  .upload-box.file-selected {
-    background-color: #d1e7dd;
-    /* Hijau muda */
-    border: 2px solid #0f5132;
-    color: #0f5132;
-  }
-
-  .upload-content {
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .btn-kembali {
-    background-color: #4B68FB;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 500;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    max-width: 200px;
-  }
-
-  .btn-kembali:hover {
-    position: relative;
-    background-color: white;
-    color: #4B68FB;
-  }
-
-  .btn-kembali .icon-circle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 25px;
-    height: 25px;
-    background-color: white;
-    border-radius: 50%;
-    margin-right: 10px;
-    transition: background-color 0.3s ease;
-  }
-
-  .btn-kembali:hover .icon-circle {
-    background-color: #4B68FB;
-  }
-
-  .btn-kembali .icon-circle i {
-    color: #4B68FB;
-    font-size: 1rem;
-    transition: color 0.3s ease;
-  }
-
-  .btn-kembali:hover .icon-circle i {
-    color: white;
-  }
-
-  .bintangMerah {
-    color: red;
-    font-weight: bold;
-  }
-</style>
-
 
 
 <body>
@@ -378,8 +215,8 @@
 
               <!-- Tombol Simpan & Kirim -->
               <div class="d-flex gap-2">
-                <button type="submit" name="aksi" value="Simpan" class="btn btn-secondary" id="btnSimpan">Simpan</button>
-                <button type="submit" name="aksi" value="Kirim" class="btn-setuju" id="btnKirim">Kirim</button>
+                <button type="button" name="aksi" value="Simpan" class="btn btn-secondary" id="btnSimpan">Simpan</button>
+                <button type="button" name="aksi" value="Kirim" class="btn-setuju" id="btnKirim">Kirim</button>
               </div>
             </div>
           </form>
