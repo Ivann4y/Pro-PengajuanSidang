@@ -580,7 +580,6 @@
                             </div>
                             <div class="value-row">Sistem Pengajuan Sidang</div>
                         </div>
-
                         <!-- Supervising Lecturer -->
                         <div class="info-group">
                             <div class="label-row">
@@ -591,7 +590,6 @@
                                 Dr. Rida Indah Fariani, S.Kom, M.Kom
                             </div>
                         </div>
-
                         <!-- Examining Lecturers -->
                         <div class="info-group">
                             <div class="label-row">
@@ -613,7 +611,6 @@
                             </div>
                             <div class="value-row">CB101 - RPL 1B</div>
                         </div>
-
                         <!-- Date Information -->
                         <div class="info-group">
                             <div class="label-row">
@@ -622,7 +619,6 @@
                             </div>
                             <div class="value-row">Selasa, 22 April 2025</div>
                         </div>
-
                         <!-- Time Information -->
                         <div class="info-group">
                             <div class="label-row">
