@@ -173,7 +173,7 @@ if ($_SESSION['role'] !== 'admin') {
                 <i class="bi bi-x-lg close"></i>
             </div>
             <!-- Judul Halaman -->
-              <h2 class="text-heading-mobile flex-fill">Beranda Admin</h2>
+              <!-- <h2 class="text-heading-mobile flex-fill">Beranda Admin</h2> -->
             <div class="header-icons">
                 <!-- tugas -->
                 <a href="aNotifikasi.php" title="tugas" style="text-decoration: none; color: inherit;">
