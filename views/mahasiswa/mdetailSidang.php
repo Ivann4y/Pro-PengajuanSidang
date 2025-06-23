@@ -2,7 +2,7 @@
 
 session_start();
 
-require "../../koneksi.php";
+require "../../koneksi/koneksiAndrew.php";
 
 // TINGKATKAN LAPORAN ERROR UNTUK DEBUGGING - Hapus baris ini setelah selesai debugging
 error_reporting(E_ALL);

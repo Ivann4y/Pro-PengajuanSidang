@@ -304,7 +304,7 @@
             left: 0;
             width: 100%;
             height: 60px;
-            background-color: #ffffff;
+            background-color:rgb(56, 38, 38);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             align-items: center;
@@ -695,18 +695,18 @@
             });
         }
 
-        // --- Sidebar Active Item Logic ---
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function() {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
+        // // --- Sidebar Active Item Logic ---
+        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        // for (let i = 0; i < listItems.length; i++) {
+        //     listItems[i].onclick = function() {
+        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+        //             for (let j = 0; j < listItems.length; j++) {
+        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+        //             }
+        //             this.classList.add("NavSide__sidebar-item--active");
+        //         }
+        //     };
+        // }
 
         
 

@@ -1,14 +1,11 @@
 
 <?php
-// session_start();
-// if ($_SESSION['role'] !== 'dosen') {
-//     header("Location: ../../index.php");
-//     exit();
-// }
-include '../../koneksi.php';
-$query = sqlsrv_query($conn, "SELECT * FROM pengajuan");
-
-
+session_start();
+if ($_SESSION['role'] !== 'dosen') {
+    header("Location: ../../index.php");
+    exit();
+}
+include '../../koneksi/koneksiAndrew.php';
 ?>
 
 
