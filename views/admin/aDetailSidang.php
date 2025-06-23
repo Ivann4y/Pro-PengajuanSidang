@@ -791,6 +791,10 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
                     <b></b><b></b>
                     <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
                 </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
+                </li>
             </ul>
         </div>
 

@@ -443,8 +443,7 @@ if ($selectedTipe == 'TA') {
 
     .table-admin-custom tbody tr.isiTabel:hover {
         color: #FFFFFF;
-    }
-
+    } 
     .detail-btn {
         border: none !important;
         background-color: transparent !important;
