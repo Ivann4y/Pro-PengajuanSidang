@@ -1,7 +1,7 @@
 <?php
 // <-- TETAP SAMA -->
 session_start();
-include "../../koneksi.php";
+include "../../koneksi/koneksiAndrew.php";
 
 if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
 
@@ -125,10 +125,9 @@ $nomor = $offset + 1;
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/dDaftarSidang.css">
     <title>Dosen - Daftar Sidang</title>
-    <style>
-        table{border-spacing:0 10px;border-collapse:separate;width:100%}thead{border-bottom:2px solid #000!important}thead th{padding:12px 15px;text-align:left}thead th:nth-child(1){text-align:center;width:5%}thead th:nth-child(2){width:15%}thead th:nth-child(3){width:25%}thead th:nth-child(4){width:20%}thead th:nth-child(5){width:20%}thead th:nth-child(6){text-align:center;width:15%}.isiTabel td{padding:12px 15px;font-family:"Poppins",sans-serif;font-weight:400;vertical-align:middle}.isiTabel td:first-child{border-radius:20px 0 0 20px;text-align:center}.isiTabel td:last-child{border-radius:0 20px 20px 0}.detail-btn{border:none!important;background-color:transparent!important;color:#4b68fb;padding:.25rem .5rem}.detail-btn:hover{opacity:.7}tr.jadiBiru:hover .detail-btn i{color:#fff!important}.dashboard-header{display:flex;justify-content:space-between;align-items:center;padding:0 15px;margin-bottom:30px}.dashboard-header .bodyHeading{font-weight:700;font-size:40px;font-family:"Poppins",sans-serif;margin:0;color:#1a1a1a}.search-input-group{background-color:#f3f4f6;border-radius:.5rem;overflow:hidden;width:300px;margin-top:.19vh -1px;margin-right:1vh}.search-input-group input.form-control{background-color:transparent;border:none;box-shadow:none;padding-left:1rem}.search-input-group .input-group-text{background-color:transparent;border:none;padding-right:0}.pagination-container{margin-top:2rem}.pagination .page-item.active .page-link{background-color:#4b68fb;border-color:#4b68fb;color:#fff;z-index:2}.pagination .page-link{color:#4b68fb}.pagination .page-link:hover{color:#2c45c9}.pagination .page-item.disabled .page-link{color:#6c757d}
-    </style>
+
 </head>
 <body>
     <div id="NavSide">

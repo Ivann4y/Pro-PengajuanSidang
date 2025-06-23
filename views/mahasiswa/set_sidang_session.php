@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-require "../../koneksi.php";
+require "../../koneksi/koneksiAndrew.php";
 
 if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
     // Invalid or missing id_sidang
