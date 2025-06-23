@@ -188,9 +188,8 @@ if ($result === false) {
                                     </td>
                                     <td data-label="Pembimbing"><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td data-label="Aksi">
-                                        <?php $detailPage = ($row['jenis_sidang'] == 0) ? 'aDetailSidangTA.php' : 'aDetailSidangSem.php'; ?>
                                         <button type="button" class="btn detail-btn"
-                                            onclick="window.location.href='<?= $detailPage ?>?id=<?= $row['id_sidang'] ?>'">
+                                            onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
                                             <i class="fa-solid fa-file-signature"></i>
                                         </button>
                                     </td>
