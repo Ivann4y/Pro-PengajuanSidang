@@ -4,6 +4,7 @@ if ($_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -443,31 +444,6 @@ if ($_SESSION['role'] !== 'dosen') {
                 <div class="col-lg-4">
                     <div class="dashboard-card sidang-mendatang-card">
                         <h3 class="section-title">Sidang Mendatang</h3>
-                        <div class="item">
-                            <div class="date-bubble"><span class="day">22</span><span class="month">Apr</span></div>
-                            <span class="info">Nayaka Ivana Putra<br><small style="color: #6B7280; font-size: 0.75rem;">Anniversary TRPL</small></span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble"><span class="day">29</span><span class="month">Mei</span></div>
-                            <span class="info">Zahrah Imelda Asari<br><small style="color: #6B7280; font-size: 0.75rem;">Sistem Pengajuan Sidang</small></span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                         <div class="item">
-                            <div class="date-bubble"><span class="day">17</span><span class="month">Agu</span></div>
-                            <span class="info">Mnur<br><small style="color: #6B7280; font-size: 0.75rem;">Sistem Rekayasa Agama</small></span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble"><span class="day">12</span><span class="month">Sep</span></div>
-                            <span class="info">Naufal Abdirrahman Faiz<br><small style="color: #6B7280; font-size: 0.75rem;">Pengunaan Kawat</small></span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
-                        <div class="item">
-                            <div class="date-bubble"><span class="day">27</span><span class="month">Sep</span></div>
-                            <span class="info">Ezra<br><small style="color: #6B7280; font-size: 0.75rem;">STEI ITB</small></span>
-                            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                        </div>
                     </div>
                 </div>
                 

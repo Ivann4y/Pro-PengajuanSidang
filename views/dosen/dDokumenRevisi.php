@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -308,7 +304,7 @@
             left: 0;
             width: 100%;
             height: 60px;
-            background-color:rgb(56, 38, 38);
+            background-color:rgb(255, 255, 255);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             align-items: center;
@@ -360,7 +356,7 @@
 
             .button-group-bottom {
                 flex-direction: row;
-                justify-content: space-between;
+                justify-content: flex-end;
                 align-items: center;
                 margin-top: 1.2cm;
                 margin-left: 0;
@@ -369,7 +365,7 @@
             
             #grup-aksi-dokumen {
                 flex-direction: row !important; 
-                justify-content: space-between !important;
+                justify-content: flex-end !important;
                 gap: 0 !important; 
                 margin-top: 2.5rem;
             }
@@ -392,6 +388,7 @@
             margin-top: 0px; 
             display: flex;
             align-items: center;
+            justify-content: flex-end; 
             gap: 1rem;
             flex-wrap: wrap;
         }
@@ -468,53 +465,6 @@
             min-width: 100px;
         }
 
-        .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1.2cm;
-            height: 45px;
-        }
-
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
     
         .custom-modal-content {
             border-radius: 30px !important;
@@ -540,17 +490,6 @@
             width: auto !important;   
             flex-grow: 0 !important;  
         }
-
-        .swal2-actions {
-            gap: 1rem;
-        }
-
-        .swal2-styled.swal2-confirm,
-        .swal2-styled.swal2-cancel {
-            border: none;
-            box-shadow: none !important;
-        }
-
     </style>
 </head>
 
@@ -583,7 +522,7 @@
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href='dDaftarSidang.php'>
-                        <span class="fw-semibold">Kembali</span>
+                        <span class="NavSide__sidebar-title fw-semibold">Kembali</span>
                     </a>
                 </li>
             </ul>
@@ -660,12 +599,6 @@
             </div>
 
             <div class="button-group-bottom" id="grup-aksi-dokumen">
-                <!-- <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>                -->
                 <div class="button-group">
                     <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
                     <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
@@ -770,7 +703,7 @@
                         },
                         inputValidator: (value) => {
                             if (!value || value.trim() === '') {
-                                return 'Tidak boleh kosong!';
+                                return 'Alasan penolakan tidak boleh kosong!';
                             }
                         }
                     }).then((result) => {
@@ -804,8 +737,7 @@
         });
 
         confirmationModal.show();
-    
-    }
+        }
     </script>
 
 </body>

@@ -12,7 +12,7 @@ if (isset($_SESSION['pesan'])) {
 if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
     die("Error: ID Sidang tidak valid atau tidak ditemukan di URL.");
 }
-$id_sidang = (int) $_GET['id_sidang'];
+$id_sidang = (int) $_SESSION['selected_sidang_id'];
 
 // === LOGIKA FETCH DATA MENGGUNAKAN FUNGSI SQLSRV ===
 $nama_mahasiswa = '';
@@ -459,7 +459,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="revision-card mt-4">
                     <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
                     <form id="revisionForm"
-                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id_sidang=' . $id_sidang; ?>"
+                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
                         method="POST" enctype="multipart/form-data">
                         <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
                             <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i>
