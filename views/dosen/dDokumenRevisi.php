@@ -468,7 +468,7 @@
             background-color: #4B68FB;
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             padding: 0 25px;
             cursor: pointer;
             font-size: 0.95rem;
@@ -536,6 +536,17 @@
             width: auto !important;   
             flex-grow: 0 !important;  
         }
+
+        .swal2-actions {
+            gap: 1rem;
+        }
+
+        .swal2-styled.swal2-confirm,
+        .swal2-styled.swal2-cancel {
+            border: none;
+            box-shadow: none !important;
+        }
+
     </style>
 </head>
 
@@ -712,42 +723,79 @@
 
         // --- Modal Logic ---
         function showConfirmationModal(action) {
-            const confirmationModalElement = document.getElementById('confirmationModal');
-            if (!confirmationModalElement) {
-                console.error('Modal HTML dengan id "confirmationModal" tidak ditemukan!');
-                return;
-            }
+        const confirmationModalElement = document.getElementById('confirmationModal');
+        if (!confirmationModalElement) {
+            console.error('Modal HTML dengan id "confirmationModal" tidak ditemukan!');
+            return;
+        }
+        
+        const confirmationModal = new bootstrap.Modal(confirmationModalElement);
+        const modalText = document.getElementById('confirmationModalText');
+        const confirmButton = document.getElementById('btnConfirmAction');
+
+        let actionText = action === 'Disetujui' ? 'menyetujui' : 'menolak';
+        
+        modalText.innerText = `Apakah Anda yakin ingin ${actionText} dokumen revisi ini?`;
+
+        const newConfirmButton = confirmButton.cloneNode(true);
+        confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+
+        newConfirmButton.addEventListener('click', function() {
+            confirmationModal.hide(); 
             
-            const confirmationModal = new bootstrap.Modal(confirmationModalElement);
-            const modalText = document.getElementById('confirmationModalText');
-            const confirmButton = document.getElementById('btnConfirmAction');
-
-            let actionText = action === 'Disetujui' ? 'menyetujui' : 'menolak';
-            
-            modalText.innerText = `Apakah Anda yakin ingin ${actionText} dokumen revisi ini?`;
-
-            // Mengatasi duplikasi event listener
-            const newConfirmButton = confirmButton.cloneNode(true);
-            confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
-
-            newConfirmButton.addEventListener('click', function() {
-                confirmationModal.hide(); 
-                
-                // Jeda sedikit agar transisi modal tertutup mulus
-                setTimeout(function() {
+            setTimeout(function() {
+                if (action === 'Ditolak') {
+                    Swal.fire({
+                        title: 'Alasan Penolakan',
+                        input: 'textarea',
+                        inputLabel: 'Catatan:',
+                        inputPlaceholder: 'Masukan catatan di sini...',
+                        showCancelButton: true,
+                        confirmButtonText: 'Kirim',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: 'btn btn-setujui',
+                            cancelButton: 'btn btn-tolak'
+                        },
+                        inputValidator: (value) => {
+                            if (!value || value.trim() === '') {
+                                return 'Alasan penolakan tidak boleh kosong!';
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: `Dokumen revisi telah berhasil ditolak.`,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // --- PERUBAHAN 1: NAVIGASI SETELAH TOLAK ---
+                                window.location.href = 'dDaftarSidang.php';
+                            });
+                            
+                            console.log('Catatan Penolakan:', result.value);
+                        }
+                    });
+                } else { // Jika aksi adalah 'Disetujui'
                     Swal.fire({
                         title: 'Berhasil!',
-                        text: `Dokumen revisi telah berhasil ${action.toLowerCase()}.`,
+                        text: `Dokumen revisi telah berhasil disetujui.`,
                         icon: 'success',
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#4B68FB'
+                    }).then(() => {
+                        // --- PERUBAHAN 2: NAVIGASI SETELAH SETUJUI ---
+                        window.location.href = 'dNilaiAkhir.php';
                     });
-                }, 500); 
-            });
+                }
+            }, 500); 
+        });
 
-            // Tampilkan modal konfirmasi
-            confirmationModal.show();
-        }
+        confirmationModal.show();
+    
+    }
     </script>
 
 </body>
