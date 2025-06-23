@@ -170,7 +170,13 @@ if ($result === false) {
                                 else echo "Judul/Mata Kuliah";
                                 ?>
                             </th>
-                            <th scope="col">Pembimbing</th>
+                            <th scope="col" id="thDynamicHeader">
+                                 <?php
+                                if ($filter === 'ta') echo "Pembimbing";
+                                elseif ($filter === 'semester') echo "Pengampu";
+                                else echo "Pembimbing/Pengampu";
+                                ?>
+                            </th>
                             <th scope="col" style="text-align: center;">Aksi</th>
                         </tr>
                     </thead>
@@ -184,7 +190,7 @@ if ($result === false) {
                                     <td data-label="Nomor"><?= $counter ?></td>
                                     <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                                     <td data-label="Judul/MK">
-                                        <?= htmlspecialchars(($row['jenis_sidang'] == 0) ? $row['judul'] : $row['nama_matkul']) ?>
+                                        <?= htmlspecialchars(($row['jenis_sidang'] == 0) ? $row['judul'] : $row['judul']) ?>
                                     </td>
                                     <td data-label="Pembimbing"><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td data-label="Aksi">
