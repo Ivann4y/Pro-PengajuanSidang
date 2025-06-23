@@ -108,13 +108,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 padding-left: 19.5vw;
             }
 
-            .img-topLeft{
+            .img-topLeft {
                 position: absolute;
                 top: 95%;
                 right: 12%;
             }
 
-            .img-buttomLeft{
+            .img-buttomLeft {
                 /* position: absolute; */
                 display: block;
                 bottom: 95%;
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .img-topRight,
-            .img-buttomRight{
+            .img-buttomRight {
                 display: none;
             }
 
