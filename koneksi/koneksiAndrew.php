@@ -28,7 +28,7 @@ $conn = null;
 foreach ($serverList as $serverName) {
     $conn = sqlsrv_connect($serverName, $connectionOptions);
     if ($conn !== false) {
-        echo "Connected to: $serverName<br>";
+        // echo "Connected to: $serverName<br>";
         break; // stop once successful
     }
 }

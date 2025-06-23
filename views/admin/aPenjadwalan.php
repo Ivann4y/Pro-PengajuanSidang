@@ -1,5 +1,5 @@
 <?php
-require "../../koneksi/koneksiDhonnan.php";
+require "../../koneksi/koneksiAndrew.php";
 
 // echo "Koneksi Berhasil!"; // Comment this out for normal use
 $selectedTipe = $_GET['tipe'] ?? 'semua';
