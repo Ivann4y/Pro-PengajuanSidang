@@ -576,6 +576,12 @@
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href='dDaftarSidang.php'>
+                        <span class="fw-semibold">Kembali</span>
+                    </a>
+                </li>
             </ul>
         </div>
 
@@ -650,12 +656,12 @@
             </div>
 
             <div class="button-group-bottom" id="grup-aksi-dokumen">
-                <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
+                <!-- <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
-                </button>               
+                </button>                -->
                 <div class="button-group">
                     <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
                     <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
@@ -760,7 +766,7 @@
                         },
                         inputValidator: (value) => {
                             if (!value || value.trim() === '') {
-                                return 'Alasan penolakan tidak boleh kosong!';
+                                return 'Tidak boleh kosong!';
                             }
                         }
                     }).then((result) => {
