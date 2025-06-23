@@ -94,14 +94,6 @@ if ($result === false) {
                             class="fw-semibold">Daftar Sidang</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
                         data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aBeranda.php"><span
-                            class="fw-semibold">Beranda</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span
-                            class="fw-semibold">Penjadwalan</span></a></li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
-                            class="fw-semibold">Daftar Sidang</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
-                        data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
             </ul>
         </div>
 
@@ -196,9 +188,8 @@ if ($result === false) {
                                     </td>
                                     <td data-label="Pembimbing"><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td data-label="Aksi">
-                                        <?php $detailPage = ($row['jenis_sidang'] == 0) ? 'aDetailSidangTA.php' : 'aDetailSidangSem.php'; ?>
                                         <button type="button" class="btn detail-btn"
-                                            onclick="window.location.href='<?= $detailPage ?>?id=<?= $row['id_sidang'] ?>'">
+                                            onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
                                             <i class="fa-solid fa-file-signature"></i>
                                         </button>
                                     </td>

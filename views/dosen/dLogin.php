@@ -230,9 +230,9 @@ $role = "dosen";
                             placeholder="NIP"
                             value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
                         <?php if ($error === 'empty'): ?>
-                            <small class="text-danger">NIM dan Kata Sandi harus diisi!</small>
+                            <small class="text-danger">NIP dan Kata Sandi harus diisi!</small>
                         <?php elseif ($error === '1'): ?>
-                            <small class="text-danger">NIM atau Kata Sandi salah!</small>
+                            <small class="text-danger">NIP atau Kata Sandi salah!</small>
                         <?php endif; ?>
                     </div>
 
