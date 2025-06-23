@@ -35,8 +35,9 @@
     <!-- Link ke file JavaScript SweetAlert2 untuk membuat notifikasi pop-up yang menarik -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Link ke stylesheet kustom lokal (style.css) -->
-    <link rel="stylesheet" href="../../css/style.css" />
+    <!-- <link rel="stylesheet" href="../../css/style.css" /> -->
     <link rel="stylesheet" href="../../assets/css/mNilaiakhir.css">
+
         <link rel="stylesheet" href="../../assets/js/mNilaiakhir.js">
     <!-- Link ke stylesheet kustom lokal tambahan (extra/style.css) -->
     <link rel="stylesheet" href="../../extra/style.css" />
