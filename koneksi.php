@@ -1,9 +1,9 @@
 <?php
-$serverName = "celsi.tail7d1f1d.ts.net,1433";
+$serverName = "DESKTOP-M7H7C9C\SQLEXPRESS01";
 $connectionOptions = [
     "Database" => "SistemSidang1",
-    "Uid" => "sqladmin",  
-    "PWD" => "sistemsidang",  
+    // "Uid" => "sqladmin",  
+    // "PWD" => "sistemsidang",  
     "TrustServerCertificate" => true,
 ];
 
