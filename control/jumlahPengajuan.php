@@ -1,5 +1,5 @@
 <?php
-include '../koneksi.php';
+include '../koneksi/koneksiAndrew.php';
 
 $query = "SELECT COUNT(*) AS jumlah_pengajuan_perlu_aksi FROM Sidang WHERE status_ajuan IS NULL";
 $stmt = sqlsrv_query($conn, $query);

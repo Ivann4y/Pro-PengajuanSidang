@@ -1,7 +1,7 @@
 <?php
 // <-- BAGIAN AWAL TETAP SAMA -->
 // session_start(); // Dinonaktifkan untuk pengujian
-require "../../koneksi.php"; // Pastikan path ini benar
+require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
 // ===================================================================================
 // BAGIAN 1: KEAMANAN DAN INISIALISASI
@@ -406,7 +406,18 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                 </a>
             </li>
+            <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
+                </li>
 
+
+             <li class="NavSide__sidebar-item">
+                <b></b><b></b>
+                <a href="dDaftarSidang.php">
+                    <span class="fw-semibold NavSide__sidebar-title">kembali</span>
+                </a>
+            </li>
 
             
             

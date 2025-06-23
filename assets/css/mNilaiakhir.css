@@ -1,4 +1,19 @@
-    /* Style untuk judul utama halaman */
+       /* Mengatur font default dan warna teks untuk elemen-elemen utama di halaman. */
+    /* '!important' digunakan untuk memastikan style ini mengalahkan style lain (misal dari Bootstrap). */
+
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    body {
+        font-family: "Poppins", sans-serif !important;
+        background-color: #ffffff !important; /* Background body putih bersih */
+     }
+     
+   /* Style untuk judul utama halaman */
     .main-title {
         font-weight: 700 !important; /* Ketebalan font tebal */
         color: #000000; /* Warna teks gelap */
@@ -143,6 +158,7 @@
     .container-fluid {
         background-color: #ffffff !important; /* Background container putih bersih */
     }
+    
     /* === NAVBAR SIDEBAR HOVER EFFECTS === */
     /* Efek hover untuk item navigasi yang AKTIF (yang berwarna putih dengan background biru) */
     .NavSide__sidebar-item.NavSide__sidebar-item--active a:hover {
