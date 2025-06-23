@@ -61,6 +61,10 @@
               <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
             </a>
           </li>
+          <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
+                </li>
          </ul>
       </div>
 
@@ -228,15 +232,8 @@
       
       </div>
        <div class="row mt-5 justify-content-between">
-        <div class="col-auto">
-           <button class="btn btn-kembali" onclick="pindahKeHalamanDaftarSidang()">
-    <span class="icon-circle">
-      <i class="fa-solid fa-arrow-left"></i>
-    </span>
-    Kembali
-  </button>
         </div>
-        <div class="col-auto">
+        <div class="col-12 d-flex justify-content-end">
           <button class="btn btn-setujui" onclick="bukaKonfirmasiModalKirim()">
             Kirim
           </button>
