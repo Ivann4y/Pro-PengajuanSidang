@@ -403,14 +403,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <a href="mdetailSidang.php?id_sidang=<?php echo $id_sidang; ?>">
                         <span class="fw-semibold">Detail Pengajuan</span>
                     </a>
-                    <a href="mdetailSidang.php?id_sidang=<?= $id_sidang ?>"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="mPerbaikan.php?id_sidang=<?php echo $id_sidang; ?>">
                         <span class="fw-semibold">Perbaikan</span>
                     </a>
-                    <a href="mPerbaikan.php?id_sidang=<?= $id_sidang ?>"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
