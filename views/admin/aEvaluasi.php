@@ -37,6 +37,10 @@
                     <b></b><b></b>
                     <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
                 </li>
+                 <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
   
             </ul>
         </div>
@@ -182,7 +186,7 @@
             Kembali
         </button>
     </div> -->
-          <div class="button-group-bottom mt-4">
+          <!-- <div class="button-group-bottom mt-4">
                 <button  id= "btnKembali"class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
@@ -191,7 +195,7 @@
 </button>
     
         
-    </div>
+    </div> -->
 
   
 
