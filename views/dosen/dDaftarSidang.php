@@ -1,7 +1,7 @@
 <?php
 // <-- TETAP SAMA -->
 session_start();
-include "../../koneksi.php";
+include "../../koneksi/koneksiAndrew.php";
 
 if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
 
