@@ -1,7 +1,8 @@
+//Argha arybawa Pasha
+    // <!-- Memuat jQuery dari CDN. Diperlukan untuk beberapa fungsionalitas Bootstrap dan script custom. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-       // Script ini menangani interaksi pada sidebar navigasi.
-    let menuToggle = document.querySelector(".NavSide__toggle");
+    // <!-- === JAVASCRIPT KUSTOM UNTUK HALAMAN INI === -->    // Script ini menangani interaksi pada sidebar navigasi.
 
     // 1. Fungsionalitas Toggle Sidebar untuk Mobile
     // Memilih elemen tombol toggle (hamburger menu)
@@ -9,6 +10,7 @@
 
     // Memilih elemen sidebar utama
     let sidebar = document.getElementById("main-sidebar");
+
     // Menambahkan event listener 'click' pada tombol toggle
     menuToggle.onclick = function () {
         // Menambah/menghapus kelas '...--active' pada tombol, biasanya untuk mengubah ikon (dari hamburger ke 'x')
