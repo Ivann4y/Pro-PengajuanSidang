@@ -117,7 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <!-- <link rel="stylesheet" href="../../assets/css/mPerbaikan.css"> -->
 
     <style>
         /* === CSS LENGKAP DAN BERSIH UNTUK SIDEBAR DAN KONTEN (SUDAH DISESUAIKAN) === */
@@ -445,7 +446,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="revision-card mt-4">
                     <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
                     <form id="revisionForm"
-                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
+                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id_sidang=' . $id_sidang; ?>"
                         method="POST" enctype="multipart/form-data">
                         <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
                             <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i>
