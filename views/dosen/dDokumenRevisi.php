@@ -365,7 +365,7 @@
             
             #grup-aksi-dokumen {
                 flex-direction: row !important; 
-                justify-content: space-between !important;
+                justify-content: flex-end !important;
                 gap: 0 !important; 
                 margin-top: 2.5rem;
             }
@@ -388,6 +388,7 @@
             margin-top: 0px; 
             display: flex;
             align-items: center;
+            justify-content: flex-end; 
             gap: 1rem;
             flex-wrap: wrap;
         }
