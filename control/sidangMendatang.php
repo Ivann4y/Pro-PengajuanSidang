@@ -1,9 +1,7 @@
-
-
 <?php
 //generate JSON sidangMendatang untuk dashboard
 
-include '../koneksi.php';
+include '../koneksi/koneksiAndrew.php';
 
 $query = "SELECT tanggal_sidang, judul FROM View_SidangMendatang ORDER BY tanggal_sidang ASC";
 $stmt = sqlsrv_query($conn, $query);
