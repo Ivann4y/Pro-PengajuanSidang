@@ -1,5 +1,5 @@
 <?php
-require "../../koneksi.php"; // Pastikan path ini benar
+require "../../koneksi/koneksiAbram.php"; // Pastikan path ini benar
 
 // --- PERSIAPAN AWAL (Tidak ada perubahan) ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';

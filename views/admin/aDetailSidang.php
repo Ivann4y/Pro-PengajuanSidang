@@ -1,5 +1,5 @@
 <?php
-require "../../koneksi.php";
+require "../../koneksi/koneksiAbram.php";
 
 // 1. Ambil ID dari URL
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -790,6 +790,10 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
                 </li>
             </ul>
         </div>
