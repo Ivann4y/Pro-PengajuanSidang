@@ -1,5 +1,5 @@
 <?php
-require "../../koneksi.php"; // Pastikan path ini benar
+require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
 // --- PERSIAPAN AWAL (Tidak ada perubahan) ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
@@ -204,7 +204,11 @@ if ($result === false) {
                                     <td data-label="Pembimbing"><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td data-label="Aksi">
                                         <button type="button" class="btn detail-btn"
+<<<<<<< HEAD
                                             onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>&jenis=<?= $row['jenis_sidang'] ?>'">
+=======
+                                            onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
+>>>>>>> 907f4c20515d3c450d034a3bf9393989deb8b085
                                             <i class="fa-solid fa-file-signature"></i>
                                         </button>
                                     </td>

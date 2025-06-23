@@ -1,5 +1,5 @@
 <?php
-include '../koneksi.php';
+include '../koneksi/koneksiAndrew.php';
 
 $query = "SELECT judul FROM View_aPerluPenjadwalan ORDER BY id_sidang ASC";
 $stmt = sqlsrv_query($conn, $query);

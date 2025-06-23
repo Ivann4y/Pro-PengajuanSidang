@@ -1,7 +1,7 @@
 <?php
 // <-- BAGIAN AWAL TETAP SAMA -->
 // session_start(); // Dinonaktifkan untuk pengujian
-require "../../koneksi.php"; // Pastikan path ini benar
+require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
 // ===================================================================================
 // BAGIAN 1: KEAMANAN DAN INISIALISASI
@@ -157,59 +157,101 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
    <style>
     /* --- STYLE DASAR & FONT --- */
     /* Reset margin, padding, dan box-sizing untuk semua elemen agar konsisten di semua browser */
+
+    /* --- STYLE DASAR & FONT --- */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
-    /* Mengatur style dasar untuk body, termasuk warna latar dan tinggi minimum */
     body { min-height: 100vh; background-color: #ffffff; }
 
     /* --- LAYOUT UTAMA --- */
-    /* Kontainer utama yang membungkus sidebar dan konten utama, menggunakan flexbox */
     #NavSide { display: flex; min-height: 100vh; position: relative; }
-    /* Kontainer untuk area konten utama di sebelah kanan sidebar */
     #page-content-wrapper { flex-grow: 1; display: flex; flex-direction: column; position: relative; margin-left: 280px; transition: margin-left 0.5s ease-in-out; }
 
     /* --- SIDEBAR (NAVIGASI KIRI) --- */
-    /* Style utama untuk sidebar: posisi tetap, lebar, warna, dan transisi */
     .NavSide__sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; border-left: 5px solid #4B68FB; background: #4B68FB; overflow-x: hidden; overflow-y: auto; z-index: 1000; display: flex; flex-direction: column; transition: transform 0.5s ease-in-out, width 0.5s ease-in-out; }
-    /* Style untuk area brand/logo di sidebar */
     .NavSide__sidebar-brand { padding: 10% 5% 50% 5%; text-align: center; }
-    /* Style untuk gambar logo di dalam brand, filter untuk mengubah warna menjadi putih */
     .NavSide__sidebar-brand img { width: 90%; max-width: 180px; height: auto; display: inline-block; filter: brightness(0) invert(1); }
-    /* Kontainer untuk daftar menu navigasi */
     .NavSide__sidebar-nav { width: 100%; padding-left: 0; padding-top: 0; list-style: none; flex-grow: 1; }
-    /* Style dasar untuk setiap item menu di sidebar */
-    .NavSide__sidebar-item { position: relative; display: block; width: 100%; border-top-left-radius: 20px; border-bottom-left-radius: 20px; margin-bottom: 15px; }
-    /* Style untuk link (tag <a>) di dalam item menu */
-    .NavSide__sidebar-item a { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; text-decoration: none; color: rgb(252, 252, 252); height: 60px; box-sizing: border-box; }
-    /* Memastikan link yang tidak aktif tetap berwarna putih */
-    .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a { color: rgb(252, 252, 252); }
-    .NavSide__sidebar-item:not(.NavSide__sidebar-item--active) a:hover { color: rgb(252, 252, 252); }
-    /* Style untuk judul/teks di dalam link menu */
-    .NavSide__sidebar-title { white-space: normal; text-align: center; line-height: 1.5; }
-    /* Style untuk item menu yang sedang aktif (warna latar menjadi putih) */
-    .NavSide__sidebar-item.NavSide__sidebar-item--active { background: #ffffff; }
-    /* Warna teks untuk link yang aktif menjadi biru */
-    .NavSide__sidebar-item.NavSide__sidebar-item--active a { color: #4B68FB !important; }
     
-    /* Efek Sudut Melengkung pada Item Aktif (trik dengan elemen 'b') */
-    /* Elemen 'b' ini digunakan untuk membuat ilusi lengkungan di atas dan bawah item aktif */
-    .NavSide__sidebar-item b:nth-child(1), .NavSide__sidebar-item b:nth-child(2) { position: absolute; height: 20px; width: 100%; background: rgb(255, 255, 255); display: none; }
-    .NavSide__sidebar-item b:nth-child(1) { top: -20px; } /* Posisi lengkungan atas */
+    /* ======================================================= */
+    /* === PERBAIKAN UTAMA DIMULAI DARI SINI === */
+    /* ======================================================= */
+
+    /* Style dasar untuk setiap item menu di sidebar */
+    .NavSide__sidebar-item { 
+        position: relative; 
+        display: block; 
+        width: 100%; 
+        border-top-left-radius: 20px; 
+        border-bottom-left-radius: 20px; 
+        margin-bottom: 15px; 
+    }
+    
+    /* Style untuk link (tag <a>) di dalam item menu */
+    .NavSide__sidebar-item a { 
+        position: relative; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        width: 100%; 
+        text-decoration: none; 
+        color: rgb(252, 252, 252); 
+        height: 60px; 
+        box-sizing: border-box; 
+    }
+
+    /* Style untuk judul/teks di dalam link menu */
+    .NavSide__sidebar-title { 
+        white-space: normal; 
+        text-align: center; 
+        line-height: 1.5; 
+    }
+    
+    /* Style untuk item menu yang sedang AKTIF (latar putih, teks biru) */
+    .NavSide__sidebar-item.NavSide__sidebar-item--active { 
+        background: #ffffff; 
+    }
+    .NavSide__sidebar-item.NavSide__sidebar-item--active a { 
+        color: #4B68FB !important; 
+    }
+    
+    /* Efek Sudut Melengkung pada Item Aktif (menggunakan elemen <b>) */
+    .NavSide__sidebar-item b {
+        position: absolute;
+        height: 20px;
+        width: 100%;
+        background: #ffffff; /* Warna ini HARUS SAMA dengan background item aktif */
+        display: none;       /* Sembunyikan secara default */
+    }
+    .NavSide__sidebar-item b:nth-child(1) { top: -20px; }  /* Posisi lengkungan atas */
     .NavSide__sidebar-item b:nth-child(2) { bottom: -20px; } /* Posisi lengkungan bawah */
-    /* Pseudo-elemen '::before' untuk menciptakan bentuk lengkungannya dengan border-radius */
-    .NavSide__sidebar-item b:nth-child(1)::before, .NavSide__sidebar-item b:nth-child(2)::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #4B68FB; display: block; }
+
+    /* Pseudo-elemen '::before' untuk menciptakan bentuk lengkungannya */
+    .NavSide__sidebar-item b::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #4B68FB; /* Warna ini HARUS SAMA dengan background sidebar */
+    }
     .NavSide__sidebar-item b:nth-child(1)::before { border-bottom-right-radius: 20px; }
     .NavSide__sidebar-item b:nth-child(2)::before { border-top-right-radius: 20px; }
-    /* Menampilkan elemen 'b' (lengkungan) hanya pada item yang aktif */
-    .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1), .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) { display: block; }
+
+    /* KUNCI UTAMA: Tampilkan elemen lengkungan HANYA pada item yang aktif */
+    .NavSide__sidebar-item.NavSide__sidebar-item--active b {
+        display: block;
+    }
+    
+    /* ======================================================= */
+    /* === AKHIR DARI BAGIAN YANG DIPERBAIKI === */
+    /* ======================================================= */
 
     /* --- KONTEN UTAMA & KOMPONENNYA --- */
-    /* Kontainer untuk konten utama halaman */
     .NavSide__main-content { flex-grow: 1; padding: 20px 0.7cm 20px calc(20px + 0.7cm); margin-right: 0; overflow-y: auto; padding-top: 20px; }
-    /* Style untuk judul utama (H2) */
     .NavSide__main-content h2 { margin-bottom: 0.9cm; font-weight: 700; }
-    /* Style untuk sub-judul (H3) */
     .NavSide__main-content h3 { font-weight: 700; font-size: 1.4rem; margin-bottom: 0.2cm; }
-    
+
     /* Badge Status */
     .status-badge { background-color: #FFA3A3; color: black; border-radius: 20px; padding: 8px 18px; display: inline-block; font-size: 0.875rem; box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08); font-weight: bold; margin-bottom: 1.2cm; }
     .status-badge.approved { background-color: #4BFBAF; } /* Warna badge jika statusnya 'approved' */
@@ -301,14 +343,14 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     @media (max-width: 700px) {
         /* Sidebar menjadi slide-in menu (tersembunyi secara default) */
         .NavSide__sidebar { width: 280px; transform: translateX(-280px); border-left-width: 0; z-index: 1040; padding-top: 35px; }
-        .NavSide__sidebar.NavSide__sidebar--active-mobile { transform: translateX(0); box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); }
+        .NavSide_sidebar.NavSide_sidebar--active-mobile { transform: translateX(0); box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); }
         .NavSide__sidebar-brand { padding: 10% 5% 50% 5%; }
         .NavSide__sidebar-brand img { width: 90%; }
         .NavSide__sidebar-nav { padding-top: 3%; }
         .NavSide__sidebar-item a { height: 50px; }
         /* Tombol Toggle (hamburger menu) ditampilkan */
         .NavSide__toggle { display: block; }
-        .NavSide__toggle.NavSide__toggle--active { transform: translateX(280px); }
+        .NavSide_toggle.NavSide_toggle--active { transform: translateX(280px); }
         /* Konten utama memenuhi seluruh layar */
         #page-content-wrapper { margin-left: 0; }
         /* Topbar ditampilkan di mobile */
@@ -330,45 +372,61 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 </style>
 </head>
 <body>
-    <div id="NavSide">
-
-      <div id="main-sidebar" class="NavSide__sidebar">
+  <div id="NavSide">
+    <div id="main-sidebar" class="NavSide__sidebar">
         <div class="NavSide__sidebar-brand">
-          <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
-
-        <div id="main-sidebar" class="NavSide__sidebar">
-            <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /></div>
-            <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="dEvaluasiSidang.php"><span class="fw-semibold NavSide__sidebar-title">Evaluasi</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="dDokumenRevisi.php"><span class="fw-semibold NavSide__sidebar-title">Dokumen</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="dNilaiAkhir.php"><span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span></a></li>
-            </ul>
-
+            <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
         </div>
+        
+        <!-- PERBAIKAN UTAMA ADA DI DALAM 'ul' INI -->
         <ul class="NavSide__sidebar-nav">
-          <li class="NavSide__sidebar-item ">
-            <b></b>
-            <b></b>
-             <a href="dEvaluasiSidang.php">
-              <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
-            </a>
-          </li>
-          <li class="NavSide__sidebar-item">
-            <b></b>
-            <b></b>
-            <a href="dDokumenRevisi.php">
-              <span class="NavSide__sidebar-title fw-semibold">Dokumen</span>
-            </a>
-          </li>
-          <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-            <b></b>
-            <b></b>
-            <a href="dNilaiAkhir.php">
-              <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-            </a>
-          </li>
-         </ul>
-      </div>
+            
+            <!-- PERBAIKAN: Nama kelas diperbaiki dan dipisah dengan spasi -->
+            <!-- Item ini akan menjadi aktif karena memiliki DUA kelas -->
+            <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <b></b><b></b>
+                <a href="dEvaluasiSidang.php">
+                    <!-- PERBAIKAN: Nama kelas span juga diperbaiki -->
+                    <span class="fw-semibold NavSide__sidebar-title">Evaluasi</span>
+                </a>
+            </li>
+            
+            <!-- PERBAIKAN: Nama kelas diperbaiki -->
+            <li class="NavSide__sidebar-item">
+                <b></b><b></b>
+                <a href="dDokumenRevisi.php">
+                    <span class="fw-semibold NavSide__sidebar-title">Dokumen</span>
+                </a>
+            </li>
+            
+            <!-- PERBAIKAN: Nama kelas diperbaiki -->
+            <li class="NavSide__sidebar-item">
+                <b></b><b></b>
+                <a href="dNilaiAkhir.php">
+                    <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
+                </a>
+            </li>
+            <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
+                </li>
+
+
+             <li class="NavSide__sidebar-item">
+                <b></b><b></b>
+                <a href="dDaftarSidang.php">
+                    <span class="fw-semibold NavSide__sidebar-title">kembali</span>
+                </a>
+            </li>
+
+            
+            
+        </ul>
+    </div>
+    
+    <!-- Sisa dari halaman Anda (seperti page-content-wrapper, dll.) -->
+    <!-- ... -->
+
         <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>

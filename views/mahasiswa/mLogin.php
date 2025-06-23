@@ -1,6 +1,6 @@
 <?php
 
-require "../../koneksi.php";
+require "../../koneksi/koneksiAndrew.php";
 
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Mahasiswa') {
