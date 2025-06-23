@@ -94,14 +94,6 @@ if ($result === false) {
                             class="fw-semibold">Daftar Sidang</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
                         data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aBeranda.php"><span
-                            class="fw-semibold">Beranda</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span
-                            class="fw-semibold">Penjadwalan</span></a></li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
-                            class="fw-semibold">Daftar Sidang</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
-                        data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
             </ul>
         </div>
 

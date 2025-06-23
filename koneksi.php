@@ -1,9 +1,9 @@
 <?php
-$serverName = "sidang5.database.windows.net";
+$serverName = "celsi.tail7d1f1d.ts.net,1433";
 $connectionOptions = [
     "Database" => "SistemSidang1",
     "Uid" => "sqladmin",  
-    "PWD" => "RPLsidang5",  
+    "PWD" => "sistemsidang",  
     "TrustServerCertificate" => true,
 ];
 
