@@ -1,4 +1,5 @@
 <?php
+// aPenjadwalan.php
 require "../../koneksi/koneksiDhonnan.php";
 
 // echo "Koneksi Berhasil!"; // Comment this out for normal use
