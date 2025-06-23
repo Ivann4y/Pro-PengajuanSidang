@@ -1,6 +1,7 @@
 <?php
-require "../../koneksi.php";
+require "../../koneksi/koneksiDhonnan.php";
 
+// echo "Koneksi Berhasil!"; // Comment this out for normal use
 $selectedTipe = $_GET['tipe'] ?? 'semua';
 $selectedStatus = $_GET['status'] ?? 'semua';
 
@@ -443,8 +444,7 @@ if ($selectedTipe == 'TA') {
 
     .table-admin-custom tbody tr.isiTabel:hover {
         color: #FFFFFF;
-    }
-
+    } 
     .detail-btn {
         border: none !important;
         background-color: transparent !important;
