@@ -35,33 +35,16 @@
     <!-- Link ke file JavaScript SweetAlert2 untuk membuat notifikasi pop-up yang menarik -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Link ke stylesheet kustom lokal (style.css) -->
-    <link rel="stylesheet" href="../../css/style.css" />
+    <!-- <link rel="stylesheet" href="../../css/style.css" /> -->
     <link rel="stylesheet" href="../../assets/css/mNilaiakhir.css">
+
+        <link rel="stylesheet" href="../../assets/js/mNilaiakhir.js">
     <!-- Link ke stylesheet kustom lokal tambahan (extra/style.css) -->
     <link rel="stylesheet" href="../../extra/style.css" />
     <!-- Link ke stylesheet Font Awesome dari CDN untuk menggunakan library ikon yang lebih beragam -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <title>Mahasiswa - Nilai Akhir</title> <!-- Judul yang akan muncul di tab browser -->
-
-<!-- === CSS KUSTOM UNTUK HALAMAN INI === -->
-<style>
-    /* Mengatur font default dan warna teks untuk elemen-elemen utama di halaman. */
-    /* '!important' digunakan untuk memastikan style ini mengalahkan style lain (misal dari Bootstrap). */
-
-        * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
-    }
-
-    body {
-        font-family: "Poppins", sans-serif !important;
-        background-color: #ffffff !important; /* Background body putih bersih */
-     }
-
-</style>
   </head>
   <body>
     <!-- Container utama untuk layout sidebar tdan konten -->
@@ -211,47 +194,5 @@
 
     </div>
 </main>
-    
-
-    <!-- Memuat jQuery dari CDN. Diperlukan untuk beberapa fungsionalitas Bootstrap dan script custom. -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- === JAVASCRIPT KUSTOM UNTUK HALAMAN INI === -->
-    <script>
-    // Script ini menangani interaksi pada sidebar navigasi.
-
-    // 1. Fungsionalitas Toggle Sidebar untuk Mobile
-    // Memilih elemen tombol toggle (hamburger menu)
-    let menuToggle = document.querySelector(".NavSide__toggle");
-    // Memilih elemen sidebar utama
-    let sidebar = document.getElementById("main-sidebar");
-
-    // Menambahkan event listener 'click' pada tombol toggle
-    menuToggle.onclick = function () {
-        // Menambah/menghapus kelas '...--active' pada tombol, biasanya untuk mengubah ikon (dari hamburger ke 'x')
-        menuToggle.classList.toggle("NavSide__toggle--active");
-        // Menambah/menghapus kelas '...--active-mobile' pada sidebar untuk menampilkan atau menyembunyikannya
-        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-    };
-
-    // 2. Fungsionalitas untuk Menandai Item Menu yang Aktif
-    // Memilih semua item menu di sidebar
-    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-    // Melakukan loop (iterasi) untuk setiap item menu
-    for (let i = 0; i < listItems.length; i++) {
-        // Menambahkan event listener 'click' pada setiap item menu
-        listItems[i].onclick = function () {
-            // Cek jika item yang diklik belum memiliki kelas '...--active'
-            if(!this.classList.contains("NavSide__sidebar-item--active")) {
-                // Hapus kelas '...--active' dari SEMUA item menu
-                for (let j = 0; j < listItems.length; j++) {
-                    listItems[j].classList.remove("NavSide__sidebar-item--active");
-                }
-                // Tambahkan kelas '...--active' HANYA ke item yang baru saja diklik
-                this.classList.add("NavSide__sidebar-item--active");
-            }
-        };
-    }
-    </script>
-  </body>
+</body>
 </html>

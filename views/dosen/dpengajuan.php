@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 if ($_SESSION['role'] !== 'dosen') {
@@ -6,6 +7,7 @@ if ($_SESSION['role'] !== 'dosen') {
 }
 include '../../koneksi/koneksiAndrew.php';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -124,276 +126,62 @@ include '../../koneksi/koneksiAndrew.php';
                                     <th scope="col">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="dPengajuanTA">
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                            
+                        <tbody id="dPengajuanTA">
+                            <?php
+                           $no = 1;
+                        $sqlTA = "SELECT id_kelompok, judul, jenis_sidang, nama_dosen FROM Sidang WHERE TipeSidang = 'TA'";
+                        $resultTA = sqlsrv_query($conn, $sqlTA);
 
+                        if ($resultTA && sqlsrv_has_rows($resultTA)) {
+                            while ($row = sqlsrv_fetch_array($resultTA, SQLSRV_FETCH_ASSOC)) {
+                                ?>
                                 <tr class="isiTabel jadiBiru">
-                                    <td>2</td>
-                                    <td>0920240053</td>
-                                    <td>Nayaka Ivanna</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
+                                    <td><?= $no++; ?></td>
+                                    <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
+                                    <td><?= htmlspecialchars($row['judul']); ?></td>
+                                    <td><?= htmlspecialchars($row['jenis_sidang']); ?></td>
+                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
                                     <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240053', 'TA')">
+                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'TA')">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </td>
                                 </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Tugas Akhir</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'TA')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tbody id="dPengajuanSem" style="display: none;">
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>1</td>
-                                    <td>0920240033</td>
-                                    <td>M. Harris Nur S.</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240033', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>2</td>
-                                    <td>0920240053</td>
-                                    <td>Nayaka Ivanna</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240053', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="isiTabel jadiBiru">
-                                    <td>3</td>
-                                    <td>0920240055</td>
-                                    <td>Nur Widya Astuti</td>
-                                    <td>Pemrograman 2</td>
-                                    <td>Timotius Victory</td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('0920240055', 'Semester')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-
-                            </tbody>
+                                <?php
+                            }
+                        } else {
+                            echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
+                        }
+                            ?>
+                        </tbody>
+                        <tbody id="dPengajuanSem" style="display: none;">
+                            <?php
+                            $no = 1;
+                            $sqlSem = "SELECT id_kelompok, nim, nama_mhs, nama_matkul, nama_dosen FROM Sidang WHERE TipeSidang = 'Semester'";
+                            $resultSem = sqlsrv_query($conn, $sqlSem);
+                            if ($resultSem && sqlsrv_has_rows($resultSem) > 0) {
+                                while ($row = sqlsrv_fetch_assoc($resultSem)) {
+                                    ?>
+                                    <tr class="isiTabel jadiBiru">
+                                        <td><?= $no++; ?></td>
+                                        <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_mhs']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                        <td style="text-align: center;">
+                                            <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'Semester')">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                            } else {
+                                echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang Semester.</td></tr>';
+                            }
+                            ?>
+                        </tbody>
                         </table>
                         <div class="pagination-container">
                             <nav aria-label="Page navigation">

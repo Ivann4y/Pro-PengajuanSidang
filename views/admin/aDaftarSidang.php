@@ -7,6 +7,18 @@ $prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all';
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $rowsPerPage = 10;
 
+$prodiList = []; // Buat array kosong untuk menampung daftar prodi
+// Asumsi: Nama prodi ada di tabel Mahasiswa kolom 'prodi'. Sesuaikan jika berbeda.
+$prodiQuery = "SELECT DISTINCT prodi FROM dbo.Mahasiswa WHERE prodi IS NOT NULL ORDER BY prodi ASC";
+$prodiResult = sqlsrv_query($conn, $prodiQuery);
+
+if ($prodiResult) {
+    while ($row = sqlsrv_fetch_array($prodiResult, SQLSRV_FETCH_ASSOC)) {
+        // Masukkan setiap nama prodi ke dalam array
+        $prodiList[] = $row['prodi']; 
+    }
+}
+
 // --- PERBAIKAN QUERY PENGHITUNGAN TOTAL DATA ---
 $countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
                FROM Sidang s
@@ -109,8 +121,8 @@ if ($result === false) {
                     <div class="filter-container">
                         <span class="filter-label fw-semibold">Filter:</span>
                         <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" id="ddAdminSidangTypeButton" type="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
+                            <button class="btn btn-primary dropdown-toggle" id="ddAdminSidangTypeButton" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <?= $filter === 'ta' ? 'Sidang TA' : ($filter === 'semester' ? 'Sidang Semester' : 'Jenis Sidang') ?>
                             </button>
                             <ul class="dropdown-menu">
@@ -165,9 +177,12 @@ if ($result === false) {
                             <th scope="col">Kelompok</th>
                             <th scope="col" id="thDynamicHeader">
                                 <?php
-                                if ($filter === 'ta') echo "Judul Sidang";
-                                elseif ($filter === 'semester') echo "Mata Kuliah";
-                                else echo "Judul/Mata Kuliah";
+                                if ($filter === 'ta')
+                                    echo "Judul Sidang";
+                                elseif ($filter === 'semester')
+                                    echo "Mata Kuliah";
+                                else
+                                    echo "Judul/Mata Kuliah";
                                 ?>
                             </th>
                             <th scope="col" id="thDynamicHeader">
@@ -195,7 +210,11 @@ if ($result === false) {
                                     <td data-label="Pembimbing"><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td data-label="Aksi">
                                         <button type="button" class="btn detail-btn"
+<<<<<<< HEAD
+                                            onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>&jenis=<?= $row['jenis_sidang'] ?>'">
+=======
                                             onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
+>>>>>>> 907f4c20515d3c450d034a3bf9393989deb8b085
                                             <i class="fa-solid fa-file-signature"></i>
                                         </button>
                                     </td>
@@ -265,7 +284,8 @@ if ($result === false) {
             if (desktopIconsContainer) {
                 const headerIcons = desktopIconsContainer.querySelector('.header-icons');
                 function handleIconPlacement() {
-                    if (window.innerWidth <= 992) { if (mobileIconsContainer && !mobileIconsContainer.contains(headerIcons)) mobileIconsContainer.appendChild(headerIcons);
+                    if (window.innerWidth <= 992) {
+                        if (mobileIconsContainer && !mobileIconsContainer.contains(headerIcons)) mobileIconsContainer.appendChild(headerIcons);
                     } else { if (!desktopIconsContainer.contains(headerIcons)) desktopIconsContainer.appendChild(headerIcons); }
                 }
                 if (menuToggle && sidebar) {
@@ -278,7 +298,7 @@ if ($result === false) {
                 window.addEventListener('resize', handleIconPlacement);
             }
         });
-        
+
     </script>
 </body>
 
