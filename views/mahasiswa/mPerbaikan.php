@@ -1,7 +1,7 @@
 <?php
 session_start();
 // 1. PASTIKAN ANDA MEMBUAT FILE INI DAN MENGISINYA DENGAN KONEKSI DATABASE ANDA
-require "../../koneksi.php";
+require "../../koneksi/koneksiAndrew.php";
 
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
@@ -9,35 +9,30 @@ if (isset($_SESSION['pesan'])) {
     unset($_SESSION['pesan']);
 }
 
-// Ambil $id_sidang hanya dari session
-if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    die("Error: ID Sidang tidak valid atau tidak ditemukan di session.");
+// Ambil $id_sidang dari GET
+if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
+    die("Error: ID Sidang tidak valid atau tidak ditemukan di URL.");
 }
-$id_sidang = (int) $_SESSION['selected_sidang_id'];
+$id_sidang = (int) $_GET['id_sidang'];
 
-// === LOGIKA FETCH DATA DARI DATABASE (DISESUAIKAN DENGAN SKEMA ANDA) ===
+// === LOGIKA FETCH DATA DARI DATABASE (SQLSRV) ===
 $nama_mahasiswa = '';
 $status_revisi = '';
 $catatan_list = [];
 
 // Query untuk mengambil info dasar (nama mahasiswa & status)
-// ===================================================================================
-// PERUBAHAN UTAMA DI SINI: Ganti 'TOP 1' (SQL Server) menjadi 'LIMIT 1' (MySQL)
-// ===================================================================================
 $query_info = "
-    SELECT ds.status_revisi, m.nama_mhs
+    SELECT TOP 1 ds.status_revisi, m.nama_mhs
     FROM Detail_Sidang ds
     JOIN Mahasiswa m ON ds.nim = m.nim
     WHERE ds.id_sidang = ?
-    LIMIT 1 
 ";
-// Note: LIMIT 1 diletakkan di akhir query.
-
-$stmt_info = mysqli_prepare($koneksi, $query_info);
-mysqli_stmt_bind_param($stmt_info, "i", $id_sidang);
-mysqli_stmt_execute($stmt_info);
-$result_info = mysqli_stmt_get_result($stmt_info);
-$data_info = mysqli_fetch_assoc($result_info);
+$params_info = array($id_sidang);
+$stmt_info = sqlsrv_query($conn, $query_info, $params_info);
+if ($stmt_info === false) {
+    die("Query info dasar gagal: " . print_r(sqlsrv_errors(), true));
+}
+$data_info = sqlsrv_fetch_array($stmt_info, SQLSRV_FETCH_ASSOC);
 
 if (!$data_info) {
     die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan. Pastikan ID dan data di tabel Detail_Sidang sudah benar, dan kolom 'nim' sudah terisi.");
@@ -45,7 +40,7 @@ if (!$data_info) {
 $nama_mahasiswa = $data_info['nama_mhs'];
 $status_revisi = $data_info['status_revisi'];
 
-// Query untuk mengambil semua catatan revisi dari para penguji (Query ini sudah benar)
+// Query untuk mengambil semua catatan revisi dari para penguji
 $query_catatan = "
     SELECT ds.catatan_sidang, d.nama_dosen
     FROM Detail_Sidang ds
@@ -53,15 +48,13 @@ $query_catatan = "
     WHERE ds.id_sidang = ?
     ORDER BY d.nama_dosen ASC
 ";
-$stmt_catatan = mysqli_prepare($koneksi, $query_catatan);
-mysqli_stmt_bind_param($stmt_catatan, "i", $id_sidang);
-mysqli_stmt_execute($stmt_catatan);
-$result_catatan = mysqli_stmt_get_result($stmt_catatan);
-while ($row = mysqli_fetch_assoc($result_catatan)) {
+$params_catatan = array($id_sidang);
+$stmt_catatan = sqlsrv_query($conn, $query_catatan, $params_catatan);
+while ($row = sqlsrv_fetch_array($stmt_catatan, SQLSRV_FETCH_ASSOC)) {
     $catatan_list[] = $row;
 }
 
-// === LOGIKA FILE UPLOAD (DISESUAIKAN DENGAN SKEMA ANDA) ===
+// === LOGIKA FILE UPLOAD (SQLSRV) ===
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
         $folder_target = "uploads/";
@@ -74,7 +67,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (empty($pesan)) {
             $file_asli = basename($_FILES["fileInput"]["name"]);
             $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
-            // Membuat nama file unik untuk menghindari tumpang tindih
             $file_unik = 'revisi_' . $id_sidang . '_' . time() . '.' . $ekstensi_file;
             $path_target = $folder_target . $file_unik;
 
@@ -87,24 +79,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if (empty($pesan)) {
                 if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
-                    // Logika disesuaikan: UPDATE kolom, bukan INSERT baris baru.
                     $query_update_dokumen = "
                         UPDATE Detail_Sidang 
                         SET dok_revisi = ?, status_revisi = 'Menunggu Persetujuan' 
                         WHERE id_sidang = ?
                     ";
-                    $stmt_update = mysqli_prepare($koneksi, $query_update_dokumen);
-                    mysqli_stmt_bind_param($stmt_update, "si", $path_target, $id_sidang);
+                    $params_update = array($path_target, $id_sidang);
+                    $stmt_update = sqlsrv_query($conn, $query_update_dokumen, $params_update);
 
-                    if (mysqli_stmt_execute($stmt_update)) {
+                    if ($stmt_update) {
                         $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
                     } else {
-                        unlink($path_target); // Hapus file yang sudah ter-upload jika gagal update DB
+                        unlink($path_target);
                         $_SESSION['pesan'] = "Error: Gagal menyimpan informasi file ke database.";
                     }
 
-                    // Redirect untuk mencegah re-submit form
-                    header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+                    header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]) . '?id_sidang=' . $id_sidang);
                     exit();
                 } else {
                     $pesan = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
@@ -112,7 +102,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     } elseif (isset($_FILES["fileInput"])) {
-        // Logika untuk menangani error upload bawaan PHP
         switch ($_FILES["fileInput"]["error"]) {
             case UPLOAD_ERR_INI_SIZE:
             case UPLOAD_ERR_FORM_SIZE:
@@ -524,15 +513,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item ">
                     <b></b><b></b>
-                    <a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+                    <a href="mdetailSidang.php?id_sidang=<?= $id_sidang ?>"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
+                    <a href="mPerbaikan.php?id_sidang=<?= $id_sidang ?>"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                    <a href="mNilaiakhir.php?id_sidang=<?= $id_sidang ?>"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -572,7 +561,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="revision-card mt-4">
                     <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
                     <form id="revisionForm"
-                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
+                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id_sidang=' . $id_sidang; ?>"
                         method="POST" enctype="multipart/form-data">
                         <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
                             <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i>

@@ -176,7 +176,7 @@ sqlsrv_close($conn);
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPerbaikan.php">
+                    <a href="mPerbaikan.php?id_sidang=<?= $id_sidang ?>">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
