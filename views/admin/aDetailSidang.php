@@ -1,5 +1,5 @@
 <?php
-require "../../koneksi.php";
+require "../../koneksi/koneksiAndrew.php";
 
 // 1. Ambil ID dari URL
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {

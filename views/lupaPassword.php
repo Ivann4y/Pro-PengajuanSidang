@@ -246,7 +246,7 @@ switch ($role) {
                     <h2 class="fs-2 fw-bold text-center"><?= $judul ?></h2>
                     <label for="emailAstra" class="mt-3">Masukkan Email Politeknik Astra</label>
                     <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
-        
+
                     <?php if ($error === 'empty'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Email harus diisi!</div>

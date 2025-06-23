@@ -1,5 +1,5 @@
 <?php
-require "../../koneksi.php";
+require "../../koneksi/koneksiAndrew.php";
 
 $selectedTipe = $_GET['tipe'] ?? 'semua';
 $selectedStatus = $_GET['status'] ?? 'semua';
