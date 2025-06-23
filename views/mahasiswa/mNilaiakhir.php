@@ -1,4 +1,13 @@
 <!-- Argha arybawa pasha -->
+
+<?php
+session_start();
+if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
+    header("Location: mSidang.php");
+    exit();
+}
+$id_sidang = $_SESSION['selected_sidang_id'];
+?>
  
 
 
@@ -60,7 +69,7 @@
                 <!-- Item menu "Detail Pengajuan" -->
                 <li class="NavSide__sidebar-item ">
                     <b></b><b></b>
-                    <a href="MdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+                    <a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
                 </li>
                 <!-- Item menu "Perbaikan" -->
                 <li class="NavSide__sidebar-item">

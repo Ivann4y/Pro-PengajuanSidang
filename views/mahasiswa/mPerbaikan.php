@@ -9,11 +9,11 @@ if (isset($_SESSION['pesan'])) {
     unset($_SESSION['pesan']);
 }
 
-// 2. HALAMAN INI HARUS DIAKSES DENGAN ID SIDANG DI URL (contoh: mPerbaikan.php?id_sidang=101)
-if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
-    die("Error: ID Sidang tidak valid atau tidak ditemukan di URL.");
+// Ambil $id_sidang hanya dari session
+if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
+    die("Error: ID Sidang tidak valid atau tidak ditemukan di session.");
 }
-$id_sidang = (int) $_GET['id_sidang'];
+$id_sidang = (int) $_SESSION['selected_sidang_id'];
 
 // === LOGIKA FETCH DATA DARI DATABASE (DISESUAIKAN DENGAN SKEMA ANDA) ===
 $nama_mahasiswa = '';
@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
 
                     // Redirect untuk mencegah re-submit form
-                    header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]) . "?id_sidang=" . $id_sidang);
+                    header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
                     exit();
                 } else {
                     $pesan = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
@@ -522,17 +522,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     src="https://astra.ac.id/wp-content/uploads/2023/10/logo-Astra-Digital-white-1.png"
                     alt="ASTRAtech Logo"></div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item"><b></b><b></b><a
-                        href="mdetailSidang.php?id_sidang=<?php echo $id_sidang; ?>"><span class="fw-semibold">Detail
-                            Pengajuan</span></a></li>
-                <li class="NavSide_sidebar-item NavSide_sidebar-item--active"><b></b><b></b><a
-                        href="mPerbaikan.php?id_sidang=<?php echo $id_sidang; ?>"><span
-                            class="fw-semibold">Perbaikan</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a
-                        href="mNilaiakhir.php?id_sidang=<?php echo $id_sidang; ?>"><span class="fw-semibold">Nilai
-                            Akhir</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="fw-semibold">Kembali
-                            ke Daftar</span></a></li>
+                <li class="NavSide__sidebar-item ">
+                    <b></b><b></b>
+                    <a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
+                </li>
             </ul>
         </div>
         <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
@@ -567,7 +572,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="revision-card mt-4">
                     <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
                     <form id="revisionForm"
-                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id_sidang=' . $id_sidang; ?>"
+                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
                         method="POST" enctype="multipart/form-data">
                         <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
                             <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i>
