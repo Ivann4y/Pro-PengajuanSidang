@@ -1,7 +1,7 @@
 <?php
 $serverName = "BALTO\\SQLEXPRESS";
 $connectionOptions = [
-    "Database" => "SistemSidang",
+    "Database" => "SistemSidang1",
     "TrustServerCertificate" => true,
 ];
 
