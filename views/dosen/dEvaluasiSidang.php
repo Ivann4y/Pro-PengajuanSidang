@@ -1,7 +1,7 @@
 <?php
 // <-- BAGIAN AWAL TETAP SAMA -->
 // session_start(); // Dinonaktifkan untuk pengujian
-require "../../koneksi/koneksiImel.php"; // Pastikan path ini benar
+require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
 // ===================================================================================
 // BAGIAN 1: KEAMANAN DAN INISIALISASI

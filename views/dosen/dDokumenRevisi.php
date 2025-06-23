@@ -304,7 +304,7 @@
             left: 0;
             width: 100%;
             height: 60px;
-            background-color:rgb(56, 38, 38);
+            background-color:rgb(255, 255, 255);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             align-items: center;
@@ -356,7 +356,7 @@
 
             .button-group-bottom {
                 flex-direction: row;
-                justify-content: space-between;
+                justify-content: flex-end;
                 align-items: center;
                 margin-top: 1.2cm;
                 margin-left: 0;
@@ -464,53 +464,6 @@
             min-width: 100px;
         }
 
-        .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1.2cm;
-            height: 45px;
-        }
-
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
     
         .custom-modal-content {
             border-radius: 30px !important;
@@ -563,6 +516,12 @@
                     <b></b><b></b>
                     <a href='dNilaiAkhir.php'>
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href='dDaftarSidang.php'>
+                        <span class="NavSide__sidebar-title fw-semibold">Kembali</span>
                     </a>
                 </li>
             </ul>
@@ -639,12 +598,6 @@
             </div>
 
             <div class="button-group-bottom" id="grup-aksi-dokumen">
-                <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>               
                 <div class="button-group">
                     <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
                     <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
@@ -712,41 +665,77 @@
 
         // --- Modal Logic ---
         function showConfirmationModal(action) {
-            const confirmationModalElement = document.getElementById('confirmationModal');
-            if (!confirmationModalElement) {
-                console.error('Modal HTML dengan id "confirmationModal" tidak ditemukan!');
-                return;
-            }
+        const confirmationModalElement = document.getElementById('confirmationModal');
+        if (!confirmationModalElement) {
+            console.error('Modal HTML dengan id "confirmationModal" tidak ditemukan!');
+            return;
+        }
+        
+        const confirmationModal = new bootstrap.Modal(confirmationModalElement);
+        const modalText = document.getElementById('confirmationModalText');
+        const confirmButton = document.getElementById('btnConfirmAction');
+
+        let actionText = action === 'Disetujui' ? 'menyetujui' : 'menolak';
+        
+        modalText.innerText = `Apakah Anda yakin ingin ${actionText} dokumen revisi ini?`;
+
+        const newConfirmButton = confirmButton.cloneNode(true);
+        confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+
+        newConfirmButton.addEventListener('click', function() {
+            confirmationModal.hide(); 
             
-            const confirmationModal = new bootstrap.Modal(confirmationModalElement);
-            const modalText = document.getElementById('confirmationModalText');
-            const confirmButton = document.getElementById('btnConfirmAction');
-
-            let actionText = action === 'Disetujui' ? 'menyetujui' : 'menolak';
-            
-            modalText.innerText = `Apakah Anda yakin ingin ${actionText} dokumen revisi ini?`;
-
-            // Mengatasi duplikasi event listener
-            const newConfirmButton = confirmButton.cloneNode(true);
-            confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
-
-            newConfirmButton.addEventListener('click', function() {
-                confirmationModal.hide(); 
-                
-                // Jeda sedikit agar transisi modal tertutup mulus
-                setTimeout(function() {
+            setTimeout(function() {
+                if (action === 'Ditolak') {
+                    Swal.fire({
+                        title: 'Alasan Penolakan',
+                        input: 'textarea',
+                        inputLabel: 'Catatan:',
+                        inputPlaceholder: 'Masukan catatan di sini...',
+                        showCancelButton: true,
+                        confirmButtonText: 'Kirim',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        customClass: {
+                            confirmButton: 'btn btn-setujui',
+                            cancelButton: 'btn btn-tolak'
+                        },
+                        inputValidator: (value) => {
+                            if (!value || value.trim() === '') {
+                                return 'Alasan penolakan tidak boleh kosong!';
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: `Dokumen revisi telah berhasil ditolak.`,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // --- PERUBAHAN 1: NAVIGASI SETELAH TOLAK ---
+                                window.location.href = 'dDaftarSidang.php';
+                            });
+                            
+                            console.log('Catatan Penolakan:', result.value);
+                        }
+                    });
+                } else { // Jika aksi adalah 'Disetujui'
                     Swal.fire({
                         title: 'Berhasil!',
-                        text: `Dokumen revisi telah berhasil ${action.toLowerCase()}.`,
+                        text: `Dokumen revisi telah berhasil disetujui.`,
                         icon: 'success',
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#4B68FB'
+                    }).then(() => {
+                        // --- PERUBAHAN 2: NAVIGASI SETELAH SETUJUI ---
+                        window.location.href = 'dNilaiAkhir.php';
                     });
-                }, 500); 
-            });
+                }
+            }, 500); 
+        });
 
-            // Tampilkan modal konfirmasi
-            confirmationModal.show();
+        confirmationModal.show();
         }
     </script>
 
