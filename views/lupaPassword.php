@@ -9,7 +9,7 @@ switch ($role) {
     case 'dosen':
         $judul = 'Lupa Kata Sandi Dosen';
         break;
-    case 'Admin':
+    case 'admin':
         $judul = 'Lupa Kata Sandi Admin';
         break;
     default:
