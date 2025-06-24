@@ -154,7 +154,6 @@ $role = "admin";
             text-decoration: none;
             font-family: "Poppins", sans-serif;
             color: white;
-            /* Default text color for all buttons */
         }
 
         .back-button-container {
@@ -176,7 +175,7 @@ $role = "admin";
             .fullscreen {
                 flex-direction: column;
                 height: auto;
-                width: 100vw;
+                width: 100%;
             }
 
             .bgBiru {
@@ -190,16 +189,6 @@ $role = "admin";
                 flex-direction: column;
                 align-items: center;
             }
-
-            /* .bgBiru img.background-awan {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                z-index: -1;
-            } */
 
             .bgBiru img.background-awan {
                 position: absolute;
@@ -216,7 +205,7 @@ $role = "admin";
             }
 
             .log {
-                width: 90%;
+                width: 100%;
                 height: auto;
                 background-color: #ffffff;
                 border-radius: 8vw 8vw 0 0;
@@ -231,27 +220,16 @@ $role = "admin";
             }
 
             #carouselExampleAutoplaying {
-                width: 200%;
-                height: 50%;
-                max-width: 100%;
-                max-height: 100%;
+                width: 100% !important;
+                height: 100% !important;
                 border-radius: 50%;
-                /* overflow: hidden; */
-                /* margin: 3vh auto; */
                 position: relative;
                 z-index: 2;
             }
 
-            .carousel-inner,
-            .carousel-item {
-                width: 100%;
-                height: 100%;
-            }
-
             .carousel-item img {
-                width: 200%;
-                height: 80%;
-                object-fit: cover;
+                width: 100% !important;
+                height: 100% !important;
             }
 
             .log .col-md-7,
@@ -274,7 +252,7 @@ $role = "admin";
             }
 
             .icon-circle {
-                margin-right: 10% !important;
+                margin-right: 5% !important;
             }
         }
     </style>
@@ -288,10 +266,10 @@ $role = "admin";
                 style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
                 alt="Background">
 
-            <!-- <div class="position-absolute"
+            <div class="position-absolute"
                 style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
             </div>
-             -->
+            
             <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
                 <label for="">Sistem Pengajuan Sidang</label>
                 <label for="">Politeknik Astra</label>
