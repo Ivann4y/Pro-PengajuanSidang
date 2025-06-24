@@ -17,12 +17,18 @@ if (!isset($_SESSION['user']['nomor_dosen'])) {
 $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
 */
 
-if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
-    die("ID Sidang tidak valid atau tidak ditemukan.");
-}
+// if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
+//     die("ID Sidang tidak valid atau tidak ditemukan.");
+// }
 
-$id_sidang = (int)$_GET['id_sidang']; // Ambil id_sidang dari URL
+// $id_sidang = (int)$_GET['id_sidang']; // Ambil id_sidang dari URL
 
+
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("Error: ID Sidang tidak valid."); // Samakan juga pesan errornya
+} 
+
+$id_sidang = (int)$_GET['id']; // Ambil "id" dari URL
 // Variabel untuk menampung data yang akan ditampilkan
 $id_kelompok = null;
 $judul = 'Data tidak ditemukan';
@@ -385,7 +391,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             <!-- Item ini akan menjadi aktif karena memiliki DUA kelas -->
             <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                 <b></b><b></b>
-                <a href="dEvaluasiSidang.php">
+                <a href="dEvaluasiSidang.php?id=<?= $id_sidang ?>">
                     <!-- PERBAIKAN: Nama kelas span juga diperbaiki -->
                     <span class="fw-semibold NavSide__sidebar-title">Evaluasi</span>
                 </a>
@@ -394,7 +400,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             <!-- PERBAIKAN: Nama kelas diperbaiki -->
             <li class="NavSide__sidebar-item">
                 <b></b><b></b>
-                <a href="dDokumenRevisi.php">
+                <a href="dDokumenRevisi.php?id=<?= $id_sidang ?>">
                     <span class="fw-semibold NavSide__sidebar-title">Dokumen</span>
                 </a>
             </li>
@@ -402,7 +408,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             <!-- PERBAIKAN: Nama kelas diperbaiki -->
             <li class="NavSide__sidebar-item">
                 <b></b><b></b>
-                <a href="dNilaiAkhir.php">
+                <a href="dNilaiAkhir.php?id=<?= $id_sidang ?>">
                     <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                 </a>
             </li>
@@ -411,13 +417,6 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
                 </li>
 
-
-             <li class="NavSide__sidebar-item">
-                <b></b><b></b>
-                <a href="dDaftarSidang.php">
-                    <span class="fw-semibold NavSide__sidebar-title">kembali</span>
-                </a>
-            </li>
 
             
             
@@ -488,8 +487,8 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                         <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                     </div>
                     <div class="button-group-bottom">
-                        <button type="button" class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'"><span class="icon-circle"><i class="fa-solid fa-arrow-left"></i></span> Kembali</button>
-                        <button type="button" class="btn-kirim" id="btnKirim">Kirim</button>
+                        
+                        <button style="margin-left:90%" type="button" class="btn-kirim" id="btnKirim">Kirim</button>
                     </div>
                 </form>
             </main>

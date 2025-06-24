@@ -27,8 +27,6 @@ $reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 }
 }
 
-
-
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
     $newPassword = $_POST['newPassword'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';

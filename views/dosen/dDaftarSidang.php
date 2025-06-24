@@ -1,10 +1,11 @@
 <?php
 // <-- TETAP SAMA -->
 session_start();
-include "../../koneksi/koneksiArgha.php";
-// require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
+include "../../koneksi/koneksiAndrew.php";
 
 if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
+
+
 
 // --- SIMULASI LOGIN (TETAP SAMA) ---
 $nomor_dosen_login = '1001'; 
@@ -193,9 +194,10 @@ $nomor = $offset + 1;
                                         <td><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
                                         <td><?= htmlspecialchars($row['penguji'] ?? 'Belum Ditentukan') ?></td>
                                         <td style="text-align: center;">
-                                            <a href="dEvaluasiSidang.php?id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
-                                                <i class="fa-solid fa-file-signature"></i>
-                                            </a>
+                                            <!-- KODE BENAR -->
+                                                <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn">
+                                                    <i class="fa-solid fa-file-signature"></i>
+                                                </a>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
