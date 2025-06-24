@@ -1,5 +1,3 @@
-<!-- Argha arybawa pasha -->
-
 <?php
 session_start();
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
