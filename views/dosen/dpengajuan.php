@@ -4,7 +4,7 @@ if ($_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit();
 }
-$nomorDosen = $_SESSION['nomor_dosen'];
+$nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 include '../../koneksi/koneksiAndrew.php';
 ?>
 
@@ -40,7 +40,7 @@ include '../../koneksi/koneksiAndrew.php';
                     <b></b><b></b>
                     <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
-                <li class="NavSide__sidebar-item NavSide_sidebar-item--active">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
@@ -375,7 +375,7 @@ include '../../koneksi/koneksiAndrew.php';
                             for (let i = 1; i <= pageCount; i++) {
                                 const pageButton = document.createElement('li');
                                 pageButton.className = 'page-item';
-                                pageButton.innerHTML = <a class="page-link" href="#">${i}</a>;
+                                pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
                                 pageButton.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     currentPage = i;
@@ -643,12 +643,11 @@ include '../../koneksi/koneksiAndrew.php';
 
                     // Select mahasiswa from autocomplete
                     function selectMahasiswa(mahasiswa, anggotaIndex) {
-                        const nimInput = document.getElementById(anggota_nim_${anggotaIndex});
-                        const namaDisplay = document.getElementById(anggota_nama_${anggotaIndex});
-                        const dropdown = document.getElementById(autocomplete_${anggotaIndex});
-
+                        const nimInput = document.getElementById(`anggota_nim_${anggotaIndex}`);
+                        const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
+                        const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
                         nimInput.value = mahasiswa.nim;
-                        namaDisplay.textContent = mahasiswa.nama_mhs; // Use nama_mhs from DB
+                        namaDisplay.textContent = mahasiswa.nama_mhs;
                         dropdown.style.display = 'none';
                     }
 
@@ -658,7 +657,7 @@ include '../../koneksi/koneksiAndrew.php';
                         const wrapper = document.getElementById('anggota-wrapper');
                         const div = document.createElement('div');
                         div.className = 'anggota-form-group';
-                        div.id = anggota-form-${anggotaCount};
+                        div.id = `anggota-form-${anggotaCount}`;
                         div.innerHTML = `
                         <label for="anggota_nim_${anggotaCount}">Anggota ${anggotaCount}:</label>
                         <div class="anggota-input-group">
@@ -680,7 +679,7 @@ include '../../koneksi/koneksiAndrew.php';
                     // Remove anggota (no changes needed)
                     function removeAnggota() {
                         if (anggotaCount > 1) {
-                            const lastForm = document.getElementById(anggota-form-${anggotaCount});
+                            const lastForm = document.getElementById(`anggota-form-${anggotaCount}`);
                             if (lastForm) {
                                 lastForm.remove();
                                 anggotaCount--;
@@ -839,7 +838,7 @@ include '../../koneksi/koneksiAndrew.php';
                         let hasAnggota = false;
                         const selectedNIMs = new Set(); // Use a Set to check for duplicates
                         for (let i = 1; i <= anggotaCount; i++) {
-                            const nimInput = document.getElementById(anggota_nim_${i});
+                            const nimInput = document.getElementById(`anggota_nim_${i}`);
                             if (nimInput.value.trim() !== '') {
                                 // Check if NIM exists in the fetched mahasiswaData
                                 const foundMahasiswa = mahasiswaData.find(mhs => String(mhs.nim) === nimInput.value.trim());
