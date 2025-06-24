@@ -1,32 +1,27 @@
 <?php
-// <-- TETAP SAMA -->
 session_start();
-include "../../koneksi/koneksiArgha.php";
-// require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
+include "../../koneksi/koneksiAndrew.php";
 
 if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
 
-// --- SIMULASI LOGIN (TETAP SAMA) ---
+// --- SIMULASI LOGIN ---
 $nomor_dosen_login = '1001'; 
 
-// --- LOGIKA FILTER & PAGINASI (TETAP SAMA) ---
+// --- LOGIKA FILTER & PAGINASI ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// --- PERBAIKAN PADA BASEQUERY ---
-// Mengadopsi prinsip "ambil data luas dulu".
-// JOIN ke Penjadwalan di sini dihapus agar tidak memfilter data terlalu dini.
-// Ini membuat base query lebih mirip dengan prinsip di aDaftarSidang.
+// --- BASE QUERY ---
 $baseQuery = "
     WITH FullSidangData AS (
         SELECT
             s.id_sidang,
             s.id_kelompok,
             s.judul,
-            s.jenis_sidang, -- Dipertahankan jika masih ada kegunaan lain
+            s.jenis_sidang,
             
             (SELECT TOP 1 mk.nama_matkul
              FROM [dbo].[Detail_Sidang] ds
@@ -47,12 +42,11 @@ $baseQuery = "
     )
 ";
 
-// --- PENYESUAIAN KLAUSA WHERE DINAMIS (Mengikuti Prinsip aDaftarSidang) ---
+// --- KLAUSA WHERE DINAMIS ---
 $whereConditions = [];
 $params = [];
 
-// 1. Tambahkan kondisi WAJIB terlebih dahulu (Fungsi yang tidak boleh hilang)
-//    Dosen yang login harus terlibat sebagai Pembimbing ATAU Penguji.
+// 1. Kondisi WAJIB: Dosen yang login harus terlibat.
 $whereConditions[] = "
     (
         EXISTS (
@@ -70,40 +64,33 @@ $whereConditions[] = "
     )";
 array_push($params, $nomor_dosen_login, $nomor_dosen_login);
 
-// 2. Tambahkan kondisi OPSIONAL dari Dropdown (Logika disesuaikan agar benar)
-//    Ini meniru cara aDaftarSidang menambahkan WHERE, tapi dengan kondisi yang tepat.
+// 2. Kondisi OPSIONAL dari Dropdown Filter
 if ($filter === 'ta') {
-    // Tampilkan jika di kolom 'judul' ATAU 'nama_matkul' tertulis 'Tugas Akhir'.
     $whereConditions[] = "(judul = ? OR nama_matkul = ?)";
     array_push($params, 'Tugas Akhir', 'Tugas Akhir');
-
 } elseif ($filter === 'semester') {
-    // Tampilkan jika BUKAN 'Tugas Akhir' di kedua kolom.
     $whereConditions[] = "(ISNULL(judul, '') != ? AND ISNULL(nama_matkul, '') != ?)";
     array_push($params, 'Tugas Akhir', 'Tugas Akhir');
 }
-// Jika $filter = 'all', tidak ada kondisi yang ditambahkan, jadi semua jenis sidang ditampilkan.
 
-
-// 3. Tambahkan kondisi OPSIONAL dari Search Box (Fungsi yang tidak boleh hilang)
+// 3. Kondisi OPSIONAL dari Search Box
 if (!empty($search)) {
     $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR judul LIKE ? OR nama_matkul LIKE ? OR pembimbing LIKE ? OR penguji LIKE ?)";
     $likeParam = "%" . $search . "%";
     array_push($params, $likeParam, $likeParam, $likeParam, $likeParam, $likeParam);
 }
 
-// 4. Gabungkan semua kondisi menjadi satu klausa WHERE (Sama seperti aDaftarSidang)
+// 4. Gabungkan semua kondisi
 $whereClause = " WHERE " . implode(' AND ', $whereConditions);
 
-// --- QUERY PENGHITUNGAN TOTAL DATA (TETAP SAMA) ---
+// --- QUERY PENGHITUNGAN TOTAL DATA ---
 $countQuery = $baseQuery . "SELECT COUNT(id_sidang) as total FROM FullSidangData" . $whereClause;
 $countResult = sqlsrv_query($conn, $countQuery, $params);
 if ($countResult === false) { die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true)); }
 $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
-// --- QUERY UTAMA UNTUK MENGAMBIL DATA (TETAP SAMA) ---
-// DISTINCT tidak lagi diperlukan karena base query sudah benar
+// --- QUERY UTAMA UNTUK MENGAMBIL DATA ---
 $mainQuery = $baseQuery . "SELECT id_sidang, id_kelompok, judul, jenis_sidang, nama_matkul, pembimbing, penguji FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 $mainParams = array_merge($params, [$offset, $rowsPerPage]);
 $result = sqlsrv_query($conn, $mainQuery, $mainParams);
@@ -112,7 +99,6 @@ if ($result === false) { die("Error pada query utama: " . print_r(sqlsrv_errors(
 $nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
-<!-- KODE HTML LANJUTANNYA TETAP SAMA -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -128,7 +114,6 @@ $nomor = $offset + 1;
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDaftarSidang.css">
     <title>Dosen - Daftar Sidang</title>
-
 </head>
 <body>
     <div id="NavSide">
@@ -167,7 +152,7 @@ $nomor = $offset + 1;
                         <form method="GET" action="" class="search-input-group ms-auto d-flex align-items-center">
                             <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" name="search" class="form-control" placeholder="Cari Kelompok, Matkul, Pembimbing..." value="<?= htmlspecialchars($search) ?>">
+                            <input type="text" name="search" class="form-control" placeholder="Cari Kelompok, Matkul..." value="<?= htmlspecialchars($search) ?>">
                         </form>
                     </div>
                 </div>
@@ -179,7 +164,6 @@ $nomor = $offset + 1;
                                 <th scope="col">Kelompok</th>
                                 <th scope="col">Judul/Mata Kuliah</th>
                                 <th scope="col">Pembimbing</th>
-                                <th scope="col">Penguji</th>
                                 <th scope="col" style="text-align: center;">Aksi</th>
                             </tr>
                         </thead>
@@ -187,13 +171,12 @@ $nomor = $offset + 1;
                             <?php if (sqlsrv_has_rows($result)): ?>
                                 <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                     <tr class="isiTabel jadiBiru">
-                                        <td><?= $nomor++ ?></td>
-                                        <td><?= htmlspecialchars($row['id_kelompok']) ?></td>
-                                        <td><?= htmlspecialchars(($row['jenis_sidang'] == '0x00' || $row['judul'] == 'Tugas Akhir') ? $row['judul'] : ($row['nama_matkul'] ?? $row['judul'])) ?></td>
-                                        <td><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
-                                        <td><?= htmlspecialchars($row['penguji'] ?? 'Belum Ditentukan') ?></td>
-                                        <td style="text-align: center;">
-                                            <a href="dEvaluasiSidang.php?id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
+                                        <td data-label="No"><?= $nomor++ ?></td>
+                                        <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                                        <td data-label="Judul/Mata Kuliah"><?= htmlspecialchars(($row['jenis_sidang'] == '0x00' || $row['judul'] == 'Tugas Akhir') ? $row['judul'] : ($row['nama_matkul'] ?? $row['judul'])) ?></td>
+                                        <td data-label="Pembimbing"><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
+                                        <td data-label="Aksi" style="text-align: center;">
+                                            <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn">
                                                 <i class="fa-solid fa-file-signature"></i>
                                             </a>
                                         </td>
@@ -236,13 +219,6 @@ $nomor = $offset + 1;
             </div>
         </div>
     </div>
-    <script>
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-    </script>
+    <script src="/Projek/Pro-PengajuanSidang/assets/js/dDaftarSidang.js"></script>
 </body>
 </html>

@@ -1,5 +1,70 @@
-<!-- Argha arybawa pasha -->
- 
+<?php
+include '../../koneksi/koneksiAndrew.php';
+session_start();
+
+// Validasi session / id_sidang
+if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
+    header("Location: mSidang.php");
+    exit();
+}
+$id_sidang = $_SESSION['selected_sidang_id'];
+
+$nilaiAkhir = null;
+
+// Cek kolom nilai_akhir di tabel Sidang
+$sqlCheck = "SELECT TOP 1 * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Sidang' AND COLUMN_NAME='nilai_akhir'";
+$stmtCol = sqlsrv_query($conn, $sqlCheck);
+$kolomAda = false;
+if ($stmtCol !== false) {
+    $colRow = sqlsrv_fetch_array($stmtCol, SQLSRV_FETCH_ASSOC);
+    if ($colRow) {
+        $kolomAda = true;
+    }
+}
+if ($kolomAda) {
+    // Jika kolom ada, coba SELECT nilai_akhir
+    $sqlVal = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
+    $stmtVal = sqlsrv_query($conn, $sqlVal, array($id_sidang));
+    if ($stmtVal !== false) {
+        $rowVal = sqlsrv_fetch_array($stmtVal, SQLSRV_FETCH_ASSOC);
+        if ($rowVal && array_key_exists('nilai_akhir', $rowVal) && $rowVal['nilai_akhir'] !== null) {
+            $nilaiAkhir = $rowVal['nilai_akhir'];
+        }
+    }
+}
+// Jika kolom tidak ada, atau kolom ada tapi NULL, lakukan perhitungan manual
+if ($nilaiAkhir === null) {
+    $sqlCalc = "
+        SELECT 
+            SUM(
+                (
+                    ISNULL(n_dokumen,0) 
+                    + ISNULL(n_presentasi,0) 
+                    + ISNULL(n_tanyajawab,0) 
+                    + ISNULL(n_proyek,0)
+                ) / 4.0 
+                * ISNULL(bobot_penilaian,0)
+            ) AS tot_score,
+            SUM(ISNULL(bobot_penilaian,0)) AS tot_bobot
+        FROM Penilaian
+        WHERE id_sidang = ?
+    ";
+    $stmtCalc = sqlsrv_query($conn, $sqlCalc, array($id_sidang));
+    if ($stmtCalc !== false) {
+        $rowCalc = sqlsrv_fetch_array($stmtCalc, SQLSRV_FETCH_ASSOC);
+        if ($rowCalc && isset($rowCalc['tot_bobot']) && $rowCalc['tot_bobot'] > 0) {
+            $nilaiHitung = floatval($rowCalc['tot_score']) / floatval($rowCalc['tot_bobot']);
+            // Contoh format 2 desimal:
+            $nilaiAkhir = number_format($nilaiHitung, 2);
+        } else {
+            $nilaiAkhir = '';
+        }
+    } else {
+        $nilaiAkhir = '';
+    }
+}
+
+?>
 
 
 <!DOCTYPE html> <!-- Mendeklarasikan bahwa dokumen ini adalah HTML5 -->
@@ -43,25 +108,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <title>Mahasiswa - Nilai Akhir</title> <!-- Judul yang akan muncul di tab browser -->
-
-<!-- === CSS KUSTOM UNTUK HALAMAN INI === -->
-<style>
-    /* Mengatur font default dan warna teks untuk elemen-elemen utama di halaman. */
-    /* '!important' digunakan untuk memastikan style ini mengalahkan style lain (misal dari Bootstrap). */
-
-        * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
-    }
-
-    body {
-        font-family: "Poppins", sans-serif !important;
-        background-color: #ffffff !important; /* Background body putih bersih */
-     }
-
-</style>
   </head>
   <body>
     <!-- Container utama untuk layout sidebar tdan konten -->
@@ -77,7 +123,7 @@
                 <!-- Item menu "Detail Pengajuan" -->
                 <li class="NavSide__sidebar-item ">
                     <b></b><b></b>
-                    <a href="MdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+                    <a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
                 </li>
                 <!-- Item menu "Perbaikan" -->
                 <li class="NavSide__sidebar-item">
@@ -211,47 +257,6 @@
 
     </div>
 </main>
-    
-
-    <!-- Memuat jQuery dari CDN. Diperlukan untuk beberapa fungsionalitas Bootstrap dan script custom. -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- === JAVASCRIPT KUSTOM UNTUK HALAMAN INI === -->
-    <script>
-    // Script ini menangani interaksi pada sidebar navigasi.
-
-    // 1. Fungsionalitas Toggle Sidebar untuk Mobile
-    // Memilih elemen tombol toggle (hamburger menu)
-    let menuToggle = document.querySelector(".NavSide__toggle");
-    // Memilih elemen sidebar utama
-    let sidebar = document.getElementById("main-sidebar");
-
-    // Menambahkan event listener 'click' pada tombol toggle
-    menuToggle.onclick = function () {
-        // Menambah/menghapus kelas '...--active' pada tombol, biasanya untuk mengubah ikon (dari hamburger ke 'x')
-        menuToggle.classList.toggle("NavSide__toggle--active");
-        // Menambah/menghapus kelas '...--active-mobile' pada sidebar untuk menampilkan atau menyembunyikannya
-        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-    };
-
-    // 2. Fungsionalitas untuk Menandai Item Menu yang Aktif
-    // Memilih semua item menu di sidebar
-    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-    // Melakukan loop (iterasi) untuk setiap item menu
-    for (let i = 0; i < listItems.length; i++) {
-        // Menambahkan event listener 'click' pada setiap item menu
-        listItems[i].onclick = function () {
-            // Cek jika item yang diklik belum memiliki kelas '...--active'
-            if(!this.classList.contains("NavSide__sidebar-item--active")) {
-                // Hapus kelas '...--active' dari SEMUA item menu
-                for (let j = 0; j < listItems.length; j++) {
-                    listItems[j].classList.remove("NavSide__sidebar-item--active");
-                }
-                // Tambahkan kelas '...--active' HANYA ke item yang baru saja diklik
-                this.classList.add("NavSide__sidebar-item--active");
-            }
-        };
-    }
-    </script>
-  </body>
+<script src="../../assets/js/mNilaiakhir.js"></script>
+</body>
 </html>

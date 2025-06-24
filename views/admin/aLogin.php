@@ -22,7 +22,7 @@ $role = "admin";
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- <link rel="stylesheet" href="../../css/button-styles.css"> -->
+    <link rel="stylesheet" href="../../css/button-styles.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -33,7 +33,6 @@ $role = "admin";
             flex-direction: column;
             min-height: 100vh;
             min-width: 100vw;
-            overflow: hidden;
         }
 
         .fullscreen {
@@ -171,6 +170,112 @@ $role = "admin";
         .btnMasuk:hover {
             background-color: #3a53c3;
             color: white;
+        }
+
+        @media (max-width: 700px) {
+            .fullscreen {
+                flex-direction: column;
+                height: auto;
+                width: 100vw;
+            }
+
+            .bgBiru {
+                width: 100%;
+                height: auto;
+                padding: 5vh 5vw;
+                box-sizing: border-box;
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* .bgBiru img.background-awan {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                z-index: -1;
+            } */
+
+            .bgBiru img.background-awan {
+                position: absolute;
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover;
+            }
+
+            .bgBiru .position-absolute {
+                position: absolute;
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover;
+            }
+
+            .log {
+                width: 90%;
+                height: auto;
+                background-color: #ffffff;
+                border-radius: 8vw 8vw 0 0;
+                margin-top: -5vh;
+                z-index: 10;
+                padding: 6vh 5vw;
+                margin: auto;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #carouselExampleAutoplaying {
+                width: 200%;
+                height: 50%;
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 50%;
+                /* overflow: hidden; */
+                /* margin: 3vh auto; */
+                position: relative;
+                z-index: 2;
+            }
+
+            .carousel-inner,
+            .carousel-item {
+                width: 100%;
+                height: 100%;
+            }
+
+            .carousel-item img {
+                width: 200%;
+                height: 80%;
+                object-fit: cover;
+            }
+
+            .log .col-md-7,
+            form,
+            .back-button-container {
+                width: 85%;
+                max-width: 400%;
+                margin-top: 0 !important;
+                padding: 0;
+            }
+
+            .back-button-container {
+                margin-top: 3vh !important;
+            }
+
+            .btn-kembali {
+                background-color: #f0f0f0;
+                width: 85% !important;
+                color: #333;
+            }
+
+            .icon-circle {
+                margin-right: 10% !important;
+            }
         }
     </style>
 </head>

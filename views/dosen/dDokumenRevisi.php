@@ -1,5 +1,72 @@
+<?php
+require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
+// ===================================================================================
+// BAGIAN 1: INISIALISASI
+// ===================================================================================
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("Error: ID Sidang tidak valid.");
+} 
+$id_sidang = (int)$_GET['id'];
 
+// Variabel default
+$judul = 'Belum ada judul';
+$ruangan = 'Belum Dijadwalkan';
+$tanggal_formatted = 'Belum Dijadwalkan';
+$jam = 'Belum Dijadwalkan';
+$dosenPembimbing = [];
+$dosenPenguji = [];
+
+// ===================================================================================
+// BAGIAN 2: PENGAMBILAN DATA
+// ### PERBAIKAN UTAMA: Logika disederhanakan, tidak lagi bergantung pada 'jenis_sidang' ###
+// ===================================================================================
+
+$sql_sidang = "SELECT Judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
+$result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
+
+if ($result_sidang && $data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
+    // 1. Selalu ambil Judul dan Dosen
+    $judul = !empty($data_sidang['Judul']) ? $data_sidang['Judul'] : 'Belum ada judul';
+    $id_kelompok = $data_sidang['id_kelompok'];
+
+    // Ambil Dosen Pembimbing
+    if ($id_kelompok) {
+        $sql_pembimbing = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
+        $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, [$id_kelompok]);
+        if ($stmt_pembimbing) {
+            while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
+                $dosenPembimbing[] = $row['nama_dosen'];
+            }
+        }
+    }
+    
+    // Ambil Dosen Penguji
+    $sql_penguji = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
+    $stmt_penguji = sqlsrv_query($conn, $sql_penguji, [$id_sidang]);
+    if ($stmt_penguji) {
+        while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
+            $dosenPenguji[] = $row['nama_dosen'];
+        }
+    }
+
+    // 2. Ambil Jadwal
+    $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang FROM Jadwal WHERE id_sidang = ?";
+    $result_jadwal = sqlsrv_query($conn, $sql_jadwal, [$id_sidang]);
+    if ($result_jadwal && $data_jadwal = sqlsrv_fetch_array($result_jadwal, SQLSRV_FETCH_ASSOC)) {
+        $ruangan = $data_jadwal['ruang_sidang'] ?? 'Belum Dijadwalkan';
+        $jam = $data_jadwal['jam_sidang'] ? $data_jadwal['jam_sidang']->format('H:i') : 'Belum Dijadwalkan';
+        if ($data_jadwal['tanggal_sidang'] instanceof DateTime) {
+            setlocale(LC_TIME, 'id_ID.UTF-8', 'Indonesian');
+            $tanggal_formatted = strftime('%A, %d %B %Y', $data_jadwal['tanggal_sidang']->getTimestamp());
+        }
+    }
+}
+
+// Siapkan variabel untuk ditampilkan di HTML
+$namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
+$namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
+?>
 
 
 <!DOCTYPE html>
@@ -175,93 +242,106 @@
             font-weight: 700;
         }
 
-        .info-card {
-            position: relative;
-            background: rgb(235, 238, 245);
-            border-radius: 30px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            overflow: hidden;
-            transition: background-color 0.4s ease;
-            margin-bottom: 1.2cm;
-        }
+/* ======================================================= */
+/* === CSS PERBAIKAN UNTUK KARTU INFORMASI === */
+/* ======================================================= */
 
-        .info-card::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px;
-            height: 100%;
-            background-color: #4B68FB;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-            transition: width 0.4s ease;
-            z-index: 0;
-        }
+/* 1. Mengatur Kartu Utama (.info-card) */
+.info-card {
+    /* Layout Dasar */
+    display: flex; /* Tetap gunakan flexbox untuk 2 kolom */
+    gap: 30px;     /* Jarak antar kolom */
+    
+    /* Ukuran dan Jarak */
+    padding: 25px;         /* Ruang di dalam kartu */
+    margin-bottom: 2.5rem; /* Jarak ke elemen di bawahnya */
+    
+    /* Tampilan Visual */
+    background: #f0f4f7; 
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 
-        .info-card:hover::after {
-            width: 100%;
-            border-radius: 20px;
-        }
+    /* --- PERBAIKAN UTAMA --- */
+    position: relative; /* Ini penting agar ::after tidak keluar */
+    overflow: hidden;   /* Mencegah ::after keluar dari sudut tumpul */
+}
 
-        .info-card .section {
-            flex: 0 0 48%;
-            z-index: 1;
-            color: #333;
-            transition: color 0.4s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+/* 2. Garis Biru di Kanan pada .info-card */
+.info-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px; /* Lebar awal garis biru */
+    height: 100%;
+    background-color: #4B68FB;
+    
+    /* --- PERBAIKAN UTAMA --- */
+    /* Hapus border-radius dari ::after agar tidak aneh saat hover */
+    /* border-top-right-radius: 20px; */
+    /* border-bottom-right-radius: 20px; */
+    
+    transition: width 0.4s ease; /* Animasi saat hover */
+    z-index: 0; /* Letakkan di belakang konten */
+}
 
-        .info-card:hover .section {
-            color: white;
-        }
+/* 3. Efek Hover */
+.info-card:hover::after {
+    width: 100%; /* Lebar penuh saat di-hover */
+}
 
-        .info-card .section .info-group {
-            margin-bottom: 1rem;
-        }
+.info-card:hover {
+    color: white; /* Ubah warna teks menjadi putih saat hover */
+}
 
-        .info-card .section .info-group:last-child {
-            margin-bottom: 0;
-        }
+.info-card:hover .info-item i {
+    color: white; /* Ubah warna ikon menjadi putih juga */
+}
 
-        .info-card .section .label-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.25rem;
-            font-size: 1rem;
-        }
+/* 4. Mengatur Kolom (.section) */
+.info-card .section {
+    flex: 1; /* Setiap kolom mengambil ruang yang sama */
+    z-index: 1; /* Pastikan konten berada di atas garis biru */
 
-        .info-card .section .label-row i {
-            margin-right: 10px;
-            color: #495057;
-            font-weight: 900;
-            transition: color 0.4s ease;
-            width: 20px;
-            text-align: center;
-        }
+    /* --- PERBAIKAN UTAMA --- */
+    /* Hapus aturan flex yang mungkin ada di sini agar item di dalamnya (paragraf) bisa berjajar ke bawah secara normal */
+    /* display: flex; */
+    /* flex-direction: column; */
+}
 
-        .info-card:hover .section .label-row i {
-            color: white;
-        }
+/* 4. Mengatur Setiap Baris Informasi (.info-item) - KUNCI UTAMA */
+.info-item {
+    position: relative; /* Penting untuk posisi ikon absolut */
+    padding-left: 35px; /* Dorong SEMUA teks ke kanan */
+    
+    margin-bottom: 5px; /* Jarak vertikal antar baris informasi */
+    line-height: 1.6; /* Keterbacaan teks */
+}
+.info-item:last-child {
+    margin-bottom: 0; /* Hapus margin pada item terakhir */
+}
 
-        .info-card .section .label-row .fw-bold {
-            font-weight: 600;
-            font-size: 1.05rem;
-        }
+/* 5. Mengatur Ikon di dalam .info-item */
+.info-item i {
+    /* Posisikan ikon kembali ke kiri */
+    position: absolute;
+    left: 0;
+    top: 5px; /* Sesuaikan agar sejajar dengan teks */
+    
+    /* Ukuran dan perataan ikon */
+    width: 25px; 
+    text-align: center;
+    font-size: 1.1rem;
+    color: #555; /* Warna ikon awal */
+    transition: color 0.4s ease; /* Transisi warna ikon saat hover */
+}
 
-        .info-card .section .value-row {
-            margin-left: 30px;
-            line-height: 1.5;
-            font-size: 0.95rem;
-            margin-bottom: 0;
-        }
-
+/* 6. Mengatur Teks Label yang Tebal */
+.info-item strong {
+    font-weight: 600; 
+    display: block; /* <-- INI KUNCINYA, TAMBAHKAN KEMBALI */
+    margin-bottom: -18px; /* Sesuaikan nilai ini, 30px mungkin terlalu besar */
+}
         /* --- Responsive Design Styles --- */
         .NavSide__toggle {
             display: none; 
@@ -308,7 +388,7 @@
             left: 0;
             width: 100%;
             height: 60px;
-            background-color:rgb(56, 38, 38);
+            background-color:rgb(255, 255, 255);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             align-items: center;
@@ -360,7 +440,7 @@
 
             .button-group-bottom {
                 flex-direction: row;
-                justify-content: space-between;
+                justify-content: flex-end;
                 align-items: center;
                 margin-top: 1.2cm;
                 margin-left: 0;
@@ -369,7 +449,7 @@
             
             #grup-aksi-dokumen {
                 flex-direction: row !important; 
-                justify-content: space-between !important;
+                justify-content: flex-end !important;
                 gap: 0 !important; 
                 margin-top: 2.5rem;
             }
@@ -392,6 +472,7 @@
             margin-top: 0px; 
             display: flex;
             align-items: center;
+            justify-content: flex-end; 
             gap: 1rem;
             flex-wrap: wrap;
         }
@@ -468,53 +549,6 @@
             min-width: 100px;
         }
 
-        .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1.2cm;
-            height: 45px;
-        }
-
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
     
         .custom-modal-content {
             border-radius: 30px !important;
@@ -541,15 +575,10 @@
             flex-grow: 0 !important;  
         }
 
-        .swal2-actions {
-            gap: 1rem;
-        }
 
-        .swal2-styled.swal2-confirm,
-        .swal2-styled.swal2-cancel {
-            border: none;
-            box-shadow: none !important;
-        }
+
+
+
 
     </style>
 </head>
@@ -564,26 +593,26 @@
                 <!-- MENU "Detail Sidang" DIHAPPU S DARI SINI -->
                 <li class="NavSide__sidebar-item "> <!-- Evaluasi aktif -->
                     <b></b><b></b>
-                    <a href="dEvaluasiSidang.php">
+                    <a href="dEvaluasiSidang.php?id=<?= $id_sidang ?>">
                         <span class="fw-semibold">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="dDokumenRevisi.php">
+                    <a href="dDokumenRevisi.php?id=<?= $id_sidang ?>">
                         <span class="fw-semibold">Dokumen</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href='dNilaiAkhir.php'>
+                    <a href="dNilaiAkhir.php?id=<?= $id_sidang ?>">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href='dDaftarSidang.php'>
-                        <span class="fw-semibold">Kembali</span>
+                    <a href="dDaftarSidang.php">
+                        <span class="NavSide__sidebar-title fw-semibold">Kembali</span>
                     </a>
                 </li>
             </ul>
@@ -599,57 +628,38 @@
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
 
-            <div class="info-card">
-                <div class="section">
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-file-invoice"></i>
-                            <span class="fw-bold">Judul Sidang</span>
-                        </div>
-                        <div class="value-row">Struktur Data</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-user-tie"></i>
-                            <span class="fw-bold">Dosen Pembimbing</span>
-                        </div>
-                        <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-user-group"></i>
-                            <span class="fw-bold">Dosen Penguji</span>
-                        </div>
-                        <div class="value-row">
-                            Timotius Victory, S.Kom, M.Kom<br>
-                            Ning Ratwasturi, S.T, M.Eng
-                        </div>
-                    </div>
-                </div>
-                <div class="section">
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-door-open"></i>
-                            <span class="fw-bold">Ruangan</span>
-                        </div>
-                        <div class="value-row">CB101 - RPL 1B</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <span class="fw-bold">Tanggal</span>
-                        </div>
-                        <div class="value-row">Selasa, 22 April 2025</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-clock"></i>
-                            <span class="fw-bold">Jam</span>
-                        </div>
-                        <div class="value-row">09.00 - 10.00</div>
-                    </div>
-                </div>
-            </div>
+
+<div class="info-card">
+    <div class="section">
+        <p class="info-item"><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br>
+            <?php echo htmlspecialchars($judul); ?>
+        </p>
+        
+        <p class="info-item"><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br>
+            <?php echo $namaPembimbing_html; ?>
+        </p>
+        
+        <p class="info-item"><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>
+            <?php echo $namaPenguji_html; ?>
+        </p>
+    </div>
+    
+    <div class="section">
+        <p class="info-item"><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br>
+            <?php echo htmlspecialchars($ruangan); ?>
+        </p>
+
+        <p class="info-item"><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>
+            <?php echo $tanggal_formatted; ?>
+        </p>
+
+        <p class="info-item"><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>
+            <?php echo htmlspecialchars($jam); ?>
+        </p>
+    </div>
+</div>
+
+
 
             <h5>Dokumen Sidang</h5>
             <div class="file-buttons-container d-flex flex-wrap">
@@ -660,12 +670,6 @@
             </div>
 
             <div class="button-group-bottom" id="grup-aksi-dokumen">
-                <!-- <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>                -->
                 <div class="button-group">
                     <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
                     <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
@@ -770,7 +774,7 @@
                         },
                         inputValidator: (value) => {
                             if (!value || value.trim() === '') {
-                                return 'Tidak boleh kosong!';
+                                return 'Alasan penolakan tidak boleh kosong!';
                             }
                         }
                     }).then((result) => {
@@ -804,8 +808,7 @@
         });
 
         confirmationModal.show();
-    
-    }
+        }
     </script>
 
 </body>

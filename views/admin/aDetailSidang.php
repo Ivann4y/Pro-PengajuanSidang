@@ -1,7 +1,7 @@
 <?php
 require "../../koneksi/koneksiAndrew.php";
 
-// 1. Ambil ID dari URL
+session_start();
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("Error: ID Sidang tidak valid.");
 } 
@@ -73,7 +73,10 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
     }
 
     // Ambil Dosen Penguji
-    $sql_penguji = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ?";
+    $sql_penguji = "SELECT d.nama_dosen 
+                FROM Dosen d 
+                JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen 
+                WHERE p.id_sidang = ? AND TRIM(p.peran_dosen) = 'Penguji'";
     $stmt_penguji = sqlsrv_query($conn, $sql_penguji, array($id_sidang));
     if ($stmt_penguji) {
         while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
@@ -786,6 +789,7 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <!-- <a href="aEvaluasi.php?id=<?= $row['id'] ?>"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a> -->
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -809,10 +813,10 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
             <main class="NavSide__main-content">
                 <h2>Detail Sidang -
                     <?php
-                    if ($data_sidang['jenis_sidang'] == 0) {
-                        echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Tugas Akhir';
-                    } elseif ($data_sidang['jenis_sidang'] == 1 && !empty($data_matkul)) {
-                        echo htmlspecialchars($data_matkul['nama_matkul']);
+                    if ($data_sidang['jenis_sidang'] == 0 && !empty($data_sidang)) {
+                        echo htmlspecialchars($data_sidang['judul']);
+                    } elseif ($data_sidang['jenis_sidang'] == 1 && !empty($data_sidang)) {
+                        echo htmlspecialchars($data_sidang['judul']);
                     }
                     ?></h2>
                 <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['id_kelompok']); ?></p>
@@ -879,12 +883,7 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
                 <h5 class="mt-4">Aksi</h5>
                 <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
                 <br><br>
-                <button class="btn-kembali" onclick="location.href='aDaftarSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>
+                
 
 
                 <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
@@ -894,6 +893,7 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
                                 <h2>Penjadwalan Sidang</h2>
                                 <div class="form-container">
                                     <form id="formDalamModal" novalidate>
+                                        <input type="hidden" name="id_sidang" value="<?php echo htmlspecialchars($id_sidang); ?>">
 
                                         <!-- ====================================== -->
                                         <!--      FIELD UMUM UNTUK SEMUA JENIS      -->
@@ -1005,6 +1005,16 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script type="text/javascript">
+        function openModal() {
+            // Reset form sebelum membuka modal
+            document.getElementById('formDalamModal').reset();
+            document.getElementById('form-error').textContent = ''; // Kosongkan pesan error
+            // Buka modal
+            var myModal = new bootstrap.Modal(document.getElementById('penjadwalanSidangModal'), {
+                keyboard: false
+            });
+            myModal.show();
+        }
         // Skrip untuk toggle sidebar dan active menu item
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");

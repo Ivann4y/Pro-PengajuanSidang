@@ -10,9 +10,9 @@ ini_set('display_errors', 1);
 
 $id_sidang = null;
 
+// Ambil $id_sidang hanya dari session
 if (isset($_SESSION['selected_sidang_id']) && !empty($_SESSION['selected_sidang_id'])) {
     $id_sidang = $_SESSION['selected_sidang_id'];
-    // echo "ID Sidang dari Session: " . $id_sidang . "<br>"; // Debugging
 } else {
     header("Location: mSidang.php");
     exit();
@@ -170,20 +170,26 @@ sqlsrv_close($conn);
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a onclick="location.href='mdetailSidang.php'">
+                    <a href="mdetailSidang.php">
                         <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a onclick="location.href='mPerbaikan.php'">
+                    <a href="mPerbaikan.php?id_sidang=<?= $id_sidang ?>">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a onclick="location.href='mNilaiakhir.php'">
+                    <a href="mNilaiakhir.php">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php">
+                        <span class="NavSide__sidebar-title fw-semibold"> Kembali</span>
                     </a>
                 </li>
             </ul>
@@ -299,12 +305,8 @@ sqlsrv_close($conn);
                 <h5>Dokumen Sidang</h5>
                 <div class="file-buttons-container d-flex flex-wrap">
                     <a href="#" class="file-button">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        file_laporan_kel-1.pdf
-                    </a>
-                    <a href="#" class="file-button">
                         <i class="fa-solid fa-file-zipper"></i>
-                        dokumen_pendukung_kel-1.zip
+                        Dokumen_Laporan_Kel-1.zip
                     </a>
                 </div>
                 

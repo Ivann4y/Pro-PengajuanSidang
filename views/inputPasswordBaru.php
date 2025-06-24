@@ -52,8 +52,6 @@ if ($reset) {
 }
 }
 
-
-
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
     $newPassword = $_POST['newPassword'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';

@@ -203,15 +203,15 @@ $role = "mahasiswa";
 
             .bgBiru img.background-awan {
                 position: absolute;
-                width: 150vw !important;
-                height: 67vh !important;
+                width: 100% !important;
+                height: 100% !important;
                 object-fit: cover;
             }
 
             .bgBiru .position-absolute {
                 position: absolute;
-                width: 150vw !important;
-                height: 67vh !important;
+                width: 100% !important;
+                height: 100% !important;
                 object-fit: cover;
             }
 
@@ -231,13 +231,13 @@ $role = "mahasiswa";
             }
 
             #carouselExampleAutoplaying {
-                width: 45vw;
-                height: 45vw;
-                max-width: 220px;
-                max-height: 220px;
+                width: 200%;
+                height: 50%;
+                max-width: 100%;
+                max-height: 100%;
                 border-radius: 50%;
-                overflow: hidden;
-                margin: 3vh auto;
+                /* overflow: hidden; */
+                /* margin: 3vh auto; */
                 position: relative;
                 z-index: 2;
             }
@@ -249,15 +249,15 @@ $role = "mahasiswa";
             }
 
             .carousel-item img {
-                width: 100%;
-                height: 100%;
+                width: 200%;
+                height: 80%;
                 object-fit: cover;
             }
 
             .log .col-md-7,
             form,
             .back-button-container {
-                width: 100%;
+                width: 85%;
                 max-width: 400%;
                 margin-top: 0 !important;
                 padding: 0;
@@ -269,7 +269,12 @@ $role = "mahasiswa";
 
             .btn-kembali {
                 background-color: #f0f0f0;
+                width: 85% !important;
                 color: #333;
+            }
+
+            .icon-circle {
+                margin-right: 10% !important;
             }
         }
     </style>
