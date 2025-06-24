@@ -123,14 +123,17 @@ $id_sidang = $_SESSION['selected_sidang_id'];
                             <div class="value-row text-secondary fw-bold">M. Harris Nur S.</div>
                           </div>
                       </div>
+
                       <div class="col-sm-6 text-black">
-                          <div class="info-group mb-5">
+
+                      <div class="info-group mb-5">
                             <div class="label-row d-flex align-items-center gap-2 mb-1">
                               <i class="fa-solid fa-book"></i>
                               <span class="fw-bold">Mata Kuliah</span>
                             </div>
                             <div class="value-row text-secondary fw-bold">Tugas Akhir</div>
                           </div>
+
                           <div class="info-group mb-3">
                             <div class="label-row d-flex align-items-center gap-2 mb-1">
                               <i class="fa-solid fa-user-tie"></i>
@@ -143,19 +146,23 @@ $id_sidang = $_SESSION['selected_sidang_id'];
                 </div>
               </div>
             </div>
+
             
             <div class="col-lg-6 d-flex">
                 <div class="card flex-fill" id="cardNilai">
                     <div class="card-body d-flex flex-column justify-content-center">
                         <h3 class="card-title text-dark text-center">Nilai Mahasiswa:</h3>
+         
                         <div class="d-flex justify-content-center align-items-center flex-grow-1">
-                            <input type="text" class="form-control text-dark"
+         
+                        <input type="text" class="form-control text-dark"
                                 id="nilaiMahasiswa" value="A" readonly />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
 
         <div class="row mt-5 ">
             <div class="col-12">
