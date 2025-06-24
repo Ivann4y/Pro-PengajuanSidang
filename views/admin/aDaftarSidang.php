@@ -1,83 +1,108 @@
 <?php
-require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
+require "../../koneksi/koneksiAndrew.php";
 
-// --- PERSIAPAN AWAL (Tidak ada perubahan) ---
+// --- PERSIAPAN AWAL (Tidak berubah) ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all';
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $rowsPerPage = 10;
+$offset = ($currentPage - 1) * $rowsPerPage;
 
-$prodiList = []; // Buat array kosong untuk menampung daftar prodi
-// Asumsi: Nama prodi ada di tabel Mahasiswa kolom 'prodi'. Sesuaikan jika berbeda.
+// --- Ambil Daftar Prodi (Tidak berubah) ---
+$prodiList = [];
 $prodiQuery = "SELECT DISTINCT prodi FROM dbo.Mahasiswa WHERE prodi IS NOT NULL ORDER BY prodi ASC";
 $prodiResult = sqlsrv_query($conn, $prodiQuery);
-
 if ($prodiResult) {
     while ($row = sqlsrv_fetch_array($prodiResult, SQLSRV_FETCH_ASSOC)) {
-        // Masukkan setiap nama prodi ke dalam array
-        $prodiList[] = $row['prodi']; 
+        $prodiList[] = $row['prodi'];
     }
 }
 
-// --- PERBAIKAN QUERY PENGHITUNGAN TOTAL DATA ---
-$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
-               FROM Sidang s
-               JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok -- Jembatan ke-1
-               JOIN Mahasiswa m ON km.nim = m.nim"; // Jembatan ke-2
+// --- QUERY BARU YANG LEBIH CERDAS ---
 
-if ($filter === 'ta') {
-    $countQuery .= " WHERE s.jenis_sidang = 0";
-} elseif ($filter === 'semester') {
-    $countQuery .= " WHERE s.jenis_sidang = 1";
-}
+// Persiapan filter
+// --- QUERY BARU YANG LEBIH CERDAS (VERSI PERBAIKAN) ---
 
-$countResult = sqlsrv_query($conn, $countQuery);
-if ($countResult === false) {
-    die("Error di countQuery: " . print_r(sqlsrv_errors(), true));
-}
-if ($countResult === false) {
-    die("Error di countQuery: " . print_r(sqlsrv_errors(), true));
-}
-$totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
-$totalPages = ceil($totalRecords / $rowsPerPage);
-
-
-// --- PERBAIKAN QUERY UTAMA PENGAMBILAN DATA ---
-$query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, s.id_kelompok, 
-                 m.nama_matkul, 
-                 MIN(d.nama_dosen) AS dosen 
-          FROM Sidang s
-          -- PERBAIKAN UTAMA: Menggunakan tabel jembatan Kelompok_Mahasiswa
-          -- Join lainnya tetap sama
-          JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-          JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
-          JOIN Jadwal j ON s.id_sidang = j.id_sidang
-          JOIN Penjadwalan p ON j.id_sidang = p.id_sidang
-          JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen";
-
+// Persiapan filter
+$params = [];
 $whereClause = [];
+
 if ($filter === 'ta') {
     $whereClause[] = "s.jenis_sidang = 0";
 } elseif ($filter === 'semester') {
     $whereClause[] = "s.jenis_sidang = 1";
 }
+
+$prodiJoin = "";
+if ($prodiFilter !== 'all') {
+    $prodiJoin = "JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok JOIN Mahasiswa m_prodi ON km.nim = m_prodi.nim";
+    $whereClause[] = "m_prodi.prodi = ?";
+    $params[] = $prodiFilter;
+}
+
+// Query untuk menghitung total data
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s {$prodiJoin}";
+if (!empty($whereClause)) {
+    // Buat klausa WHERE untuk count query
+    $countWhereClause = $whereClause;
+    if ($prodiFilter !== 'all') {
+        array_pop($countWhereClause); // Hapus parameter prodi dari klausa count jika ada
+    }
+    if (!empty($countWhereClause)) {
+        $countQuery .= " WHERE " . implode(" AND ", $countWhereClause);
+    }
+}
+$countParams = ($prodiFilter !== 'all' ? [$prodiFilter] : []);
+$countResult = sqlsrv_query($conn, $countQuery, $countParams);
+if($countResult === false) { die(print_r(sqlsrv_errors(), true)); }
+$totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
+$totalPages = ceil($totalRecords / $rowsPerPage);
+
+// Query utama untuk mengambil data
+$query = "SELECT 
+        s.id_sidang,
+        s.judul,
+        s.id_kelompok,
+        s.jenis_sidang,
+        
+        (SELECT TOP 1 mk.nama_matkul 
+         FROM Detail_Sidang ds
+         JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+         WHERE ds.id_sidang = s.id_sidang) AS nama_matkul,
+         
+        -- [PERBAIKAN UTAMA DI SINI]
+        CASE 
+            WHEN s.jenis_sidang = 0 THEN -- Jika Sidang TA, ambil HANYA Pembimbing (peran=1)
+                (SELECT d.nama_dosen
+                 FROM Penjadwalan p
+                 JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen
+                 WHERE p.id_sidang = s.id_sidang AND p.peran_dosen = 1)
+            WHEN s.jenis_sidang = 1 THEN -- Jika Sidang Semester, ambil Pengampu
+                (SELECT STRING_AGG(d.nama_dosen, ', ')
+                 FROM Pengampu_Kelas pk
+                 JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
+                 WHERE pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang))
+        END AS nama_dosen_terkait
+    
+    FROM Sidang s
+    {$prodiJoin}
+";
+
 if (!empty($whereClause)) {
     $query .= " WHERE " . implode(' AND ', $whereClause);
 }
 
-// Menyesuaikan GROUP BY dengan semua kolom yang dibutuhkan
-$query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, s.id_kelompok, m.nama_matkul 
-            ORDER BY s.id_sidang";
-$query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
+$query .= " ORDER BY s.id_sidang OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
-$result = sqlsrv_query($conn, $query);
+// Tambahkan parameter untuk OFFSET dan FETCH
+$params_final = $params;
+$params_final[] = $offset;
+$params_final[] = $rowsPerPage;
+
+$result = sqlsrv_query($conn, $query, $params_final);
 if ($result === false) {
     die("Error di main query: " . print_r(sqlsrv_errors(), true));
 }
-if ($result === false) {
-    die("Error di main query: " . print_r(sqlsrv_errors(), true));
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -196,39 +221,43 @@ if ($result === false) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (sqlsrv_has_rows($result)): ?>
-                            <?php
-                            $counter = ($currentPage - 1) * $rowsPerPage + 1;
-                            while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
-                                ?>
-                                <tr class="isiTabel">
-                                    <td data-label="Nomor"><?= $counter ?></td>
-                                    <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
-                                    <td data-label="Judul/MK">
-                                        <?= htmlspecialchars(($row['jenis_sidang'] == 0) ? $row['judul'] : $row['judul']) ?>
-                                    </td>
-                                    <td data-label="Pembimbing"><?= htmlspecialchars($row['dosen']) ?></td>
-                                    <td data-label="Aksi">
-                                        <button type="button" class="btn detail-btn"
-<<<<<<< HEAD
-                                            onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>&jenis=<?= $row['jenis_sidang'] ?>'">
-=======
-                                            onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
->>>>>>> 907f4c20515d3c450d034a3bf9393989deb8b085
-                                            <i class="fa-solid fa-file-signature"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php
-                                $counter++;
-                            endwhile;
-                            ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="5" class="text-center">Tidak ada data untuk ditampilkan.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
+    <?php if (sqlsrv_has_rows($result)): ?>
+        <?php
+        $counter = ($currentPage - 1) * $rowsPerPage + 1;
+        while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
+        ?>
+            <tr class="isiTabel">
+                <td data-label="Nomor"><?= $counter ?></td>
+                <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                <td data-label="Judul/MK">
+                    <?php 
+                    // Jika sidang semester, tampilkan nama matkul. Jika TA, tampilkan judul.
+                    echo htmlspecialchars(($row['jenis_sidang'] == 1) ? $row['nama_matkul'] : $row['judul']); 
+                    ?>
+                </td>
+                <td data-label="Pembimbing/Pengampu">
+                    <?php 
+                    // Tampilkan daftar nama dosen yang sudah digabung
+                    echo htmlspecialchars($row['nama_dosen_terkait']); 
+                    ?>
+                </td>
+                <td data-label="Aksi">
+                    <button type="button" class="btn detail-btn"
+                        onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </button>
+                </td>
+            </tr>
+            <?php
+            $counter++;
+        endwhile;
+        ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="5" class="text-center">Tidak ada data untuk ditampilkan.</td>
+        </tr>
+    <?php endif; ?>
+</tbody>
                 </table>
             </div>
 
