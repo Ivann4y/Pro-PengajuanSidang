@@ -305,12 +305,8 @@ sqlsrv_close($conn);
                 <h5>Dokumen Sidang</h5>
                 <div class="file-buttons-container d-flex flex-wrap">
                     <a href="#" class="file-button">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        file_laporan_kel-1.pdf
-                    </a>
-                    <a href="#" class="file-button">
                         <i class="fa-solid fa-file-zipper"></i>
-                        dokumen_pendukung_kel-1.zip
+                        Dokumen_Laporan_Kel-1.zip
                     </a>
                 </div>
                 
