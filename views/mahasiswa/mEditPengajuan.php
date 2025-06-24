@@ -119,9 +119,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['aksi'])) {
               <label for="matkul" class="form-label">Mata Kuliah<span class="text-danger">* </span></label>
               <select class="forM form-select" id="matkul" name="matkul" required>
                 <option value="" selected disabled>Pilih Mata Kuliah</option>
-                <option value="Tugas Akhir" <?php if ($matkul_get == 'Tugas Akhir') echo ' selected'; ?>>Tugas Akhir</option>
-                <option value="Pemrograman Web" <?php if ($matkul_get == 'Pemrograman Web') echo ' selected'; ?>>Pemrograman Web</option>
-                <!-- Other options... -->
+                <?php
+                  $matkulDipilih = $_GET['matkul'] ?? '';
+
+                  $query = "SELECT nama_matkul FROM Matakuliah";
+                  $result = sqlsrv_query($conn, $query);
+
+                  while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+                      $nama = $row['nama_matkul'];
+                      $selected = ($nama == $matkulDipilih) ? 'selected' : '';
+                      echo "<option value=\"$nama\" $selected>$nama</option>";
+                  }
+                  ?>
               </select>
             </div>
             <div class="row">
