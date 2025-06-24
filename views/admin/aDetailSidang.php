@@ -788,7 +788,8 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="aEvaluasi.php?id=<?= $row['id_sidang'] ?>"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <!-- <a href="aEvaluasi.php?id=<?= $row['id'] ?>"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a> -->
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
