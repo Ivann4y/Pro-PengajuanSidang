@@ -1,46 +1,109 @@
 <?php
-// ... (KODE PHP ANDA TIDAK BERUBAH) ...
+// Selalu mulai session di baris paling atas
 session_start();
+
+// Anda memanggil file koneksi yang membuat variabel $conn
 require "../../koneksi/koneksiAndrew.php";
+
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
     $pesan = $_SESSION['pesan'];
     unset($_SESSION['pesan']);
 }
+
+// Cek apakah ID sidang ada di dalam session.
 if (!isset($_SESSION['selected_sidang_id']) || !is_numeric($_SESSION['selected_sidang_id'])) {
-    die("Error: Tidak ada sidang yang dipilih.");
+    die("Error: Tidak ada sidang yang dipilih. Silakan kembali ke halaman daftar sidang dan pilih salah satu.");
 }
 $id_sidang = (int) $_SESSION['selected_sidang_id'];
+
+
+// === LOGIKA FETCH DATA ===
 $nama_mahasiswa = '';
 $status_revisi = '';
 $status_pengajuan = 'Belum Disetujui';
 $catatan_list = [];
-$query_info = "SELECT TOP 1 ds.status_revisi, m.nama_mhs FROM Detail_Sidang ds JOIN Sidang s ON ds.id_sidang = s.id_sidang JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok JOIN Mahasiswa m ON km.nim = m.nim WHERE ds.id_sidang = ?";
+
+// Query untuk mengambil informasi dasar
+$query_info = "
+    SELECT TOP 1 ds.status_revisi, m.nama_mhs
+    FROM Detail_Sidang ds
+    JOIN Sidang s ON ds.id_sidang = s.id_sidang
+    JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+    JOIN Mahasiswa m ON km.nim = m.nim
+    WHERE ds.id_sidang = ?
+";
 $params_info = array($id_sidang);
 $stmt_info = sqlsrv_query($conn, $query_info, $params_info);
 if ($stmt_info === false) {
-    die(print_r(sqlsrv_errors(), true));
+    die("Error saat menjalankan query info: <br><pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 $data_info = sqlsrv_fetch_array($stmt_info, SQLSRV_FETCH_ASSOC);
 if (!$data_info) {
-    die("Error: Data sidang tidak ditemukan.");
+    die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan.");
 }
 $nama_mahasiswa = $data_info['nama_mhs'];
 $status_revisi = $data_info['status_revisi'];
 if (empty(trim($status_revisi))) {
     $status_revisi = 'Belum Ada Revisi';
 }
-$query_catatan = "SELECT ds.catatan_sidang, d.nama_dosen FROM Detail_Sidang ds JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen WHERE ds.id_sidang = ? ORDER BY d.nama_dosen ASC";
+
+// Query untuk mengambil catatan perbaikan
+$query_catatan = "
+    SELECT ds.catatan_sidang, d.nama_dosen
+    FROM Detail_Sidang ds
+    JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE ds.id_sidang = ?
+    ORDER BY d.nama_dosen ASC
+";
 $params_catatan = array($id_sidang);
 $stmt_catatan = sqlsrv_query($conn, $query_catatan, $params_catatan);
 if ($stmt_catatan === false) {
-    die(print_r(sqlsrv_errors(), true));
+    die("Error saat menjalankan query catatan: <br><pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 while ($row = sqlsrv_fetch_array($stmt_catatan, SQLSRV_FETCH_ASSOC)) {
     $catatan_list[] = $row;
 }
+
+// === LOGIKA FILE UPLOAD ===
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // ... Logika Upload File Anda ...
+    if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
+        $folder_target = "uploads/";
+        if (!file_exists($folder_target)) {
+            mkdir($folder_target, 0755, true);
+        }
+
+        $file_asli = basename($_FILES["fileInput"]["name"]);
+        $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
+        $file_unik = 'revisi_' . $id_sidang . '_' . time() . '.' . $ekstensi_file;
+        $path_target = $folder_target . $file_unik;
+        $ekstensi_diizinkan = array("pdf", "docx", "pptx", "zip");
+
+        if (!in_array($ekstensi_file, $ekstensi_diizinkan) || $_FILES["fileInput"]["size"] > 5242880) { // Max 5MB
+            $_SESSION['pesan'] = "Error: Format atau ukuran file tidak sesuai.";
+        } else {
+            if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
+                $query_update_dokumen = "
+                    UPDATE Detail_Sidang 
+                    SET dok_revisi = ?, status_revisi = 'Menunggu Persetujuan' 
+                    WHERE id_sidang = ?
+                ";
+                $params_update = array($path_target, $id_sidang);
+                $stmt_update = sqlsrv_query($conn, $query_update_dokumen, $params_update);
+
+                if ($stmt_update) {
+                    $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
+                } else {
+                    unlink($path_target);
+                    $_SESSION['pesan'] = "Error: Gagal menyimpan informasi file ke database.";
+                }
+            } else {
+                $_SESSION['pesan'] = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
+            }
+        }
+        header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+        exit();
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -55,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* CSS Lengkap dan Final (Tidak berubah dari versi terakhir) */
+        /* CSS Lengkap dan Final (Tidak berubah) */
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
         * {
@@ -330,28 +393,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .btn-tolak {
-            background-color: #fd7d7d;
-            border-radius: 50px;
-            height: 40px;
-            width: 120px;
+            background-color: #6c757d;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            transition: background-color 0.2s ease;
         }
+
         .btn-tolak:hover {
-            background-color: #fd7d7d;
-            transform: translateY(-2px);
-            color: white;
-        }
-
-        .btn-kirim {
-            background-color: #4FD382;
-            border-radius: 50px;
-            height: 40px;
-            width: 120px;
-        }
-
-        .btn-kirim:hover {
-            background-color: #4FD382;
-            transform: translateY(-2px);
-            color: white;
+            background-color: #5a6268;
         }
 
         @media (max-width: 992px) {
@@ -402,7 +453,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 align-items: stretch !important;
             }
         }
-        
     </style>
 </head>
 
@@ -447,7 +497,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <strong><?php echo htmlspecialchars($catatan['nama_dosen']); ?> - Penguji</strong>
                             <p class="mt-2 mb-0 text-truncate-2">
                                 <?php echo htmlspecialchars($catatan['catatan_sidang']); ?><span
-                                    class="text-selengkapnya">Selengkapnya...</span></p>
+                                    class="text-selengkapnya">Selengkapnya...</span>
+                            </p>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -469,7 +520,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-custom-primary" id="openConfirmModalBtn"
-                            data-bs-toggle="modal" data-bs-target="#modalKonfirmasi" disabled>Kirim</button>
+                            data-bs-toggle="modal" data-bs-target="#modalKonfirmasi" >Kirim</button>
                     </div>
                 </form>
             </div>
@@ -483,7 +534,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title fs-5" id="modalDetailLabel<?php echo $index; ?>">Detail Catatan dari
-                            <?php echo htmlspecialchars($catatan['nama_dosen']); ?></h4>
+                            <?php echo htmlspecialchars($catatan['nama_dosen']); ?>
+                        </h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                     <div class="modal-body">
@@ -530,18 +582,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php endif; ?>
 
     <script>
-        // SCRIPT JS FINAL (Tidak perlu diubah)
         document.addEventListener('DOMContentLoaded', function () {
             const menuToggle = document.querySelector(".NavSide__toggle");
             const sidebar = document.getElementById("main-sidebar");
-
             if (menuToggle && sidebar) {
                 menuToggle.onclick = () => {
                     menuToggle.classList.toggle("NavSide__toggle--active");
                     sidebar.classList.toggle("NavSide__sidebar--active-mobile");
                 };
             }
-
             const fileInput = document.getElementById('fileInput');
             const openConfirmModalBtn = document.getElementById('openConfirmModalBtn');
             const initialState = document.getElementById('initial-state');
@@ -549,6 +598,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const fileNameDisplay = document.getElementById('fileNameDisplay');
             const uploadPromptText = document.getElementById('upload-prompt-text');
             if (fileInput && openConfirmModalBtn) {
+                openConfirmModalBtn.disabled = true;
                 fileInput.addEventListener('change', function () {
                     if (this.files.length > 0) {
                         initialState.classList.add('d-none');
