@@ -1,10 +1,10 @@
-
 <?php
 session_start();
-if ($_SESSION['role'] !== 'dosen') {
-    header("Location: ../../index.php");
-    exit();
-}
+// if ($_SESSION['role'] !== 'dosen') {
+//     header("Location: ../../index.php");
+//     exit();
+// }
+$nomorDosen = $_SESSION['nomor_dosen'];
 include '../../koneksi/koneksiAndrew.php';
 ?>
 
@@ -120,7 +120,7 @@ include '../../koneksi/koneksiAndrew.php';
                                 <tr>
                                     <th scope="col">No</th>
                                     <th scope="col">Kelompok</th>
-                                    <th scope="col">Nama</th>
+                                    <th scope="col">Judul</th>
                                     <th scope="col">Mata Kuliah</th>
                                     <th scope="col">Dosen Pembimbing</th>
                                     <th scope="col">Aksi</th>
@@ -130,7 +130,10 @@ include '../../koneksi/koneksiAndrew.php';
                         <tbody id="dPengajuanTA">
                             <?php
                            $no = 1;
-                        $sqlTA = "SELECT id_kelompok, judul, jenis_sidang, nama_dosen FROM Sidang WHERE TipeSidang = 'TA'";
+                      $sqlTA = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
+                                FROM Sidang s
+                                JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
+                                WHERE s.TipeSidang = 'TA' AND s.nomor_dosen = '$nomorDosen'";
                         $resultTA = sqlsrv_query($conn, $sqlTA);
 
                         if ($resultTA && sqlsrv_has_rows($resultTA)) {
@@ -139,7 +142,7 @@ include '../../koneksi/koneksiAndrew.php';
                                 <tr class="isiTabel jadiBiru">
                                     <td><?= $no++; ?></td>
                                     <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                    <td><?= htmlspecialchars($row['judul']); ?></td>
+                                    <td><?= htmlspecialchars($row['id_sidang']); ?></td>
                                     <td><?= htmlspecialchars($row['jenis_sidang']); ?></td>
                                     <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
                                     <td style="text-align: center;">
@@ -158,7 +161,11 @@ include '../../koneksi/koneksiAndrew.php';
                         <tbody id="dPengajuanSem" style="display: none;">
                             <?php
                             $no = 1;
-                            $sqlSem = "SELECT id_kelompok, nim, nama_mhs, nama_matkul, nama_dosen FROM Sidang WHERE TipeSidang = 'Semester'";
+                            $sqlSem = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
+                                        FROM Sidang s
+                                        JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
+                                        WHERE s.TipeSidang = 'Semester' AND s.nomor_dosen = '$nomorDosen'";
+
                             $resultSem = sqlsrv_query($conn, $sqlSem);
                             if ($resultSem && sqlsrv_has_rows($resultSem) > 0) {
                                 while ($row = sqlsrv_fetch_assoc($resultSem)) {
@@ -166,8 +173,8 @@ include '../../koneksi/koneksiAndrew.php';
                                     <tr class="isiTabel jadiBiru">
                                         <td><?= $no++; ?></td>
                                         <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                        <td><?= htmlspecialchars($row['nama_mhs']); ?></td>
-                                        <td><?= htmlspecialchars($row['nama_matkul']); ?></td>
+                                        <td><?= htmlspecialchars($row['id_sidang']); ?></td>
+                                        <td><?= htmlspecialchars($row['jenis_sidang']); ?></td>
                                         <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
                                         <td style="text-align: center;">
                                             <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'Semester')">
