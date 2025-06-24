@@ -1,35 +1,74 @@
 <?php
-// <-- BAGIAN AWAL TETAP SAMA -->
-// session_start(); // Dinonaktifkan untuk pengujian
+session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
 // ===================================================================================
 // BAGIAN 1: KEAMANAN DAN INISIALISASI
 // ===================================================================================
-// --- SIMULASI LOGIN (TIDAK PERLU DIUBAH-UBAH, HANYA UNTUK QUERY NILAI/CATATAN) ---
-$nomor_dosen_login = '1001'; 
-
-// Nonaktifkan pengecekan session yang asli
-/*
-if (!isset($_SESSION['user']['nomor_dosen'])) {
-    die("Akses ditolak. Silakan login sebagai dosen.");
-}
-$nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
-*/
-
-// if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
-//     die("ID Sidang tidak valid atau tidak ditemukan.");
-// }
-
-// $id_sidang = (int)$_GET['id_sidang']; // Ambil id_sidang dari URL
-
-
+// Ambil ID dari URL. Ini adalah gerbang utama.
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid."); // Samakan juga pesan errornya
-} 
+    die("Error: ID Sidang tidak valid.");
+}
+$id_sidang = (int)$_GET['id'];
 
-$id_sidang = (int)$_GET['id']; // Ambil "id" dari URL
-// Variabel untuk menampung data yang akan ditampilkan
+// Simulasi Dosen yang Login (nantinya ganti dengan session asli)
+$nomor_dosen_login = '1001'; 
+// if (!isset($_SESSION['user']['nomor_dosen'])) { die("Akses ditolak."); }
+// $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
+
+// ===================================================================================
+// BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
+// ===================================================================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Ambil semua data dari form yang dikirim
+    $catatan_post = $_POST['catatanEvaluasi'];
+    $nilaiLaporan = !empty($_POST['nilaiLaporan']) ? (int)$_POST['nilaiLaporan'] : null;
+    $nilaiPresentasi = !empty($_POST['materiPresentasi']) ? (int)$_POST['materiPresentasi'] : null;
+    $nilaiPenyampaian = !empty($_POST['nilaiPenyampaian']) ? (int)$_POST['nilaiPenyampaian'] : null;
+    $nilaiProyek = !empty($_POST['nilaiProyek']) ? (int)$_POST['nilaiProyek'] : null;
+
+    // Tidak perlu koneksi baru, gunakan $conn yang sudah ada dari include
+    // $conn_post = sqlsrv_connect($serverName, $connectionOptions); 
+
+    // 1. UPDATE CATATAN REVISI DI TABEL Detail_Sidang
+    $sql_update_catatan = "UPDATE Detail_Sidang SET catatan_sidang = ? WHERE id_sidang = ? AND nomor_dosen = ?";
+    $params_update_catatan = [$catatan_post, $id_sidang, $nomor_dosen_login];
+    $stmt_update_catatan = sqlsrv_query($conn, $sql_update_catatan, $params_update_catatan);
+    if ($stmt_update_catatan === false) { die("Gagal memperbarui catatan revisi: " . print_r(sqlsrv_errors(), true)); }
+
+    // 2. CEK & SIMPAN NILAI (UPSERT) KE TABEL Penilaian
+    $sql_cek_nilai = "SELECT COUNT(*) as 'count' FROM Penilaian WHERE id_sidang = ? AND nomor_dosen = ?";
+    $stmt_cek_nilai = sqlsrv_query($conn, $sql_cek_nilai, [$id_sidang, $nomor_dosen_login]);
+    $nilai_exists = sqlsrv_fetch_array($stmt_cek_nilai, SQLSRV_FETCH_ASSOC)['count'] > 0;
+    
+    if ($nilai_exists) {
+        $sql_nilai = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ? WHERE id_sidang = ? AND nomor_dosen = ?";
+        $params_nilai = [$nilaiLaporan, $nilaiPresentasi, $nilaiPenyampaian, $nilaiProyek, $id_sidang, $nomor_dosen_login];
+    } else {
+        $sql_get_nim = "SELECT TOP 1 km.nim FROM Sidang s JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok WHERE s.id_sidang = ?";
+        $stmt_get_nim = sqlsrv_query($conn, $sql_get_nim, [$id_sidang]);
+        $nim_untuk_insert = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)['nim'];
+        $sql_nilai = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, n_dokumen, n_presentasi, n_tanyajawab, n_proyek) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $params_nilai = [$id_sidang, $nim_untuk_insert, $nomor_dosen_login, $nilaiLaporan, $nilaiPresentasi, $nilaiPenyampaian, $nilaiProyek];
+    }
+    
+    $stmt_nilai = sqlsrv_query($conn, $sql_nilai, $params_nilai);
+    if ($stmt_nilai === false) { die("Gagal menyimpan nilai: " . print_r(sqlsrv_errors(), true)); }
+    
+    // sqlsrv_close($conn_post); // Jangan tutup koneksi di sini
+
+    // ### INI BAGIAN YANG DIPERBAIKI ###
+    // Pastikan ada tanda "=" setelah "id"
+    header("Location: dEvaluasiSidang.php?id=" . $id_sidang . "&status=sukses");
+    exit();
+}
+
+// ===================================================================================
+// BAGIAN 3: PENGAMBILAN DATA UNTUK DITAMPILKAN DI HALAMAN
+// ===================================================================================
+
+// Variabel default
 $id_kelompok = null;
 $judul = 'Data tidak ditemukan';
 $ruangan = '-';
@@ -38,91 +77,32 @@ $jam = '-';
 $dosenPembimbing = [];
 $dosenPenguji = [];
 $catatan_revisi = '';
-$nilai_mahasiswa = [
-    'n_dokumen' => '', 'n_presentasi' => '', 'n_tanyajawab' => '', 'n_proyek' => ''
-];
+$nilai_mahasiswa = ['n_dokumen' => '', 'n_presentasi' => '', 'n_tanyajawab' => '', 'n_proyek' => ''];
 
-// ===================================================================================
-// BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
-// ===================================================================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Ambil data dari form. id_sidang sudah ada dari URL
-    $catatan_post = $_POST['catatanEvaluasi'];
-    $nilaiLaporan = !empty($_POST['nilaiLaporan']) ? (int)$_POST['nilaiLaporan'] : null;
-    $nilaiPresentasi = !empty($_POST['materiPresentasi']) ? (int)$_POST['materiPresentasi'] : null;
-    $nilaiPenyampaian = !empty($_POST['nilaiPenyampaian']) ? (int)$_POST['nilaiPenyampaian'] : null;
-    $nilaiProyek = !empty($_POST['nilaiProyek']) ? (int)$_POST['nilaiProyek'] : null;
-
-    $conn_post = sqlsrv_connect($serverName, $connectionOptions);
-
-    $sql_update_catatan = "UPDATE Detail_Sidang SET catatan_sidang = ? WHERE id_sidang = ? AND nomor_dosen = ?";
-    $params_update_catatan = [$catatan_post, $id_sidang, $nomor_dosen_login];
-    $stmt_update_catatan = sqlsrv_query($conn_post, $sql_update_catatan, $params_update_catatan);
-    if ($stmt_update_catatan === false) { die("Gagal memperbarui catatan revisi: " . print_r(sqlsrv_errors(), true)); }
-    sqlsrv_free_stmt($stmt_update_catatan);
-
-    $sql_cek_nilai = "SELECT COUNT(*) as 'count' FROM Penilaian WHERE id_sidang = ? AND nomor_dosen = ?";
-    $stmt_cek_nilai = sqlsrv_query($conn_post, $sql_cek_nilai, [$id_sidang, $nomor_dosen_login]);
-    $nilai_exists = sqlsrv_fetch_array($stmt_cek_nilai, SQLSRV_FETCH_ASSOC)['count'] > 0;
-    
-    if ($nilai_exists) {
-        $sql_nilai = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ? WHERE id_sidang = ? AND nomor_dosen = ?";
-        $params_nilai = [$nilaiLaporan, $nilaiPresentasi, $nilaiPenyampaian, $nilaiProyek, $id_sidang, $nomor_dosen_login];
-    } else {
-        $sql_get_nim = "SELECT TOP 1 km.nim FROM Sidang s JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok WHERE s.id_sidang = ?";
-        $stmt_get_nim = sqlsrv_query($conn_post, $sql_get_nim, [$id_sidang]);
-        $nim_untuk_insert = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)['nim'];
-        $sql_nilai = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, n_dokumen, n_presentasi, n_tanyajawab, n_proyek) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $params_nilai = [$id_sidang, $nim_untuk_insert, $nomor_dosen_login, $nilaiLaporan, $nilaiPresentasi, $nilaiPenyampaian, $nilaiProyek];
-    }
-    
-    $stmt_nilai = sqlsrv_query($conn_post, $sql_nilai, $params_nilai);
-    if ($stmt_nilai === false) { die("Gagal menyimpan nilai: " . print_r(sqlsrv_errors(), true)); }
-    
-    sqlsrv_close($conn_post);
-
-    // $_SESSION['status'] = ['type' => 'success', 'message' => 'Evaluasi berhasil disimpan!'];
-    header("Location: dEvaluasiSidang.php?id_sidang=" . $id_sidang);
-    exit();
-}
-// <-- AKHIR BAGIAN AWAL TETAP SAMA -->
-
-// ===================================================================================
-// BAGIAN 3: PENGAMBILAN DATA UNTUK DITAMPILKAN
-// ===================================================================================
-
+// Ambil data sidang
 $sql_sidang = "SELECT Judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
 $result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
-if ($result_sidang === false) { die("Error Query Sidang: " . print_r(sqlsrv_errors(), true)); }
-$data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC);
-
-if ($data_sidang) {
+if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
     $judul = $data_sidang['Judul'];
     $id_kelompok = $data_sidang['id_kelompok'];
 
-    // --- LOGIKA PENGAMBILAN DOSEN ---
+    // Ambil dosen pembimbing
     if ($id_kelompok) {
-        // ### PERUBAHAN DI SINI: Ditambahkan DISTINCT untuk mencegah duplikasi ###
         $sql_pembimbing = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
         $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, [$id_kelompok]);
         if ($stmt_pembimbing) {
-            while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
-                $dosenPembimbing[] = $row['nama_dosen'];
-            }
+            while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) { $dosenPembimbing[] = $row['nama_dosen']; }
         }
     }
     
-    // ### PERUBAHAN DI SINI: Ditambahkan DISTINCT untuk membuat query lebih aman ###
+    // Ambil dosen penguji
     $sql_penguji = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
     $stmt_penguji = sqlsrv_query($conn, $sql_penguji, [$id_sidang]);
     if ($stmt_penguji) {
-        while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
-            $dosenPenguji[] = $row['nama_dosen'];
-        }
+        while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) { $dosenPenguji[] = $row['nama_dosen']; }
     }
-    // --- AKHIR PERBAIKAN ---
-
-    // <-- LANJUTAN KODE TETAP SAMA -->
+    
+    // Ambil jadwal
     $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang FROM Jadwal WHERE id_sidang = ?";
     $result_jadwal = sqlsrv_query($conn, $sql_jadwal, [$id_sidang]);
     if ($result_jadwal && $data_jadwal = sqlsrv_fetch_array($result_jadwal, SQLSRV_FETCH_ASSOC)) {
@@ -134,6 +114,7 @@ if ($data_sidang) {
         }
     }
 
+    // Ambil catatan & nilai yang sudah ada untuk ditampilkan di form
     $sql_catatan = "SELECT catatan_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
     $result_catatan = sqlsrv_query($conn, $sql_catatan, [$id_sidang, $nomor_dosen_login]);
     if ($result_catatan && $row_catatan = sqlsrv_fetch_array($result_catatan, SQLSRV_FETCH_ASSOC)) { $catatan_revisi = $row_catatan['catatan_sidang']; }
@@ -146,7 +127,7 @@ if ($data_sidang) {
 $namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
 $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
 
-// sqlsrv_close($conn);
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -431,7 +412,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
                 <h2>Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-                <form id="evaluasiForm" method="POST" action="dEvaluasiSidang.php?id_sidang=<?php echo $id_sidang; ?>">
+                <form id="evaluasiForm" method="POST" action="dEvaluasiSidang.php?id=<?php echo $id_sidang; ?>">
                     <div class="info-card">
                         <div class="section">
                             <div class="info-group">
