@@ -1,7 +1,9 @@
 <?php
+// Selalu mulai session di baris paling atas
 session_start();
-// 1. PASTIKAN ANDA MEMBUAT FILE INI DAN MENGISINYA DENGAN KONEKSI DATABASE ANDA
-require "../../koneksi.php";
+
+// Anda memanggil file koneksi yang membuat variabel $conn
+require "../../koneksi/koneksiAndrew.php";
 
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
@@ -9,43 +11,44 @@ if (isset($_SESSION['pesan'])) {
     unset($_SESSION['pesan']);
 }
 
-// 2. HALAMAN INI HARUS DIAKSES DENGAN ID SIDANG DI URL (contoh: mPerbaikan.php?id_sidang=101)
-if (!isset($_GET['id_sidang']) || !is_numeric($_GET['id_sidang'])) {
-    die("Error: ID Sidang tidak valid atau tidak ditemukan di URL.");
+// Cek apakah ID sidang ada di dalam session.
+if (!isset($_SESSION['selected_sidang_id']) || !is_numeric($_SESSION['selected_sidang_id'])) {
+    die("Error: Tidak ada sidang yang dipilih. Silakan kembali ke halaman daftar sidang dan pilih salah satu.");
 }
-$id_sidang = (int) $_GET['id_sidang'];
+$id_sidang = (int) $_SESSION['selected_sidang_id'];
 
-// === LOGIKA FETCH DATA DARI DATABASE (DISESUAIKAN DENGAN SKEMA ANDA) ===
+
+// === LOGIKA FETCH DATA ===
 $nama_mahasiswa = '';
 $status_revisi = '';
+$status_pengajuan = 'Belum Disetujui';
 $catatan_list = [];
 
-// Query untuk mengambil info dasar (nama mahasiswa & status)
-// ===================================================================================
-// PERUBAHAN UTAMA DI SINI: Ganti 'TOP 1' (SQL Server) menjadi 'LIMIT 1' (MySQL)
-// ===================================================================================
+// Query untuk mengambil informasi dasar
 $query_info = "
-    SELECT ds.status_revisi, m.nama_mhs
+    SELECT TOP 1 ds.status_revisi, m.nama_mhs
     FROM Detail_Sidang ds
-    JOIN Mahasiswa m ON ds.nim = m.nim
+    JOIN Sidang s ON ds.id_sidang = s.id_sidang
+    JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+    JOIN Mahasiswa m ON km.nim = m.nim
     WHERE ds.id_sidang = ?
-    LIMIT 1 
 ";
-// Note: LIMIT 1 diletakkan di akhir query.
-
-$stmt_info = mysqli_prepare($koneksi, $query_info);
-mysqli_stmt_bind_param($stmt_info, "i", $id_sidang);
-mysqli_stmt_execute($stmt_info);
-$result_info = mysqli_stmt_get_result($stmt_info);
-$data_info = mysqli_fetch_assoc($result_info);
-
+$params_info = array($id_sidang);
+$stmt_info = sqlsrv_query($conn, $query_info, $params_info);
+if ($stmt_info === false) {
+    die("Error saat menjalankan query info: <br><pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+$data_info = sqlsrv_fetch_array($stmt_info, SQLSRV_FETCH_ASSOC);
 if (!$data_info) {
-    die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan. Pastikan ID dan data di tabel Detail_Sidang sudah benar, dan kolom 'nim' sudah terisi.");
+    die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan.");
 }
 $nama_mahasiswa = $data_info['nama_mhs'];
 $status_revisi = $data_info['status_revisi'];
+if (empty(trim($status_revisi))) {
+    $status_revisi = 'Belum Ada Revisi';
+}
 
-// Query untuk mengambil semua catatan revisi dari para penguji (Query ini sudah benar)
+// Query untuk mengambil catatan perbaikan
 $query_catatan = "
     SELECT ds.catatan_sidang, d.nama_dosen
     FROM Detail_Sidang ds
@@ -53,78 +56,53 @@ $query_catatan = "
     WHERE ds.id_sidang = ?
     ORDER BY d.nama_dosen ASC
 ";
-$stmt_catatan = mysqli_prepare($koneksi, $query_catatan);
-mysqli_stmt_bind_param($stmt_catatan, "i", $id_sidang);
-mysqli_stmt_execute($stmt_catatan);
-$result_catatan = mysqli_stmt_get_result($stmt_catatan);
-while ($row = mysqli_fetch_assoc($result_catatan)) {
+$params_catatan = array($id_sidang);
+$stmt_catatan = sqlsrv_query($conn, $query_catatan, $params_catatan);
+if ($stmt_catatan === false) {
+    die("Error saat menjalankan query catatan: <br><pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+while ($row = sqlsrv_fetch_array($stmt_catatan, SQLSRV_FETCH_ASSOC)) {
     $catatan_list[] = $row;
 }
 
-// === LOGIKA FILE UPLOAD (DISESUAIKAN DENGAN SKEMA ANDA) ===
+// === LOGIKA FILE UPLOAD ===
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
         $folder_target = "uploads/";
         if (!file_exists($folder_target)) {
-            if (!mkdir($folder_target, 0755, true)) {
-                $pesan = "Error: Gagal membuat folder uploads.";
-            }
+            mkdir($folder_target, 0755, true);
         }
 
-        if (empty($pesan)) {
-            $file_asli = basename($_FILES["fileInput"]["name"]);
-            $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
-            // Membuat nama file unik untuk menghindari tumpang tindih
-            $file_unik = 'revisi_' . $id_sidang . '_' . time() . '.' . $ekstensi_file;
-            $path_target = $folder_target . $file_unik;
+        $file_asli = basename($_FILES["fileInput"]["name"]);
+        $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
+        $file_unik = 'revisi_' . $id_sidang . '_' . time() . '.' . $ekstensi_file;
+        $path_target = $folder_target . $file_unik;
+        $ekstensi_diizinkan = array("pdf", "docx", "pptx", "zip");
 
-            $ekstensi_diizinkan = array("pdf", "docx", "pptx", "zip");
-            if (!in_array($ekstensi_file, $ekstensi_diizinkan)) {
-                $pesan = "Error: Format file tidak diizinkan. Hanya .pdf, .docx, .pptx, dan .zip yang boleh diunggah.";
-            } elseif ($_FILES["fileInput"]["size"] > 5242880) { // 5 MB
-                $pesan = "Error: Ukuran file terlalu besar. Maksimal 5 MB.";
-            }
+        if (!in_array($ekstensi_file, $ekstensi_diizinkan) || $_FILES["fileInput"]["size"] > 5242880) { // Max 5MB
+            $_SESSION['pesan'] = "Error: Format atau ukuran file tidak sesuai.";
+        } else {
+            if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
+                $query_update_dokumen = "
+                    UPDATE Detail_Sidang 
+                    SET dok_revisi = ?, status_revisi = 'Menunggu Persetujuan' 
+                    WHERE id_sidang = ?
+                ";
+                $params_update = array($path_target, $id_sidang);
+                $stmt_update = sqlsrv_query($conn, $query_update_dokumen, $params_update);
 
-            if (empty($pesan)) {
-                if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
-                    // Logika disesuaikan: UPDATE kolom, bukan INSERT baris baru.
-                    $query_update_dokumen = "
-                        UPDATE Detail_Sidang 
-                        SET dok_revisi = ?, status_revisi = 'Menunggu Persetujuan' 
-                        WHERE id_sidang = ?
-                    ";
-                    $stmt_update = mysqli_prepare($koneksi, $query_update_dokumen);
-                    mysqli_stmt_bind_param($stmt_update, "si", $path_target, $id_sidang);
-
-                    if (mysqli_stmt_execute($stmt_update)) {
-                        $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
-                    } else {
-                        unlink($path_target); // Hapus file yang sudah ter-upload jika gagal update DB
-                        $_SESSION['pesan'] = "Error: Gagal menyimpan informasi file ke database.";
-                    }
-
-                    // Redirect untuk mencegah re-submit form
-                    header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]) . "?id_sidang=" . $id_sidang);
-                    exit();
+                if ($stmt_update) {
+                    $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
                 } else {
-                    $pesan = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
+                    unlink($path_target);
+                    $_SESSION['pesan'] = "Error: Gagal menyimpan informasi file ke database.";
                 }
+            } else {
+                $_SESSION['pesan'] = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
             }
         }
-    } elseif (isset($_FILES["fileInput"])) {
-        // Logika untuk menangani error upload bawaan PHP
-        switch ($_FILES["fileInput"]["error"]) {
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                $pesan = "Error: Ukuran file melebihi batas yang diizinkan server.";
-                break;
-            case UPLOAD_ERR_NO_FILE:
-                $pesan = "Error: Tidak ada file yang dipilih.";
-                break;
-            default:
-                $pesan = "Error: Terjadi kesalahan saat mengunggah file (Kode: " . $_FILES["fileInput"]["error"] . ").";
-                break;
-        }
+        header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+        exit();
     }
 }
 ?>
@@ -140,7 +118,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+        /* CSS Lengkap dan Final (Tidak berubah) */
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
         * {
             margin: 0;
@@ -149,34 +128,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-family: "Poppins", sans-serif;
         }
 
-        html {
-            overflow-y: scroll;
-        }
-
         body {
-            background-color: #FFFFFF;
+            background-color: #ffffff;
         }
 
         #NavSide {
             display: flex;
             min-height: 100vh;
-        }
-
-        #page-content-wrapper {
-            flex-grow: 1;
-            margin-left: 280px;
-            transition: margin-left 0.4s ease-in-out;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .NavSide__main-content {
-            padding: 2rem;
-            margin-left: 30px;
-            margin-right: 40px;
-            flex-grow: 1;
-            overflow-y: auto;
-            background-color: #ffffff !important;
+            position: relative;
         }
 
         .NavSide__sidebar {
@@ -185,11 +144,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             left: 0;
             bottom: 0;
             width: 280px;
-            background: #4B68FB;
+            background: #4b68fb;
             z-index: 1000;
             display: flex;
             flex-direction: column;
             transition: transform 0.4s ease-in-out;
+        }
+
+        .NavSide__main-content {
+            flex-grow: 1;
+            padding: 25px 30px;
+            margin-left: 280px;
+            transition: margin-left 0.4s ease-in-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        .NavSide__topbar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .NavSide__toggle {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #4b68fb;
         }
 
         .NavSide__sidebar-brand {
@@ -233,32 +220,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             box-sizing: border-box;
         }
 
-        .NavSide_sidebar-item.NavSide_sidebar-item--active {
+        .NavSide__sidebar-item.NavSide__sidebar-item--active {
             background: #ffffff;
         }
 
-        .NavSide_sidebar-item.NavSide_sidebar-item--active a {
-            color: #4B68FB;
+        .NavSide__sidebar-item.NavSide__sidebar-item--active a {
+            color: #4b68fb;
         }
 
-        .NavSide__sidebar-item b:nth-child(1),
-        .NavSide__sidebar-item b:nth-child(2) {
+        .NavSide__sidebar-item b:nth-child(1) {
             position: absolute;
+            top: -20px;
             height: 20px;
             width: 100%;
             background: #fff;
             display: none;
         }
 
-        .NavSide__sidebar-item b:nth-child(1) {
-            top: -20px;
+        .NavSide__sidebar-item b:nth-child(1)::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-bottom-right-radius: 20px;
+            background: #4b68fb;
         }
 
         .NavSide__sidebar-item b:nth-child(2) {
+            position: absolute;
             bottom: -20px;
+            height: 20px;
+            width: 100%;
+            background: #fff;
+            display: none;
         }
 
-        .NavSide__sidebar-item b:nth-child(1)::before,
         .NavSide__sidebar-item b:nth-child(2)::before {
             content: "";
             position: absolute;
@@ -266,77 +264,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             left: 0;
             width: 100%;
             height: 100%;
-            background: #4B68FB;
-        }
-
-        .NavSide__sidebar-item b:nth-child(1)::before {
-            border-bottom-right-radius: 20px;
-        }
-
-        .NavSide__sidebar-item b:nth-child(2)::before {
             border-top-right-radius: 20px;
+            background: #4b68fb;
         }
 
-        .NavSide_sidebar-item.NavSide_sidebar-item--active b:nth-child(1),
-        .NavSide_sidebar-item.NavSide_sidebar-item--active b:nth-child(2) {
-            display: block;
-        }
-
-        @media (max-width: 992px) {
-            .NavSide__sidebar {
-                transform: translateX(-280px);
-            }
-
-            .NavSide_sidebar.NavSide_sidebar--active-mobile {
-                transform: translateX(0);
-            }
-
-            #page-content-wrapper {
-                margin-left: 0;
-            }
-
-            .NavSide__toggle {
-                display: block;
-                position: fixed;
-                top: 15px;
-                left: 20px;
-                z-index: 1001;
-                transition: transform 0.4s ease-in-out;
-            }
-
-            .NavSide_toggle.NavSide_toggle--active {
-                transform: translateX(280px);
-            }
-
-            .NavSide__main-content {
-                padding-top: 60px;
-                margin-left: 0;
-                margin-right: 0;
-                padding: 60px 1rem 1rem 1rem;
-            }
-        }
-
-        .NavSide__toggle {
-            display: none;
-            font-size: 2rem;
-            cursor: pointer;
-            color: #4B68FB;
-        }
-
-        .NavSide__toggle .close {
-            display: none;
-        }
-
-        .NavSide_toggle.NavSide_toggle--active .open {
-            display: none;
-        }
-
-        .NavSide_toggle.NavSide_toggle--active .close {
+        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
             display: block;
         }
 
         .page-content-header-wrapper h1 {
             font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
         }
 
         .badge-custom {
@@ -352,12 +292,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .status-menunggu-persetujuan {
             background-color: #FFD56F;
-            color: #5d4a1a;
+            color: #5d4a1a !important;
         }
 
         .status-disetujui {
             background-color: #A3E4D7;
-            color: #0E6655;
+            color: #0E6655 !important;
+        }
+
+        .status-belum-ada-revisi {
+            background-color: #6c757d;
         }
 
         .card-comment {
@@ -448,69 +392,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             cursor: not-allowed;
         }
 
-        #modalKonfirmasi .modal-content {
-            background-color: #ffffff;
-            border-radius: 24px;
-            border: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        #modalKonfirmasi .modal-header {
-            border-bottom: none;
-            padding-bottom: 0;
-            justify-content: center;
-        }
-
-        #modalKonfirmasi .modal-title {
-            font-weight: 700;
-            font-size: 1.75rem;
-            color: #333;
-            width: 100%;
-        }
-
-        #modalKonfirmasi .modal-body p {
-            font-size: 1rem;
-            color: #555;
-            margin-top: 0.5rem;
-            margin-bottom: 2rem;
-            font-weight: 500;
-        }
-
-        #modalKonfirmasi .modal-body .d-flex {
-            justify-content: center !important;
-            gap: 1rem;
-        }
-
-        #modalKonfirmasi .modal-body button {
-            border-radius: 50px;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            border: none;
+        .btn-tolak {
+            background-color: #6c757d;
             color: white;
-            min-width: 140px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            transition: background-color 0.2s ease;
         }
 
-        #modalKonfirmasi .modal-body button:hover {
-            transform: translateY(-3px);
+        .btn-tolak:hover {
+            background-color: #5a6268;
         }
 
-        #modalKonfirmasi .btn-tolak {
-            background-color: #FF7171;
+        @media (max-width: 992px) {
+            .NavSide__sidebar {
+                transform: translateX(-280px);
+            }
+
+            .NavSide__sidebar.NavSide__sidebar--active-mobile {
+                transform: translateX(0);
+            }
+
+            .NavSide__main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+
+            .NavSide__topbar {
+                display: flex;
+                z-index: 999;
+            }
+
+            .NavSide__toggle {
+                position: relative;
+                z-index: 1001;
+                transition: transform 0.4s ease-in-out;
+            }
+
+            .NavSide__toggle.NavSide__toggle--active {
+                transform: translateX(280px);
+            }
+
+            .NavSide__toggle .close {
+                display: none;
+            }
+
+            .NavSide__toggle.NavSide__toggle--active .open {
+                display: none;
+            }
+
+            .NavSide__toggle.NavSide__toggle--active .close {
+                display: block;
+            }
         }
 
-        #modalKonfirmasi .btn-tolak:hover {
-            box-shadow: 0 6px 25px rgba(255, 113, 113, 0.6);
-        }
-
-        #modalKonfirmasi #confirmSubmitBtn {
-            background-color: #4FD382;
-        }
-
-        #modalKonfirmasi #confirmSubmitBtn:hover {
-            box-shadow: 0 6px 25px rgba(79, 211, 130, 0.6);
+        @media (max-width: 768px) {
+            .page-content-header-wrapper {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
         }
     </style>
 </head>
@@ -518,102 +459,95 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
-            <div class="NavSide__sidebar-brand"><img
-                    src="https://astra.ac.id/wp-content/uploads/2023/10/logo-Astra-Digital-white-1.png"
-                    alt="ASTRAtech Logo"></div>
+            <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /></div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item"><b></b><b></b><a
-                        href="mdetailSidang.php?id_sidang=<?php echo $id_sidang; ?>"><span class="fw-semibold">Detail
-                            Pengajuan</span></a></li>
-                <li class="NavSide_sidebar-item NavSide_sidebar-item--active"><b></b><b></b><a
-                        href="mPerbaikan.php?id_sidang=<?php echo $id_sidang; ?>"><span
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mdetailSidang.php"><span
+                            class="fw-semibold">Detail Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
                             class="fw-semibold">Perbaikan</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a
-                        href="mNilaiakhir.php?id_sidang=<?php echo $id_sidang; ?>"><span class="fw-semibold">Nilai
-                            Akhir</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="fw-semibold">Kembali
-                            ke Daftar</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mNilaiakhir.php"><span
+                            class="fw-semibold">Nilai Akhir</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span
+                            class="fw-semibold">Kembali</span></a></li>
             </ul>
         </div>
-        <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
-        <div id="page-content-wrapper">
-            <main class="NavSide__main-content">
-                <div class="page-content-header-wrapper">
-                    <h1 class="fs-2 fw-bold">Detail Sidang - Sistem Pengajuan Sidang</h1>
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <h2 class="fs-5 fw-semibold mb-0">Catatan Perbaikan -
-                            <?php echo htmlspecialchars($nama_mahasiswa); ?></h2>
-                        <span
-                            class="badge-custom status-<?php echo strtolower(str_replace(' ', '-', $status_revisi)); ?>">Status
-                            Revisi : <?php echo htmlspecialchars($status_revisi); ?></span>
-                    </div>
-                </div>
-
-                <?php foreach ($catatan_list as $index => $catatan): ?>
-                    <div class="card-comment mt-4" data-bs-toggle="modal"
-                        data-bs-target="#modalDetail<?php echo $index; ?>">
-                        <strong><?php echo htmlspecialchars($catatan['nama_dosen']); ?> - Penguji</strong>
-                        <p class="mt-2 mb-0 text-truncate-2">
-                            <?php echo htmlspecialchars($catatan['catatan_sidang']); ?>
-                            <span class="text-selengkapnya">Selengkapnya...</span>
-                        </p>
-                    </div>
-                <?php endforeach; ?>
-
-                <?php if (empty($catatan_list)): ?>
-                    <div class="alert alert-info mt-4">Belum ada catatan perbaikan untuk sidang ini.</div>
-                <?php endif; ?>
-
-                <div class="revision-card mt-4">
-                    <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
-                    <form id="revisionForm"
-                        action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?id_sidang=' . $id_sidang; ?>"
-                        method="POST" enctype="multipart/form-data">
-                        <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
-                            <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i>
-                            </div>
-                            <div id="selected-state" class="d-none"><i
-                                    class="bi bi-file-earmark-text-fill fs-1 text-primary"></i></div>
-                            <p id="upload-prompt-text" class="text-muted mt-2">Unggah berkas revisi (.pdf, .docx, .pptx,
-                                .zip)</p>
-                        </label>
-                        <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
-                        <div class="text-center mt-2">
-                            <p id="fileNameDisplay" class="fw-bold mb-0"></p>
-                        </div>
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="button" class="btn btn-custom-primary" id="openConfirmModalBtn"
-                                data-bs-toggle="modal" data-bs-target="#modalKonfirmasi" disabled>Kirim</button>
-                        </div>
-                    </form>
-                </div>
-
-                <?php foreach ($catatan_list as $index => $catatan): ?>
-                    <div class="modal fade" id="modalDetail<?php echo $index; ?>" tabindex="-1"
-                        aria-labelledby="modalDetailLabel<?php echo $index; ?>" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title fs-5" id="modalDetailLabel<?php echo $index; ?>">Detail Catatan
-                                        dari <?php echo htmlspecialchars($catatan['nama_dosen']); ?></h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Tutup"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p style="white-space: pre-wrap;">
-                                        <?php echo htmlspecialchars($catatan['catatan_sidang']); ?></p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-
-            </main>
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
         </div>
+        <main class="NavSide__main-content">
+            <div
+                class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
+                <h1 class="fs-2">Detail Sidang - Sistem Pengajuan Sidang</h1>
+                <div class="d-flex flex-column align-items-start align-items-md-end">
+                    <span class="badge-custom status-belum-disetujui mb-2">Status Pengajuan :
+                        <?php echo htmlspecialchars($status_pengajuan); ?></span>
+                    <span
+                        class="badge-custom status-<?php echo strtolower(str_replace(' ', '-', $status_revisi)); ?>">Status
+                        Revisi : <?php echo htmlspecialchars($status_revisi); ?></span>
+                </div>
+            </div>
+            <h1 class="fs-4 fw-semibold mb-3">Catatan Perbaikan - <?php echo htmlspecialchars($nama_mahasiswa); ?></h1>
+            <div class="mt-4">
+                <?php if (empty($catatan_list)): ?>
+                    <div class="alert alert-info">Belum ada catatan perbaikan untuk sidang ini.</div>
+                <?php else: ?>
+                    <?php foreach ($catatan_list as $index => $catatan): ?>
+                        <div class="card-comment mb-3" data-bs-toggle="modal"
+                            data-bs-target="#modalDetail<?php echo $index; ?>">
+                            <strong><?php echo htmlspecialchars($catatan['nama_dosen']); ?> - Penguji</strong>
+                            <p class="mt-2 mb-0 text-truncate-2">
+                                <?php echo htmlspecialchars($catatan['catatan_sidang']); ?><span
+                                    class="text-selengkapnya">Selengkapnya...</span>
+                            </p>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <div class="revision-card mt-4">
+                <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
+                <form id="revisionForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST"
+                    enctype="multipart/form-data">
+                    <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
+                        <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i></div>
+                        <div id="selected-state" class="d-none"><i
+                                class="bi bi-file-earmark-text-fill fs-1 text-primary"></i></div>
+                        <p id="upload-prompt-text" class="text-muted mt-2">Unggah berkas revisi (.pdf, .docx, .pptx,
+                            .zip)</p>
+                    </label>
+                    <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
+                    <div class="text-center mt-2">
+                        <p id="fileNameDisplay" class="fw-bold mb-0"></p>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-custom-primary" id="openConfirmModalBtn"
+                            data-bs-toggle="modal" data-bs-target="#modalKonfirmasi" >Kirim</button>
+                    </div>
+                </form>
+            </div>
+        </main>
     </div>
+
+    <?php foreach ($catatan_list as $index => $catatan): ?>
+        <div class="modal fade" id="modalDetail<?php echo $index; ?>" tabindex="-1"
+            aria-labelledby="modalDetailLabel<?php echo $index; ?>" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title fs-5" id="modalDetailLabel<?php echo $index; ?>">Detail Catatan dari
+                            <?php echo htmlspecialchars($catatan['nama_dosen']); ?>
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p style="white-space: pre-wrap;"><?php echo htmlspecialchars($catatan['catatan_sidang']); ?></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
 
     <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel"
         aria-hidden="true">
@@ -626,8 +560,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <p>Apakah Anda sudah yakin ingin mengupload dokumen revisi ini?</p>
                     <div class="d-flex justify-content-center">
                         <button type="button" class="btn btn-tolak me-3" data-bs-dismiss="modal">Batalkan</button>
-                        <button type="button" class="btn" id="confirmSubmitBtn"
-                            style="background-color: #4FD382; color:white;">Lanjutkan</button>
+                        <button type="button" class="btn btn-kirim me-3" id="confirmSubmitBtn">Lanjutkan</button>
                     </div>
                 </div>
             </div>
@@ -636,16 +569,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <?php
-    if (!empty($pesan)):
-        $isSuccess = stripos($pesan, 'sukses') !== false;
-        $cleanPesan = preg_replace('/^(Sukses|Error): /i', '', $pesan);
-        ?>
+    <?php if (!empty($pesan)): ?>
         <script>
             Swal.fire({
-                title: '<?php echo $isSuccess ? "Berhasil" : "Error"; ?>',
-                text: '<?php echo addslashes($cleanPesan); ?>',
-                icon: '<?php echo $isSuccess ? "success" : "error"; ?>',
+                title: '<?php echo stripos($pesan, "sukses") !== false ? "Berhasil" : "Error"; ?>',
+                text: '<?php echo addslashes(preg_replace('/^(Sukses|Error): /i', '', $pesan)); ?>',
+                icon: '<?php echo stripos($pesan, "sukses") !== false ? "success" : "error"; ?>',
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#4B68FB'
             });
@@ -657,7 +586,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const menuToggle = document.querySelector(".NavSide__toggle");
             const sidebar = document.getElementById("main-sidebar");
             if (menuToggle && sidebar) {
-                menuToggle.onclick = function () {
+                menuToggle.onclick = () => {
                     menuToggle.classList.toggle("NavSide__toggle--active");
                     sidebar.classList.toggle("NavSide__sidebar--active-mobile");
                 };
@@ -669,18 +598,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const fileNameDisplay = document.getElementById('fileNameDisplay');
             const uploadPromptText = document.getElementById('upload-prompt-text');
             if (fileInput && openConfirmModalBtn) {
+                openConfirmModalBtn.disabled = true;
                 fileInput.addEventListener('change', function () {
                     if (this.files.length > 0) {
-                        if (initialState) initialState.classList.add('d-none');
-                        if (selectedState) selectedState.classList.remove('d-none');
-                        if (fileNameDisplay) fileNameDisplay.textContent = this.files[0].name;
-                        if (uploadPromptText) uploadPromptText.classList.add('d-none');
+                        initialState.classList.add('d-none');
+                        selectedState.classList.remove('d-none');
+                        fileNameDisplay.textContent = this.files[0].name;
+                        uploadPromptText.classList.add('d-none');
                         openConfirmModalBtn.disabled = false;
                     } else {
-                        if (initialState) initialState.classList.remove('d-none');
-                        if (selectedState) selectedState.classList.add('d-none');
-                        if (fileNameDisplay) fileNameDisplay.textContent = '';
-                        if (uploadPromptText) uploadPromptText.classList.remove('d-none');
+                        initialState.classList.remove('d-none');
+                        selectedState.classList.add('d-none');
+                        fileNameDisplay.textContent = '';
+                        uploadPromptText.classList.remove('d-none');
                         openConfirmModalBtn.disabled = true;
                     }
                 });

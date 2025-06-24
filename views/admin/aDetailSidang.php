@@ -1,7 +1,7 @@
 <?php
 require "../../koneksi/koneksiAndrew.php";
 
-// 1. Ambil ID dari URL
+session_start();
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("Error: ID Sidang tidak valid.");
 } 
@@ -831,7 +831,8 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="aEvaluasi.php?id=<?= $row['id_sidang'] ?>"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <!-- <a href="aEvaluasi.php?id=<?= $row['id'] ?>"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a> -->
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>

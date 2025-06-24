@@ -1,3 +1,0 @@
-<?php
-$serverName = 'WDYASCONNECT\SQLEXPRESS';
-?>

@@ -10,9 +10,9 @@ ini_set('display_errors', 1);
 
 $id_sidang = null;
 
+// Ambil $id_sidang hanya dari session
 if (isset($_SESSION['selected_sidang_id']) && !empty($_SESSION['selected_sidang_id'])) {
     $id_sidang = $_SESSION['selected_sidang_id'];
-    // echo "ID Sidang dari Session: " . $id_sidang . "<br>"; // Debugging
 } else {
     header("Location: mSidang.php");
     exit();
@@ -23,17 +23,15 @@ $data_sidang = [];
 $data_jadwal = [];
 $nama_prodi = 'N/A';
 $dosen_pembimbing = 'N/A';
-$dosen_penguji = []; // Array karena bisa banyak penguji
-$data_matkul = null; // Akan menyimpan array jika ada, null jika tidak
-$dosen_pengampu = []; // Array karena bisa banyak pengampu
+$dosen_penguji = [];
+$data_matkul = null;
+$dosen_pengampu = [];
 
-// 1. Query utama untuk mendapatkan informasi dasar sidang dan jenis sidang
-// Hanya join dengan Jadwal, tidak dengan Detail_Sidang, MataKuliah, Dosen, Penjadwalan di sini
 $sql_utama = "SELECT
                 s.id_sidang,
                 s.judul,
-                CAST(s.jenis_sidang AS INT) AS jenis_sidang, -- Pastikan jenis_sidang diambil sebagai INT
-                s.id_kelompok -- Pastikan id_kelompok juga diambil
+                CAST(s.jenis_sidang AS INT) AS jenis_sidang, 
+                s.id_kelompok
               FROM Sidang s
               WHERE s.id_sidang = ?";
 
@@ -54,20 +52,18 @@ if (!$data_sidang) {
     exit();
 }
 
-// 2. Query terpisah untuk Jadwal (lebih aman dan bersih)
 $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang, jam_selesai FROM Jadwal WHERE id_sidang = ?";
 $stmt_jadwal = sqlsrv_query($conn, $sql_jadwal, array($id_sidang));
 if ($stmt_jadwal === false) {
     error_log("Error fetching jadwal: " . print_r(sqlsrv_errors(), true));
 } else {
     $data_jadwal = sqlsrv_fetch_array($stmt_jadwal, SQLSRV_FETCH_ASSOC);
-    if (!$data_jadwal) { $data_jadwal = []; } // Pastikan array kosong jika tidak ada jadwal
+    if (!$data_jadwal) { $data_jadwal = []; }
 }
 
-// Konversi format tanggal dan jam untuk tampilan
 $tanggal_sidang_formatted = 'Belum Dijadwalkan';
 if (isset($data_jadwal['tanggal_sidang']) && $data_jadwal['tanggal_sidang'] instanceof DateTime) {
-    setlocale(LC_TIME, 'id_ID.utf8'); // Pastikan locale Indonesia untuk nama hari/bulan
+    setlocale(LC_TIME, 'id_ID.utf8');
     $tanggal_sidang_formatted = $data_jadwal['tanggal_sidang']->format('l, d F Y');
 }
 
@@ -79,11 +75,9 @@ if (isset($data_jadwal['jam_sidang']) && $data_jadwal['jam_sidang'] instanceof D
     }
 }
 
-// --- Logika pengambilan data spesifik berdasarkan jenis_sidang ---
 $jenis_sidang = $data_sidang['jenis_sidang'];
 $id_kelompok = $data_sidang['id_kelompok'];
 
-// Query untuk nama prodi (umum untuk semua jenis sidang yang terkait kelompok)
 if (!empty($id_kelompok)) {
     $sql_prodi = "SELECT m.prodi FROM Mahasiswa m JOIN Kelompok_Mahasiswa km ON m.nim = km.nim WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
     $stmt_prodi = sqlsrv_query($conn, $sql_prodi, array($id_kelompok));
@@ -95,8 +89,7 @@ if (!empty($id_kelompok)) {
 }
 
 
-if ($jenis_sidang === 0) { // Asumsi 0 = Sidang Tugas Akhir (TA)
-    // Ambil Dosen Pembimbing (asumsi satu pembimbing per kelompok)
+if ($jenis_sidang === 0) {
     $sql_pembimbing = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
     $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, array($id_kelompok));
     if ($stmt_pembimbing) {
@@ -108,7 +101,6 @@ if ($jenis_sidang === 0) { // Asumsi 0 = Sidang Tugas Akhir (TA)
         error_log("Error fetching pembimbing: " . print_r(sqlsrv_errors(), true));
     }
 
-    // Ambil Dosen Penguji (bisa lebih dari satu)
     $sql_penguji = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ? AND p.peran_dosen = 0"; // Peran 0 untuk penguji
     $stmt_penguji = sqlsrv_query($conn, $sql_penguji, array($id_sidang));
     if ($stmt_penguji) {
@@ -119,8 +111,7 @@ if ($jenis_sidang === 0) { // Asumsi 0 = Sidang Tugas Akhir (TA)
         error_log("Error fetching penguji: " . print_r(sqlsrv_errors(), true));
     }
 
-} elseif ($jenis_sidang === 1) { // Asumsi 1 = Sidang Semester
-    // Ambil Mata Kuliah
+} elseif ($jenis_sidang === 1) {
     $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk
                    JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul
                    WHERE ds.id_sidang = ?";
@@ -130,7 +121,6 @@ if ($jenis_sidang === 0) { // Asumsi 0 = Sidang Tugas Akhir (TA)
         if ($data_matkul) {
             $id_matkul = $data_matkul['id_matkul'];
 
-            // Ambil Dosen Pengampu (bisa lebih dari satu)
             $sql_pengampu = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
             $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
             if ($stmt_pengampu) {
@@ -170,20 +160,26 @@ sqlsrv_close($conn);
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a onclick="location.href='mdetailSidang.php'">
+                    <a href="mdetailSidang.php">
                         <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a onclick="location.href='mPerbaikan.php'">
+                    <a href="mPerbaikan.php?id_sidang=<?= $id_sidang ?>">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a onclick="location.href='mNilaiakhir.php'">
+                    <a href="mNilaiakhir.php">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php">
+                        <span class="NavSide__sidebar-title fw-semibold"> Kembali</span>
                     </a>
                 </li>
             </ul>
@@ -207,6 +203,10 @@ sqlsrv_close($conn);
                         }
                     ?>
                 </h2>
+
+                <h2 class="fs-5 fw-semibold mb-0">
+                    Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($id_kelompok); ?>
+                </h2><br>
                 <!-- <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['id_kelompok'] ?? 'N/A'); ?></p> -->
 
                 <div class="status-badge" id="statusBadge">Status Pengajuan : Belum Disetujui</div>
@@ -299,21 +299,10 @@ sqlsrv_close($conn);
                 <h5>Dokumen Sidang</h5>
                 <div class="file-buttons-container d-flex flex-wrap">
                     <a href="#" class="file-button">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        file_laporan_kel-1.pdf
-                    </a>
-                    <a href="#" class="file-button">
                         <i class="fa-solid fa-file-zipper"></i>
-                        dokumen_pendukung_kel-1.zip
+                        Dokumen_Laporan_Kel-1.zip
                     </a>
                 </div>
-                
-               <button type="button" class="btn-kembali" onclick="location.href='mSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>
             </main>
         </div>
     </div>
