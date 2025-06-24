@@ -164,7 +164,6 @@ $nomor = $offset + 1;
                                 <th scope="col">Kelompok</th>
                                 <th scope="col">Judul/Mata Kuliah</th>
                                 <th scope="col">Pembimbing</th>
-                                <th scope="col">Penguji</th>
                                 <th scope="col" style="text-align: center;">Aksi</th>
                             </tr>
                         </thead>
@@ -176,7 +175,6 @@ $nomor = $offset + 1;
                                         <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                                         <td data-label="Judul/Mata Kuliah"><?= htmlspecialchars(($row['jenis_sidang'] == '0x00' || $row['judul'] == 'Tugas Akhir') ? $row['judul'] : ($row['nama_matkul'] ?? $row['judul'])) ?></td>
                                         <td data-label="Pembimbing"><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
-                                        <td data-label="Penguji"><?= htmlspecialchars($row['penguji'] ?? 'Belum Ditentukan') ?></td>
                                         <td data-label="Aksi" style="text-align: center;">
                                             <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn">
                                                 <i class="fa-solid fa-file-signature"></i>

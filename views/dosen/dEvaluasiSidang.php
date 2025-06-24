@@ -468,10 +468,10 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                             <h4>Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
                         </div>
                         <div class="penilaian-row">
-                            <div class="col-item"><label for="nilaiLaporan">Nilai laporan :</label><input type="number" id="nilaiLaporan" name="nilaiLaporan" class="form-control-custom input-nilai" min="0" max="100" value="<?php echo htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? ''); ?>"></div>
-                            <div class="col-item"><label for="materiPresentasi">Materi Presentasi :</label><input type="number" id="materiPresentasi" name="materiPresentasi" class="form-control-custom input-nilai" min="0" max="100" value="<?php echo htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? ''); ?>"></div>
-                            <div class="col-item"><label for="nilaiPenyampaian">Penyampaian :</label><input type="number" id="nilaiPenyampaian" name="nilaiPenyampaian" class="form-control-custom input-nilai" min="0" max="100" value="<?php echo htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? ''); ?>"></div>
-                            <div class="col-item"><label for="nilaiProyek">Nilai Proyek :</label><input type="number" id="nilaiProyek" name="nilaiProyek" class="form-control-custom input-nilai" min="0" max="100" value="<?php echo htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? ''); ?>"></div>
+                            <div class="col-item"><label for="nilaiLaporan">Nilai laporan :</label><input type="number" id="nilaiLaporan" name="nilaiLaporan" class="form-control-custom input-nilai" min="0" max="100" ></div>
+                            <div class="col-item"><label for="materiPresentasi">Materi Presentasi :</label><input type="number" id="materiPresentasi" name="materiPresentasi" class="form-control-custom input-nilai" min="0" max="100" ></div>
+                            <div class="col-item"><label for="nilaiPenyampaian">Penyampaian :</label><input type="number" id="nilaiPenyampaian" name="nilaiPenyampaian" class="form-control-custom input-nilai" min="0" max="100" ></div>
+                            <div class="col-item"><label for="nilaiProyek">Nilai Proyek :</label><input type="number" id="nilaiProyek" name="nilaiProyek" class="form-control-custom input-nilai" min="0" max="100" ></div>
                         </div>
                         <p class="error-message" id="nilaiSidangErrorMessage"> *Semua nilai harus diisi!</p>
                     </div>
