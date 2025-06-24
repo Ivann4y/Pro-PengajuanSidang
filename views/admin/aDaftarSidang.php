@@ -271,7 +271,7 @@ if ($result === false) {
                             </li>
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                 <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
-                                    <a class="page-link"
+                                    <a class="pageuuuuu-link"
                                         href="?filter=<?= $filter ?>&prodi=<?= urlencode($prodiFilter) ?>&page=<?= $i ?>"><?= $i ?></a>
                                 </li>
                             <?php endfor; ?>
