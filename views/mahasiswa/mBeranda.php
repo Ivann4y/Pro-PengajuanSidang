@@ -4,6 +4,37 @@ if ($_SESSION['role'] !== 'mahasiswa') {
     header("Location: ../../index.php");
     exit();
 }
+// Dummy data as before
+$mahasiswa_info = [
+    'nama' => 'Nayaka'
+];
+$card_dashboard = [
+    'sidang_berlangsung' => 3,
+    'menunggu_penilaian' => 2
+];
+$tugas_list = [
+    'Revisi Sidang PRG',
+    'Revisi Sidang Basdat',
+    'Revisi Sidang TA',
+    'Revisi Sidang Orkom',
+    'Revisi Sidang Jaringan Komputer',
+    'Revisi Sidang Sistem Informasi',
+    'Revisi Sidang Sistem Terdistribusi',
+    'Revisi Sidang Sistem Operasi',
+    'Revisi Sidang Kecerdasan Buatan',
+    'Revisi Sidang Pemrograman Web',
+];
+$sidang_mendatang = [
+    ['tanggal_sidang' => '2025-06-18', 'judul' => 'Sistem Pengajuan Skripsi', 'link_detail' => 'mdetailsidangta.php'],
+    ['tanggal_sidang' => '2025-06-20', 'judul' => 'Revisi Proposal KP', 'link_detail' => 'mdetailsidangta.php'],
+    ['tanggal_sidang' => '2025-06-24', 'judul' => 'Sidang Akhir TA', 'link_detail' => 'mdetailsidangta.php'],
+    ['tanggal_sidang' => '2025-06-30', 'judul' => 'Presentasi Proyek', 'link_detail' => 'mdetailsidangta.php'],
+    ['tanggal_sidang' => '2025-07-02', 'judul' => 'Pengumpulan Laporan', 'link_detail' => 'mdetailsidangta.php'],
+];
+$mahasiswa_info_json = json_encode($mahasiswa_info);
+$card_dashboard_json = json_encode($card_dashboard);
+$tugas_list_json = json_encode($tugas_list);
+$sidang_mendatang_json = json_encode($sidang_mendatang);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -132,6 +163,13 @@ if ($_SESSION['role'] !== 'mahasiswa') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <?php include '../../assets/js/mahasiswa-dashboard.php'; ?>
+    <script>
+    const mahasiswaInfo = <?php echo $mahasiswa_info_json; ?>;
+    const cardDashboard = <?php echo $card_dashboard_json; ?>;
+    const tugasList = <?php echo $tugas_list_json; ?>;
+    const sidangData = <?php echo $sidang_mendatang_json; ?>;
+    // ... rest of your JS ...
+    </script>
 </body>
 
 </html>
