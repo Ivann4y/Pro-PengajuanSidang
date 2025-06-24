@@ -6,6 +6,11 @@
   margin-left: 10px;
 }
 
+/* Menghilangkan navigasi tab mahasiswa jika ada */
+.nav-tabs {
+  display: none !important;
+}
+
 /* Style untuk teks informasi mahasiswa (seperti nama, nim, dll) */
 .student-info {
   font-size: 1rem;
@@ -23,11 +28,14 @@
   border-radius: 20px; /* Sudut yang lebih tumpul */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Efek bayangan halus */
   margin-left: 10px;
+    border: none; /* <-- PERUBAHAN: Memastikan border hilang */
+
 }
 
 /* Style untuk kartu nilai */
 #cardNilai {
   background-color: rgb(235, 238, 245);
+  border: none; /* <-- PERUBAHAN: Memastikan border hilang */
   border-radius: 50px; /* Sudut sangat tumpul (membentuk kapsul jika tinggi) */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -38,6 +46,7 @@
 /* Style untuk kartu data mahasiswa */
 #carddataMahasiswa {
   background-color: rgb(235, 238, 245);
+  border: none; /* <-- PERUBAHAN: Memastikan border hilang */
   border-radius: 50px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
