@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../koneksi.php';
+require_once '../koneksi/koneksiAndrew.php';
 
 $success = '';
 $errorType = '';
@@ -26,8 +26,6 @@ $reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
     }
 }
 }
-
-
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
     $newPassword = $_POST['newPassword'] ?? '';

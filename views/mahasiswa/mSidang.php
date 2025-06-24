@@ -2,7 +2,7 @@
 
 session_start();
 
-require "../../koneksi.php";
+require "../../koneksi/koneksiAndrew.php";
 
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 

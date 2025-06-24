@@ -1,23 +1,23 @@
 <?php
 
 session_start();
-require "koneksi.php";
+require "koneksi/koneksiAndrew.php";
 
 
 $role = $_POST['role'] ?? '';
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
-if  (empty($username) || empty($password)) {
+if (empty($username) || empty($password)) {
     header("Location: views/$role/{$role[0]}Login.php?error=empty&username=" . urlencode($username));
     exit();
 }
 
 
-$tableNama= '';
+$tableNama = '';
 $usernameKolom = '';
 $passwordKolom = 'password_hash';
-$redirectPath = ''; 
+$redirectPath = '';
 
 
 switch ($role) {
@@ -37,7 +37,8 @@ switch ($role) {
         $redirectPath = 'views/admin/aBeranda.php';
         break;
     default:
-        header("Location: views/{$role}/login.php?username=" . urlencode($username));
+        $_SESSION['login_error'] = 'Role tidak valid!';
+        header("Location: index.php");
         exit();
 }
 
@@ -62,7 +63,7 @@ try {
         // **LANGKAH PALING PENTING: Verifikasi password**
         if (password_verify($password, $user[$passwordKolom])) {
             // Jika password cocok, login berhasil!
-            
+
             // Hapus data sensitif sebelum disimpan ke session
             unset($user[$passwordKolom]);
 
@@ -80,14 +81,13 @@ try {
     // Jika user tidak ditemukan ATAU password salah, gagalkan login
     $_SESSION['login_error'] = 'Username atau Password salah!';
     // Redirect kembali ke halaman login yang sesuai
-    header("Location: views/{$role}/login.php?username=" . urlencode($username));
-    exit();
+    header("Location: views/$role/{$role[0]}Login.php?error=1&username=" . urlencode($username) . "&role=" . urlencode($role));
 
+    exit();
 } catch (Exception $e) {
     // Tangani error server
     $_SESSION['login_error'] = 'Terjadi kesalahan pada sistem. Silakan coba lagi.';
     error_log($e->getMessage()); // Catat error ke log server untuk di-debug
-    header("Location: views/{$role}/login.php?username=" . urlencode($username));
+    header("Location: views/$role/{$role[0]}Login.php?error=1&username=" . urlencode($username) . "&role=" . urlencode($role));
     exit();
 }
-?>

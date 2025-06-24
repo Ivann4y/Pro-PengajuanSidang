@@ -1,526 +1,526 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
 
-        /* Styling untuk body */
-        body {
-            min-height: 100vh; /* Tinggi minimal seukuran viewport */
-            background-color: #FFFFFF;
-        }
-        
-        /* Kontainer utama yang membungkus sidebar dan konten utama */
-        #NavSide {
-            display: flex;
-            min-height: 100vh;
-            position: relative;
-        }
+/* Styling untuk body */
+body {
+  min-height: 100vh; /* Tinggi minimal seukuran viewport */
+  background-color: #ffffff;
+}
 
-        /* Styling untuk sidebar navigasi */
-        .NavSide__sidebar {
-            position: fixed; /* Tetap di posisi saat scroll */
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 280px;
-            background: #4B68FB; /* Warna latar sidebar */
-            z-index: 1000; /* Tampil di atas elemen lain */
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.4s ease-in-out; /* Animasi saat sidebar muncul/hilang */
-        }
+/* Kontainer utama yang membungkus sidebar dan konten utama */
+#NavSide {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
 
-        /* Styling untuk brand/logo di sidebar */
-        .NavSide__sidebar-brand {
-            padding: 10% 5% 50% 5%;
-            text-align: center;
-        }
+/* Styling untuk sidebar navigasi */
+.NavSide__sidebar {
+  position: fixed; /* Tetap di posisi saat scroll */
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: #4b68fb; /* Warna latar sidebar */
+  z-index: 1000; /* Tampil di atas elemen lain */
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s ease-in-out; /* Animasi saat sidebar muncul/hilang */
+}
 
-        .NavSide__sidebar-brand img {
-            width: 90%;
-            max-width: 180px;
-            height: auto;
-        }
+/* Styling untuk brand/logo di sidebar */
+.NavSide__sidebar-brand {
+  padding: 10% 5% 50% 5%;
+  text-align: center;
+}
 
-        /* Styling untuk daftar navigasi di sidebar */
-        .NavSide__sidebar-nav {
-            width: 100%;
-            padding: 0;
-            list-style: none;
-            flex-grow: 1; /* Mengisi sisa ruang vertikal */
-        }
+.NavSide__sidebar-brand img {
+  width: 90%;
+  max-width: 180px;
+  height: auto;
+}
 
-        /* Styling untuk setiap item di menu navigasi sidebar */
-        .NavSide__sidebar-item {
-            position: relative;
-            display: block;
-            width: 100%;
-            border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        
-        /* Styling untuk link di dalam item navigasi */
-        .NavSide__sidebar-item a {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            text-decoration: none;
-            color: #fff; /* Warna teks putih */
-            padding: 5% 2%;
-            height: 60px;
-            box-sizing: border-box;
-        }
+/* Styling untuk daftar navigasi di sidebar */
+.NavSide__sidebar-nav {
+  width: 100%;
+  padding: 0;
+  list-style: none;
+  flex-grow: 1; /* Mengisi sisa ruang vertikal */
+}
 
-        /* Style khusus untuk item menu yang aktif */
-        .NavSide__sidebar-item.NavSide__sidebar-item--active {
-            background: #ffffff; /* Latar belakang putih */
-        }
-        
-        /* Warna teks biru untuk link pada item aktif */
-        .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: #4B68FB;
-        }
-        
-        /* CSS untuk membuat efek lengkungan pada item menu aktif */
-        /* Elemen 'b' ini digunakan untuk menciptakan ilusi sudut melengkung */
-        .NavSide__sidebar-item b:nth-child(1) {
-            position: absolute;
-            top: -20px;
-            height: 20px;
-            width: 100%;
-            background: #fff;
-            display: none; /* Disembunyikan secara default */
-        }
+/* Styling untuk setiap item di menu navigasi sidebar */
+.NavSide__sidebar-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
 
-        .NavSide__sidebar-item b:nth-child(1)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-bottom-right-radius: 20px; /* Lengkungan di sudut kanan bawah */
-            background: #4B68FB; /* Warna sama dengan sidebar */
-        }
+/* Styling untuk link di dalam item navigasi */
+.NavSide__sidebar-item a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+  color: #fff; /* Warna teks putih */
+  padding: 5% 2%;
+  height: 60px;
+  box-sizing: border-box;
+}
 
-        .NavSide__sidebar-item b:nth-child(2) {
-            position: absolute;
-            bottom: -20px;
-            height: 20px;
-            width: 100%;
-            background: #fff;
-            display: none; /* Disembunyikan secara default */
-        }
+/* Style khusus untuk item menu yang aktif */
+.NavSide__sidebar-item.NavSide__sidebar-item--active {
+  background: #ffffff; /* Latar belakang putih */
+}
 
-        .NavSide__sidebar-item b:nth-child(2)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-top-right-radius: 20px; /* Lengkungan di sudut kanan atas */
-            background: #4B68FB;
-        }
+/* Warna teks biru untuk link pada item aktif */
+.NavSide__sidebar-item.NavSide__sidebar-item--active a {
+  color: #4b68fb;
+}
 
-        /* Menampilkan elemen lengkungan hanya pada item yang aktif */
-        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
-        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
-            display: block;
-        }
-        
-        /* Styling untuk area konten utama */
-        .NavSide__main-content {
-            flex-grow: 1;
-            padding: 25px 30px;
-            margin-left: 280px; /* Memberi ruang untuk sidebar */
-            transition: margin-left 0.4s ease-in-out; /* Animasi saat sidebar disembunyikan/ditampilkan */
-        }
-        
-        /* Topbar yang muncul di tampilan mobile */
-        .NavSide__topbar {
-            display: none; /* Sembunyi di desktop */
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            z-index: 900;
-            background: #FFFFFF;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-        }
-        
-        /* Tombol toggle (hamburger menu) untuk mobile */
-        .NavSide__toggle {
-            font-size: 2rem;
-            cursor: pointer;
-            color: #4B68FB;
-            z-index: 1002;
-        }
-        
-        /* Mengatur ikon buka/tutup pada tombol toggle */
-        .NavSide__toggle .close {
-            display: none;
-        }
+/* CSS untuk membuat efek lengkungan pada item menu aktif */
+/* Elemen 'b' ini digunakan untuk menciptakan ilusi sudut melengkung */
+.NavSide__sidebar-item b:nth-child(1) {
+  position: absolute;
+  top: -20px;
+  height: 20px;
+  width: 100%;
+  background: #fff;
+  display: none; /* Disembunyikan secara default */
+}
 
-        .NavSide__toggle.NavSide__toggle--active .open {
-            display: none;
-        }
+.NavSide__sidebar-item b:nth-child(1)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-bottom-right-radius: 20px; /* Lengkungan di sudut kanan bawah */
+  background: #4b68fb; /* Warna sama dengan sidebar */
+}
 
-        .NavSide__toggle.NavSide__toggle--active .close {
-            display: block;
-        }
-        
-        /* Header utama di dalam konten */
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 2rem;
-        }
-        
-        /* Panel kiri header (judul dan filter) */
-        .header-left-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        /* Kontainer untuk filter */
-        .filter-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.NavSide__sidebar-item b:nth-child(2) {
+  position: absolute;
+  bottom: -20px;
+  height: 20px;
+  width: 100%;
+  background: #fff;
+  display: none; /* Disembunyikan secara default */
+}
 
-        .filter-container .filter-label {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #333;
-        }
+.NavSide__sidebar-item b:nth-child(2)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 20px; /* Lengkungan di sudut kanan atas */
+  background: #4b68fb;
+}
 
-        /* Judul utama halaman */
-        .main-title {
-            color: rgb(0, 0, 0);
-            font-weight: 700;
-            font-size: 2.1rem;
-            margin-bottom: 1rem;
-        }
+/* Menampilkan elemen lengkungan hanya pada item yang aktif */
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+  display: block;
+}
 
-        /* Panel kanan header (ikon dan search) */
-        .header-right-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.75rem;
-        }
+/* Styling untuk area konten utama */
+.NavSide__main-content {
+  flex-grow: 1;
+  padding: 25px 30px;
+  margin-left: 280px; /* Memberi ruang untuk sidebar */
+  transition: margin-left 0.4s ease-in-out; /* Animasi saat sidebar disembunyikan/ditampilkan */
+}
 
-        /* Grup input untuk pencarian */
-        .search-input-group {
-            background-color: #F3F4F6;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            max-width: 250px;
-            width: 100%;
-        }
+/* Topbar yang muncul di tampilan mobile */
+.NavSide__topbar {
+  display: none; /* Sembunyi di desktop */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  z-index: 900;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
 
-        /* Menghilangkan style default pada input pencarian */
-        .search-input-group input.form-control {
-            background-color: transparent;
-            border: none;
-            box-shadow: none;
-        }
-        
-        /* Menghilangkan style default pada ikon di dalam input pencarian */
-        .search-input-group .input-group-text {
-            background-color: transparent;
-            border: none;
-        }
+/* Tombol toggle (hamburger menu) untuk mobile */
+.NavSide__toggle {
+  font-size: 2rem;
+  cursor: pointer;
+  color: #4b68fb;
+  z-index: 1002;
+}
 
-        /* Kontainer untuk ikon-ikon di header (notifikasi, profil) */
-        .header-icons {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
+/* Mengatur ikon buka/tutup pada tombol toggle */
+.NavSide__toggle .close {
+  display: none;
+}
 
-        .header-icons>a {
-            font-size: 1.4rem;
-            color: #5a5a5a;
-            transition: color 0.2s ease;
-        }
+.NavSide__toggle.NavSide__toggle--active .open {
+  display: none;
+}
 
-        .header-icons>a:hover {
-            color: #4B68FB;
-        }
-        
-        /* Styling untuk ikon profil */
-        .header-right-panel .profile-icon,
-        .NavSide__topbar .profile-icon {
-            background-color: #333;
-            border-radius: 50%; /* Membuatnya bulat */
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.2s ease;
-        }
+.NavSide__toggle.NavSide__toggle--active .close {
+  display: block;
+}
 
-        .header-right-panel .profile-icon:hover,
-        .NavSide__topbar .profile-icon:hover {
-            transform: scale(1.1); /* Efek zoom saat hover */
-        }
-        
-        .header-right-panel .profile-icon a,
-        .NavSide__topbar .profile-icon a {
-            color: white;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Tombol dropdown untuk filter jenis sidang */
-        #ddAdminSidangTypeButton {
-            background-color: #4B68FB;
-            border-color: #4B68FB;
-            border-radius: 20px;
-            padding: 6px 16px;
-            font-weight: 500;
-            box-shadow: none !important;
-        }
+/* Header utama di dalam konten */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
 
-        /* Kustomisasi tabel admin */
-        .table-admin-custom {
-            border-spacing: 0 10px; /* Jarak antar baris */
-            border-collapse: separate;
-            width: 100%;
-        }
+/* Panel kiri header (judul dan filter) */
+.header-left-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-        .table-admin-custom thead th {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 2px solid #dee2e6;
-        }
+/* Kontainer untuk filter */
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-        /* Baris isi tabel */
-        .table-admin-custom tbody tr.isiTabel {
-            background-color: #F5F5F5;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
+.filter-container .filter-label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
 
-        .table-admin-custom .isiTabel td {
-            padding: 15px 18px;
-            vertical-align: middle;
-        }
-        
-        /* Membuat sudut melengkung pada sel pertama dan terakhir setiap baris */
-        .table-admin-custom .isiTabel td:first-child {
-            border-radius: 10px 0 0 10px;
-        }
+/* Judul utama halaman */
+.main-title {
+  color: rgb(0, 0, 0);
+  font-weight: 700;
+  font-size: 2.1rem;
+  margin-bottom: 1rem;
+}
 
-        .table-admin-custom .isiTabel td:last-child {
-            border-radius: 0 10px 10px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+/* Panel kanan header (ikon dan search) */
+.header-right-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
 
-        /* Efek hover pada baris tabel */
-        .table-admin-custom tbody tr.isiTabel:hover {
-            background-color: #4B68FB;
-            color: #FFFFFF;
-        }
-        
-        /* Tombol detail di dalam tabel */
-        .detail-btn {
-            border: none !important;
-            background-color: transparent !important;
-            color: #4B68FB;
-            padding: 0.25rem 0.5rem;
-        }
+/* Grup input untuk pencarian */
+.search-input-group {
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  max-width: 250px;
+  width: 100%;
+}
 
-        .detail-btn:hover {
-            opacity: 0.7;
-        }
-        
-        /* Mengubah warna tombol detail saat baris di-hover */
-        .table-admin-custom tbody tr.isiTabel:hover .detail-btn {
-            color: #FFFFFF;
-            opacity: 1;
-        }
+/* Menghilangkan style default pada input pencarian */
+.search-input-group input.form-control {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
 
-        /* Kontainer untuk kontrol paginasi */
-        .pagination-container {
-            margin-top: 2rem;
-        }
+/* Menghilangkan style default pada ikon di dalam input pencarian */
+.search-input-group .input-group-text {
+  background-color: transparent;
+  border: none;
+}
 
-        /* Style untuk item paginasi yang aktif */
-        .pagination .page-item.active .page-link {
-            background-color: #4B68FB;
-            border-color: #4B68FB;
-            color: white;
-            z-index: 2;
-        }
+/* Kontainer untuk ikon-ikon di header (notifikasi, profil) */
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
 
-        .pagination .page-link {
-            color: #4B68FB;
-        }
+.header-icons > a {
+  font-size: 1.4rem;
+  color: #5a5a5a;
+  transition: color 0.2s ease;
+}
 
-        .pagination .page-link:hover {
-            color: #2c45c9;
-        }
+.header-icons > a:hover {
+  color: #4b68fb;
+}
 
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d;
-        }
-        
-        /* Kustomisasi header pada modal (popup) */
-        .modal-header-custom {
-            background-color: #4B68FB;
-            color: white;
-        }
+/* Styling untuk ikon profil */
+.header-right-panel .profile-icon,
+.NavSide__topbar .profile-icon {
+  background-color: #333;
+  border-radius: 50%; /* Membuatnya bulat */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
 
-        /* Kustomisasi tombol pada footer modal */
-        .modal-footer .btn-danger {
-            background-color: #FD7D7D;
-            border-color: #FD7D7D;
-        }
+.header-right-panel .profile-icon:hover,
+.NavSide__topbar .profile-icon:hover {
+  transform: scale(1.1); /* Efek zoom saat hover */
+}
 
-        .modal-footer .btn-success {
-            background-color: #4FD382;
-            border-color: #4FD382;
-        }
+.header-right-panel .profile-icon a,
+.NavSide__topbar .profile-icon a {
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-        /* Media Query untuk layar dengan lebar maksimal 992px (tablet) */
-        @media (max-width: 992px) {
-            /* Sembunyikan sidebar di luar layar */
-            .NavSide__sidebar {
-                transform: translateX(-280px);
-            }
+/* Tombol dropdown untuk filter jenis sidang */
+#ddAdminSidangTypeButton {
+  background-color: #4b68fb;
+  border-color: #4b68fb;
+  border-radius: 100px;
+  padding: 10px 30px;
+  font-weight: 500;
+  box-shadow: none !important;
+}
 
-            /* Tampilkan sidebar saat kelas aktif ditambahkan (via JS) */
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-            }
+/* Kustomisasi tabel admin */
+.table-admin-custom {
+  border-spacing: 0 10px; /* Jarak antar baris */
+  border-collapse: separate;
+  width: 100%;
+}
 
-            /* Hapus margin kiri konten utama dan beri padding atas untuk topbar */
-            .NavSide__main-content {
-                margin-left: 0;
-                padding-top: 80px;
-            }
+.table-admin-custom thead th {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+}
 
-            /* Tampilkan topbar */
-            .NavSide__topbar {
-                display: flex;
-            }
+/* Baris isi tabel */
+.table-admin-custom tbody tr.isiTabel {
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 
-            .NavSide__toggle {
-                position: relative;
-                top: auto;
-                left: auto;
-            }
+.table-admin-custom .isiTabel td {
+  padding: 15px 18px;
+  vertical-align: middle;
+}
 
-            /* Pindahkan tombol toggle bersamaan dengan sidebar */
-            .NavSide__toggle.NavSide__toggle--active {
-                transform: translateX(280px);
-            }
+/* Membuat sudut melengkung pada sel pertama dan terakhir setiap baris */
+.table-admin-custom .isiTabel td:first-child {
+  border-radius: 10px 0 0 10px;
+}
 
-            /* Sembunyikan search bar di header kanan */
-            .search-input-group {
-                display: none;
-            }
-        }
+.table-admin-custom .isiTabel td:last-child {
+  border-radius: 0 10px 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-        /* Media Query untuk layar dengan lebar maksimal 768px (mobile) */
-        @media (max-width: 768px) {
-            /* Ubah layout header menjadi vertikal */
-            .main-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 1.5rem;
-            }
+/* Efek hover pada baris tabel */
+.table-admin-custom tbody tr.isiTabel:hover {
+  background-color: #4b68fb;
+  color: #ffffff;
+}
 
-            .main-title {
-                font-size: 1.8rem;
-            }
-            
-            /* Sembunyikan overflow horizontal pada tabel */
-            .the-responsive {
-                overflow-x: hidden;
-            }
-            
-            /* Sembunyikan header tabel asli */
-            .table-admin-custom thead {
-                display: none;
-            }
-            
-            /* Ubah tampilan tabel menjadi seperti kartu (card-based) */
-            .table-admin-custom tbody,
-            .table-admin-custom tr,
-            .table-admin-custom td {
-                display: block;
-                width: 100%;
-            }
+/* Tombol detail di dalam tabel */
+.detail-btn {
+  border: none !important;
+  background-color: transparent !important;
+  color: #4b68fb;
+  padding: 0.25rem 0.5rem;
+}
 
-            .table-admin-custom tr.isiTabel {
-                margin-bottom: 20px;
-                border-radius: 10px;
-                overflow: hidden;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            }
-            
-            /* Atur ulang sel tabel */
-            .table-admin-custom td {
-                display: flex;
-                justify-content: space-between;
-                padding: 12px 15px;
-                text-align: right;
-                border-bottom: 1px solid #e9e9e9;
-                align-items: center;
-            }
+.detail-btn:hover {
+  opacity: 0.7;
+}
 
-            /* Nonaktifkan efek hover pada mode mobile untuk UX yang lebih baik */
-            .table-admin-custom tr.isiTabel:hover,
-            .table-admin-custom tr.isiTabel:hover .detail-btn {
-                background-color: #F5F5F5;
-                color: #000;
-            }
+/* Mengubah warna tombol detail saat baris di-hover */
+.table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+  color: #ffffff;
+  opacity: 1;
+}
 
-            .table-admin-custom tr.isiTabel:hover .detail-btn {
-                color: #4B68FB;
-            }
+/* Kontainer untuk kontrol paginasi */
+.pagination-container {
+  margin-top: 2rem;
+}
 
-            /* Reset radius sudut pada sel */
-            .table-admin-custom td:first-child,
-            .table-admin-custom td:last-child {
-                border-radius: 0;
-            }
+/* Style untuk item paginasi yang aktif */
+.pagination .page-item.active .page-link {
+  background-color: #4b68fb;
+  border-color: #4b68fb;
+  color: white;
+  z-index: 2;
+}
 
-            .table-admin-custom td:last-child {
-                border-bottom: none;
-                justify-content: center;
-            }
-            
-            /* Gunakan pseudo-element 'before' untuk menampilkan label kolom */
-            /* Ini penting untuk aksesibilitas di tampilan mobile */
-            .table-admin-custom td::before {
-                content: attr(data-label); /* Ambil konten dari atribut data-label */
-                font-weight: 600;
-                text-align: left;
-                margin-right: 10px;
-                color: #333;
-            }
-        }
+.pagination .page-link {
+  color: #4b68fb;
+}
+
+.pagination .page-link:hover {
+  color: #2c45c9;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #6c757d;
+}
+
+/* Kustomisasi header pada modal (popup) */
+.modal-header-custom {
+  background-color: #4b68fb;
+  color: white;
+}
+
+/* Kustomisasi tombol pada footer modal */
+.modal-footer .btn-danger {
+  background-color: #fd7d7d;
+  border-color: #fd7d7d;
+}
+
+.modal-footer .btn-success {
+  background-color: #4fd382;
+  border-color: #4fd382;
+}
+
+/* Media Query untuk layar dengan lebar maksimal 992px (tablet) */
+@media (max-width: 992px) {
+  /* Sembunyikan sidebar di luar layar */
+  .NavSide__sidebar {
+    transform: translateX(-280px);
+  }
+
+  /* Tampilkan sidebar saat kelas aktif ditambahkan (via JS) */
+  .NavSide__sidebar.NavSide__sidebar--active-mobile {
+    transform: translateX(0);
+  }
+
+  /* Hapus margin kiri konten utama dan beri padding atas untuk topbar */
+  .NavSide__main-content {
+    margin-left: 0;
+    padding-top: 80px;
+  }
+
+  /* Tampilkan topbar */
+  .NavSide__topbar {
+    display: flex;
+  }
+
+  .NavSide__toggle {
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+
+  /* Pindahkan tombol toggle bersamaan dengan sidebar */
+  .NavSide__toggle.NavSide__toggle--active {
+    transform: translateX(280px);
+  }
+
+  /* Sembunyikan search bar di header kanan */
+  .search-input-group {
+    display: none;
+  }
+}
+
+/* Media Query untuk layar dengan lebar maksimal 768px (mobile) */
+@media (max-width: 768px) {
+  /* Ubah layout header menjadi vertikal */
+  .main-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .main-title {
+    font-size: 1.8rem;
+  }
+
+  /* Sembunyikan overflow horizontal pada tabel */
+  .the-responsive {
+    overflow-x: hidden;
+  }
+
+  /* Sembunyikan header tabel asli */
+  .table-admin-custom thead {
+    display: none;
+  }
+
+  /* Ubah tampilan tabel menjadi seperti kartu (card-based) */
+  .table-admin-custom tbody,
+  .table-admin-custom tr,
+  .table-admin-custom td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-admin-custom tr.isiTabel {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Atur ulang sel tabel */
+  .table-admin-custom td {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    text-align: right;
+    border-bottom: 1px solid #e9e9e9;
+    align-items: center;
+  }
+
+  /* Nonaktifkan efek hover pada mode mobile untuk UX yang lebih baik */
+  .table-admin-custom tr.isiTabel:hover,
+  .table-admin-custom tr.isiTabel:hover .detail-btn {
+    background-color: #f5f5f5;
+    color: #000;
+  }
+
+  .table-admin-custom tr.isiTabel:hover .detail-btn {
+    color: #4b68fb;
+  }
+
+  /* Reset radius sudut pada sel */
+  .table-admin-custom td:first-child,
+  .table-admin-custom td:last-child {
+    border-radius: 0;
+  }
+
+  .table-admin-custom td:last-child {
+    border-bottom: none;
+    justify-content: center;
+  }
+
+  /* Gunakan pseudo-element 'before' untuk menampilkan label kolom */
+  /* Ini penting untuk aksesibilitas di tampilan mobile */
+  .table-admin-custom td::before {
+    content: attr(data-label); /* Ambil konten dari atribut data-label */
+    font-weight: 600;
+    text-align: left;
+    margin-right: 10px;
+    color: #333;
+  }
+}

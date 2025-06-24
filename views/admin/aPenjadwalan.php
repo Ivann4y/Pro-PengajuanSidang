@@ -1,6 +1,7 @@
 <?php
-require "../../koneksi.php";
+require "../../koneksi/koneksiAndrew.php";
 
+// echo "Koneksi Berhasil!"; // Comment this out for normal use
 $selectedTipe = $_GET['tipe'] ?? 'semua';
 $selectedStatus = $_GET['status'] ?? 'semua';
 
@@ -418,13 +419,14 @@ if ($selectedTipe == 'TA') {
     }
 
     .table-admin-custom tbody tr.isiTabel {
-        background-color: #F5F5F5;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: color 0.3s ease;
     }
 
     .table-admin-custom .isiTabel td {
+        background-color: #F5F5F5; 
         padding: 15px 18px;
         vertical-align: middle;
+        transition: background-color 0.3s ease; /* Move the background transition here */
     }
 
     .table-admin-custom .isiTabel td:first-child {
@@ -436,11 +438,13 @@ if ($selectedTipe == 'TA') {
         text-align: center;
     }
 
-    .table-admin-custom tbody tr.isiTabel:hover {
-        background-color: #4B68FB;
-        color: #FFFFFF;
+    .table-admin-custom tbody tr.isiTabel:hover td {
+        background-color: #4B68FB; 
     }
 
+    .table-admin-custom tbody tr.isiTabel:hover {
+        color: #FFFFFF;
+    } 
     .detail-btn {
         border: none !important;
         background-color: transparent !important;

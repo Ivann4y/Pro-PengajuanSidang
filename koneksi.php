@@ -1,9 +1,10 @@
 <?php
-$serverName = "sidang5.database.windows.net";
+    // $serverName = "celsi.tail7d1f1d.ts.net,1433";
+    $serverName = "MYBOOKHYPE\SQLEXPRESS"; // Ganti dengan nama server SQL Server Anda
 $connectionOptions = [
     "Database" => "SistemSidang1",
-    "Uid" => "sqladmin",  
-    "PWD" => "RPLsidang5",  
+    // "Uid" => "sqladmin",  
+    // "PWD" => "sistemsidang",  
     "TrustServerCertificate" => true,
 ];
 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../koneksi.php'; // Pastikan path benar
+require_once '../koneksi/koneksiAndrew.php'; 
 require_once '../function/cobamailer.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $expires = date('Y-m-d H:i:s', strtotime('+15 minutes'));
         sqlsrv_query($conn, "INSERT INTO password_resets (email, role, token, expires_at) VALUES (?, ?, ?, ?)", [$email, $role, $token, $expires]);
         $resetLink = "http://localhost/PRG2/Pro-PengajuanSidang/views/inputPasswordBaru.php?token=$token";
-       $result = sendResetPasswordEmail($email, $user['username'], $token);
+        $result = sendResetPasswordEmail($email, $user['username'], $token);
+
 
         if ($result['success']) {
             $_SESSION['reset_email'] = $email;
@@ -46,23 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
- // Send reset password email
-    // $result = sendResetPasswordEmail($email, $email);
-    
-    // if ($result['success']) {
-    //     $_SESSION['reset_email'] = $email;
-    //     $_SESSION['reset_role'] = $role;
-    //     // Tampilkan notifikasi sukses di lupaPassword.php
-    //     header("Location: lupaPassword.php?success=1&role=$role");
-    //     exit();
-    // } else {
-    //     header("Location: lupaPassword.php?error=mail&role=$role");
-    //     exit();
-    // }
+// Send reset password email
+// $result = sendResetPasswordEmail($email, $email);
+
+// if ($result['success']) {
+//     $_SESSION['reset_email'] = $email;
+//     $_SESSION['reset_role'] = $role;
+//     // Tampilkan notifikasi sukses di lupaPassword.php
+//     header("Location: lupaPassword.php?success=1&role=$role");
+//     exit();
+// } else {
+//     header("Location: lupaPassword.php?error=mail&role=$role");
+//     exit();
 // }
-?>
-
-
-
-   
-
+// }

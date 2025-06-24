@@ -1,6 +1,100 @@
-<?php 
- include '../../koneksi.php';
- ?>
+<?php
+include '../../koneksi/koneksiAndrew.php';
+
+// Get next ID
+$next_id = 1;
+$sql_id = "SELECT MAX(id_sidang) AS max_id FROM Sidang";
+$result_id = $conn->query($sql_id);
+if ($result_id && $row = $result_id->fetch_assoc()) {
+    $next_id = $row['max_id'] + 1;
+}
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $judul = $_POST['judul'];
+    $matkul = $_POST['matkul'];
+    $id_kelompok = 1; // Should come from session
+    $aksi = $_POST['aksi'];
+    $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
+    $waktu_pengumpulan = date('Y-m-d H:i:s');
+    
+    // Handle file upload
+    $dok_laporan = '';
+    $fileName = '';
+    
+    if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
+        $file = $_FILES['DokumenSidang'];
+        $fileName = $file['name'];
+        $fileTmpName = $file['tmp_name'];
+        
+        // Create upload directory if not exists
+        $uploadDir = '../../uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        
+        // Generate unique filename
+        $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
+        $newFileName = uniqid('', true) . '.' . $fileExt;
+        $uploadPath = $uploadDir . $newFileName;
+        
+        if (move_uploaded_file($fileTmpName, $uploadPath)) {
+            $dok_laporan = $uploadPath;
+        }
+    }
+
+    // Insert into database
+    $sql = "INSERT INTO Sidang (
+        id_sidang,
+        judul, 
+        waktu_pengumpulan, 
+        dok_laporan, 
+        status_ajuan, 
+        jenis_sidang, 
+        id_kelompok
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("isssisi", 
+        $next_id,
+        $judul, 
+        $waktu_pengumpulan, 
+        $dok_laporan, 
+        $status_ajuan, 
+        $matkul, 
+        $id_kelompok
+    );
+    
+    if ($stmt->execute()) {
+        $message = ($status_ajuan == 1) 
+            ? 'Pengajuan Berhasil Dikirim!' 
+            : 'Pengajuan Berhasil Disimpan!';
+        
+        echo "<script>
+            Swal.fire({
+                title: '$message',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            }).then(() => {
+                window.location.href = 'mPengajuan.php';
+            });
+        </script>";
+        exit;
+    } else {
+        $error = "Error: " . $stmt->error;
+        echo "<script>
+            Swal.fire({
+                title: 'Gagal menyimpan data',
+                text: '$error',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            });
+        </script>";
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -18,8 +112,18 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <title>Edit Pengajuan Sidang</title>
+  <style>
+    .file-selected {
+      background-color: #d1fae5 !important;
+      border: 1px solid #10b981 !important;
+    }
+    .file-name {
+      color: #047857;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+  </style>
 </head>
-
 
 <body>
   <div id="NavSide">
@@ -61,7 +165,6 @@
         </div>
         <div class="row">
           <div class="col-12">
-
             <h5 class="fw-bold mt-4 mb-3">Tambah Sidang</h5>
             <hr>
           </div>
@@ -70,7 +173,10 @@
           $judul = $_GET['judul'] ?? '';
           $matkul = $_GET['matkul'] ?? '';
           ?>
-          <form action="#" method="post">
+          <form action="" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="id_sidang" value="<?php echo $next_id; ?>">
+            <input type="hidden" name="aksi" id="formAksi" value="">
+            
             <div class="mb-3">
               <label for="judul" class="form-label">Judul Sidang
                 <span class="text-danger">* </span>
@@ -83,75 +189,23 @@
               </label>
               <select class="forM form-select" id="matkul" name="matkul">
                 <option selected disabled>Pilih Mata Kuliah</option>
-                <option value="Tugas Akhir" <?php if ($matkul == 'Tugas Akhir') {
-                                              echo ' selected';
-                                            }
-                                            ?>>Tugas Akhir</option>
-                <option value="Pemrograman Web" <?php if ($matkul == 'Pemrograman Web') {
-                                                  echo ' selected';
-                                                }
-                                                ?>>Pemrograman Web</option>
-                <option value="Sistem Operasi" <?php if ($matkul == 'Sistem Operasi') {
-                                                  echo ' selected';
-                                                }
-                                                ?>>Sistem Operasi</option>
-                <option value="Basis Data Lanjut" <?php if ($matkul == 'Basis Data Lanjut') {
-                                                    echo ' selected';
-                                                  }
-                                                  ?>>Basis Data Lanjut</option>
-                <option value="Struktur Data" <?php if ($matkul == 'Struktur Data') {
-                                                echo ' selected';
-                                              }
-                                              ?>>Struktur Data</option>
-                <option value="Kecerdasan Buatan" <?php if ($matkul == 'Kecerdasan Buatan') {
-                                                    echo ' selected';
-                                                  }
-                                                  ?>>Kecerdasan Buatan</option>
-                <option value="Sistem Terdistribusi" <?php if ($matkul == 'Sistem Terdistribusi') {
-                                                        echo ' selected';
-                                                      }
-                                                      ?>>Sistem Terdistribusi</option>
-                <option value="Jaringan Komputer" <?php if ($matkul == 'Jaringan Komputer') {
-                                                    echo ' selected';
-                                                  }
-                                                  ?>>Jaringan Komputer</option>
-                <option value="Komputasi Awan" <?php if ($matkul == 'Komputasi Awan') {
-                                                  echo ' selected';
-                                                }
-                                                ?>>Komputasi Awan</option>
-                <option value="Pemrograman Mobile" <?php if ($matkul == 'Pemrograman Mobile') {
-                                                      echo ' selected';
-                                                    }
-                                                    ?>>Pemrograman Mobile</option>
-                <option value="Analisis Data" <?php if ($matkul == 'Analisis Data') {
-                                                echo ' selected';
-                                              }
-                                              ?>>Analisis Data</option>
-                <option value="Interaksi Manusia Komputer" <?php if ($matkul == 'Interaksi Manusia Komputer') {
-                                                              echo ' selected';
-                                                            }
-                                                            ?>>Interaksi Manusia Komputer</option>
-                <option value="Pengujian Perangkat Lunak" <?php if ($matkul == 'Pengujian Perangkat Lunak') {
-                                                            echo ' selected';
-                                                          }
-                                                          ?>>Pengujian Perangkat Lunak</option>
-                <option value="Pengolahan Citra" <?php if ($matkul == 'Pengolahan Citra') {
-                                                    echo ' selected';
-                                                  }
-                                                  ?>>Pengolahan Citra</option>
-                <option value="Pemrograman Jaringan" <?php if ($matkul == 'Pemrograman Jaringan') {
-                                                        echo ' selected';
-                                                      }
-                                                      ?>>Pemrograman Jaringan</option>
-                <option value="Sistem Tertanam" <?php if ($matkul == 'Sistem Tertanam') {
-                                                  echo ' selected';
-                                                }
-                                                ?>>Sistem Tertanam</option>
-                <option value="Analisis Big Data" <?php if ($matkul == 'Analisis Big Data') {
-                                                    echo ' selected';
-                                                  }
-                                                  ?>>Analisis Big Data</option>
-
+                <option value="Tugas Akhir" <?php if ($matkul == 'Tugas Akhir') echo ' selected'; ?>>Tugas Akhir</option>
+                <option value="Pemrograman Web" <?php if ($matkul == 'Pemrograman Web') echo ' selected'; ?>>Pemrograman Web</option>
+                <option value="Sistem Operasi" <?php if ($matkul == 'Sistem Operasi') echo ' selected'; ?>>Sistem Operasi</option>
+                <option value="Basis Data Lanjut" <?php if ($matkul == 'Basis Data Lanjut') echo ' selected'; ?>>Basis Data Lanjut</option>
+                <option value="Struktur Data" <?php if ($matkul == 'Struktur Data') echo ' selected'; ?>>Struktur Data</option>
+                <option value="Kecerdasan Buatan" <?php if ($matkul == 'Kecerdasan Buatan') echo ' selected'; ?>>Kecerdasan Buatan</option>
+                <option value="Sistem Terdistribusi" <?php if ($matkul == 'Sistem Terdistribusi') echo ' selected'; ?>>Sistem Terdistribusi</option>
+                <option value="Jaringan Komputer" <?php if ($matkul == 'Jaringan Komputer') echo ' selected'; ?>>Jaringan Komputer</option>
+                <option value="Komputasi Awan" <?php if ($matkul == 'Komputasi Awan') echo ' selected'; ?>>Komputasi Awan</option>
+                <option value="Pemrograman Mobile" <?php if ($matkul == 'Pemrograman Mobile') echo ' selected'; ?>>Pemrograman Mobile</option>
+                <option value="Analisis Data" <?php if ($matkul == 'Analisis Data') echo ' selected'; ?>>Analisis Data</option>
+                <option value="Interaksi Manusia Komputer" <?php if ($matkul == 'Interaksi Manusia Komputer') echo ' selected'; ?>>Interaksi Manusia Komputer</option>
+                <option value="Pengujian Perangkat Lunak" <?php if ($matkul == 'Pengujian Perangkat Lunak') echo ' selected'; ?>>Pengujian Perangkat Lunak</option>
+                <option value="Pengolahan Citra" <?php if ($matkul == 'Pengolahan Citra') echo ' selected'; ?>>Pengolahan Citra</option>
+                <option value="Pemrograman Jaringan" <?php if ($matkul == 'Pemrograman Jaringan') echo ' selected'; ?>>Pemrograman Jaringan</option>
+                <option value="Sistem Tertanam" <?php if ($matkul == 'Sistem Tertanam') echo ' selected'; ?>>Sistem Tertanam</option>
+                <option value="Analisis Big Data" <?php if ($matkul == 'Analisis Big Data') echo ' selected'; ?>>Analisis Big Data</option>
               </select>
             </div>
 
@@ -162,7 +216,7 @@
                   <h6 class="fw-bold text-dark">Dokumen Sidang
                     <span class="text-danger">* </span>
                   </h6>
-                  <div id="DokumenSidangForm" action="#" method="POST" enctype="multipart/form-data">
+                  <div id="DokumenSidangForm">
                     <label class="upload-box w-100 mt-3 text-center">
                       <input type="file" id="DokumenSidang" name="DokumenSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
                       <div class="upload-content">
@@ -171,6 +225,7 @@
                           <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z" />
                         </svg>
                         <p class="mt-2 text-muted small DokumenLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
+                        <div id="fileNameDisplay" class="file-name mt-2"></div>
                       </div>
                     </label>
                   </div>
@@ -198,9 +253,6 @@
                 </div>
               </div>
             </div>
-
-
-
 
             <!-- Tombol Kembali -->
             <div class="d-flex justify-content-between align-items-center">
@@ -271,118 +323,105 @@
       };
     }
 
-    //Tombol Kirim dan Simpan
-    const btnKirim = document.getElementById('btnKirim');
+    // File upload handling
+    const DokumenSidang = document.getElementById('DokumenSidang');
+    const uploadBox = document.querySelector('.upload-box');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const uploadIcon = document.getElementById('uploadIcon');
+    const labelText = document.querySelector('.DokumenLabelText');
 
-    btnKirim.addEventListener('click', function() {
-      const judul = document.getElementById('judul').value;
-      const matkul = document.getElementById('matkul').value;
-      const laporan = document.getElementById('DokumenSidang').files.length;
-      const modalValidasi = new bootstrap.Modal(document.getElementById('modalValidasi'));
-
-      if (judul == "" || matkul == "Pilih Mata Kuliah") {
-        Swal.fire({
-          title: 'Mohon lengkapi semua form!',
-          icon: 'error',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        }).then(() => {
-          modal.hide();
-        });
-      } else if (laporan === 0) {
-        Swal.fire({
-          title: 'Dokumen Tidak Boleh Kosong!',
-          icon: 'error',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        }).then(() => {
-          modal.hide();
-        });
+    DokumenSidang.addEventListener('change', function() {
+      if (this.files.length > 0) {
+        const fileName = this.files[0].name;
+        fileNameDisplay.textContent = fileName;
+        fileNameDisplay.style.display = 'block';
+        
+        // Hide upload icon and text
+        uploadIcon.style.display = 'none';
+        labelText.style.display = 'none';
+        
+        // Add green background
+        uploadBox.classList.add('file-selected');
       } else {
+        fileNameDisplay.textContent = '';
+        fileNameDisplay.style.display = 'none';
+        
+        // Show upload icon and text
+        uploadIcon.style.display = 'block';
+        labelText.style.display = 'block';
+        
+        // Remove green background
+        uploadBox.classList.remove('file-selected');
+      }
+    });
+
+    // Form validation and submission
+    const btnKirim = document.getElementById('btnKirim');
+    const btnSimpan = document.getElementById('btnSimpan');
+    const btnLanjutkan = document.getElementById('btnLanjutkan');
+    const form = document.querySelector('form');
+    const formAksi = document.getElementById('formAksi');
+
+    // Kirim button handler
+    btnKirim.addEventListener('click', function() {
+      if (validateForm()) {
+        formAksi.value = 'Kirim';
+        const modalValidasi = new bootstrap.Modal(document.getElementById('modalValidasi'));
         modalValidasi.show();
       }
     });
 
-    const btnSimpan = document.getElementById('btnSimpan');
-
+    // Simpan button handler
     btnSimpan.addEventListener('click', function() {
+      if (validateForm()) {
+        formAksi.value = 'Simpan';
+        form.submit();
+      }
+    });
+
+    // Lanjutkan button handler
+    btnLanjutkan.addEventListener('click', function() {
+      form.submit();
+    });
+
+    // Form validation function
+    function validateForm() {
       const judul = document.getElementById('judul').value;
       const matkul = document.getElementById('matkul').value;
       const laporan = document.getElementById('DokumenSidang').files.length;
 
-      if (judul == "" || matkul == "Pilih Mata Kuliah") {
+      if (judul.trim() === "") {
         Swal.fire({
-          title: 'Mohon lengkapi semua form!',
+          title: 'Judul tidak boleh kosong!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
-        }).then(() => {
-          modal.hide();
         });
-      } else if (laporan === 0) {
+        return false;
+      }
+
+      if (matkul === "Pilih Mata Kuliah" || !matkul) {
         Swal.fire({
-          title: 'Dokumen Tidak Boleh Kosong!',
+          title: 'Pilih mata kuliah!',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
-        }).then(() => {
-          modal.hide();
         });
-      } else {
+        return false;
+      }
+
+      if (laporan === 0) {
         Swal.fire({
-          title: 'Pengajuan Berhasil Disimpan!',
-          icon: 'success',
+          title: 'Dokumen tidak boleh kosong!',
+          icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: '#4B68FB'
-        }).then(() => {
-          history.back();
         });
+        return false;
       }
-    });
 
-    // Upload Dokumen Sidang
-    const DokumenSidang = document.getElementById('DokumenSidang');
-    const uploadIcon = document.getElementById('uploadIcon');
-    const laporanBox = DokumenSidang.closest('.upload-box');
-
-    DokumenSidang.addEventListener('change', function() {
-      if (DokumenSidang.files.length > 0) {
-        uploadIcon.style.display = 'none';
-      }
-    });
-
-    // Warna upload dokumen ganti ketika file dipilih
-    function updateUploadBox(input, box) {
-      const textLabel = box.querySelector('.DokumenLabelText');
-      const uploadBox = document.querySelector('.upload-box');
-
-      if (input.files.length > 0) {
-        const fileName = input.files[0].name;
-        box.classList.add('file-selected');
-        textLabel.textContent = `File terupload: ${fileName}`;
-      } else {
-        box.classList.remove('file-selected');
-        textLabel.textContent = 'Upload file revisi dengan format pdf, docx, pptx, dan zip';
-      }
+      return true;
     }
-    const uploadBox = document.querySelector('.upload-box');
-    DokumenSidang.addEventListener('change', () => updateUploadBox(DokumenSidang, uploadBox));
-
-    //Tombol Lanjutkan, Modal verifikasi berhasil
-    const btnLanjutkan = document.getElementById('btnLanjutkan');
-    btnLanjutkan.addEventListener('click', function() {
-      Swal.fire({
-        title: 'Pengajuan Berhasil Dikirim!',
-        icon: 'success',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#4B68FB'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          location.href = 'mPengajuan.php';
-        }
-      });
-    });
   </script>
 </body>
-
 </html>
