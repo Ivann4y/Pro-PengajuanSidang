@@ -102,7 +102,6 @@ if ($nilaiAkhir === null) {
     <!-- Link ke stylesheet kustom lokal (style.css) -->
     <link rel="stylesheet" href="../../css/style.css" />
     <link rel="stylesheet" href="../../assets/css/mNilaiakhir.css">
-        <link rel="stylesheet" href="../../assets/js/mNilaiakhir.js">
     <!-- Link ke stylesheet kustom lokal tambahan (extra/style.css) -->
     <link rel="stylesheet" href="../../extra/style.css" />
     <!-- Link ke stylesheet Font Awesome dari CDN untuk menggunakan library ikon yang lebih beragam -->
@@ -258,5 +257,6 @@ if ($nilaiAkhir === null) {
 
     </div>
 </main>
+<script src="../../assets/js/mNilaiakhir.js"></script>
 </body>
 </html>
