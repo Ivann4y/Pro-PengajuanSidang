@@ -3,7 +3,7 @@
 require "../../koneksi/koneksiAndrew.php";
 
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Mahasiswa') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     header('Location: ../../index.php');
     exit();
 }

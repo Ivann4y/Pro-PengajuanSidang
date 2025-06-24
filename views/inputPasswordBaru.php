@@ -12,16 +12,41 @@ $role = ''; // Akan diisi dari tabel password_resets jika token valid
 $reset = null;
 if ($token) {
   $stmt = sqlsrv_query($conn, "SELECT * FROM password_resets WHERE token=? AND used=0", [$token]);
-$reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    $reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 
-  if ($reset) {
+// Logika untuk menentukan tanggal kadaluarsa token 
+if ($reset) {
+     $role = $reset['role']; // role dari database, BUKAN dari GET/POST
+
+    // Mapping table dan kolom berdasarkan role
+    switch ($role) {
+        case 'mahasiswa':
+            $tableNama = 'Mahasiswa';
+            $emailKolom = 'email';
+            break;
+        case 'dosen':
+            $tableNama = 'Dosen';
+            $emailKolom = 'email';
+            break;
+        case 'admin':
+            $tableNama = 'Admin';
+            $emailKolom = 'email';
+            break;
+        default:
+            // Jika role tidak valid, anggap token tidak valid
+            $reset = null;
+    }
+
     date_default_timezone_set('Asia/Jakarta');
     $now = date('Y-m-d H:i:s');
-    if ($reset['expires_at'] > $now) {
-        // Token masih berlaku
+    $expires_at = $reset['expires_at'];
+    if ($expires_at instanceof DateTime) {
+        $expires_at = $expires_at->format('Y-m-d H:i:s');
+    }
+    // Bandingkan sebagai string
+    if ($expires_at > $now) {
         $role = $reset['role'];
     } else {
-        // Token expired
         $reset = null;
     }
 }
@@ -30,6 +55,10 @@ $reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
     $newPassword = $_POST['newPassword'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';
+    
+    // $tableNama = $_POST['tableNama'] ?? $_GET['tableNama'] ?? '';
+    // $emailKolom = $_POST['emailKolom'] ?? $_GET['emailKolom'] ?? 'email';
+   
 
     // Validasi jika password kosong
     if (empty($newPassword) || empty($confirmPassword)) {
@@ -44,11 +73,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
     } else {
         // Hash password baru dan update ke database
         $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-        sqlsrv_query($conn, "UPDATE users SET password_hash=? WHERE email=? AND role=?", [$hash, $reset['email'], $reset['role']]);
+        sqlsrv_query($conn, "UPDATE [dbo].[$tableNama] SET password_hash=? WHERE [$emailKolom]=? AND role=?", [$hash, $reset['email'], $reset['role']]);
         sqlsrv_query($conn, "UPDATE password_resets SET used=1 WHERE token=?", [$token]);
-//         if ($result === false) {
-//     die(print_r(sqlsrv_errors(), true));
-// }
          // Hapus semua reset password yang sudah digunakan atau kadaluarsa
        sqlsrv_query($conn, "DELETE FROM password_resets WHERE (used=1 OR expires_at < GETDATE()) AND email=?", [$reset['email']]);
         $success = "Kata sandi berhasil diubah!";
@@ -58,10 +84,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
 }
 
 // ...HTML... Jika token tidak valid atau sudah kadaluarsa, tampilkan pesan error
-if (!$reset) {
-    echo '<div class="alert alert-danger">Token tidak valid atau sudah kadaluarsa.</div>';
-}
-
+// if (!$reset) {
+//     echo ' <div class="token-alert">
+//         <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+//         Token tidak valid atau sudah kadaluarsa.
+//     </div>';
+// }
 
 // Cek pesan sukses/error
 if (isset($_GET['success'])) {
@@ -90,7 +118,6 @@ switch ($role) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../css/button-styles.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -257,6 +284,103 @@ switch ($role) {
             /* Already white, no change needed */
             transform: translateY(-2px);
         }
+
+        /* Style Alert */
+        .token-alert {
+            margin: 24px 0 0 0;
+            padding: 18px 24px;
+            background: #ffeaea;
+            color: #b71c1c;
+            border: 1.5px solid #f5c2c7;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 600px;
+            box-shadow: 0 2px 8px rgba(183,28,28,0.04);
+        }
+        .token-alert .icon {
+            font-size: 1.5rem;
+            color: #b71c1c;
+        }
+
+        /* RESPONSIVE DESIGN */
+@media (max-width: 991.98px) {
+    .fullscreen {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+    .bgBiru, .right-column-wrapper {
+        width: 100%;
+        height: auto;
+        min-height: 300px;
+    }
+    .bgBiru {
+        min-height: 250px;
+        height: 40vh;
+    }
+    .right-column-wrapper {
+        min-height: 350px;
+        padding: 24px 0;
+    }
+    .log form {
+        width: 90vw;
+        max-width: 400px;
+    }
+    
+    .shadow-rectangle {
+       display: none; /* Hide the shadow rectangle on smaller screens */
+    }
+
+    .carousel{
+        display: none; /* Hide the carousel on smaller screens */
+    }
+
+    .bgBiru img {
+       display: none; /* Hide the background image on smaller screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .fullscreen {
+        flex-direction: column;
+        height: auto;
+    }
+    .bgBiru, .right-column-wrapper {
+        width: 100%;
+        min-width: 0;
+        min-height: 200px;
+        height: auto;
+    }
+    .bgBiru {
+        min-height: 120px;
+        height: 30vh;
+    }
+    .right-column-wrapper {
+        min-height: 300px;
+        padding: 16px 0;
+    }
+    .log form {
+        width: 98vw;
+        max-width: 98vw;
+        min-width: 0;
+        padding: 0 8px;
+    }
+    .token-alert {
+        max-width: 98vw;
+        font-size: 1rem;
+        padding: 12px 8px;
+    }
+    .button-container {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+}
+
+        
     </style>
 </head>
 
@@ -267,7 +391,7 @@ switch ($role) {
                 class="position-absolute"
                 style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
                 alt="Background">
-            <div class="position-absolute"
+            <div class="position-absolute shadow-rectangle"
                 style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
             </div>
             <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
@@ -300,7 +424,7 @@ switch ($role) {
         <div class="right-column-wrapper">
             <div class="log">
                 <?php if ($reset): ?>
-              <form action="inputPasswordBaru.php?token=<?= htmlspecialchars($token) ?>" method="POST">
+                    <form action="inputPasswordBaru.php?token=<?= htmlspecialchars($token) ?>" method="POST">
                     <div class="text-center pt-5 mb-4">
                         <h2 class="fs-2 fw-bold"><?= $judul ?></h2>
                         <?php if (!empty($success)): ?>
@@ -309,6 +433,7 @@ switch ($role) {
                             </div>
                         <?php endif; ?>
                     </div>
+                  
                     <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
 
                     <div class="mb-3">
@@ -334,21 +459,48 @@ switch ($role) {
                             <div class="text-danger">Kata sandi dan konfirmasi tidak cocok.</div>
                         <?php endif; ?>
                     </div>
+                    <div class="button-container d-flex justify-content-end gap-3 mt-4">
+                 
+                   <button type="submit" class="btn btn-setujui" id="btnKirim">
+                            Kirim
+                  </button>
+        
+             </div>
+                <div class="button-container d-flex justify-content-end gap-3 mt-4">
+                 <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
+                    <span class="icon-circle">
+                <i class="fa-solid fa-arrow-left"></i>
+                  </span>
+                        Kembali
+                      </button>
+                  
+        
+             </div>
             </div>
+            
 
-            <div class="button-container d-flex justify-content-between">
+            <!-- <div class="button-container d-flex justify-content-between">
+              
                 <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
                     </span>
                     Kembali
                 </button>
-                <button type="submit" class="btn btn-setujui me-4" id="btnKirim">
-                    Kirim
-                </button>
-            </div>
+            
+            </div> -->
+
             </form>
             <?php endif; ?>
+
+            <!-- Jika token tidak valid atau sudah kadaluarsa -->
+            <?php if (!$reset): ?>    
+            <div class="token-alert">
+             <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                Token tidak valid atau sudah kadaluarsa.
+             </div>
+            <?php endif; ?>
+
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>

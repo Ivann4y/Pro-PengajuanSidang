@@ -5,34 +5,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     header('Content-Type: application/json');
 
-    // Ambil data dari form
+    // Ambil semua data dari form, TERMASUK BOBOT
     $id_sidang = isset($_POST['id_sidang']) ? (int)$_POST['id_sidang'] : 0;
     $ruangan = $_POST['ruangan'] ?? null;
     $tanggal = $_POST['tanggal'] ?? null;
     $jam_awal = $_POST['jam_awal'] ?? null;
     $jam_akhir = $_POST['jam_akhir'] ?? null;
     $penguji_nama_list = $_POST['penguji_nama'] ?? [];
+    $penguji_bobot_list = $_POST['penguji_bobot'] ?? []; // <-- DATA BOBOT DIAMBIL
 
     if ($id_sidang == 0) {
         echo json_encode(['status' => 'error', 'message' => 'ID Sidang tidak valid.']);
         exit;
     }
 
-    // Mulai Transaksi
     if (sqlsrv_begin_transaction($conn) === false) {
         echo json_encode(['status' => 'error', 'message' => 'Gagal memulai transaksi database.']);
         exit;
     }
+     if (!empty($penguji_bobot_list)) {
+        // Membersihkan array dari nilai non-numerik sebelum menjumlahkan
+        $bobot_numerik = array_filter($penguji_bobot_list, 'is_numeric');
+        $total_bobot = array_sum($bobot_numerik);
+    }
+    if ($total_bobot < 0){
+        // Jika total bobot kurang dari 0, langsung hentikan proses dan kirim error
+        echo json_encode(['status' => 'error', 'message' => 'Gagal: Total bobot penilaian tidak boleh kurang dari 0%.']);
+        exit; // Hentikan eksekusi skrip
+    }
 
-    // Variabel penanda keberhasilan semua query
+    if ($total_bobot > 100) {
+        // Jika total bobot lebih dari 100, langsung hentikan proses dan kirim error
+        echo json_encode(['status' => 'error', 'message' => 'Gagal: Total bobot penilaian tidak boleh melebihi 100%. Total saat ini adalah ' . $total_bobot . '%.']);
+        exit; // Hentikan eksekusi skrip
+    }
+
     $all_queries_ok = true;
+    $error_message = 'Gagal mengubah jadwal. Terjadi kesalahan yang tidak diketahui.';
 
-    // 1. Update atau Insert Jadwal
+    // 1. Update Jadwal (Tidak berubah)
+    // ... (kode ini sudah benar) ...
     $sql_cek_jadwal = "SELECT id_sidang FROM Jadwal WHERE id_sidang = ?";
     $stmt_cek = sqlsrv_query($conn, $sql_cek_jadwal, array($id_sidang));
-    if (!$stmt_cek) { $all_queries_ok = false; }
-    
-    if ($all_queries_ok) {
+    if($stmt_cek !== false){
         $jadwal_exists = sqlsrv_fetch_array($stmt_cek);
         if ($jadwal_exists) {
             $sql_jadwal = "UPDATE Jadwal SET ruang_sidang = ?, tanggal_sidang = ?, jam_sidang = ?, jam_selesai = ? WHERE id_sidang = ?";
@@ -42,59 +57,79 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $params_jadwal = array($id_sidang, $ruangan, $tanggal, $jam_awal, $jam_akhir);
         }
         $stmt_jadwal = sqlsrv_query($conn, $sql_jadwal, $params_jadwal);
-        if (!$stmt_jadwal) { $all_queries_ok = false; }
+        if ($stmt_jadwal === false) { $all_queries_ok = false; }
+    } else {
+        $all_queries_ok = false;
     }
 
-    // 2. Logika penguji hanya dijalankan jika sidangnya adalah TA
+
+    // 2. Logika Penguji & BOBOT
     if ($all_queries_ok) {
-        $sql_jenis = "SELECT CAST(jenis_sidang AS INT) as jenis FROM Sidang WHERE id_sidang = ?";
-        $stmt_jenis = sqlsrv_query($conn, $sql_jenis, array($id_sidang));
-        if (!$stmt_jenis) { $all_queries_ok = false; }
+        $sql_sidang = "SELECT id_kelompok, CAST(jenis_sidang AS INT) as jenis FROM Sidang WHERE id_sidang = ?";
+        $stmt_sidang = sqlsrv_query($conn, $sql_sidang, array($id_sidang));
         
-        if ($all_queries_ok) {
-            $data_jenis = sqlsrv_fetch_array($stmt_jenis, SQLSRV_FETCH_ASSOC);
-
-            if ($data_jenis && $data_jenis['jenis'] == 0) {
+        if ($stmt_sidang !== false) {
+            $data_sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC);
+            if ($data_sidang && $data_sidang['jenis'] == 0) {
                 
-                // ========================================================
-                // PERBAIKAN UTAMA DI SINI: Hanya hapus penguji, bukan semua peran
-                // ========================================================
-              $sql_delete_penguji = "DELETE FROM Penjadwalan WHERE id_sidang = ? AND TRIM(peran_dosen) = 'Penguji'";
-                $stmt_delete = sqlsrv_query($conn, $sql_delete_penguji, array($id_sidang));
-                if (!$stmt_delete) { $all_queries_ok = false; }
+                // Ambil daftar nomor dosen penguji lama untuk dihapus dari Penilaian
+                $penguji_lama_nos = [];
+                $sql_get_lama = "SELECT nomor_dosen FROM Penjadwalan WHERE id_sidang = ? AND peran_dosen = 0";
+                $stmt_get_lama = sqlsrv_query($conn, $sql_get_lama, array($id_sidang));
+                if($stmt_get_lama !== false){
+                    while($row = sqlsrv_fetch_array($stmt_get_lama, SQLSRV_FETCH_ASSOC)){
+                        $penguji_lama_nos[] = $row['nomor_dosen'];
+                    }
+                }
 
-                // Insert penguji baru
-                if ($all_queries_ok && !empty($penguji_nama_list)) {
-                    foreach ($penguji_nama_list as $nama_dosen) {
-                        $nama_penguji_var = trim($nama_dosen);
-                        if (!empty($nama_penguji_var)) {
-                            
-                            $sql_get_dosen = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
-                            $stmt_get_dosen = sqlsrv_query($conn, $sql_get_dosen, array($nama_penguji_var));
-                            if (!$stmt_get_dosen) { $all_queries_ok = false; break; }
+                // Hapus entri penilaian lama untuk penguji lama
+                if (!empty($penguji_lama_nos)) {
+                    $placeholders = implode(',', array_fill(0, count($penguji_lama_nos), '?'));
+                    $sql_delete_penilaian = "DELETE FROM Penilaian WHERE id_sidang = ? AND nomor_dosen IN ($placeholders)";
+                    $params_delete = array_merge([$id_sidang], $penguji_lama_nos);
+                    if (sqlsrv_query($conn, $sql_delete_penilaian, $params_delete) === false) { $all_queries_ok = false; }
+                }
 
-                            $dosen_data = sqlsrv_fetch_array($stmt_get_dosen, SQLSRV_FETCH_ASSOC);
+                // Hapus penguji lama dari Penjadwalan
+                $sql_delete_penguji = "DELETE FROM Penjadwalan WHERE id_sidang = ? AND peran_dosen = 0";
+                if (sqlsrv_query($conn, $sql_delete_penguji, array($id_sidang)) === false) { $all_queries_ok = false; }
 
-                            if (!$dosen_data) {
-                                // Jika dosen tidak ditemukan, batalkan semua
-                                $all_queries_ok = false; 
-                                // Simpan nama dosen yang error untuk pesan
-                                $failed_dosen_name = $nama_penguji_var; 
-                                break;
-                            }
+                // Ambil daftar NIM mahasiswa dalam kelompok ini
+                $id_kelompok = $data_sidang['id_kelompok'];
+                $list_nim_mahasiswa = [];
+                $sql_get_nim = "SELECT nim FROM Kelompok_Mahasiswa WHERE id_kelompok = ?";
+                $stmt_get_nim = sqlsrv_query($conn, $sql_get_nim, array($id_kelompok));
+                while($row = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)) {
+                    $list_nim_mahasiswa[] = $row['nim'];
+                }
 
+                // Loop melalui setiap penguji yang dikirim dari form
+                if ($all_queries_ok && !empty($list_nim_mahasiswa)) {
+                    foreach ($penguji_nama_list as $index => $nama_dosen) {
+                        if (empty(trim($nama_dosen))) continue;
+
+                        $sql_get_dosen = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
+                        $stmt_get_dosen = sqlsrv_query($conn, $sql_get_dosen, array($nama_dosen));
+                        $dosen_data = sqlsrv_fetch_array($stmt_get_dosen, SQLSRV_FETCH_ASSOC);
+
+                        if ($dosen_data) {
                             $nomor_dosen = $dosen_data['nomor_dosen'];
-                            // Cek dulu apakah dosen ini sudah ada di penjadwalan (untuk mencegah error duplicate key)
-                            $sql_check_exist = "SELECT COUNT(*) as total FROM Penjadwalan WHERE id_sidang = ? AND nomor_dosen = ?";
-                            $stmt_check_exist = sqlsrv_query($conn, $sql_check_exist, array($id_sidang, $nomor_dosen));
-                            $row_exist = sqlsrv_fetch_array($stmt_check_exist, SQLSRV_FETCH_ASSOC);
+                            $bobot = isset($penguji_bobot_list[$index]) && is_numeric($penguji_bobot_list[$index]) ? (float)$penguji_bobot_list[$index] : 0.0;
+                            
+                            // A. Insert ke tabel Penjadwalan
+                            $sql_insert_jadwal = "INSERT INTO Penjadwalan (id_sidang, nomor_dosen, peran_dosen) VALUES (?, ?, 0)";
+                            if (sqlsrv_query($conn, $sql_insert_jadwal, array($id_sidang, $nomor_dosen)) === false) { $all_queries_ok = false; break; }
 
-                            if($row_exist['total'] == 0) {
-                                $sql_insert_penguji = "INSERT INTO Penjadwalan (id_sidang, nomor_dosen, peran_dosen) VALUES (?, ?, 'Penguji')";
-                                $stmt_insert = sqlsrv_query($conn, $sql_insert_penguji, array($id_sidang, $nomor_dosen));
-                                if (!$stmt_insert) { $all_queries_ok = false; break; }
+                            // B. Insert ke tabel Penilaian untuk SETIAP MAHASISWA
+                            foreach ($list_nim_mahasiswa as $nim) {
+                                $sql_insert_penilaian = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, bobot_penilaian) VALUES (?, ?, ?, ?)";
+                                $params_penilaian = array($id_sidang, $nim, $nomor_dosen, $bobot);
+                                if(sqlsrv_query($conn, $sql_insert_penilaian, $params_penilaian) === false) {
+                                    $all_queries_ok = false;
+                                    $error_message = "Gagal insert bobot untuk mhs $nim.";
+                                    break 2; // Keluar dari kedua loop
+                                }
                             }
-                            // Jika sudah ada (misal sebagai pembimbing), kita abaikan saja, tidak perlu insert lagi.
                         }
                     }
                 }
@@ -102,20 +137,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Selesaikan Transaksi
     if ($all_queries_ok) {
         sqlsrv_commit($conn);
-        echo json_encode(['status' => 'success', 'message' => 'Jadwal dan penguji berhasil diubah!']);
+        echo json_encode(['status' => 'success', 'message' => 'Jadwal, penguji, dan bobot berhasil diubah!']);
     } else {
         sqlsrv_rollback($conn);
-        // Buat pesan error yang lebih spesifik jika ada
-        $error_message = 'Gagal mengubah jadwal. Terjadi kesalahan pada database.';
-        if(isset($failed_dosen_name)) {
-            $error_message = "Gagal: Dosen dengan nama '$failed_dosen_name' tidak ditemukan.";
-        }
-        echo json_encode(['status' => 'error', 'message' => $error_message]);
+        echo json_encode(['status' => 'error', 'message' => $error_message ?: 'Terjadi kesalahan pada database.']);
     }
-
     exit;
 }
 
