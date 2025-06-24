@@ -1,101 +1,90 @@
 <?php
-include '../../koneksi/koneksiAndrew.php'; // This now correctly includes your SQL Server connection
+// Start the session to get the logged-in user's ID
+session_start(); 
 
-// Get next ID
-$next_id = 1;
-// --- SQLSRV CHANGE: Use sqlsrv_query and sqlsrv_fetch_array ---
-$sql_id = "SELECT MAX(id_sidang) AS max_id FROM Sidang";
-$stmt_id = sqlsrv_query($conn, $sql_id);
-if ($stmt_id === false) {
-    die("Error getting max ID: " . print_r(sqlsrv_errors(), true));
+include '../../koneksi/koneksiAndrew.php'; // Your SQL Server connection
+
+// --- IMPORTANT ---
+// Assume the logged-in student's ID is stored in the session.
+// You MUST set this variable after a successful login.
+// For this example, I'll hardcode it, but in your real app, it must come from the session.
+// $_SESSION['mahasiswa_id'] = 123; // Example ID
+if (!isset($_SESSION['mahasiswa_id'])) {
+    die("Error: User is not logged in. Session 'mahasiswa_id' not set.");
 }
-if ($row = sqlsrv_fetch_array($stmt_id, SQLSRV_FETCH_ASSOC)) {
-    // Check if the result is not NULL (for an empty table)
-    if ($row['max_id'] !== null) {
-        $next_id = $row['max_id'] + 1;
-    }
-}
-sqlsrv_free_stmt($stmt_id); // Free the statement resource
+$id_mahasiswa_logged_in = $_SESSION['mahasiswa_id'];
 
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // --- CHANGE 1: LOOK UP id_kelompok DYNAMICALLY ---
+    $id_kelompok = null;
+    $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE id_mahasiswa = ?";
+    $params_kelompok = [$id_mahasiswa_logged_in];
+    $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
+
+    if ($stmt_kelompok === false) {
+        die("Error fetching group ID: " . print_r(sqlsrv_errors(), true));
+    }
+    if ($row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
+        $id_kelompok = $row['id_kelompok'];
+    }
+    sqlsrv_free_stmt($stmt_kelompok);
+
+    // If no group was found for the student, stop execution.
+    if ($id_kelompok === null) {
+        die("Fatal Error: Could not find a 'kelompok' (group) for the logged-in student.");
+    }
+    
+    // Get form data
     $judul = $_POST['judul'];
-    $matkul = $_POST['matkul'];
-    $id_kelompok = 5001; // Should come from session
+    $jenis_sidang_id = $_POST['matkul']; // This is now an ID from the dropdown
     $aksi = $_POST['aksi'];
     $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
     $waktu_pengumpulan = date('Y-m-d H:i:s');
     
-    // Handle file upload (This part is correct and does not need changes)
-    $dok_laporan = '';
-    $fileName = '';
-    
+    // Handle file upload
+    $dok_laporan_filename = null; // Store only the filename
     if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['DokumenSidang'];
-        $fileName = $file['name'];
-        $fileTmpName = $file['tmp_name'];
-        
         $uploadDir = '../../uploads/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
+        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+        // --- CHANGE 2: STORE ONLY THE FILENAME, NOT THE FULL PATH ---
+        $dok_laporan_filename = 'laporan_' . uniqid('', true) . '.' . $fileExt;
+        $uploadPath = $uploadDir . $dok_laporan_filename;
         
-        $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
-        $newFileName = uniqid('', true) . '.' . $fileExt;
-        $uploadPath = $uploadDir . $newFileName;
-        
-        if (move_uploaded_file($fileTmpName, $uploadPath)) {
-            $dok_laporan = $uploadPath;
-        }
+        move_uploaded_file($file['tmp_name'], $uploadPath);
     }
 
-    // --- SQLSRV CHANGE: Use sqlsrv_prepare and sqlsrv_execute ---
-    // Insert into database
+    // --- CHANGE 3: MODIFIED INSERT STATEMENT ---
+    // We removed `id_sidang` because the database will generate it (IDENTITY column).
     $sql = "INSERT INTO Sidang (
-        id_sidang,
         judul, 
         waktu_pengumpulan, 
         dok_laporan, 
         status_ajuan, 
         jenis_sidang, 
         id_kelompok
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    ) VALUES (?, ?, ?, ?, ?, ?)";
     
     // Create an array of parameters to bind
     $params = [
-        $next_id,
         $judul, 
         $waktu_pengumpulan, 
-        $dok_laporan, 
+        $dok_laporan_filename, // Use the filename
         $status_ajuan, 
-        $matkul, 
-        $id_kelompok
+        $jenis_sidang_id,    // Use the ID from the dropdown
+        $id_kelompok         // Use the looked-up group ID
     ];
     
-    // Prepare the statement. Parameters are passed here.
     $stmt = sqlsrv_prepare($conn, $sql, $params);
 
-    if ($stmt === false) {
-        // Handle preparation error
-        $error = "Error preparing statement: " . print_r(sqlsrv_errors(), true);
-        echo "<script>
-            Swal.fire({
-                title: 'Gagal menyiapkan data',
-                text: 'Terjadi kesalahan pada server. Silakan coba lagi.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-            });
-        </script>";
-        // You might want to log the full $error here for debugging
-    } else {
-        // Execute the statement
+    if ($stmt) {
         if (sqlsrv_execute($stmt)) {
-            $message = ($status_ajuan == 1) 
-                ? 'Pengajuan Berhasil Dikirim!' 
-                : 'Pengajuan Berhasil Disimpan!';
-            
+            $message = ($status_ajuan == 1) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
             echo "<script>
                 Swal.fire({
                     title: '$message',
@@ -108,19 +97,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </script>";
             exit;
         } else {
-            // Handle execution error
-            $error = "Error executing statement: " . print_r(sqlsrv_errors(), true);
+            // More detailed error for debugging
+            $errors = sqlsrv_errors();
+            $errorMessage = "Gagal menyimpan data. Error: " . $errors[0]['message'];
+            error_log($errorMessage); // Log error to server logs
+
             echo "<script>
                 Swal.fire({
                     title: 'Gagal menyimpan data',
-                    text: 'Terjadi kesalahan pada server. Silakan coba lagi.',
+                    text: 'Terjadi kesalahan pada server. Silakan coba lagi. Cek log untuk detail.',
                     icon: 'error',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#4B68FB'
                 });
             </script>";
-            // You might want to log the full $error here for debugging
         }
+    } else {
+         $errors = sqlsrv_errors();
+         $errorMessage = "Gagal menyiapkan statement. Error: " . $errors[0]['message'];
+         error_log($errorMessage); // Log error to server logs
+
+         echo "<script>
+            Swal.fire({
+                title: 'Gagal menyiapkan data',
+                text: 'Terjadi kesalahan pada server. Silakan coba lagi.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            });
+        </script>";
     }
 }
 ?>
@@ -215,29 +220,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               </label>
               <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo htmlspecialchars($judul); ?>" placeholder="Masukkan Judul Sidang" />
             </div>
-            <div class="mb-3">
+                        <div class="mb-3">
               <label for="matkul" class="form-label">Mata Kuliah
                 <span class="text-danger">* </span>
               </label>
               <select class="forM form-select" id="matkul" name="matkul">
                 <option selected disabled>Pilih Mata Kuliah</option>
-                <option value="Tugas Akhir" <?php if ($matkul == 'Tugas Akhir') echo ' selected'; ?>>Tugas Akhir</option>
-                <option value="Pemrograman Web" <?php if ($matkul == 'Pemrograman Web') echo ' selected'; ?>>Pemrograman Web</option>
-                <option value="Sistem Operasi" <?php if ($matkul == 'Sistem Operasi') echo ' selected'; ?>>Sistem Operasi</option>
-                <option value="Basis Data Lanjut" <?php if ($matkul == 'Basis Data Lanjut') echo ' selected'; ?>>Basis Data Lanjut</option>
-                <option value="Struktur Data" <?php if ($matkul == 'Struktur Data') echo ' selected'; ?>>Struktur Data</option>
-                <option value="Kecerdasan Buatan" <?php if ($matkul == 'Kecerdasan Buatan') echo ' selected'; ?>>Kecerdasan Buatan</option>
-                <option value="Sistem Terdistribusi" <?php if ($matkul == 'Sistem Terdistribusi') echo ' selected'; ?>>Sistem Terdistribusi</option>
-                <option value="Jaringan Komputer" <?php if ($matkul == 'Jaringan Komputer') echo ' selected'; ?>>Jaringan Komputer</option>
-                <option value="Komputasi Awan" <?php if ($matkul == 'Komputasi Awan') echo ' selected'; ?>>Komputasi Awan</option>
-                <option value="Pemrograman Mobile" <?php if ($matkul == 'Pemrograman Mobile') echo ' selected'; ?>>Pemrograman Mobile</option>
-                <option value="Analisis Data" <?php if ($matkul == 'Analisis Data') echo ' selected'; ?>>Analisis Data</option>
-                <option value="Interaksi Manusia Komputer" <?php if ($matkul == 'Interaksi Manusia Komputer') echo ' selected'; ?>>Interaksi Manusia Komputer</option>
-                <option value="Pengujian Perangkat Lunak" <?php if ($matkul == 'Pengujian Perangkat Lunak') echo ' selected'; ?>>Pengujian Perangkat Lunak</option>
-                <option value="Pengolahan Citra" <?php if ($matkul == 'Pengolahan Citra') echo ' selected'; ?>>Pengolahan Citra</option>
-                <option value="Pemrograman Jaringan" <?php if ($matkul == 'Pemrograman Jaringan') echo ' selected'; ?>>Pemrograman Jaringan</option>
-                <option value="Sistem Tertanam" <?php if ($matkul == 'Sistem Tertanam') echo ' selected'; ?>>Sistem Tertanam</option>
-                <option value="Analisis Big Data" <?php if ($matkul == 'Analisis Big Data') echo ' selected'; ?>>Analisis Big Data</option>
+                <?php
+                  // Fetch all courses from the database to populate the dropdown
+                  $sql_matkul = "SELECT id_matkul, nama_matkul FROM dbo.MataKuliah ORDER BY nama_matkul ASC";
+                  $stmt_matkul = sqlsrv_query($conn, $sql_matkul);
+                  if ($stmt_matkul === false) {
+                      // Basic error handling
+                      echo '<option disabled>Error memuat mata kuliah</option>';
+                  } else {
+                      // Loop through the results and create an <option> for each one
+                      while ($matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC)) {
+                          echo '<option value="' . htmlspecialchars($matkul['id_matkul']) . '">' . htmlspecialchars($matkul['nama_matkul']) . '</option>';
+                      }
+                  }
+                  // Free the statement resource
+                  sqlsrv_free_stmt($stmt_matkul);
+                ?>
               </select>
             </div>
 
