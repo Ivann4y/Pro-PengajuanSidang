@@ -1,9 +1,9 @@
 <?php
 session_start();
-// if ($_SESSION['role'] !== 'dosen') {
-//     header("Location: ../../index.php");
-//     exit();
-// }
+if ($_SESSION['role'] !== 'dosen') {
+    header("Location: ../../index.php");
+    exit();
+}
 $nomorDosen = $_SESSION['nomor_dosen'];
 include '../../koneksi/koneksiAndrew.php';
 ?>
