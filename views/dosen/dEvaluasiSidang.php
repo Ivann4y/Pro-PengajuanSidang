@@ -463,7 +463,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                         </div>
                         <div class="form-group-custom">
                             <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-                            <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
+                            <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."></textarea>
                         </div>
                         <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                     </div>
