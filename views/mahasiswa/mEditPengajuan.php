@@ -216,28 +216,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo htmlspecialchars($judul); ?>" placeholder="Masukkan Judul Sidang" />
             </div>
             <div class="mb-3">
-              <label for="matkul" class="form-label">Mata Kuliah
-                <span class="text-danger">* </span>
-              </label>
-              <select class="forM form-select" id="matkul" name="matkul">
-                <option selected disabled>Pilih Mata Kuliah</option>
-                <option value="Tugas Akhir" <?php if ($matkul == 'Tugas Akhir') echo ' selected'; ?>>Tugas Akhir</option>
-                <option value="Pemrograman Web" <?php if ($matkul == 'Pemrograman Web') echo ' selected'; ?>>Pemrograman Web</option>
-                <option value="Sistem Operasi" <?php if ($matkul == 'Sistem Operasi') echo ' selected'; ?>>Sistem Operasi</option>
-                <option value="Basis Data Lanjut" <?php if ($matkul == 'Basis Data Lanjut') echo ' selected'; ?>>Basis Data Lanjut</option>
-                <option value="Struktur Data" <?php if ($matkul == 'Struktur Data') echo ' selected'; ?>>Struktur Data</option>
-                <option value="Kecerdasan Buatan" <?php if ($matkul == 'Kecerdasan Buatan') echo ' selected'; ?>>Kecerdasan Buatan</option>
-                <option value="Sistem Terdistribusi" <?php if ($matkul == 'Sistem Terdistribusi') echo ' selected'; ?>>Sistem Terdistribusi</option>
-                <option value="Jaringan Komputer" <?php if ($matkul == 'Jaringan Komputer') echo ' selected'; ?>>Jaringan Komputer</option>
-                <option value="Komputasi Awan" <?php if ($matkul == 'Komputasi Awan') echo ' selected'; ?>>Komputasi Awan</option>
-                <option value="Pemrograman Mobile" <?php if ($matkul == 'Pemrograman Mobile') echo ' selected'; ?>>Pemrograman Mobile</option>
-                <option value="Analisis Data" <?php if ($matkul == 'Analisis Data') echo ' selected'; ?>>Analisis Data</option>
-                <option value="Interaksi Manusia Komputer" <?php if ($matkul == 'Interaksi Manusia Komputer') echo ' selected'; ?>>Interaksi Manusia Komputer</option>
-                <option value="Pengujian Perangkat Lunak" <?php if ($matkul == 'Pengujian Perangkat Lunak') echo ' selected'; ?>>Pengujian Perangkat Lunak</option>
-                <option value="Pengolahan Citra" <?php if ($matkul == 'Pengolahan Citra') echo ' selected'; ?>>Pengolahan Citra</option>
-                <option value="Pemrograman Jaringan" <?php if ($matkul == 'Pemrograman Jaringan') echo ' selected'; ?>>Pemrograman Jaringan</option>
-                <option value="Sistem Tertanam" <?php if ($matkul == 'Sistem Tertanam') echo ' selected'; ?>>Sistem Tertanam</option>
-                <option value="Analisis Big Data" <?php if ($matkul == 'Analisis Big Data') echo ' selected'; ?>>Analisis Big Data</option>
+              <label for="matkul" class="form-label">Mata Kuliah<span class="text-danger">* </span></label>
+              <select class="forM form-select" id="matkul" name="matkul" required>
+                <option value="" selected disabled>Pilih Mata Kuliah</option>
+                <?php
+                  $matkulDipilih = $_GET['matkul'] ?? '';
+
+                  $query = "SELECT nama_matkul FROM Matakuliah";
+                  $result = sqlsrv_query($conn, $query);
+
+                  while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+                      $nama = $row['nama_matkul'];
+                      $selected = ($nama == $matkulDipilih) ? 'selected' : '';
+                      echo "<option value=\"$nama\" $selected>$nama</option>";
+                  }
+                  ?>
               </select>
             </div>
 

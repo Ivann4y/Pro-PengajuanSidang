@@ -40,7 +40,7 @@ include '../../koneksi/koneksiAndrew.php';
                     <b></b><b></b>
                     <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide__sidebar-item NavSide_sidebar-item--active">
                     <b></b><b></b>
                     <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
@@ -133,8 +133,40 @@ include '../../koneksi/koneksiAndrew.php';
                       $sqlTA = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
                                 FROM Sidang s
                                 JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
-                                WHERE s.TipeSidang = 'TA' AND s.nomor_dosen = '$nomorDosen'";
+                                WHERE s.jenis_sidang = 'TA'";
                         $resultTA = sqlsrv_query($conn, $sqlTA);
+
+                        // Simulasi dummy data
+                        $dummyTA = [
+                            [
+                                'id_kelompok' => 'KEL001',
+                                'judul' => 'Sistem Informasi Penggajian',
+                                'jenis_sidang' => 'Sidang Akhir',
+                                'nama_dosen' => 'Timotius Victory'
+                            ],
+                            [
+                                'id_kelompok' => 'KEL002',
+                                'judul' => 'Aplikasi Kasir Modern',
+                                'jenis_sidang' => 'Sidang Semester',
+                                'nama_dosen' => 'Timotius Victory'
+                            ]
+                        ];
+                        $no = 1;
+                        foreach ($dummyTA as $row) {
+                            echo "<tr class='isiTabel jadiBiru'>
+                                <td>{$no}</td>
+                                <td>{$row['id_kelompok']}</td>
+                                <td>{$row['judul']}</td>
+                                <td>{$row['jenis_sidang']}</td>
+                                <td>{$row['nama_dosen']}</td>
+                                <td style='text-align: center;'>
+                                    <button class='detail-btn' onclick=\"goToDetail('{$row['id_kelompok']}', 'TA')\">
+                                        <i class='bi bi-eye'></i>
+                                    </button>
+                                </td>
+                            </tr>";
+                            $no++;
+                        }
 
                         if ($resultTA && sqlsrv_has_rows($resultTA)) {
                             while ($row = sqlsrv_fetch_array($resultTA, SQLSRV_FETCH_ASSOC)) {
@@ -164,7 +196,7 @@ include '../../koneksi/koneksiAndrew.php';
                             $sqlSem = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
                                         FROM Sidang s
                                         JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
-                                        WHERE s.TipeSidang = 'Semester' AND s.nomor_dosen = '$nomorDosen'";
+                                        WHERE s.jenis_sidang = 'Semester'";
 
                             $resultSem = sqlsrv_query($conn, $sqlSem);
                             if ($resultSem && sqlsrv_has_rows($resultSem) > 0) {
@@ -343,7 +375,7 @@ include '../../koneksi/koneksiAndrew.php';
                             for (let i = 1; i <= pageCount; i++) {
                                 const pageButton = document.createElement('li');
                                 pageButton.className = 'page-item';
-                                pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                                pageButton.innerHTML = <a class="page-link" href="#">${i}</a>;
                                 pageButton.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     currentPage = i;
@@ -611,9 +643,9 @@ include '../../koneksi/koneksiAndrew.php';
 
                     // Select mahasiswa from autocomplete
                     function selectMahasiswa(mahasiswa, anggotaIndex) {
-                        const nimInput = document.getElementById(`anggota_nim_${anggotaIndex}`);
-                        const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
-                        const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
+                        const nimInput = document.getElementById(anggota_nim_${anggotaIndex});
+                        const namaDisplay = document.getElementById(anggota_nama_${anggotaIndex});
+                        const dropdown = document.getElementById(autocomplete_${anggotaIndex});
 
                         nimInput.value = mahasiswa.nim;
                         namaDisplay.textContent = mahasiswa.nama_mhs; // Use nama_mhs from DB
@@ -626,7 +658,7 @@ include '../../koneksi/koneksiAndrew.php';
                         const wrapper = document.getElementById('anggota-wrapper');
                         const div = document.createElement('div');
                         div.className = 'anggota-form-group';
-                        div.id = `anggota-form-${anggotaCount}`;
+                        div.id = anggota-form-${anggotaCount};
                         div.innerHTML = `
                         <label for="anggota_nim_${anggotaCount}">Anggota ${anggotaCount}:</label>
                         <div class="anggota-input-group">
@@ -648,7 +680,7 @@ include '../../koneksi/koneksiAndrew.php';
                     // Remove anggota (no changes needed)
                     function removeAnggota() {
                         if (anggotaCount > 1) {
-                            const lastForm = document.getElementById(`anggota-form-${anggotaCount}`);
+                            const lastForm = document.getElementById(anggota-form-${anggotaCount});
                             if (lastForm) {
                                 lastForm.remove();
                                 anggotaCount--;
@@ -807,7 +839,7 @@ include '../../koneksi/koneksiAndrew.php';
                         let hasAnggota = false;
                         const selectedNIMs = new Set(); // Use a Set to check for duplicates
                         for (let i = 1; i <= anggotaCount; i++) {
-                            const nimInput = document.getElementById(`anggota_nim_${i}`);
+                            const nimInput = document.getElementById(anggota_nim_${i});
                             if (nimInput.value.trim() !== '') {
                                 // Check if NIM exists in the fetched mahasiswaData
                                 const foundMahasiswa = mahasiswaData.find(mhs => String(mhs.nim) === nimInput.value.trim());
