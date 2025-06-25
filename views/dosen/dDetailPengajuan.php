@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['nomor_dosen'])) {
+  // fallback sementara untuk testing
+  $_SESSION['nomor_dosen'] = '1001';
+}
 include '../../koneksi/koneksiAndrew.php';
 ?>
 
@@ -8,7 +13,17 @@ include '../../koneksi/koneksiAndrew.php';
 // }
 
 // Get parameters
-$id_sidang = isset($_GET['id_sidang']) ? $_GET['id_sidang'] : null;
+$id_kelompok = isset($_GET['id_kelompok']) ? $_GET['id_kelompok'] : null;
+$tipe = isset($_GET['tipe']) ? $_GET['tipe'] : null;
+
+// Proteksi: jika tidak ada id_sidang di URL
+// if (!$id_sidang) {
+//   echo "<script>
+//     alert('ID sidang tidak ditemukan. Anda akan diarahkan kembali.');
+//     window.location.href = 'dpengajuan.php';
+//   </script>";
+//   exit;
+// }
 
 // Initialize variables
 $sidang = [];
@@ -18,31 +33,39 @@ $revisions = [];
 $all_approved = false;
 
 // Fetch submission details
-if ($id_sidang) {
-  // Get main submission data
-  $sql = "SELECT * FROM Sidang WHERE id_sidang = ?";
-  $params = array($id_sidang);
+if ($id_kelompok) {
+  // 1. Ambil info judul, jenis sidang, dan nama kelompok
+  $sql = "SELECT s.judul, s.jenis_sidang, s.id_kelompok, k.nama_kelompok
+          FROM Sidang s
+          LEFT JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+          WHERE s.id_kelompok = ?";
+  $params = [$id_kelompok];
   $stmt = sqlsrv_query($conn, $sql, $params);
+  $info_sidang = [];
+  if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+      $info_sidang = $row;
+  }
 
+  // 2. Ambil data utama sidang
+  $sql = "SELECT * FROM Sidang WHERE id_kelompok = ?";
+  $stmt = sqlsrv_query($conn, $sql, $params);
   if ($stmt === false) {
     die(print_r(sqlsrv_errors(), true));
   }
-
   $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 
-  // Get detail/revision data
+  // 3. Ambil data detail sidang & revisi
   $sql = "SELECT ds.*, d.nama_dosen 
-            FROM Detail_Sidang ds
-            JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-            WHERE ds.id_sidang = ?";
+          FROM Detail_Sidang ds
+          JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+          WHERE ds.id_kelompok = ?";
   $stmt = sqlsrv_query($conn, $sql, $params);
-
   if ($stmt !== false) {
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
       $detail_sidang[] = $row;
-      // Collect revisions
       if (!empty($row['dok_revisi'])) {
         $revisions[] = [
+          'id' => $row['id'], // tambahkan kalau kamu ingin mendukung download by ID
           'dokumen' => $row['dok_revisi'],
           'dosen' => $row['nama_dosen'],
           'catatan' => $row['catatan_sidang'],
@@ -52,57 +75,82 @@ if ($id_sidang) {
     }
   }
 
-  // Check if all panelists have approved
+  // 4. Cek apakah semua dosen sudah menyetujui
   $sql = "SELECT COUNT(*) as total, 
-                   SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved
-            FROM Persetujuan_Sidang 
-            WHERE id_sidang = ?";
+                 SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved
+          FROM Persetujuan_Sidang 
+          WHERE id_kelompok = ?";
   $stmt = sqlsrv_query($conn, $sql, $params);
-
   if ($stmt !== false) {
     $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
     $all_approved = ($row['total'] > 0 && $row['approved'] == $row['total']);
 
-    // Update revision status if all approved
+    // 5. Update status jika semua menyetujui
     if ($all_approved) {
       $sql = "UPDATE Detail_Sidang 
-                    SET status_revisi = 'Approved' 
-                    WHERE id_sidang = ?";
+              SET status_revisi = 'Approved' 
+              WHERE id_kelompok = ?";
       sqlsrv_query($conn, $sql, $params);
     }
   }
 
-  // Handle Approval/Rejection (add to top of file)
+  // 6. Handle aksi Approve / Reject
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['nomor_dosen'])) {
     $nomor_dosen = $_SESSION['nomor_dosen'];
 
-    // APPROVE action
     if (isset($_POST['approve'])) {
-      $sql = "UPDATE Detail_Sidang 
-                SET status_revisi = 'Approved' 
-                WHERE id_sidang = ? AND nomor_dosen = ?";
-      $params = [$id_sidang, $nomor_dosen];
-      sqlsrv_query($conn, $sql, $params);
+      // Cek apakah sudah pernah disetujui/ditolak
+      $sql = "SELECT id FROM Persetujuan_Sidang 
+              WHERE id_kelompok = ? AND nomor_dosen = ?";
+      $params = [$id_kelompok, $nomor_dosen];
+      $stmt = sqlsrv_query($conn, $sql, $params);
 
-      $_SESSION['alert'] = "Sidang disetujui!";
+      if (sqlsrv_has_rows($stmt)) {
+        $sql = "UPDATE Persetujuan_Sidang 
+                SET status = 'Approved', catatan = NULL 
+                WHERE id_kelompok = ? AND nomor_dosen = ?";
+      } else {
+        $sql = "INSERT INTO Persetujuan_Sidang 
+                (id_kelompok, nomor_dosen, status) 
+                VALUES (?, ?, 'Approved')";
+      }
+      sqlsrv_query($conn, $sql, $params);
+      $_SESSION['success'] = "Sidang berhasil disetujui";
+      header("Location: " . $_SERVER['PHP_SELF'] . "?id_kelompok=" . $id_kelompok);
+      exit();
     }
 
-    // REJECT action
-    elseif (isset($_POST['reject']) && !empty($_POST['catatan'])) {
-      $sql = "UPDATE Detail_Sidang 
-                SET status_revisi = 'Rejected', 
-                    catatan_sidang = ? 
-                WHERE id_sidang = ? AND nomor_dosen = ?";
-      $params = [$_POST['catatan'], $id_sidang, $nomor_dosen];
-      sqlsrv_query($conn, $sql, $params);
+    elseif (isset($_POST['reject'])) {
+      $catatan = $_POST['catatan'] ?? '';
+      if (empty($catatan)) {
+        $_SESSION['error'] = "Silakan isi catatan penolakan";
+      } else {
+        $sql = "SELECT id FROM Persetujuan_Sidang 
+                WHERE id_kelompok = ? AND nomor_dosen = ?";
+        $params = [$id_kelompok, $nomor_dosen];
+        $stmt = sqlsrv_query($conn, $sql, $params);
 
-      $_SESSION['alert'] = "Revisi diminta. Catatan telah disimpan.";
+        if (sqlsrv_has_rows($stmt)) {
+          $sql = "UPDATE Persetujuan_Sidang 
+                  SET status = 'Rejected', catatan = ? 
+                  WHERE id_kelompok = ? AND nomor_dosen = ?";
+        } else {
+          $sql = "INSERT INTO Persetujuan_Sidang 
+                  (id_kelompok, nomor_dosen, status, catatan) 
+                  VALUES (?, ?, 'Rejected', ?)";
+        }
+
+        $params = [$catatan, $id_kelompok, $nomor_dosen];
+        sqlsrv_query($conn, $sql, $params);
+
+        $_SESSION['success'] = "Sidang berhasil ditolak";
+        header("Location: " . $_SERVER['PHP_SELF'] . "?id_kelompok=" . $id_kelompok);
+        exit();
+      }
     }
-
-    header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang);
-    exit();
   }
 }
+
 
 // Handle approval/rejection
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['nomor_dosen'])) {
@@ -111,26 +159,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['nomor_dosen'])) {
   if (isset($_POST['approve'])) {
     // Check if already approved/rejected by this panelist
     $sql = "SELECT id FROM Persetujuan_Sidang 
-                WHERE id_sidang = ? AND nomor_dosen = ?";
-    $params = array($id_sidang, $nomor_dosen);
+                WHERE id_kelompok = ? AND nomor_dosen = ?";
+    $params = array($id_kelompok, $nomor_dosen);
     $stmt = sqlsrv_query($conn, $sql, $params);
 
     if (sqlsrv_has_rows($stmt)) {
       // Update existing approval
       $sql = "UPDATE Persetujuan_Sidang 
                     SET status = 'Approved', catatan = NULL 
-                    WHERE id_sidang = ? AND nomor_dosen = ?";
+                    WHERE id_kelompok = ? AND nomor_dosen = ?";
     } else {
       // Create new approval
       $sql = "INSERT INTO Persetujuan_Sidang 
-                    (id_sidang, nomor_dosen, status) 
+                    (id_kelompok, nomor_dosen, status) 
                     VALUES (?, ?, 'Approved')";
     }
 
     $stmt = sqlsrv_query($conn, $sql, $params);
 
     $_SESSION['success'] = "Sidang berhasil disetujui";
-    header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang);
+    header("Location: " . $_SERVER['PHP_SELF'] . "?id_kelompok=" . $id_kelompok);
     exit();
   } elseif (isset($_POST['reject'])) {
     $catatan = $_POST['catatan'] ?? '';
@@ -140,27 +188,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['nomor_dosen'])) {
     } else {
       // Check if already approved/rejected by this panelist
       $sql = "SELECT id FROM Persetujuan_Sidang 
-                    WHERE id_sidang = ? AND nomor_dosen = ?";
-      $params = array($id_sidang, $nomor_dosen);
+                    WHERE id_kelompok = ? AND nomor_dosen = ?";
+      $params = array($id_kelompok, $nomor_dosen);
       $stmt = sqlsrv_query($conn, $sql, $params);
 
       if (sqlsrv_has_rows($stmt)) {
         // Update existing approval
         $sql = "UPDATE Persetujuan_Sidang 
                         SET status = 'Rejected', catatan = ? 
-                        WHERE id_sidang = ? AND nomor_dosen = ?";
+                        WHERE id_kelompok = ? AND nomor_dosen = ?";
       } else {
         // Create new approval
         $sql = "INSERT INTO Persetujuan_Sidang 
-                        (id_sidang, nomor_dosen, status, catatan) 
+                        (id_kelompok, nomor_dosen, status, catatan) 
                         VALUES (?, ?, 'Rejected', ?)";
       }
 
-      $params = array($catatan, $id_sidang, $nomor_dosen);
+      $params = array($catatan, $id_kelompok, $nomor_dosen);
       $stmt = sqlsrv_query($conn, $sql, $params);
 
       $_SESSION['success'] = "Sidang berhasil ditolak";
-      header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang);
+      header("Location: " . $_SERVER['PHP_SELF'] . "?id_kelompok=" . $id_kelompok);
       exit();
     }
   }
@@ -187,7 +235,7 @@ if (isset($_GET['download'])) {
   // 3. Validasi file sebelum download
   if (isset($filepath) && file_exists($filepath)) {
     $filename = basename($filepath);
-    // $mimeType = mime_content_type($filepath); // Deteksi tipe file
+    $mimeType = mime_content_type($filepath); // Deteksi tipe file
 
     header('Content-Description: File Transfer');
     header('Content-Type: ' . $mimeType);
@@ -300,27 +348,45 @@ if ($tipe === 'TA') {
         <h5 class="fw-semibold section">Informasi Pengajuan</h5>
         <div class="row mt-2">
           <div class="col-md-6 section">
-            <p class="mb-1">Nama Mahasiswa</p>
-            <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['nama']); ?></p>
+            <p class="mb-1">Kelompok</p>
+            <p class="fw-bold"><?= htmlspecialchars($info_sidang['id_kelompok'] ?? '-') ?></p>
 
-            <p class="mb-1">Nomor Induk Mahasiswa</p>
-            <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['nim']); ?></p>
+            <p class="mb-1">Anggota</p>
+            <p class="fw-bold">
+              <?php
+              if (!empty($anggota)) {
+                foreach ($anggota as $nama) {
+                  echo htmlspecialchars($nama) . "<br>";
+                }
+              } else {
+                echo "-";
+              }
+              ?>
+            </p>
           </div>
-          <div class="col-md-6 section">
-            <p class="mb-1">Mata Kuliah</p>
-            <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['mata_kuliah']); ?></p>
 
-            <?php
-            if (isset($mahasiswa['judul_sidang'])) {
-            ?>
-              <p class="mb-1 mt-3">Judul Sidang</p>
-              <p class="fw-bold"><?php echo htmlspecialchars($mahasiswa['judul_sidang']); ?></p>
-            <?php
-            }
-            ?>
+          <div class="col-md-6 section">
+            <p class="mb-1">Judul Sidang</p>
+            <p class="fw-bold"><?= htmlspecialchars($info_sidang['judul'] ?? '-') ?></p>
+
+            <p class="mb-1">Jenis Sidang</p>
+            <p class="fw-bold"><?= htmlspecialchars($info_sidang['jenis_sidang'] ?? '-') ?></p>
+
+            <p class="mb-1 mt-3">Dosen Pembimbing</p>
+            <p class="fw-bold">
+              <?php
+              foreach ($detail_sidang as $dosen) {
+                if (strtolower($dosen['peran'] ?? '') === 'pembimbing') {
+                  echo htmlspecialchars($dosen['nama_dosen']);
+                  break;
+                }
+              }
+              ?>
+            </p>
           </div>
         </div>
       </div>
+
 
       <div class="card mb-3 dokumen-sidang position-relative">
         <h5 class="fw-semibold">Dokumen Sidang</h5>
