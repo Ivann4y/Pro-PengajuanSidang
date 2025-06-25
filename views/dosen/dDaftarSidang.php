@@ -1,5 +1,11 @@
 <?php
+
 session_start();
+if ($_SESSION['role'] !== 'dosen') {
+    header("Location: ../../index.php");
+    exit();
+}
+
 include "../../koneksi/koneksiAndrew.php";
 
 if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
@@ -7,64 +13,35 @@ if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); 
 // --- SIMULASI LOGIN ---
 $nomor_dosen_login = '1001'; 
 
-// --- LOGIKA FILTER & PAGINASI ---
+// --- LOGIKA FILTER & PAGINASI MENGGUNAKAN GET (URL) ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+// Pastikan halaman tidak pernah kurang dari 1
+$currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// --- BASE QUERY ---
+// --- BASE QUERY (Kembali ke kode asli Anda) ---
 $baseQuery = "
     WITH FullSidangData AS (
         SELECT
-            s.id_sidang,
-            s.id_kelompok,
-            s.judul,
-            s.jenis_sidang,
-            
-            (SELECT TOP 1 mk.nama_matkul
-             FROM [dbo].[Detail_Sidang] ds
-             JOIN [dbo].[MataKuliah] mk ON ds.id_matkul = mk.id_matkul
-             WHERE ds.id_sidang = s.id_sidang) AS nama_matkul,
-            
-            (SELECT TOP 1 d.nama_dosen
-             FROM [dbo].[Bimbingan] b
-             JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen
-             WHERE b.id_kelompok = s.id_kelompok AND d.isPembimbing = 0x01) AS pembimbing,
-             
-            (SELECT STRING_AGG(d.nama_dosen, ', ')
-             FROM [dbo].[Penjadwalan] p
-             JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen
-             WHERE p.id_sidang = s.id_sidang AND d.isPenguji = 0x01) AS penguji
-             
+            s.id_sidang, s.id_kelompok, s.judul, s.jenis_sidang,
+            (SELECT TOP 1 mk.nama_matkul FROM [dbo].[Detail_Sidang] ds JOIN [dbo].[MataKuliah] mk ON ds.id_matkul = mk.id_matkul WHERE ds.id_sidang = s.id_sidang) AS nama_matkul,
+            (SELECT TOP 1 d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = s.id_kelompok AND d.isPembimbing = 0x01) AS pembimbing,
+            (SELECT STRING_AGG(d.nama_dosen, ', ') FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = s.id_sidang AND d.isPenguji = 0x01) AS penguji
         FROM [dbo].[Sidang] s
     )
 ";
 
-// --- KLAUSA WHERE DINAMIS ---
+// --- KLAUSA WHERE DINAMIS (Kembali ke kode asli Anda) ---
 $whereConditions = [];
 $params = [];
 
-// 1. Kondisi WAJIB: Dosen yang login harus terlibat.
 $whereConditions[] = "
-    (
-        EXISTS (
-            SELECT 1 
-            FROM [dbo].[Bimbingan] b 
-            JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen
-            WHERE b.id_kelompok = FullSidangData.id_kelompok AND d.nomor_dosen = ?
-        )
-        OR
-        EXISTS (
-            SELECT 1 
-            FROM [dbo].[Penjadwalan] p 
-            WHERE p.id_sidang = FullSidangData.id_sidang AND p.nomor_dosen = ?
-        )
-    )";
+    (EXISTS (SELECT 1 FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = FullSidangData.id_kelompok AND d.nomor_dosen = ?)
+     OR EXISTS (SELECT 1 FROM [dbo].[Penjadwalan] p WHERE p.id_sidang = FullSidangData.id_sidang AND p.nomor_dosen = ?))";
 array_push($params, $nomor_dosen_login, $nomor_dosen_login);
 
-// 2. Kondisi OPSIONAL dari Dropdown Filter
 if ($filter === 'ta') {
     $whereConditions[] = "(judul = ? OR nama_matkul = ?)";
     array_push($params, 'Tugas Akhir', 'Tugas Akhir');
@@ -73,14 +50,12 @@ if ($filter === 'ta') {
     array_push($params, 'Tugas Akhir', 'Tugas Akhir');
 }
 
-// 3. Kondisi OPSIONAL dari Search Box
 if (!empty($search)) {
     $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR judul LIKE ? OR nama_matkul LIKE ? OR pembimbing LIKE ? OR penguji LIKE ?)";
     $likeParam = "%" . $search . "%";
     array_push($params, $likeParam, $likeParam, $likeParam, $likeParam, $likeParam);
 }
 
-// 4. Gabungkan semua kondisi
 $whereClause = " WHERE " . implode(' AND ', $whereConditions);
 
 // --- QUERY PENGHITUNGAN TOTAL DATA ---
@@ -89,6 +64,12 @@ $countResult = sqlsrv_query($conn, $countQuery, $params);
 if ($countResult === false) { die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true)); }
 $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
+if($totalPages == 0) $totalPages = 1;
+
+if ($currentPage > $totalPages) {
+    $currentPage = $totalPages;
+    $offset = ($currentPage - 1) * $rowsPerPage;
+}
 
 // --- QUERY UTAMA UNTUK MENGAMBIL DATA ---
 $mainQuery = $baseQuery . "SELECT id_sidang, id_kelompok, judul, jenis_sidang, nama_matkul, pembimbing, penguji FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
@@ -103,17 +84,15 @@ $nomor = $offset + 1;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dosen - Daftar Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDaftarSidang.css">
-    <title>Dosen - Daftar Sidang</title>
 </head>
 <body>
     <div id="NavSide">
@@ -144,11 +123,13 @@ $nomor = $offset + 1;
                                 <?php if ($filter === 'ta') echo 'Sidang TA'; elseif ($filter === 'semester') echo 'Sidang Semester'; else echo 'Semua'; ?>
                             </button>
                             <ul class="dropdown-menu rounded shadow">
-                                <li><a class="dropdown-item" href="?filter=all&page=1&search=<?= urlencode($search) ?>">Semua</a></li>
-                                <li><a class="dropdown-item" href="?filter=ta&page=1&search=<?= urlencode($search) ?>">Sidang TA</a></li>
-                                <li><a class="dropdown-item" href="?filter=semester&page=1&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
+                                <!-- Link filter sekarang membawa parameter search yang aktif -->
+                                <li><a class="dropdown-item" href="?filter=all&search=<?= urlencode($search) ?>">Semua</a></li>
+                                <li><a class="dropdown-item" href="?filter=ta&search=<?= urlencode($search) ?>">Sidang TA</a></li>
+                                <li><a class="dropdown-item" href="?filter=semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
                             </ul>
                         </div>
+                        <!-- Form search sekarang menggunakan method GET dan membawa parameter filter yang aktif -->
                         <form method="GET" action="" class="search-input-group ms-auto d-flex align-items-center">
                             <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -168,7 +149,7 @@ $nomor = $offset + 1;
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (sqlsrv_has_rows($result)): ?>
+                            <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
                                 <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                     <tr class="isiTabel jadiBiru">
                                         <td data-label="No"><?= $nomor++ ?></td>
@@ -183,7 +164,7 @@ $nomor = $offset + 1;
                                     </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
-                                <tr><td colspan="6" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>
+                                <tr><td colspan="5" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -211,13 +192,7 @@ $nomor = $offset + 1;
         </main>
     </div>
     <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div style="background-color: rgb(67, 54, 240);"><div class="modal-header"><h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1></div></div>
-                <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
-                <div class="modal-footer justify-content-center border-0"><button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button></div>
-            </div>
-        </div>
+        <div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div style="background-color: rgb(67, 54, 240);"><div class="modal-header"><h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1></div></div><div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div><div class="modal-footer justify-content-center border-0"><button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button></div></div></div>
     </div>
     <script src="/Projek/Pro-PengajuanSidang/assets/js/dDaftarSidang.js"></script>
 </body>
