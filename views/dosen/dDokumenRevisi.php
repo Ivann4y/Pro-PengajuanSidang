@@ -1,3 +1,78 @@
+<?php
+require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
+
+// ===================================================================================
+// BAGIAN 1: INISIALISASI
+// ===================================================================================
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("Error: ID Sidang tidak valid.");
+} 
+$id_sidang = (int)$_GET['id'];
+
+// Variabel default
+$judul = 'Belum ada judul';
+$ruangan = 'Belum Dijadwalkan';
+$tanggal_formatted = 'Belum Dijadwalkan';
+$jam = 'Belum Dijadwalkan';
+$dosenPembimbing = [];
+$dosenPenguji = [];
+
+// ===================================================================================
+// BAGIAN 2: PENGAMBILAN DATA
+// ### PERBAIKAN UTAMA: Logika disederhanakan, tidak lagi bergantung pada 'jenis_sidang' ###
+// ===================================================================================
+
+$sql_sidang = "SELECT Judul, id_kelompok, jenis_sidang FROM Sidang WHERE id_sidang = ?";
+$result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
+
+if ($result_sidang && $data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
+    // 1. Selalu ambil Judul dan Dosen
+    $judul = !empty($data_sidang['Judul']) ? $data_sidang['Judul'] : 'Belum ada judul';
+    $id_kelompok = $data_sidang['id_kelompok'];
+
+    // Ambil Dosen Pembimbing
+    if ($id_kelompok) {
+        $sql_pembimbing = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
+        $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, [$id_kelompok]);
+        if ($stmt_pembimbing) {
+            while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
+                $dosenPembimbing[] = $row['nama_dosen'];
+            }
+        }
+    }
+    
+    // Ambil Dosen Penguji
+    $sql_penguji = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
+    $stmt_penguji = sqlsrv_query($conn, $sql_penguji, [$id_sidang]);
+    if ($stmt_penguji) {
+        while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
+            $dosenPenguji[] = $row['nama_dosen'];
+        }
+    }
+} elseif ($data_sidang['jenis_sidang'] == 1) { // Asumsi 1 = Semester
+    // [FIX] Menggunakan TOP 1
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk
+                   JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul
+                   WHERE ds.id_sidang = ?";
+    $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
+    if ($stmt_matkul) {
+        $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC);
+    }
+
+    if ($data_matkul) {
+        $id_matkul = $data_matkul['id_matkul'];
+        $sql_pengampu = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
+        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
+        if ($stmt_pengampu) {
+            while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
+                $dosen_pengampu[] = $row['nama_dosen'];
+            }
+        }
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -11,532 +86,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../css/button-styles.css">
+    <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for pop-up notifications -->
 
-
-    <style>
-        /* --- General and Body Styles --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            background-color: #ffffff;
-        }
-
-        /* --- Base Sidebar, Main Content, and Info Card Styles --- */
-        #NavSide {
-            display: flex;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        .NavSide__sidebar {
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            bottom: 0px;
-            width: 280px;
-            border-radius: 1px;
-            box-sizing: border-box;
-            border-left: 5px solid #4B68FB;
-            background: #4B68FB;
-            overflow-x: hidden;
-            overflow-y: auto;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
-        }
-
-        .NavSide__sidebar-brand {
-            padding: 10% 5% 50% 5%;
-            text-align: center;
-        }
-
-        .NavSide__sidebar-brand img {
-            width: 90%;
-            max-width: 180px;
-            height: auto;
-            display: inline-block;
-            filter: brightness(0) invert(1);
-        }
-
-        .NavSide__sidebar-nav {
-            width: 100%;
-            padding-left: 0;
-            padding-top: 0;
-            list-style: none;
-            flex-grow: 1;
-        }
-
-        .NavSide__sidebar-item {
-            position: relative;
-            display: block;
-            width: 100%;
-            border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
-            margin-bottom: 15px;
-        }
-
-        .NavSide__sidebar-item a {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            text-decoration: none;
-            color: rgb(252, 252, 252);
-            padding: 5% 2%;
-            height: 60px;
-            box-sizing: border-box;
-        }
-
-        .NavSide__sidebar-title {
-            white-space: normal;
-            text-align: center;
-            line-height: 1.5;
-            color: white;
-        }
-
-        .NavSide__sidebar-item.NavSide__sidebar-item--active {
-            background: #ffffff;
-        }
-
-        .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: #4B68FB !important;
-        }
-
-        .NavSide__sidebar-item b:nth-child(1) {
-            position: absolute;
-            top: -20px;
-            height: 20px;
-            width: 100%;
-            background: rgb(255, 255, 255);
-            display: none;
-        }
-
-        .NavSide__sidebar-item b:nth-child(1)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-bottom-right-radius: 20px;
-            background: #4B68FB;
-            display: block;
-        }
-
-        .NavSide__sidebar-item b:nth-child(2) {
-            position: absolute;
-            bottom: -20px;
-            height: 20px;
-            width: 100%;
-            background: rgb(255, 255, 255);
-            display: none;
-        }
-
-        .NavSide__sidebar-item b:nth-child(2)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-top-right-radius: 20px;
-            background: #4B68FB;
-            display: block;
-        }
-
-        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
-        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
-            display: block;
-        }
-
-        .NavSide__main-content {
-            flex-grow: 1;
-            padding: 20px 20px 20px calc(20px + 1cm);
-            margin-left: 280px;
-            overflow-y: auto;
-            transition: margin-left 0.5s ease-in-out;
-        }
-
-        .NavSide__main-content h2 {
-            margin-bottom: 1.2cm;
-            font-weight: 700;
-        }
-
-        .info-card {
-            position: relative;
-            background: rgb(235, 238, 245);
-            border-radius: 30px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            overflow: hidden;
-            transition: background-color 0.4s ease;
-            margin-bottom: 1.2cm;
-        }
-
-        .info-card::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px;
-            height: 100%;
-            background-color: #4B68FB;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-            transition: width 0.4s ease;
-            z-index: 0;
-        }
-
-        .info-card:hover::after {
-            width: 100%;
-            border-radius: 20px;
-        }
-
-        .info-card .section {
-            flex: 0 0 48%;
-            z-index: 1;
-            color: #333;
-            transition: color 0.4s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .info-card:hover .section {
-            color: white;
-        }
-
-        .info-card .section .info-group {
-            margin-bottom: 1rem;
-        }
-
-        .info-card .section .info-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .info-card .section .label-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.25rem;
-            font-size: 1rem;
-        }
-
-        .info-card .section .label-row i {
-            margin-right: 10px;
-            color: #495057;
-            font-weight: 900;
-            transition: color 0.4s ease;
-            width: 20px;
-            text-align: center;
-        }
-
-        .info-card:hover .section .label-row i {
-            color: white;
-        }
-
-        .info-card .section .label-row .fw-bold {
-            font-weight: 600;
-            font-size: 1.05rem;
-        }
-
-        .info-card .section .value-row {
-            margin-left: 30px;
-            line-height: 1.5;
-            font-size: 0.95rem;
-            margin-bottom: 0;
-        }
-
-        /* --- Responsive Design Styles --- */
-        .NavSide__toggle {
-            display: none; 
-            position: fixed;
-            top: 15px;
-            left: 15px; 
-            width: 40px;
-            height: 40px;
-            z-index: 1100;
-            cursor: pointer;
-            transition: transform 0.5s ease-in-out; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .NavSide__toggle i.bi {
-            position: absolute;
-            font-size: 28px;
-            color: #4B68FB;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .NavSide__toggle .bi.close {
-            opacity: 0; 
-        }
-
-        .NavSide__toggle.active .bi.open {
-            opacity: 0; 
-        }
-
-        .NavSide__toggle.active .bi.close {
-            opacity: 1; 
-        }
-        
-        .NavSide__toggle.active {
-            transform: translateX(50vw); 
-        }
-
-        .NavSide__topbar {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color:rgb(56, 38, 38);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-            align-items: center;
-            padding: 0 15px;
-            justify-content: space-between;
-        }
-
-
-        /* Responsive styles for screens smaller than 700px */
-        @media (max-width: 700px) {
-            .NavSide__sidebar {
-                width: 50vw; 
-                transform: translateX(-100%);
-            }
-
-            .NavSide__sidebar.active {
-                transform: translateX(0); 
-            }
-
-            .NavSide__main-content {
-                margin-left: 0;
-                padding-top: 75px;
-            }
-
-            .NavSide__toggle {
-                display: flex; 
-            }
-
-            .NavSide__toggle i.bi.open {
-                display: block;
-            }
-
-            .NavSide__toggle.NavSide__toggle--active {
-                color: #4B68FB;
-            }
-
-            .NavSide__topbar {
-                display: flex;
-            }
-
-            .info-card .section {
-                flex: 0 0 100%;
-                margin-bottom: 1rem;
-            }
-
-            .info-card .section:last-child {
-                margin-bottom: 0;
-            }
-
-            .button-group-bottom {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 1.2cm;
-                margin-left: 0;
-                margin-right: 0; 
-            }
-            
-            #grup-aksi-dokumen {
-                flex-direction: row !important; 
-                justify-content: space-between !important;
-                gap: 0 !important; 
-                margin-top: 2.5rem;
-            }
-
-            #grup-aksi-dokumen .btn {
-                width: auto !important; 
-                max-width: none !important;
-                margin: 0 !important; 
-            }
-
-           
-            #grup-aksi-dokumen .button-group {
-                flex-direction: row !important; 
-                gap: 0.5rem !important; 
-                margin-top: 0 !important; 
-            }
-        }  
-        
-        .button-group-bottom {
-            margin-top: 0px; 
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        /* File Button Styles */
-        .file-button {
-            display: inline-flex;
-            align-items: center;
-            background-color: rgb(235, 238, 245);
-            border-radius: 20px;
-            padding: 12px 20px;
-            margin-right: 15px;
-            margin-bottom: 15px;
-            text-decoration: none;
-            color: #4B68FB;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
-        .file-button:hover {
-            background-color: #4B68FB;
-            color: white;
-            text-decoration: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .file-button i {
-            font-size: 1.25rem;
-            margin-right: 10px;
-            color: #4B68FB;
-            transition: color 0.2s ease;
-        }
-
-        .file-button:hover i {
-            color: white;
-        }
-
-        /* Penyesuaian responsif untuk tombol berkas */
-        @media (max-width: 576px) {
-            .file-button {
-                flex-basis: 100;
-                width: 100%;
-                display: flex;
-                margin-right: 0;
-            }
-        }
-
-        /* Modal Styles */
-        .modal-content {
-            border-radius: 20px;
-            border: none;
-        }
-
-        .modal-body {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .modal-title {
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .modal-buttons button {
-            min-width: 100px;
-        }
-
-        .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 1.2cm;
-            height: 45px;
-        }
-
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
-    
-        .custom-modal-content {
-            border-radius: 30px !important;
-            background-color: #f8f9fa;
-            border: none;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 20px; 
-        }
-
-        .custom-modal-header {
-            border-bottom: none;
-            justify-content: center;
-            padding: 0; 
-            margin-bottom: 20px; 
-        }
-
-        .custom-modal-body {
-            text-align: center;
-            padding: 0; 
-        }
-
-        #confirmationModal .btn {
-            width: auto !important;   
-            flex-grow: 0 !important;  
-        }
-    </style>
 </head>
 
 <body>
@@ -549,20 +101,26 @@
                 <!-- MENU "Detail Sidang" DIHAPPU S DARI SINI -->
                 <li class="NavSide__sidebar-item "> <!-- Evaluasi aktif -->
                     <b></b><b></b>
-                    <a href="dEvaluasiSidang.php">
+                    <a href="dEvaluasiSidang.php?id=<?= $id_sidang ?>">
                         <span class="fw-semibold">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="dDokumenRevisi.php">
+                    <a href="dDokumenRevisi.php?id=<?= $id_sidang ?>">
                         <span class="fw-semibold">Dokumen</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href='dNilaiAkhir.php'>
+                    <a href="dNilaiAkhir.php?id=<?= $id_sidang ?>">
                         <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="dDaftarSidang.php">
+                        <span class="NavSide__sidebar-title fw-semibold">Kembali</span>
                     </a>
                 </li>
             </ul>
@@ -574,77 +132,95 @@
                 <i class="bi bi-x-lg close"></i>
             </div>
         </div>
-       
+
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
 
-            <div class="info-card">
-                <div class="section">
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-file-invoice"></i>
-                            <span class="fw-bold">Judul Sidang</span>
-                        </div>
-                        <div class="value-row">Struktur Data</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-user-tie"></i>
-                            <span class="fw-bold">Dosen Pembimbing</span>
-                        </div>
-                        <div class="value-row">Dr. Rida Indah Fariani, S.Si, M.T.I</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-user-group"></i>
-                            <span class="fw-bold">Dosen Penguji</span>
-                        </div>
-                        <div class="value-row">
-                            Timotius Victory, S.Kom, M.Kom<br>
-                            Ning Ratwasturi, S.T, M.Eng
-                        </div>
-                    </div>
-                </div>
-                <div class="section">
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-door-open"></i>
-                            <span class="fw-bold">Ruangan</span>
-                        </div>
-                        <div class="value-row">CB101 - RPL 1B</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <span class="fw-bold">Tanggal</span>
-                        </div>
-                        <div class="value-row">Selasa, 22 April 2025</div>
-                    </div>
-                    <div class="info-group">
-                        <div class="label-row">
-                            <i class="fa-solid fa-clock"></i>
-                            <span class="fw-bold">Jam</span>
-                        </div>
-                        <div class="value-row">09.00 - 10.00</div>
-                    </div>
-                </div>
-            </div>
+
+<div class="info-card">
+    <div class="section">
+        <!-- Tampilan akan dirender berdasarkan kondisi IF -->
+        <?php if ($data_sidang['jenis_sidang'] == 0): ?>
+            
+            <p class="info-item"><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Belum ada judul'; ?></p>
+            
+            <p class="info-item"><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br><?php echo !empty($dosen_pembimbing['nama_dosen']) ? htmlspecialchars($dosen_pembimbing['nama_dosen']) : 'Belum ditentukan'; ?></p>
+            
+            <p class="info-item"><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>
+                <?php
+                if (!empty($dosen_penguji)) {
+                    echo implode('<br>', array_map('htmlspecialchars', $dosen_penguji));
+                } else {
+                    echo 'Belum ditentukan';
+                }
+                ?>
+            </p>
+
+        <?php elseif ($data_sidang['jenis_sidang'] == 1): ?>
+            
+            <!-- PERBAIKAN: Menambahkan class="info-item" di sini -->
+            <p class="info-item"><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'N/A'; ?></p>
+            
+            <!-- PERBAIKAN: Menambahkan class="info-item" di sini -->
+            <p class="info-item"><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>
+                <?php
+                if (!empty($dosen_pengampu)) {
+                    echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu));
+                } else {
+                    echo 'Belum ditentukan';
+                }
+                ?>
+            </p>
+
+        <?php else: ?>
+            <p class="info-item">Jenis sidang tidak dikenali.</p>
+        <?php endif; ?>
+    </div>
+    
+    <div class="section">
+        <!-- PERBAIKAN: Menambahkan class="info-item" di semua paragraf di bawah ini -->
+        <p class="info-item"><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br><?php echo !empty($data_jadwal['ruang_sidang']) ? htmlspecialchars($data_jadwal['ruang_sidang']) : 'Belum Dijadwalkan'; ?></p>
+
+        <p class="info-item"><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>
+            <?php
+            if (!empty($data_jadwal['tanggal_sidang']) && $data_jadwal['tanggal_sidang'] instanceof DateTime) {
+                setlocale(LC_TIME, 'id_ID.utf8');
+                echo $data_jadwal['tanggal_sidang']->format('l, d F Y');
+            } else {
+                echo 'Belum Dijadwalkan';
+            }
+            ?>
+        </p>
+
+        <p class="info-item"><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>
+            <?php
+            if (!empty($data_jadwal['jam_sidang']) && $data_jadwal['jam_sidang'] instanceof DateTime) {
+                echo $data_jadwal['jam_sidang']->format('H.i');
+                if (!empty($data_jadwal['jam_selesai']) && $data_jadwal['jam_selesai'] instanceof DateTime) {
+                    echo ' - ' . $data_jadwal['jam_selesai']->format('H.i');
+                }
+            } else {
+                echo 'Belum Dijadwalkan';
+            }
+            ?>
+        </p>
+    </div>
+</div>
 
             <h5>Dokumen Sidang</h5>
             <div class="file-buttons-container d-flex flex-wrap">
-                <a href="#" class="file-button">
-                    <i class="fa-solid fa-file-zipper"></i>
-                    dokumen_revisi_kel-1.zip
-                </a>
+                <?php if (!empty($data_revisi['dok_revisi'])): ?>
+                    <a href="../../uploadtesting/<?= htmlspecialchars($data_revisi['dok_revisi']) ?>" class="file-button" download>
+                        <i class="fa-solid fa-file-zipper"></i>
+                        <?= htmlspecialchars(basename($data_revisi['dok_revisi'])) ?>
+                    </a>
+                <?php else: ?>
+                    <p class="text-muted">Belum ada dokumen revisi yang diupload mahasiswa.</p>
+                <?php endif; ?>
             </div>
 
+
             <div class="button-group-bottom" id="grup-aksi-dokumen">
-                <button class="btn btn-kembali" onclick="location.href='dDaftarSidang.php'">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>               
                 <div class="button-group">
                     <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
                     <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
@@ -695,20 +271,6 @@
             });
         }
 
-        // // --- Sidebar Active Item Logic ---
-        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        // for (let i = 0; i < listItems.length; i++) {
-        //     listItems[i].onclick = function() {
-        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-        //             for (let j = 0; j < listItems.length; j++) {
-        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-        //             }
-        //             this.classList.add("NavSide__sidebar-item--active");
-        //         }
-        //     };
-        // }
-
-        
 
         // --- Modal Logic ---
         function showConfirmationModal(action) {
@@ -717,39 +279,74 @@
                 console.error('Modal HTML dengan id "confirmationModal" tidak ditemukan!');
                 return;
             }
-            
+
             const confirmationModal = new bootstrap.Modal(confirmationModalElement);
             const modalText = document.getElementById('confirmationModalText');
             const confirmButton = document.getElementById('btnConfirmAction');
 
             let actionText = action === 'Disetujui' ? 'menyetujui' : 'menolak';
-            
+
             modalText.innerText = `Apakah Anda yakin ingin ${actionText} dokumen revisi ini?`;
 
-            // Mengatasi duplikasi event listener
             const newConfirmButton = confirmButton.cloneNode(true);
             confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
 
             newConfirmButton.addEventListener('click', function() {
-                confirmationModal.hide(); 
-                
-                // Jeda sedikit agar transisi modal tertutup mulus
+                confirmationModal.hide();
+
                 setTimeout(function() {
-                    Swal.fire({
-                        title: 'Berhasil!',
-                        text: `Dokumen revisi telah berhasil ${action.toLowerCase()}.`,
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#4B68FB'
-                    });
-                }, 500); 
+                    if (action === 'Ditolak') {
+                        Swal.fire({
+                            title: 'Alasan Penolakan',
+                            input: 'textarea',
+                            inputLabel: 'Catatan:',
+                            inputPlaceholder: 'Masukan catatan di sini...',
+                            showCancelButton: true,
+                            confirmButtonText: 'Kirim',
+                            cancelButtonText: 'Batal',
+                            reverseButtons: true,
+                            customClass: {
+                                confirmButton: 'btn btn-setujui',
+                                cancelButton: 'btn btn-tolak'
+                            },
+                            inputValidator: (value) => {
+                                if (!value || value.trim() === '') {
+                                    return 'Alasan penolakan tidak boleh kosong!';
+                                }
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: `Dokumen revisi telah berhasil ditolak.`,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    // --- PERUBAHAN 1: NAVIGASI SETELAH TOLAK ---
+                                    window.location.href = 'dDaftarSidang.php';
+                                });
+
+                                console.log('Catatan Penolakan:', result.value);
+                            }
+                        });
+                    } else { // Jika aksi adalah 'Disetujui'
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: `Dokumen revisi telah berhasil disetujui.`,
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#4B68FB'
+                        }).then(() => {
+                            // --- PERUBAHAN 2: NAVIGASI SETELAH SETUJUI ---
+                            window.location.href = 'dNilaiAkhir.php';
+                        });
+                    }
+                }, 500);
             });
 
-            // Tampilkan modal konfirmasi
             confirmationModal.show();
         }
     </script>
-
 </body>
 
 </html>

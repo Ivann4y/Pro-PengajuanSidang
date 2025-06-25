@@ -4,12 +4,18 @@ $role = $_GET['role'] ?? 'guest';
 
 switch ($role) {
     case 'mahasiswa':
+        $tableNama = 'Mahasiswa';
+        $emailKolom = 'email'; 
         $judul = 'Lupa Kata Sandi Mahasiswa';
         break;
     case 'dosen':
+        $tableNama = 'Dosen';
+        $emailKolom = 'email';
         $judul = 'Lupa Kata Sandi Dosen';
         break;
     case 'admin':
+        $tableNama = 'Admin';
+        $emailKolom = 'email';
         $judul = 'Lupa Kata Sandi Admin';
         break;
     default:
@@ -246,7 +252,9 @@ switch ($role) {
                     <h2 class="fs-2 fw-bold text-center"><?= $judul ?></h2>
                     <label for="emailAstra" class="mt-3">Masukkan Email Politeknik Astra</label>
                     <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
-
+                    <input type="hidden" name="tableNama" value="<?= htmlspecialchars($tableNama) ?>">
+                    <input type="hidden" name="emailKolom" value="<?= htmlspecialchars($emailKolom) ?>">
+                    
                     <?php if ($error === 'empty'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Email harus diisi!</div>
