@@ -1,126 +1,95 @@
 <?php
-include '../../koneksi/koneksiAndrew.php'; // This now correctly includes your SQL Server connection
+// Start the session to get the logged-in user's ID
+session_start();
 
-// Get next ID
-$next_id = 1;
-// --- SQLSRV CHANGE: Use sqlsrv_query and sqlsrv_fetch_array ---
-$sql_id = "SELECT MAX(id_sidang) AS max_id FROM Sidang";
-$stmt_id = sqlsrv_query($conn, $sql_id);
-if ($stmt_id === false) {
-    die("Error getting max ID: " . print_r(sqlsrv_errors(), true));
+include '../../koneksi/koneksiAndrew.php'; // Your SQL Server connection
+
+$success_message = '';
+$error_message = '';
+
+// --- IMPORTANT ---
+// Assume the logged-in student's NIM is stored in the session.
+// You MUST set this variable after a successful login.
+// For this example, I'll hardcode it, but in your real app, it must come from the session.
+// $_SESSION['user_nim'] = '12345678'; // Example NIM
+if (!isset($_SESSION['user_nim'])) {
+    // For now, we will use a placeholder NIM. Replace '12345678' with a real NIM from your Mahasiswa table.
+    // die("Error: User is not logged in. Session 'user_nim' not set.");
+     $nim_mahasiswa_logged_in = '1000000001'; // <-- REPLACE WITH A REAL, EXISTING NIM FOR TESTING
+} else {
+    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
 }
-if ($row = sqlsrv_fetch_array($stmt_id, SQLSRV_FETCH_ASSOC)) {
-    // Check if the result is not NULL (for an empty table)
-    if ($row['max_id'] !== null) {
-        $next_id = $row['max_id'] + 1;
-    }
-}
-sqlsrv_free_stmt($stmt_id); // Free the statement resource
 
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
+
+    // --- DYNAMICALLY LOOK UP THE STUDENT'S GROUP ID (id_kelompok) ---
+    $id_kelompok = null;
+    
+    // *** FIX: Changed the query to use 'nim' which is a likely column name in Kelompok_Mahasiswa ***
+    // This query finds the group ID associated with the logged-in student's NIM.
+    $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?";
+    $params_kelompok = [$nim_mahasiswa_logged_in];
+    
+    $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
+
+    if ($stmt_kelompok === false) {
+        // Stop execution and show the exact database error.
+        die("Error fetching group ID: " . print_r(sqlsrv_errors(), true));
+    }
+    
+    // Fetch the result
+    if ($row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
+        $id_kelompok = $row['id_kelompok'];
+    }
+    sqlsrv_free_stmt($stmt_kelompok);
+
+    // If no group was found for the student, we can either stop or allow the submission with a NULL id_kelompok.
+    // Since your Sidang table allows NULL for id_kelompok, we will proceed.
+
+    // Get the rest of the form data
     $judul = $_POST['judul'];
-    $matkul = $_POST['matkul'];
-    $id_kelompok = 5001; // Should come from session
+    $jenis_sidang_name = $_POST['matkul']; // The NAME of the course, e.g., "Tugas Akhir"
     $aksi = $_POST['aksi'];
     $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
-    $waktu_pengumpulan = date('Y-m-d H:i:s');
     
-    // Handle file upload (This part is correct and does not need changes)
-    $dok_laporan = '';
-    $fileName = '';
-    
+    // Handle file upload
+    $dok_laporan_filename = null;
     if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['DokumenSidang'];
-        $fileName = $file['name'];
-        $fileTmpName = $file['tmp_name'];
-        
-        $uploadDir = '../../uploads/';
+        $uploadDir = '../../uploads/laporan/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
-        
-        $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
-        $newFileName = uniqid('', true) . '.' . $fileExt;
-        $uploadPath = $uploadDir . $newFileName;
-        
-        if (move_uploaded_file($fileTmpName, $uploadPath)) {
-            $dok_laporan = $uploadPath;
-        }
+        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $dok_laporan_filename = 'laporan_' . uniqid('', true) . '.' . $fileExt;
+        $uploadPath = $uploadDir . $dok_laporan_filename;
+        move_uploaded_file($file['tmp_name'], $uploadPath);
     }
 
-    // --- SQLSRV CHANGE: Use sqlsrv_prepare and sqlsrv_execute ---
-    // Insert into database
-    $sql = "INSERT INTO Sidang (
-        id_sidang,
-        judul, 
-        waktu_pengumpulan, 
-        dok_laporan, 
-        status_ajuan, 
-        jenis_sidang, 
-        id_kelompok
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    // Determine the 'jenis_sidang' bit value based on the course name
+    $jenis_sidang_bit = ($jenis_sidang_name == 'Tugas Akhir') ? 0 : 1;
+
+    // --- FINAL INSERT STATEMENT ---
+    $sql = "INSERT INTO dbo.Sidang (judul, waktu_pengumpulan, dok_laporan, status_ajuan, status_sidang, jenis_sidang, id_kelompok, dok_final) 
+            VALUES (?, GETDATE(), ?, ?, ?, ?, ?, NULL)";
     
-    // Create an array of parameters to bind
     $params = [
-        $next_id,
         $judul, 
-        $waktu_pengumpulan, 
-        $dok_laporan, 
+        $dok_laporan_filename,
         $status_ajuan, 
-        $matkul, 
-        $id_kelompok
+        0, // status_sidang (default)
+        $jenis_sidang_bit,
+        $id_kelompok // This will be the found ID or NULL if not found
     ];
     
-    // Prepare the statement. Parameters are passed here.
     $stmt = sqlsrv_prepare($conn, $sql, $params);
 
-    if ($stmt === false) {
-        // Handle preparation error
-        $error = "Error preparing statement: " . print_r(sqlsrv_errors(), true);
-        echo "<script>
-            Swal.fire({
-                title: 'Gagal menyiapkan data',
-                text: 'Terjadi kesalahan pada server. Silakan coba lagi.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-            });
-        </script>";
-        // You might want to log the full $error here for debugging
+    if ($stmt && sqlsrv_execute($stmt)) {
+        $success_message = ($status_ajuan == 1) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
     } else {
-        // Execute the statement
-        if (sqlsrv_execute($stmt)) {
-            $message = ($status_ajuan == 1) 
-                ? 'Pengajuan Berhasil Dikirim!' 
-                : 'Pengajuan Berhasil Disimpan!';
-            
-            echo "<script>
-                Swal.fire({
-                    title: '$message',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                }).then(() => {
-                    window.location.href = 'mPengajuan.php';
-                });
-            </script>";
-            exit;
-        } else {
-            // Handle execution error
-            $error = "Error executing statement: " . print_r(sqlsrv_errors(), true);
-            echo "<script>
-                Swal.fire({
-                    title: 'Gagal menyimpan data',
-                    text: 'Terjadi kesalahan pada server. Silakan coba lagi.',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                });
-            </script>";
-            // You might want to log the full $error here for debugging
-        }
+        $error_message = "Gagal menyimpan data. Detail: " . print_r(sqlsrv_errors(), true);
     }
 }
 ?>
@@ -215,22 +184,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               </label>
               <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo htmlspecialchars($judul); ?>" placeholder="Masukkan Judul Sidang" />
             </div>
-            <div class="mb-3">
-              <label for="matkul" class="form-label">Mata Kuliah<span class="text-danger">* </span></label>
-              <select class="forM form-select" id="matkul" name="matkul" required>
-                <option value="" selected disabled>Pilih Mata Kuliah</option>
+                        <div class="mb-3">
+              <label for="matkul" class="form-label">Mata Kuliah
+                <span class="text-danger">* </span>
+              </label>
+              <select class="forM form-select" id="matkul" name="matkul">
+                <option selected disabled>Pilih Mata Kuliah</option>
                 <?php
-                  $matkulDipilih = $_GET['matkul'] ?? '';
-
-                  $query = "SELECT nama_matkul FROM Matakuliah";
-                  $result = sqlsrv_query($conn, $query);
-
-                  while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-                      $nama = $row['nama_matkul'];
-                      $selected = ($nama == $matkulDipilih) ? 'selected' : '';
-                      echo "<option value=\"$nama\" $selected>$nama</option>";
+                  // Fetch all courses from the database to populate the dropdown
+                  $sql_matkul = "SELECT id_matkul, nama_matkul FROM dbo.MataKuliah ORDER BY nama_matkul ASC";
+                  $stmt_matkul = sqlsrv_query($conn, $sql_matkul);
+                  if ($stmt_matkul === false) {
+                      // Basic error handling
+                      echo '<option disabled>Error memuat mata kuliah</option>';
+                  } else {
+                      // Loop through the results and create an <option> for each one
+                      while ($matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC)) {
+                          echo '<option value="' . htmlspecialchars($matkul['id_matkul']) . '">' . htmlspecialchars($matkul['nama_matkul']) . '</option>';
+                      }
                   }
-                  ?>
+                  // Free the statement resource
+                  sqlsrv_free_stmt($stmt_matkul);
+                ?>
               </select>
             </div>
 

@@ -22,6 +22,11 @@
 // 
 //  VERSI PENDEK 
 
+
+// ad02
+//  echo password_hash('adm12345678', PASSWORD_DEFAULT);
+// 
+
 // a1
 // echo "\n";
 // echo password_hash('ap', PASSWORD_DEFAULT);
