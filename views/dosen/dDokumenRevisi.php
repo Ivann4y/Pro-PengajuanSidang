@@ -1,87 +1,52 @@
 <?php
-require "../../koneksi/koneksiAndrew.php";
+require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
-// 1. Ambil ID dari URL
+// ===================================================================================
+// BAGIAN 1: INISIALISASI
+// ===================================================================================
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid."); // Samakan juga pesan errornya
-}
+    die("Error: ID Sidang tidak valid.");
+} 
+$id_sidang = (int)$_GET['id'];
 
-$id_sidang = (int)$_GET['id']; // Ambil "id" dari URL
+// Variabel default
+$judul = 'Belum ada judul';
+$ruangan = 'Belum Dijadwalkan';
+$tanggal_formatted = 'Belum Dijadwalkan';
+$jam = 'Belum Dijadwalkan';
+$dosenPembimbing = [];
+$dosenPenguji = [];
 
-// Variabel penampung
-$data_nim = [];
-$nama_prodi = 'N/A';
-$data_sidang = [];
-$data_mahasiswa = [];
-$dosen_pembimbing = null;
-$dosen_penguji = [];
-$dosen_pengampu = [];
-$data_matkul = null;
+// ===================================================================================
+// BAGIAN 2: PENGAMBILAN DATA
+// ### PERBAIKAN UTAMA: Logika disederhanakan, tidak lagi bergantung pada 'jenis_sidang' ###
+// ===================================================================================
 
-// 2. Query utama dengan CAST untuk jenis_sidang
-$sql_utama = "SELECT 
-                s.id_sidang, s.judul, 
-                CASE 
-                    WHEN s.status_sidang = 1 THEN 'Disetujui'
-                    WHEN s.status_sidang = 0 THEN 'Ditolak'
-                    ELSE 'Menunggu'
-                END AS status_sidang_text, 
-                CAST(s.jenis_sidang AS INT) AS jenis_sidang, -- Mengubah binary ke integer
-                s.id_kelompok
-              FROM Sidang s
-              WHERE s.id_sidang = ?";
-$params_utama = array($id_sidang);
-$stmt_utama = sqlsrv_query($conn, $sql_utama, $params_utama);
-if ($stmt_utama === false) {
-    die("Error pada query utama: " . print_r(sqlsrv_errors(), true));
-}
-$data_sidang = sqlsrv_fetch_array($stmt_utama, SQLSRV_FETCH_ASSOC);
-if (!$data_sidang) {
-    die("Error: Data Sidang dengan ID $id_sidang tidak ditemukan.");
-}
+$sql_sidang = "SELECT Judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
+$result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
 
-// --- Query Terpisah untuk Jadwal (lebih aman dari NULL) ---
-$sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang, jam_selesai FROM Jadwal WHERE id_sidang = ?";
-$stmt_jadwal = sqlsrv_query($conn, $sql_jadwal, array($id_sidang));
-$data_jadwal = sqlsrv_fetch_array($stmt_jadwal, SQLSRV_FETCH_ASSOC);
-if (!$data_jadwal) {
-    $data_jadwal = [];
-} // Jika tidak ada jadwal, buat array kosong
+if ($result_sidang && $data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
+    // 1. Selalu ambil Judul dan Dosen
+    $judul = !empty($data_sidang['Judul']) ? $data_sidang['Judul'] : 'Belum ada judul';
+    $id_kelompok = $data_sidang['id_kelompok'];
 
-// 3. Query mahasiswa
-$id_kelompok = $data_sidang['id_kelompok'];
-$sql_mahasiswa = "SELECT m.prodi FROM Mahasiswa m
-                  JOIN Kelompok_Mahasiswa km ON m.nim = km.nim
-                  WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
-$params_mahasiswa = array($id_kelompok);
-$stmt_mahasiswa = sqlsrv_query($conn, $sql_mahasiswa, $params_mahasiswa);
-if ($stmt_mahasiswa === false) {
-    die("Error pada query mahasiswa: " . print_r(sqlsrv_errors(), true));
-}
-// Ambil nama prodi dari baris pertama, karena semua anggota kelompok prodinya sama
-if ($row = sqlsrv_fetch_array($stmt_mahasiswa, SQLSRV_FETCH_ASSOC)) {
-    $nama_prodi = $row['prodi'];
-}
-$nim_str = implode(', ', $data_nim);
-
-// 4. Logika kondisional
-if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
     // Ambil Dosen Pembimbing
-    $sql_pembimbing = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
-    $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, array($id_kelompok));
-    if ($stmt_pembimbing) {
-        $dosen_pembimbing = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC);
+    if ($id_kelompok) {
+        $sql_pembimbing = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
+        $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, [$id_kelompok]);
+        if ($stmt_pembimbing) {
+            while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
+                $dosenPembimbing[] = $row['nama_dosen'];
+            }
+        }
     }
-
+    
     // Ambil Dosen Penguji
-    $sql_penguji = "SELECT d.nama_dosen 
-                FROM Dosen d 
-                JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen 
-                WHERE p.id_sidang = ? AND TRIM(p.peran_dosen) = 'Penguji'";
-    $stmt_penguji = sqlsrv_query($conn, $sql_penguji, array($id_sidang));
+    $sql_penguji = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
+    $stmt_penguji = sqlsrv_query($conn, $sql_penguji, [$id_sidang]);
     if ($stmt_penguji) {
         while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
-            $dosen_penguji[] = $row['nama_dosen'];
+            $dosenPenguji[] = $row['nama_dosen'];
         }
     }
 } elseif ($data_sidang['jenis_sidang'] == 1) { // Asumsi 1 = Semester
@@ -105,13 +70,6 @@ if ($data_sidang['jenis_sidang'] == 0) { // Asumsi 0 = TA
         }
     }
 }
-
-// ambil dokumen revisi
-$sql_revisi = "SELECT dok_revisi FROM Detail_Sidang WHERE id_sidang = ?";
-$params_revisi = array($id_sidang);
-$stmt_revisi = sqlsrv_query($conn, $sql_revisi, $params_revisi);
-$data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
-$nama_file = $data_revisi['dok_revisi'] ?? '';
 ?>
 
 
@@ -179,75 +137,75 @@ $nama_file = $data_revisi['dok_revisi'] ?? '';
             <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
 
 
-            <div class="info-card">
-                <div class="section">
-                    <!-- Tampilan akan dirender berdasarkan kondisi IF -->
-                    <?php if ($data_sidang['jenis_sidang'] == 0): ?>
+<div class="info-card">
+    <div class="section">
+        <!-- Tampilan akan dirender berdasarkan kondisi IF -->
+        <?php if ($data_sidang['jenis_sidang'] == 0): ?>
+            
+            <p class="info-item"><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Belum ada judul'; ?></p>
+            
+            <p class="info-item"><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br><?php echo !empty($dosen_pembimbing['nama_dosen']) ? htmlspecialchars($dosen_pembimbing['nama_dosen']) : 'Belum ditentukan'; ?></p>
+            
+            <p class="info-item"><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>
+                <?php
+                if (!empty($dosen_penguji)) {
+                    echo implode('<br>', array_map('htmlspecialchars', $dosen_penguji));
+                } else {
+                    echo 'Belum ditentukan';
+                }
+                ?>
+            </p>
 
-                        <p class="info-item"><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Belum ada judul'; ?></p>
+        <?php elseif ($data_sidang['jenis_sidang'] == 1): ?>
+            
+            <!-- PERBAIKAN: Menambahkan class="info-item" di sini -->
+            <p class="info-item"><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'N/A'; ?></p>
+            
+            <!-- PERBAIKAN: Menambahkan class="info-item" di sini -->
+            <p class="info-item"><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>
+                <?php
+                if (!empty($dosen_pengampu)) {
+                    echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu));
+                } else {
+                    echo 'Belum ditentukan';
+                }
+                ?>
+            </p>
 
-                        <p class="info-item"><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br><?php echo !empty($dosen_pembimbing['nama_dosen']) ? htmlspecialchars($dosen_pembimbing['nama_dosen']) : 'Belum ditentukan'; ?></p>
+        <?php else: ?>
+            <p class="info-item">Jenis sidang tidak dikenali.</p>
+        <?php endif; ?>
+    </div>
+    
+    <div class="section">
+        <!-- PERBAIKAN: Menambahkan class="info-item" di semua paragraf di bawah ini -->
+        <p class="info-item"><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br><?php echo !empty($data_jadwal['ruang_sidang']) ? htmlspecialchars($data_jadwal['ruang_sidang']) : 'Belum Dijadwalkan'; ?></p>
 
-                        <p class="info-item"><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>
-                            <?php
-                            if (!empty($dosen_penguji)) {
-                                echo implode('<br>', array_map('htmlspecialchars', $dosen_penguji));
-                            } else {
-                                echo 'Belum ditentukan';
-                            }
-                            ?>
-                        </p>
+        <p class="info-item"><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>
+            <?php
+            if (!empty($data_jadwal['tanggal_sidang']) && $data_jadwal['tanggal_sidang'] instanceof DateTime) {
+                setlocale(LC_TIME, 'id_ID.utf8');
+                echo $data_jadwal['tanggal_sidang']->format('l, d F Y');
+            } else {
+                echo 'Belum Dijadwalkan';
+            }
+            ?>
+        </p>
 
-                    <?php elseif ($data_sidang['jenis_sidang'] == 1): ?>
-
-                        <!-- PERBAIKAN: Menambahkan class="info-item" di sini -->
-                        <p class="info-item"><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'N/A'; ?></p>
-
-                        <!-- PERBAIKAN: Menambahkan class="info-item" di sini -->
-                        <p class="info-item"><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>
-                            <?php
-                            if (!empty($dosen_pengampu)) {
-                                echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu));
-                            } else {
-                                echo 'Belum ditentukan';
-                            }
-                            ?>
-                        </p>
-
-                    <?php else: ?>
-                        <p class="info-item">Jenis sidang tidak dikenali.</p>
-                    <?php endif; ?>
-                </div>
-
-                <div class="section">
-                    <!-- PERBAIKAN: Menambahkan class="info-item" di semua paragraf di bawah ini -->
-                    <p class="info-item"><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br><?php echo !empty($data_jadwal['ruang_sidang']) ? htmlspecialchars($data_jadwal['ruang_sidang']) : 'Belum Dijadwalkan'; ?></p>
-
-                    <p class="info-item"><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>
-                        <?php
-                        if (!empty($data_jadwal['tanggal_sidang']) && $data_jadwal['tanggal_sidang'] instanceof DateTime) {
-                            setlocale(LC_TIME, 'id_ID.utf8');
-                            echo $data_jadwal['tanggal_sidang']->format('l, d F Y');
-                        } else {
-                            echo 'Belum Dijadwalkan';
-                        }
-                        ?>
-                    </p>
-
-                    <p class="info-item"><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>
-                        <?php
-                        if (!empty($data_jadwal['jam_sidang']) && $data_jadwal['jam_sidang'] instanceof DateTime) {
-                            echo $data_jadwal['jam_sidang']->format('H.i');
-                            if (!empty($data_jadwal['jam_selesai']) && $data_jadwal['jam_selesai'] instanceof DateTime) {
-                                echo ' - ' . $data_jadwal['jam_selesai']->format('H.i');
-                            }
-                        } else {
-                            echo 'Belum Dijadwalkan';
-                        }
-                        ?>
-                    </p>
-                </div>
-            </div>
+        <p class="info-item"><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>
+            <?php
+            if (!empty($data_jadwal['jam_sidang']) && $data_jadwal['jam_sidang'] instanceof DateTime) {
+                echo $data_jadwal['jam_sidang']->format('H.i');
+                if (!empty($data_jadwal['jam_selesai']) && $data_jadwal['jam_selesai'] instanceof DateTime) {
+                    echo ' - ' . $data_jadwal['jam_selesai']->format('H.i');
+                }
+            } else {
+                echo 'Belum Dijadwalkan';
+            }
+            ?>
+        </p>
+    </div>
+</div>
 
             <h5>Dokumen Sidang</h5>
             <div class="file-buttons-container d-flex flex-wrap">

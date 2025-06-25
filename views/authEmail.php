@@ -6,6 +6,8 @@ require_once '../function/cobamailer.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['emailAstra']);
     $role = $_POST['role'] ?? 'guest';
+    $tableNama = $_POST['tableNama'] ?? '';
+    $emailKolom = $_POST['emailKolom'] ?? 'email';
 
     // Validasi jika input kosong
     if (empty($email)) {
@@ -20,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Validasi email & role di database
-    $stmt = sqlsrv_query($conn, "SELECT * FROM users WHERE email=? AND role=?", [$email, $role]);
+    $stmt = sqlsrv_query($conn, "SELECT * FROM [dbo].[$tableNama] WHERE [$emailKolom]=? AND role=?", [$email, $role]);
     $user = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 
     if ($user) {
@@ -35,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result['success']) {
             $_SESSION['reset_email'] = $email;
             $_SESSION['reset_role'] = $role;
+            $_SESSION['reset_table'] = $tableNama;
             header("Location: lupaPassword.php?success=1&role=$role");
             exit();
         } else {

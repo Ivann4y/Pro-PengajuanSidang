@@ -1,68 +1,229 @@
-        table {
-            border-spacing:0 10px;border-collapse:separate;width:100%}
-            thead
-            {border-bottom:2px solid #000!important}
-            thead th{
-                padding:12px 15px;text-align:left}
-                
-                thead th:nth-child(1){
-                    text-align:center;width:5%}
-                    
-                    thead th:nth-child(2){
-                        width:15%}
-                        
-                        thead th:nth-child(3){
-                            width:25%}
-                            
-                            thead th:nth-child(4){
-                                width:20%}
-                                
-                                thead th:nth-child(5){
-                                    width:20%}
-                                    
-                                    thead th:nth-child(6){
-                                        text-align:center;width:15%}
-                                        
-                                        .isiTabel td{
-                                            padding:12px 15px;font-family:"Poppins",sans-serif;font-weight:400;vertical-align:middle}
-                                            
-                                            .isiTabel td:first-child{
-                                                border-radius:20px 0 0 20px;text-align:center}
-                                                
-                                                .isiTabel td:last-child{
-                                                    border-radius:0 20px 20px 0}
-                                                    
-                                                    .detail-btn{
-                                                        border:none!important;background-color:transparent!important;color:#4b68fb;padding:.25rem .5rem}
-                                                        .detail-btn:hover{
-                                                            opacity:.7
-                                                        }
-                                                        tr.jadiBiru:hover .detail-btn i{
-                                                            color:#fff!important}
+/* ================================================= */
+/* ===== GAYA UNTUK TAMPILAN DESKTOP (DEFAULT) ===== */
+/* ================================================= */
+table {
+    border-spacing: 0 10px;
+    border-collapse: separate;
+    width: 100%;
+}
+thead {
+    border-bottom: 2px solid #000 !important;
+}
+thead th {
+    padding: 12px 15px;
+    text-align: left;
+}
+thead th:nth-child(1) {
+    text-align: center;
+    width: 5%;
+}
+thead th:nth-child(2) {
+    width: 15%;
+}
+thead th:nth-child(3) {
+    width: 25%;
+}
+thead th:nth-child(4) {
+    width: 20%;
+}
+thead th:nth-child(5) {
+    width: 20%;
+}
+thead th:nth-child(6) {
+    text-align: center;
+    width: 15%;
+}
+.isiTabel td {
+    padding: 12px 15px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    vertical-align: middle;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Tambahkan transisi agar perubahan warna lebih halus */
+    transition: all 0.3s ease;
+}
+.isiTabel td:first-child {
+    border-radius: 10px 0 0 10px;
+    text-align: center;
+}
+.isiTabel td:last-child {
+    border-radius: 0 10px 10px 0;
+}
 
-                                                            .dashboard-header{
-                                                                display:flex;justify-content:space-between;align-items:center;padding:0 15px;margin-bottom:30px}
+/* ===== [START] KODE BARU UNTUK EFEK HOVER BIRU ===== */
+/* Aturan ini akan membuat seluruh sel di baris yang di-hover menjadi biru */
+.isiTabel:hover td {
+    background-color: #4b68fb;
+    color: #fff;
+    /* Optional: Memberi shadow biru agar terlihat lebih modern saat di-hover */
+    box-shadow: 0 4px 12px rgba(75, 104, 251, 0.35);
+}
 
-                                                                .dashboard-header .bodyHeading{
-                                                                    font-weight:700;font-size:40px;font-family:"Poppins",sans-serif;margin:0;color:#1a1a1a}
-                                                                    .search-input-group{
-                                                                        background-color:#f3f4f6;border-radius:.5rem;overflow:hidden;width:300px;margin-top:.19vh -1px;margin-right:1vh}
+/* Aturan ini memastikan tombol/ikon Aksi juga berubah warna menjadi putih */
+.isiTabel:hover .detail-btn {
+    color: #fff;
+}
+/* ===== [END] KODE BARU UNTUK EFEK HOVER BIRU ===== */
 
-                                                                        .search-input-group input.form-control{background-color:transparent;border:none;box-shadow:none;padding-left:1rem}
+.detail-btn {
+    border: none !important;
+    background-color: transparent !important;
+    color: #4b68fb;
+    padding: .25rem .5rem;
+    transition: opacity 0.3s ease; /* Menambahkan transisi pada tombol */
+}
+.detail-btn:hover {
+    opacity: .7;
+}
+tr.jadiBiru:hover .detail-btn i {
+    color: #fff !important;
+}
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    margin-bottom: 30px;
+}
+.dashboard-header .bodyHeading {
+    font-weight: 700;
+    font-size: 40px;
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    color: #1a1a1a;
+}
+.search-input-group {
+    background-color: #f3f4f6;
+    border-radius: .5rem;
+    overflow: hidden;
+    width: 300px;
+}
+.search-input-group input.form-control {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding-left: 1rem;
+}
+.search-input-group .input-group-text {
+    background-color: transparent;
+    border: none;
+    padding-right: 0;
+}
+.pagination-container {
+    margin-top: 2rem;
+}
+.pagination .page-item.active .page-link {
+    background-color: #4b68fb;
+    border-color: #4b68fb;
+    color: #fff;
+    z-index: 2;
+}
+.pagination .page-link {
+    color: #4b68fb;
+}
+.pagination .page-link:hover {
+    color: #2c45c9;
+}
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+}
 
-                                                                        .search-input-group .input-group-text{
-                                                                            background-color:transparent;border:none;padding-right:0}
+/* ========================================================== */
+/* ===== GAYA RESPONSIVE UNTUK TAMPILAN MOBILE (< 768px) ===== */
+/* ========================================================== */
 
-                                                                            .pagination-container{margin-top:2rem}
+@media screen and (max-width: 768px) {
+    /* Sembunyikan header tabel asli */
+    table thead {
+        display: none;
+    }
 
-                                                                        .pagination .page-item.active .page-link{
-                                                                            background-color:#4b68fb;border-color:#4b68fb;color:#fff;z-index:2}
+    /* Ubah perilaku tabel menjadi seperti blok */
+    table,
+    .isiTabel,
+    .isiTabel td {
+        display: block;
+        width: 100% !important;
+    }
 
-                                                                .pagination .page-link{
-                                                                    color:#4b68fb}
+    /* Hapus spasi antar baris tabel */
+    table {
+        border-spacing: 0;
+    }
 
-                                                    .pagination .page-link:hover{
-                                                        color:#2c45c9}
-                                                        
-                                                        .pagination .page-item.disabled .page-link{
-                                                            color:#6c757d}
+    /* Jadikan setiap baris (tr) sebagai kartu (card) */
+    .isiTabel {
+        margin-bottom: 20px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+    
+    /* ===== [START] PERBAIKAN HOVER DI MOBILE ===== */
+    /* Hapus efek hover biru di mobile karena interaksi hover tidak umum */
+    .isiTabel:hover td {
+        background-color: transparent;
+        color: inherit; /* Kembalikan ke warna teks asli */
+        box-shadow: none;
+    }
+    /* ===== [END] PERBAIKAN HOVER DI MOBILE ===== */
+
+    /* Atur ulang gaya sel (td) */
+    .isiTabel td {
+        padding: 12px 20px;
+        text-align: right;
+        position: relative;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: transparent; /* Hapus background td individu */
+        box-shadow: none; /* Hapus shadow td individu */
+    }
+
+    /* Hapus border-radius per sel */
+    .isiTabel td:first-child,
+    .isiTabel td:last-child {
+        border-radius: 0;
+    }
+
+    /* Hapus garis pemisah di item terakhir kartu */
+    .isiTabel td:last-child {
+        border-bottom: none;
+    }
+
+    /* Buat label dari atribut data-label */
+    .isiTabel td[data-label]::before {
+        content: attr(data-label);
+        font-weight: 600;
+        text-align: left;
+        margin-right: 1em;
+        color: #333;
+    }
+
+    /* Khusus untuk kolom Aksi, dorong tombol ke kanan tanpa label */
+    .isiTabel td[data-label="Aksi"] {
+        justify-content: flex-end;
+    }
+    .isiTabel td[data-label="Aksi"]::before {
+        display: none;
+    }
+    
+    /* Atur agar tombol Aksi di mobile tidak berubah warna saat hover */
+    tr.jadiBiru:hover .detail-btn i,
+    .isiTabel:hover .detail-btn {
+        color: #4b68fb !important;
+    }
+
+    /* Responsif untuk filter dan pencarian */
+    .container-fluid>.row:first-child>div {
+        flex-wrap: wrap;
+    }
+    .search-input-group {
+        width: 100%;
+        margin-left: 0 !important;
+        margin-top: 15px;
+    }
+}
