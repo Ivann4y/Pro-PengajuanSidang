@@ -22,7 +22,7 @@ $dosenPenguji = [];
 // ### PERBAIKAN UTAMA: Logika disederhanakan, tidak lagi bergantung pada 'jenis_sidang' ###
 // ===================================================================================
 
-$sql_sidang = "SELECT Judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
+$sql_sidang = "SELECT Judul, id_kelompok, jenis_sidang FROM Sidang WHERE id_sidang = ?";
 $result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
 
 if ($result_sidang && $data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
