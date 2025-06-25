@@ -1,131 +1,95 @@
 <?php
 // Start the session to get the logged-in user's ID
-session_start(); 
+session_start();
 
 include '../../koneksi/koneksiAndrew.php'; // Your SQL Server connection
 
+$success_message = '';
+$error_message = '';
+
 // --- IMPORTANT ---
-// Assume the logged-in student's ID is stored in the session.
+// Assume the logged-in student's NIM is stored in the session.
 // You MUST set this variable after a successful login.
 // For this example, I'll hardcode it, but in your real app, it must come from the session.
-// $_SESSION['mahasiswa_id'] = 123; // Example ID
-if (!isset($_SESSION['mahasiswa_id'])) {
-    die("Error: User is not logged in. Session 'mahasiswa_id' not set.");
+// $_SESSION['user_nim'] = '12345678'; // Example NIM
+if (!isset($_SESSION['user_nim'])) {
+    // For now, we will use a placeholder NIM. Replace '12345678' with a real NIM from your Mahasiswa table.
+    // die("Error: User is not logged in. Session 'user_nim' not set.");
+     $nim_mahasiswa_logged_in = '1000000001'; // <-- REPLACE WITH A REAL, EXISTING NIM FOR TESTING
+} else {
+    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
 }
-$id_mahasiswa_logged_in = $_SESSION['mahasiswa_id'];
 
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // --- CHANGE 1: LOOK UP id_kelompok DYNAMICALLY ---
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
+
+    // --- DYNAMICALLY LOOK UP THE STUDENT'S GROUP ID (id_kelompok) ---
     $id_kelompok = null;
-    $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE id_mahasiswa = ?";
-    $params_kelompok = [$id_mahasiswa_logged_in];
+    
+    // *** FIX: Changed the query to use 'nim' which is a likely column name in Kelompok_Mahasiswa ***
+    // This query finds the group ID associated with the logged-in student's NIM.
+    $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?";
+    $params_kelompok = [$nim_mahasiswa_logged_in];
+    
     $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
 
     if ($stmt_kelompok === false) {
+        // Stop execution and show the exact database error.
         die("Error fetching group ID: " . print_r(sqlsrv_errors(), true));
     }
+    
+    // Fetch the result
     if ($row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
         $id_kelompok = $row['id_kelompok'];
     }
     sqlsrv_free_stmt($stmt_kelompok);
 
-    // If no group was found for the student, stop execution.
-    if ($id_kelompok === null) {
-        die("Fatal Error: Could not find a 'kelompok' (group) for the logged-in student.");
-    }
-    
-    // Get form data
+    // If no group was found for the student, we can either stop or allow the submission with a NULL id_kelompok.
+    // Since your Sidang table allows NULL for id_kelompok, we will proceed.
+
+    // Get the rest of the form data
     $judul = $_POST['judul'];
-    $jenis_sidang_id = $_POST['matkul']; // This is now an ID from the dropdown
+    $jenis_sidang_name = $_POST['matkul']; // The NAME of the course, e.g., "Tugas Akhir"
     $aksi = $_POST['aksi'];
     $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
-    $waktu_pengumpulan = date('Y-m-d H:i:s');
     
     // Handle file upload
-    $dok_laporan_filename = null; // Store only the filename
+    $dok_laporan_filename = null;
     if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['DokumenSidang'];
-        $uploadDir = '../../uploads/';
+        $uploadDir = '../../uploads/laporan/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
         $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
-        // --- CHANGE 2: STORE ONLY THE FILENAME, NOT THE FULL PATH ---
         $dok_laporan_filename = 'laporan_' . uniqid('', true) . '.' . $fileExt;
         $uploadPath = $uploadDir . $dok_laporan_filename;
-        
         move_uploaded_file($file['tmp_name'], $uploadPath);
     }
 
-    // --- CHANGE 3: MODIFIED INSERT STATEMENT ---
-    // We removed `id_sidang` because the database will generate it (IDENTITY column).
-    $sql = "INSERT INTO Sidang (
-        judul, 
-        waktu_pengumpulan, 
-        dok_laporan, 
-        status_ajuan, 
-        jenis_sidang, 
-        id_kelompok
-    ) VALUES (?, ?, ?, ?, ?, ?)";
+    // Determine the 'jenis_sidang' bit value based on the course name
+    $jenis_sidang_bit = ($jenis_sidang_name == 'Tugas Akhir') ? 0 : 1;
+
+    // --- FINAL INSERT STATEMENT ---
+    $sql = "INSERT INTO dbo.Sidang (judul, waktu_pengumpulan, dok_laporan, status_ajuan, status_sidang, jenis_sidang, id_kelompok, dok_final) 
+            VALUES (?, GETDATE(), ?, ?, ?, ?, ?, NULL)";
     
-    // Create an array of parameters to bind
     $params = [
         $judul, 
-        $waktu_pengumpulan, 
-        $dok_laporan_filename, // Use the filename
+        $dok_laporan_filename,
         $status_ajuan, 
-        $jenis_sidang_id,    // Use the ID from the dropdown
-        $id_kelompok         // Use the looked-up group ID
+        0, // status_sidang (default)
+        $jenis_sidang_bit,
+        $id_kelompok // This will be the found ID or NULL if not found
     ];
     
     $stmt = sqlsrv_prepare($conn, $sql, $params);
 
-    if ($stmt) {
-        if (sqlsrv_execute($stmt)) {
-            $message = ($status_ajuan == 1) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
-            echo "<script>
-                Swal.fire({
-                    title: '$message',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                }).then(() => {
-                    window.location.href = 'mPengajuan.php';
-                });
-            </script>";
-            exit;
-        } else {
-            // More detailed error for debugging
-            $errors = sqlsrv_errors();
-            $errorMessage = "Gagal menyimpan data. Error: " . $errors[0]['message'];
-            error_log($errorMessage); // Log error to server logs
-
-            echo "<script>
-                Swal.fire({
-                    title: 'Gagal menyimpan data',
-                    text: 'Terjadi kesalahan pada server. Silakan coba lagi. Cek log untuk detail.',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                });
-            </script>";
-        }
+    if ($stmt && sqlsrv_execute($stmt)) {
+        $success_message = ($status_ajuan == 1) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
     } else {
-         $errors = sqlsrv_errors();
-         $errorMessage = "Gagal menyiapkan statement. Error: " . $errors[0]['message'];
-         error_log($errorMessage); // Log error to server logs
-
-         echo "<script>
-            Swal.fire({
-                title: 'Gagal menyiapkan data',
-                text: 'Terjadi kesalahan pada server. Silakan coba lagi.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-            });
-        </script>";
+        $error_message = "Gagal menyimpan data. Detail: " . print_r(sqlsrv_errors(), true);
     }
 }
 ?>
