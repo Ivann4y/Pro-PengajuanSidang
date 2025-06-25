@@ -2,7 +2,7 @@
 require "../../koneksi/koneksiAndrew.php";
 
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Dosen') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     header('Location: ../../index.php');
     exit();
 }
@@ -152,7 +152,6 @@ $role = "dosen";
             text-decoration: none;
             font-family: "Poppins", sans-serif;
             color: white;
-            /* Default text color for all buttons */
         }
 
         .back-button-container {
@@ -174,7 +173,7 @@ $role = "dosen";
             .fullscreen {
                 flex-direction: column;
                 height: auto;
-                width: 100vw;
+                width: 100%;
             }
 
             .bgBiru {
@@ -188,16 +187,6 @@ $role = "dosen";
                 flex-direction: column;
                 align-items: center;
             }
-
-            /* .bgBiru img.background-awan {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                z-index: -1;
-            } */
 
             .bgBiru img.background-awan {
                 position: absolute;
@@ -214,7 +203,7 @@ $role = "dosen";
             }
 
             .log {
-                width: 90%;
+                width: 100%;
                 height: auto;
                 background-color: #ffffff;
                 border-radius: 8vw 8vw 0 0;
@@ -229,27 +218,16 @@ $role = "dosen";
             }
 
             #carouselExampleAutoplaying {
-                width: 200%;
-                height: 50%;
-                max-width: 100%;
-                max-height: 100%;
+                width: 100% !important;
+                height: 100% !important;
                 border-radius: 50%;
-                /* overflow: hidden; */
-                /* margin: 3vh auto; */
                 position: relative;
                 z-index: 2;
             }
 
-            .carousel-inner,
-            .carousel-item {
-                width: 100%;
-                height: 100%;
-            }
-
             .carousel-item img {
-                width: 200%;
-                height: 80%;
-                object-fit: cover;
+                width: 100% !important;
+                height: 100% !important;
             }
 
             .log .col-md-7,
@@ -272,7 +250,7 @@ $role = "dosen";
             }
 
             .icon-circle {
-                margin-right: 10% !important;
+                margin-right: 5% !important;
             }
         }
     </style>

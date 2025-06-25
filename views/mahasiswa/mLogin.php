@@ -3,7 +3,7 @@
 require "../../koneksi/koneksiAndrew.php";
 
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Mahasiswa') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     header('Location: ../../index.php');
     exit();
 }
@@ -154,7 +154,6 @@ $role = "mahasiswa";
             text-decoration: none;
             font-family: "Poppins", sans-serif;
             color: white;
-            /* Default text color for all buttons */
         }
 
         .back-button-container {
@@ -172,11 +171,11 @@ $role = "mahasiswa";
             color: white;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 1024px) {
             .fullscreen {
                 flex-direction: column;
                 height: auto;
-                width: 100vw;
+                width: 100%;
             }
 
             .bgBiru {
@@ -190,16 +189,6 @@ $role = "mahasiswa";
                 flex-direction: column;
                 align-items: center;
             }
-
-            /* .bgBiru img.background-awan {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                z-index: -1;
-            } */
 
             .bgBiru img.background-awan {
                 position: absolute;
@@ -216,7 +205,7 @@ $role = "mahasiswa";
             }
 
             .log {
-                width: 90%;
+                width: 100%;
                 height: auto;
                 background-color: #ffffff;
                 border-radius: 8vw 8vw 0 0;
@@ -231,27 +220,16 @@ $role = "mahasiswa";
             }
 
             #carouselExampleAutoplaying {
-                width: 200%;
-                height: 50%;
-                max-width: 100%;
-                max-height: 100%;
+                width: 80% !important;
+                height: 100% !important;
                 border-radius: 50%;
-                /* overflow: hidden; */
-                /* margin: 3vh auto; */
                 position: relative;
                 z-index: 2;
             }
 
-            .carousel-inner,
-            .carousel-item {
-                width: 100%;
-                height: 100%;
-            }
-
             .carousel-item img {
-                width: 200%;
-                height: 80%;
-                object-fit: cover;
+                width: 90% !important;
+                height: 100% !important;
             }
 
             .log .col-md-7,
@@ -265,16 +243,110 @@ $role = "mahasiswa";
 
             .back-button-container {
                 margin-top: 3vh !important;
+                margin-left: 12vw !important;
             }
 
             .btn-kembali {
-                background-color: #f0f0f0;
+                background-color: #4B68FB;
                 width: 85% !important;
-                color: #333;
+                color: white;
             }
 
             .icon-circle {
-                margin-right: 10% !important;
+                margin-right: 5% !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            html,
+            body {
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+
+            .fullscreen {
+                flex-direction: column;
+                height: auto;
+                width: 100%;
+            }
+
+            .bgBiru {
+                width: 100%;
+                height: auto;
+                padding: 5vh 5vw;
+                box-sizing: border-box;
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .bgBiru img.background-awan {
+                position: absolute;
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover;
+            }
+
+            .bgBiru .position-absolute {
+                position: absolute;
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover;
+            }
+
+            .log {
+                width: 100%;
+                height: auto;
+                background-color: #ffffff;
+                border-radius: 8vw 8vw 0 0;
+                margin-top: -5vh;
+                z-index: 10;
+                padding: 6vh 5vw;
+                margin: auto;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #carouselExampleAutoplaying {
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 50%;
+                position: relative;
+                z-index: 2;
+            }
+
+            .carousel-item img {
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            .log .col-md-7,
+            form {
+                width: 85%;
+                max-width: 100%;
+                padding: 0;
+                margin: auto;
+            }
+
+            .back-button-container {
+                padding-top: 3vh !important;
+                /* margin-top: 3vh !important; */
+                margin: auto !important;
+            }
+
+            .btn-kembali {
+                background-color: #4B68FB;
+                width: 85% !important;
+                color: white;
+            }
+
+            .icon-circle {
+                margin-right: 5% !important;
             }
         }
     </style>

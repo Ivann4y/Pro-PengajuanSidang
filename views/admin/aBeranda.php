@@ -39,7 +39,6 @@ if ($_SESSION['role'] !== 'admin') {
             align-items: center;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-
         }
 
         .penjadwalan-status-card:hover {

@@ -1,5 +1,8 @@
 <?php
 include '../../koneksi/koneksiAndrew.php';
+?>
+
+<?php
 
 
 ?>
@@ -165,6 +168,7 @@ include '../../koneksi/koneksiAndrew.php';
       width: 100%;
       margin-left: 0;
     }
+
 
     .form-control {
       background-color: rgb(235, 238, 245);
@@ -498,20 +502,6 @@ include '../../koneksi/koneksiAndrew.php';
             </div>
         </div>
 
-
-        <!-- Baris Tombol Kembali saja -->
-        <div class="row mt-5 justify-content-between">
-          <div class="col-auto">
-            <button class="btn btn-kembali" onclick="pindahKeHalamanDaftarSidang()">
-              <span class="icon-circle">
-                <i class="fa-solid fa-arrow-left"></i>
-              </span>
-              Kembali
-            </button>
-          </div>
-          <!-- Tombol Kirim dihapus -->
-        </div>
-      </div> <!-- akhir container-fluid -->
     </main>
   </div>
 
