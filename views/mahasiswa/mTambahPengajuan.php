@@ -1,56 +1,38 @@
 <?php
-// Start the session to get the logged-in user's ID
 session_start();
+include '../../koneksi/koneksiAndrew.php'; // Only include once
 
-include '../../koneksi/koneksiAndrew.php'; // Your SQL Server connection
+// Initialize messages
+$success_message = $_SESSION['success_message'] ?? '';
+$error_message = $_SESSION['error_message'] ?? '';
 
-$success_message = '';
-$error_message = '';
+// Clear messages after reading
+unset($_SESSION['success_message']);
+unset($_SESSION['error_message']);
 
-// --- IMPORTANT ---
-// Assume the logged-in student's NIM is stored in the session.
-// You MUST set this variable after a successful login.
-// For this example, I'll hardcode it, but in your real app, it must come from the session.
-// $_SESSION['user_nim'] = '12345678'; // Example NIM
-if (!isset($_SESSION['user_nim'])) {
-    // For now, we will use a placeholder NIM. Replace '12345678' with a real NIM from your Mahasiswa table.
-    // die("Error: User is not logged in. Session 'user_nim' not set.");
-     $nim_mahasiswa_logged_in = '1000000001'; // <-- REPLACE WITH A REAL, EXISTING NIM FOR TESTING
-} else {
-    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
-}
-
+// Hardcoded NIM for testing (remove in production)
+$nim_mahasiswa_logged_in = '1000000001'; 
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
-
-    // --- DYNAMICALLY LOOK UP THE STUDENT'S GROUP ID (id_kelompok) ---
+    // Look up student's group ID
     $id_kelompok = null;
-    
-    // *** FIX: Changed the query to use 'nim' which is a likely column name in Kelompok_Mahasiswa ***
-    // This query finds the group ID associated with the logged-in student's NIM.
     $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?";
     $params_kelompok = [$nim_mahasiswa_logged_in];
-    
     $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
 
     if ($stmt_kelompok === false) {
-        // Stop execution and show the exact database error.
         die("Error fetching group ID: " . print_r(sqlsrv_errors(), true));
     }
     
-    // Fetch the result
     if ($row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
         $id_kelompok = $row['id_kelompok'];
     }
     sqlsrv_free_stmt($stmt_kelompok);
 
-    // If no group was found for the student, we can either stop or allow the submission with a NULL id_kelompok.
-    // Since your Sidang table allows NULL for id_kelompok, we will proceed.
-
-    // Get the rest of the form data
+    // Get form data
     $judul = $_POST['judul'];
-    $jenis_sidang_name = $_POST['matkul']; // The NAME of the course, e.g., "Tugas Akhir"
+    $jenis_sidang_name = $_POST['matkul'];
     $aksi = $_POST['aksi'];
     $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
     
@@ -59,19 +41,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
     if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['DokumenSidang'];
         $uploadDir = '../../uploads/laporan/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
         $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
         $dok_laporan_filename = 'laporan_' . uniqid('', true) . '.' . $fileExt;
         $uploadPath = $uploadDir . $dok_laporan_filename;
         move_uploaded_file($file['tmp_name'], $uploadPath);
     }
 
-    // Determine the 'jenis_sidang' bit value based on the course name
+    // Determine jenis_sidang
     $jenis_sidang_bit = ($jenis_sidang_name == 'Tugas Akhir') ? 0 : 1;
 
-    // --- FINAL INSERT STATEMENT ---
+    // Prepare SQL statement
     $sql = "INSERT INTO dbo.Sidang (judul, waktu_pengumpulan, dok_laporan, status_ajuan, status_sidang, jenis_sidang, id_kelompok, dok_final) 
             VALUES (?, GETDATE(), ?, ?, ?, ?, ?, NULL)";
     
@@ -81,17 +61,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $status_ajuan, 
         0, // status_sidang (default)
         $jenis_sidang_bit,
-        $id_kelompok // This will be the found ID or NULL if not found
+        $id_kelompok
     ];
     
     $stmt = sqlsrv_prepare($conn, $sql, $params);
 
+    // Execute and handle result
     if ($stmt && sqlsrv_execute($stmt)) {
-        $success_message = ($status_ajuan == 1) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
+        $_SESSION['success_message'] = ($status_ajuan == 1) 
+            ? 'Pengajuan Berhasil Dikirim!' 
+            : 'Pengajuan Berhasil Disimpan!';
     } else {
-        $error_message = "Gagal menyimpan data. Detail: " . print_r(sqlsrv_errors(), true);
+        $_SESSION['error_message'] = "Gagal menyimpan data. Detail: " . print_r(sqlsrv_errors(), true);
     }
+    
+    // Redirect to avoid form resubmission
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -299,6 +288,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Display success/error messages
+    document.addEventListener('DOMContentLoaded', function() {
+        <?php if ($success_message): ?>
+            Swal.fire({
+                title: 'Berhasil!',
+                text: '<?php echo $success_message; ?>',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            });
+        <?php endif; ?>
+
+        <?php if ($error_message): ?>
+            Swal.fire({
+                title: 'Gagal!',
+                text: '<?php echo addslashes($error_message); ?>',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            });
+        <?php endif; ?>
+    });
     // Sidebar Toggle Logic 
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
@@ -420,6 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
       return true;
     }
+
   </script>
 </body>
 </html>
