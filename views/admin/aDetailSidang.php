@@ -82,23 +82,55 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
             }
         }
     }
-} elseif ($data_sidang['jenis_sidang'] == 1) { // Sidang Semester
-    // ... (Logika untuk sidang semester tidak perlu diubah) ...
-    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul WHERE ds.id_sidang = ?";
+} elseif ($data_sidang['jenis_sidang'] == 1) { 
+    // [LANGKAH 1] Ambil id_matkul dari detail sidang.
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul 
+                   FROM MataKuliah mk 
+                   JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul 
+                   WHERE ds.id_sidang = ?";
     $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
-    if ($stmt_matkul) { $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); }
+    if ($stmt_matkul) { 
+        $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); 
+    }
 
+    // [LANGKAH 2] Jika mata kuliah ditemukan, cari dosen pengampunya dengan benar.
     if ($data_matkul) {
+        // Ambil variabel yang dibutuhkan dari data yang sudah ada
         $id_matkul = $data_matkul['id_matkul'];
-        $sql_pengampu = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
-        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
-        if ($stmt_pengampu) {
-            while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
-                $dosen_pengampu[] = $row['nama_dosen'];
-            }
+        $id_kelompok = $data_sidang['id_kelompok']; // Kita sudah punya id_kelompok
+
+        // [PERBAIKAN UTAMA] Query yang benar untuk mengambil dosen pengampu
+        $sql_pengampu = "SELECT d.nama_dosen 
+            FROM Dosen d 
+            JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen 
+            WHERE 
+                -- Filter 1: Mencocokkan mata kuliah dengan placeholder
+                pk.id_matkul = ?
+                
+                -- Filter 2: Mencocokkan kelas mahasiswa dengan subquery dan placeholder
+                AND pk.id_kelas = (
+                    SELECT TOP 1 km.id_kelas
+                    FROM Kelompok_Mahasiswa kpm
+                    JOIN Kelas_Mahasiswa km ON kpm.nim = km.nim
+                    WHERE kpm.id_kelompok = ?
+                )
+        ";
+
+        // [PERBAIKAN PARAMETER] Berikan DUA parameter yang dibutuhkan: id_matkul dan id_kelompok
+        $params_pengampu = array($id_matkul, $id_kelompok);
+        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, $params_pengampu);
+
+        if ($stmt_pengampu === false) {
+            die("Error pada query pengampu: " . print_r(sqlsrv_errors(), true));
+        }
+        
+        // Ambil semua nama dosen dan masukkan ke array
+        while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
+            $dosen_pengampu[] = $row['nama_dosen'];
         }
     }
 }
+
 
 // Ambil daftar semua dosen untuk autocomplete
 $dosen_list_penguji = [];

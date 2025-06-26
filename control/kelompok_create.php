@@ -43,6 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sql_bimbingan = "INSERT INTO Bimbingan (nomor_dosen, id_kelompok, isPembimbing) VALUES (?, ?, ?)";
     sqlsrv_query($conn, $sql_bimbingan, [$nomor_dosen, $id_kelompok, 1]);
 
+    // 4. Update Dosen's isPembimbing status to 1
+    $sql_update_dosen = "UPDATE Dosen SET isPembimbing = 1 WHERE nomor_dosen = ?";
+    $stmt_update_dosen = sqlsrv_query($conn, $sql_update_dosen, [$nomor_dosen]);
+    
+    if ($stmt_update_dosen === false) {
+        echo json_encode(['success' => false, 'message' => 'Gagal mengupdate status pembimbing dosen']);
+        exit();
+    }
+
     echo json_encode(['success' => true, 'message' => 'Kelompok berhasil dibuat!']);
     exit();
 }

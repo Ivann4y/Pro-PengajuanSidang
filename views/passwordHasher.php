@@ -10,7 +10,7 @@
 
 // echo "Mahasiswa";
 
-// echo password_hash('mp12345678', PASSWORD_DEFAULT);
+// echo password_hash('mhs1', PASSWORD_DEFAULT);
 // // $2y$10$cudHdtyr1eIpuWHUE7R22uMXYDf/a6jUaTTZk2QIO/W7hywYeJosy
 
 // echo "\nDosen\n";
