@@ -2,24 +2,20 @@
 
 session_start();
 
-require "../../koneksi/koneksiAndrew.php"; // Adjust this path if your koneksi file is elsewhere
+require "../../koneksi/koneksiAndrew.php";
 
-// TINGKATKAN LAPORAN ERROR UNTUK DEBUGGING - Hapus baris ini setelah selesai debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 $id_sidang = null;
 
-// Get $id_sidang from session only
 if (isset($_SESSION['selected_sidang_id']) && !empty($_SESSION['selected_sidang_id'])) {
     $id_sidang = $_SESSION['selected_sidang_id'];
 } else {
-    // Redirect if no sidang ID is selected
     header("Location: mSidang.php");
     exit();
 }
 
-// Initialize all variables to be used
 $data_sidang = [];
 $data_jadwal = [];
 $nama_prodi = 'N/A';
@@ -27,17 +23,16 @@ $dosen_pembimbing = 'N/A';
 $dosen_penguji = [];
 $data_matkul = null;
 $dosen_pengampu = [];
-$dok_laporan = null; // Initialize for document content
-$status_ajuan = null; // Initialize for status
+$dok_laporan = null;
+$status_ajuan = null;
 
-// Main query to get Sidang details, including document and status
 $sql_utama = "SELECT
                 s.id_sidang,
                 s.judul,
                 CAST(s.jenis_sidang AS INT) AS jenis_sidang,
                 s.id_kelompok,
-                s.dok_laporan,    -- Fetch the document content (VARBINARY(MAX))
-                s.status_ajuan    -- Fetch the submission status
+                s.dok_laporan,
+                s.status_ajuan
               FROM Sidang s
               WHERE s.id_sidang = ?";
 
@@ -54,15 +49,13 @@ $data_sidang = sqlsrv_fetch_array($stmt_utama, SQLSRV_FETCH_ASSOC);
 
 if (!$data_sidang) {
     echo "Detail sidang tidak ditemukan untuk ID: " . htmlspecialchars($id_sidang) . ".";
-    header("Location: mSidang.php"); // Redirect if sidang not found
+    header("Location: mSidang.php");
     exit();
 }
 
-// Assign fetched values for document and status
 $dok_laporan = $data_sidang['dok_laporan'] ?? null;
 $status_ajuan = $data_sidang['status_ajuan'] ?? null;
 
-// --- PHP Logic for Status Badge ---
 $status_text = '';
 $status_class = '';
 if ($status_ajuan === 0) {
@@ -72,13 +65,10 @@ if ($status_ajuan === 0) {
     $status_text = 'Status Pengajuan : Disetujui';
     $status_class = 'disetujui';
 } else {
-    $status_text = 'Status Pengajuan : Tidak Diketahui'; // Fallback for unexpected values
+    $status_text = 'Status Pengajuan : Tidak Diketahui';
     $status_class = '';
 }
-// --- End PHP Logic for Status Badge ---
 
-
-// Fetch Jadwal (Schedule) details
 $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang, jam_selesai FROM Jadwal WHERE id_sidang = ?";
 $stmt_jadwal = sqlsrv_query($conn, $sql_jadwal, array($id_sidang));
 if ($stmt_jadwal === false) {
@@ -88,10 +78,9 @@ if ($stmt_jadwal === false) {
     if (!$data_jadwal) { $data_jadwal = []; }
 }
 
-// Format date and time for display
 $tanggal_sidang_formatted = 'Belum Dijadwalkan';
 if (isset($data_jadwal['tanggal_sidang']) && $data_jadwal['tanggal_sidang'] instanceof DateTime) {
-    setlocale(LC_TIME, 'id_ID.utf8'); // Set locale for Indonesian date formatting
+    setlocale(LC_TIME, 'id_ID.utf8');
     $tanggal_sidang_formatted = $data_jadwal['tanggal_sidang']->format('l, d F Y');
 }
 
@@ -106,7 +95,6 @@ if (isset($data_jadwal['jam_sidang']) && $data_jadwal['jam_sidang'] instanceof D
 $jenis_sidang = $data_sidang['jenis_sidang'];
 $id_kelompok = $data_sidang['id_kelompok'];
 
-// Fetch Prodi (Study Program) name
 if (!empty($id_kelompok)) {
     $sql_prodi = "SELECT m.prodi FROM Mahasiswa m JOIN Kelompok_Mahasiswa km ON m.nim = km.nim WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
     $stmt_prodi = sqlsrv_query($conn, $sql_prodi, array($id_kelompok));
@@ -117,8 +105,7 @@ if (!empty($id_kelompok)) {
     }
 }
 
-// Fetch Dosen details based on jenis_sidang
-if ($jenis_sidang === 0) { // If it's a "Tugas Akhir" (TA) sidang
+if ($jenis_sidang === 0) {
     $sql_pembimbing = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
     $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, array($id_kelompok));
     if ($stmt_pembimbing) {
@@ -130,7 +117,7 @@ if ($jenis_sidang === 0) { // If it's a "Tugas Akhir" (TA) sidang
         error_log("Error fetching pembimbing: " . print_r(sqlsrv_errors(), true));
     }
 
-    $sql_penguji = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ? AND p.peran_dosen = 0"; // Peran 0 for examiner
+    $sql_penguji = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ? AND p.peran_dosen = 0";
     $stmt_penguji = sqlsrv_query($conn, $sql_penguji, array($id_sidang));
     if ($stmt_penguji) {
         while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
@@ -140,7 +127,7 @@ if ($jenis_sidang === 0) { // If it's a "Tugas Akhir" (TA) sidang
         error_log("Error fetching penguji: " . print_r(sqlsrv_errors(), true));
     }
 
-} elseif ($jenis_sidang === 1) { // If it's a "Semester" (Mata Kuliah) sidang
+} elseif ($jenis_sidang === 1) {
     $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk
                     JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul
                     WHERE ds.id_sidang = ?";
@@ -165,7 +152,7 @@ if ($jenis_sidang === 0) { // If it's a "Tugas Akhir" (TA) sidang
     }
 }
 
-sqlsrv_close($conn); // Close the database connection
+sqlsrv_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -241,7 +228,7 @@ sqlsrv_close($conn); // Close the database connection
 
                 <div class="info-card">
                     <div class="section">
-                        <?php if ((int)$data_sidang['jenis_sidang'] === 1): // Info-card TOP: displayed if jenis_sidang == 1 (Semester) ?>
+                        <?php if ((int)$data_sidang['jenis_sidang'] === 1): ?>
                             <div class="info-group">
                                 <div class="label-row">
                                     <i class="fa-solid fa-book"></i>
@@ -261,7 +248,7 @@ sqlsrv_close($conn); // Close the database connection
                                     <?= !empty($dosen_pengampu) ? implode('<br>', array_map('htmlspecialchars', $dosen_pengampu)) : '-' ?>
                                 </div>
                             </div>
-                        <?php elseif ((int)$data_sidang['jenis_sidang'] === 0): // Info-card BOTTOM: displayed if jenis_sidang == 0 (TA) ?>
+                        <?php elseif ((int)$data_sidang['jenis_sidang'] === 0): ?>
                             <div class="info-group">
                                 <div class="label-row">
                                     <i class="fa-solid fa-file-invoice"></i>
@@ -275,7 +262,7 @@ sqlsrv_close($conn); // Close the database connection
                                 <div class="label-row">
                                     <i class="fa-solid fa-user-tie"></i>
                                     <span class="fw-bold">Dosen Pembimbing</span>
-                                  </div>
+                                </div>
                                 <div class="value-row">
                                     <?= htmlspecialchars($dosen_pembimbing) ?>
                                 </div>
@@ -342,7 +329,6 @@ sqlsrv_close($conn); // Close the database connection
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script type="text/javascript">
-      // Script for sidebar toggle functionality
       let menuToggle = document.querySelector(".NavSide__toggle");
       let sidebar = document.getElementById("main-sidebar");
 
@@ -353,22 +339,17 @@ sqlsrv_close($conn); // Close the database connection
         };
       }
 
-      // Script for marking active menu item
       let menuItems = document.querySelectorAll(".NavSide__sidebar-item");
       if (menuItems.length > 0) {
         menuItems.forEach(item => {
           item.onclick = function (event) {
-            // Remove 'active' class from all items
             menuItems.forEach(innerItem => {
               innerItem.classList.remove("NavSide__sidebar-item--active");
             });
-            // Add 'active' class to the clicked item
             this.classList.add("NavSide__sidebar-item--active");
           };
         });
       }
-
-      // The status badge state is now controlled by PHP, so no client-side click toggle needed here
     </script>
 </body>
 </html>

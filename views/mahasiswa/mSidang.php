@@ -4,20 +4,46 @@ session_start();
 
 require "../../koneksi/koneksiAndrew.php";
 
+if (isset($_GET['action']) && $_GET['action'] === 'set_sidang_session' && isset($_GET['id_sidang']) && is_numeric($_GET['id_sidang'])) {
+    $id_sidang_from_get = (int)$_GET['id_sidang'];
+
+    $checkQuery = "SELECT id_sidang FROM Sidang WHERE id_sidang = ?";
+    $checkStmt = sqlsrv_prepare($conn, $checkQuery, array($id_sidang_from_get));
+
+    if ($checkStmt === false) {
+        header("Location: mSidang.php?error=query_check");
+        exit();
+    }
+
+    if (!sqlsrv_execute($checkStmt)) {
+        header("Location: mSidang.php?error=execute_check");
+        exit();
+    }
+
+    if (sqlsrv_has_rows($checkStmt)) {
+        $_SESSION['selected_sidang_id'] = $id_sidang_from_get;
+        header("Location: mdetailSidang.php");
+        exit();
+    } else {
+        header("Location: mSidang.php?error=sidang_not_found");
+        exit();
+    }
+}
+
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $rowsPerPage = 10;
 $countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
-               FROM Sidang s
-               JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang 
-               JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
-               JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen";
+                FROM Sidang s
+                JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang 
+                JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
+                JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen";
 
 if ($filter === 'ta') {
-    $countQuery .= " AND s.jenis_sidang = 0";
+    $countQuery .= " WHERE s.jenis_sidang = 0";
 } elseif ($filter === 'semester') {
-    $countQuery .= " AND s.jenis_sidang = 1";
+    $countQuery .= " WHERE s.jenis_sidang = 1";
 }
 
 $countResult = sqlsrv_query($conn, $countQuery);
@@ -44,9 +70,9 @@ $query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul, MIN(d.nama
           JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen";
 
 if ($filter === 'ta') {
-    $query .= " AND s.jenis_sidang = 0";
+    $query .= " WHERE s.jenis_sidang = 0";
 } elseif ($filter === 'semester') {
-    $query .= " AND s.jenis_sidang = 1";
+    $query .= " WHERE s.jenis_sidang = 1";
 }
 
 $query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul ORDER BY s.id_sidang";
@@ -188,7 +214,7 @@ if ($result === false) {
                                     <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
                                     <td><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td>
-                                        <a href="set_sidang_session.php?id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
+                                        <a href="?action=set_sidang_session&id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
                                             <i class="bi bi-eye"></i>
                                         </a>
                                     </td>
@@ -229,7 +255,6 @@ if ($result === false) {
         </main>
     </div>
 
-    <!-- Modal keluar-->
     <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -249,11 +274,8 @@ if ($result === false) {
         </div>
     </div>
 
-    
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sidebar Toggle Logic 
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
 
