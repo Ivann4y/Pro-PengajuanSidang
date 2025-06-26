@@ -78,10 +78,18 @@ $query = "SELECT
                  JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen
                  WHERE p.id_sidang = s.id_sidang AND p.peran_dosen = 1)
             WHEN s.jenis_sidang = 1 THEN -- Jika Sidang Semester, ambil Pengampu
-                (SELECT STRING_AGG(d.nama_dosen, ', ')
+                (SELECT STRING_AGG(d.nama_dosen, CHAR(13) + CHAR(10))
                  FROM Pengampu_Kelas pk
                  JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
-                 WHERE pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang))
+                 WHERE 
+                -- Filter 1: Mencocokkan mata kuliahnya (sama seperti sebelumnya)
+                pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang)
+                
+                -- Filter 2: Mencocokkan kelas mahasiswa
+                AND pk.id_kelas = (SELECT TOP 1 km.id_kelas
+                                   FROM Kelompok_Mahasiswa kpm
+                                   JOIN Kelas_Mahasiswa km ON kpm.nim = km.nim
+                                   WHERE kpm.id_kelompok = s.id_kelompok))
         END AS nama_dosen_terkait
     
     FROM Sidang s
@@ -231,14 +239,12 @@ if ($result === false) {
                 <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                 <td data-label="Judul/MK">
                     <?php 
-                    // Jika sidang semester, tampilkan nama matkul. Jika TA, tampilkan judul.
                     echo htmlspecialchars(($row['jenis_sidang'] == 1) ? $row['nama_matkul'] : $row['judul']); 
                     ?>
                 </td>
                 <td data-label="Pembimbing/Pengampu">
                     <?php 
-                    // Tampilkan daftar nama dosen yang sudah digabung
-                    echo htmlspecialchars($row['nama_dosen_terkait']); 
+                    echo nl2br(htmlspecialchars($row['nama_dosen_terkait'])); 
                     ?>
                 </td>
                 <td data-label="Aksi">
@@ -271,7 +277,7 @@ if ($result === false) {
                             </li>
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                 <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
-                                    <a class="pageuuuuu-link"
+                                    <a class="page-link"
                                         href="?filter=<?= $filter ?>&prodi=<?= urlencode($prodiFilter) ?>&page=<?= $i ?>"><?= $i ?></a>
                                 </li>
                             <?php endfor; ?>
