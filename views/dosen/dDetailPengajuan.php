@@ -327,20 +327,28 @@ $nim = $_GET['nim'] ?? 'N/A';
 $tipe = $_GET['tipe'] ?? 'N/A';
 $mahasiswa = [];
 
-if ($tipe === 'TA') {
-  $mahasiswa = [
-    'nama' => 'M. Haaris Nur S.',
-    'nim' => '0920240033',
+// Dummy lengkap sesuai id dan tipe
+$dummyData = [
+  '001' => [
+    'no_kelompok' => 'KEL001',
+    'anggota' => ['M. Haaris', 'Rudi Nur Salim', 'Siti Rahayu'],
     'mata_kuliah' => 'Tugas Akhir',
-  ];
-} elseif ($tipe === 'Semester') {
-  $mahasiswa = [
-    'nama' => 'M. Harris Nur S.',
-    'nim' => '0920240033',
+    'judul_sidang' => 'Sistem Informasi Penggajian',
+    'dosen_pembimbing' => 'Timotius Victory'
+  ],
+  '002' => [
+    'no_kelompok' => 'KEL002',
+    'anggota' => ['Maya Sari', 'Fikri Ramadhan', 'Gilang Pratama'],
     'mata_kuliah' => 'Pemrograman 2',
-    'judul_sidang' => 'Sistem Pengajuan Sidang'
-  ];
+    'judul_sidang' => 'Aplikasi Kasir Modern',
+    'dosen_pembimbing' => 'Timotius Victory'
+  ]
+];
+
+if (isset($dummyData[$id_sidang])) {
+  $mahasiswa = $dummyData[$id_sidang];
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -354,11 +362,11 @@ if ($tipe === 'TA') {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css" />
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <link rel="stylesheet" href="../../extra/style.css">
   <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css">
+  <link rel="stylesheet" href="../../extra/style.css">
   <title>Detail Pengajuan</title>
+
 </head>
 
 <body class="p-4">
@@ -372,7 +380,7 @@ if ($tipe === 'TA') {
           <b></b><b></b>
           <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
         </li>
-        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+        <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
           <b></b><b></b>
           <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
         </li>
@@ -398,12 +406,12 @@ if ($tipe === 'TA') {
     </div>
     <main class="NavSide__main-content" id="dPengajuan">
       <div class="dashboard-header">
-        <div class="header-icons d-none d-md-flex">
+        <div class="header-icons d-none d-md-flex"> 
           <!-- <i class="bi bi-bell-fill"></i> -->
         </div>
-      </div>
+     </div>
 
-      <h3 class="mb-4">Detail Pengajuan</h3>
+  <h3 class="mb-4">Detail Pengajuan</h3>
 
       <div class="card mb-3 info-pengajuan">
         <h5 class="fw-semibold section">Informasi Pengajuan</h5>
@@ -449,79 +457,70 @@ if ($tipe === 'TA') {
       </div>
 
 
-      <div class="card mb-3 dokumen-sidang position-relative">
-        <h5 class="fw-semibold">Dokumen Sidang</h5>
-        <div class="mt-2">
-          <?php if (!empty($sidang['dokumen_path'])): ?>
-            <a class="text-decoration-none base-tombol berkas-laporan"
-              href="../../uploadtesting<?php echo htmlspecialchars($sidang['dokumen_path']); ?>" download>
-              <i class="fa-solid fa-file-lines"></i>
-              <?php echo htmlspecialchars(basename($sidang['dokumen_path'])); ?>
-            </a>
-          <?php endif; ?>
+<div class="card mb-3 dokumen-sidang position-relative">
+  <h5 class="fw-semibold">Dokumen Sidang</h5>
+  <div class="mt-2">
+    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
+      <i class="fa-solid fa-file-lines"></i> berkas_laporan_kel-1.pdf
+    </a>
+  </div>
+</div> 
+
+<div class="d-flex justify-content-between">
+  <button class="btn-kembali" onclick="location.href='dpengajuan.php'">
+    <span class="icon-circle"> <i class="fa-solid fa-arrow-left"></i></span>Kembali</button>
+  <div class="d-flex justify-content-between ">
+    <button class="btn btn-danger btn-circle me-2" id="btnTolak">Tolak</button>
+    <button class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
+  </div>
+</div>
+
+    <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+        <img src="../../assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
+        <h5 class="modal-title fw-bold" id="notifModalLabel"></h5>
         </div>
-      </div>
+    </div>
+  </div>
 
-      <div class="d-flex justify-content-between">
-        <button class="btn-kembali" onclick="location.href='dpengajuan.php'">
-          <span class="icon-circle"> <i class="fa-solid fa-arrow-left"></i></span>Kembali</button>
-        <?php if (isset($_SESSION['nomor_dosen'])): ?>
-          <div class="d-flex justify-content-between ">
+  <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+                  <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menyetujui?</p>
+                    <div class="d-flex justify-content-between px-5">
+                      <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+                      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn" >Lanjutkan</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            <button class="btn btn-danger btn-circle me-2" id="btnTolak" data-bs-toggle="#modalTolak">Tolak</button>
-            <form method="POST" style="display: inline;">
-              <button type="submit" name="approve" class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
-            </form>
-          </div>
-      </div>
-
-      <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content text-center p-4">
-            <img src="../../assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
-            <h5 class="modal-title fw-bold" id="notifModalLabel">Alasan Penolakan</h5>
-          </div>
-        </div>
-      </div>
-    <?php endif; ?>
-
-    <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-          <div class="modal-header border-0 justify-content-center">
-            <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+<div class="modal fade" id="modalTolak" tabindex="-1" aria-labelledby="modalTolakLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+        <h4 class="modal-title fw-bold" id="modalTolakLabel" style="font-size: 24px;">Perhatian</h4>
           </div>
           <div class="modal-body">
-            <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menyetujui?</p>
-            <div class="d-flex justify-content-between px-5">
-              <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
-              <button type="submit" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="submitBtn">Lanjutkan</button>
-            </div>
+          <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menolak?</p>
+          <div class="mb-4 px-3">
+            <textarea id="alasanTolak" class="form-control mb-4" placeholder="Masukkan alasan penolakan" rows="3"></textarea>
+            <small id="errorAlasan" class="text-danger d-none">Silakan isi alasan terlebih dahulu.</small>
           </div>
+          <div class="d-flex justify-content-between px-5">
+          <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+          <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="tolakBtn">Lanjutkan</button>
         </div>
       </div>
     </div>
-
-    <div class="modal fade" id="modalTolak" tabindex="-1" aria-labelledby="modalTolakLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-          <div class="modal-header border-0 justify-content-center">
-            <h4 class="modal-title fw-bold" id="modalTolakLabel" style="font-size: 24px;">Perhatian</h4>
-          </div>
-          <div class="modal-body">
-            <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menolak?</p>
-            <div class="mb-4 px-3">
-              <textarea id="alasanTolak" class="form-control mb-4" placeholder="Masukkan alasan penolakan" rows="3"></textarea>
-              <small id="errorAlasan" class="text-danger d-none">Silakan isi alasan terlebih dahulu.</small>
-            </div>
-            <div class="d-flex justify-content-between px-5">
-              <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
-              <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="tolakBtn">Lanjutkan</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  </div>
+</div>
 
     <!-- Modal keluar-->
     <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -534,79 +533,79 @@ if ($tipe === 'TA') {
           </div>
           <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
           <div class="modal-footer justify-content-center border-0">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-          </div>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+          <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-      const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
-      const modalTolak = new bootstrap.Modal(document.getElementById('modalTolak'));
+<script> 
+    const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
+    const modalTolak = new bootstrap.Modal(document.getElementById('modalTolak'));
 
-      // Buka modal konfirmasi ketika klik tombol Setujui
-      document.getElementById('btnSetujui').addEventListener('click', function() {
-        modalKonfirmasi.show();
-      });
+    // Buka modal konfirmasi ketika klik tombol Setujui
+    document.getElementById('btnSetujui').addEventListener('click', function () {
+      modalKonfirmasi.show();
+    });
 
-      // Buka modal tolak ketika klik tombol Tolak
-      document.getElementById('btnTolak').addEventListener('click', function() {
-        modalTolak.show();
-      });
+    // Buka modal tolak ketika klik tombol Tolak
+    document.getElementById('btnTolak').addEventListener('click', function () {
+      modalTolak.show();
+    });
 
-      // Jika tekan "Lanjutkan" di modal Setujui
-      document.getElementById('submitBtn').addEventListener('click', function() {
-        Swal.fire({
-          title: 'Pengajuan Berhasil Dikirim!',
-          icon: 'success',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            history.back();
-          }
-        });
-      });
-
-      document.getElementById('tolakBtn').addEventListener('click', function() {
-        const alasan = document.getElementById('alasanTolak').value.trim();
-
-        if (alasan === '') {
-          Swal.fire({
-            title: 'Gagal',
-            text: 'Silakan isi alasan penolakan terlebih dahulu.',
-            icon: 'warning',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#4B68FB'
-          });
-          return;
+    // Jika tekan "Lanjutkan" di modal Setujui
+    document.getElementById('submitBtn').addEventListener('click', function () {
+      Swal.fire({
+        title: 'Pengajuan Berhasil Dikirim!',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          history.back(); 
         }
-
-        Swal.fire({
-          title: 'Pengajuan Ditolak',
-          text: 'Pengajuan sidang berhasil ditolak.',
-          icon: 'success',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            console.log("Alasan penolakan:", alasan);
-            history.back();
-          }
-        });
       });
+    });
 
-      // Sidebar Toggle Logic
-      let menuToggle = document.querySelector(".NavSide__toggle");
-      let sidebar = document.getElementById("main-sidebar");
+    document.getElementById('tolakBtn').addEventListener('click', function () {
+    const alasan = document.getElementById('alasanTolak').value.trim();
 
-      menuToggle.onclick = function() {
-        menuToggle.classList.toggle("NavSide__toggle--active");
-        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-      };
-    </script>
-    <script src="../../assets/js/main.js"></script>
+    if (alasan === '') {
+      Swal.fire({
+        title: 'Gagal',
+        text: 'Silakan isi alasan penolakan terlebih dahulu.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Pengajuan Ditolak',
+      text: 'Pengajuan sidang berhasil ditolak.',
+      icon: 'success',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log("Alasan penolakan:", alasan);
+        history.back();
+      }
+    });
+  });
+
+  // Sidebar Toggle Logic
+    let menuToggle = document.querySelector(".NavSide__toggle");
+    let sidebar = document.getElementById("main-sidebar");
+
+    menuToggle.onclick = function() {
+      menuToggle.classList.toggle("NavSide__toggle--active");
+      sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+    };
+</script>
+<script src="../../assets/js/main.js"></script>
 </body>
 
 </html>

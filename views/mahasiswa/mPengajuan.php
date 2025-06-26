@@ -296,7 +296,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
             };
 
             window.tambahData = function () {
-                window.location.href = 'mEditPengajuan.php';
+                window.location.href = 'mTambahPengajuan.php';
             };
         });
     </script>
