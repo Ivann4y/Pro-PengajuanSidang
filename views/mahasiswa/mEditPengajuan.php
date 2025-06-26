@@ -1,4 +1,8 @@
 <?php
+<<<<<<< HEAD
+include '../../koneksi/koneksiAndrew.php'; // This now correctly includes your SQL Server connection
+session_start();
+=======
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -20,6 +24,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 }
 
 include '../../koneksi/koneksiAndrew.php';
+>>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
 // Get next ID
 $next_id = 1;
 // --- SQLSRV CHANGE: Use sqlsrv_query and sqlsrv_fetch_array ---
@@ -41,7 +46,8 @@ sqlsrv_free_stmt($stmt_id); // Free the statement resource
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $judul = $_POST['judul'];
     $matkul = $_POST['matkul'];
-    $id_kelompok = 5001; // Should come from session
+    $id_kelompok = $_SESSION['id_kelompok']; // Should come from session
+    //$id_kelompok = 5001;
     $aksi = $_POST['aksi'];
     $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
     $waktu_pengumpulan = date('Y-m-d H:i:s');

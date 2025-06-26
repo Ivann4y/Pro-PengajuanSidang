@@ -397,7 +397,16 @@ body {
     /* Pesan Error Validasi */
     .error-message { color: red; font-size: 0.9rem; font-weight: 500; display: none; margin-top: 10px; margin-left: 0; text-align: left; }
 
+
+
+
+
+
+
+
+
     /* --- RESPONSIVE DESIGN --- */
+
 
     /* Style untuk Tablet (lebar layar maks 768px) */
     @media (max-width: 768px) {
@@ -420,6 +429,36 @@ body {
         color: inherit; /* Kembalikan ke warna teks asli */
         box-shadow: none;
     }
+
+
+.penilaian-row {
+        flex-direction: column; /* PAKSA SEMUA ITEM JADI TUMPUKAN VERTIKAL */
+        align-items: stretch;   /* Buat item membentang selebar kontainer */
+        gap: 20px;              /* Jarak antar baris nilai */
+    }
+
+ /* --- INI KODE BARU YANG SUDAH DIPERBAIKI --- */
+.penilaian-row .col-item {
+    display: grid;
+    /* UBAH 'auto' MENJADI LEBAR TETAP (misal: 150px) */
+    grid-template-columns: 150px 1fr; /* <--- INI SOLUSINYA */
+    gap: 10px;
+    width: 100%;
+    align-items: center; /* Tambahkan ini agar label dan input sejajar di tengah */
+}
+    /* Hilangkan titik dua di mobile agar lebih bersih */
+    .penilaian-row label::after {
+        content: ""; 
+    }
+    
+    .penilaian-row label {
+        text-align: left;
+    }
+
+    input.form-control-custom.input-nilai {
+        width: 100%; /* Buat input memenuhi sisa ruang */
+    }
+    
     /* ===== [END] PERBAIKAN HOVER DI MOBILE ===== */
 
     }
@@ -443,6 +482,43 @@ body {
         .btn-kembali .icon-circle i { font-size: 1.1rem; }
         .penilaian-row label { width: 150px; flex-shrink: 0; white-space: nowrap; margin-right: 10px; text-align: left; }
         input.form-control-custom.input-nilai { flex-grow: 1; width: auto; min-width: unset; }
+
+        .col-lg-49 {
+     flex: 0 0 100%;
+     max-width: 100%;
+  }
+
+
+   /* ... (kode media query Anda yang lain) ... */
+
+     .penilaian-row {
+        flex-direction: column; /* PAKSA SEMUA ITEM JADI TUMPUKAN VERTIKAL */
+        align-items: stretch;   /* Buat item membentang selebar kontainer */
+        gap: 20px;              /* Jarak antar baris nilai */
+    }
+
+/* --- INI KODE BARU YANG SUDAH DIPERBAIKI --- */
+.penilaian-row .col-item {
+    display: grid;
+    /* UBAH 'auto' MENJADI LEBAR TETAP (misal: 150px) */
+    grid-template-columns: 150px 1fr; /* <--- INI SOLUSINYA */
+    gap: 10px;
+    width: 100%;
+    align-items: center; /* Tambahkan ini agar label dan input sejajar di tengah */
+}
+
+    /* Hilangkan titik dua di mobile agar lebih bersih */
+    .penilaian-row label::after {
+        content: ""; 
+    }
+    
+    .penilaian-row label {
+        text-align: left;
+    }
+
+    input.form-control-custom.input-nilai {
+        width: 100%; /* Buat input memenuhi sisa ruang */
+    }
     }
 
     
