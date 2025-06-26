@@ -1,133 +1,86 @@
 <?php
-// Start the session to get the logged-in user's ID
-session_start(); 
+session_start();
+include '../../koneksi/koneksiAndrew.php'; // Only include once
 
-include '../../koneksi/koneksiAndrew.php'; // Your SQL Server connection
+// Initialize messages
+$success_message = $_SESSION['success_message'] ?? '';
+$error_message = $_SESSION['error_message'] ?? '';
 
-// --- IMPORTANT ---
-// Assume the logged-in student's ID is stored in the session.
-// You MUST set this variable after a successful login.
-// For this example, I'll hardcode it, but in your real app, it must come from the session.
-// $_SESSION['mahasiswa_id'] = 123; // Example ID
-if (!isset($_SESSION['mahasiswa_id'])) {
-    die("Error: User is not logged in. Session 'mahasiswa_id' not set.");
-}
-$id_mahasiswa_logged_in = $_SESSION['mahasiswa_id'];
+// Clear messages after reading
+unset($_SESSION['success_message']);
+unset($_SESSION['error_message']);
 
+// Hardcoded NIM for testing (remove in production)
+$nim_mahasiswa_logged_in = '1000000001'; 
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // --- CHANGE 1: LOOK UP id_kelompok DYNAMICALLY ---
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
+    // Look up student's group ID
     $id_kelompok = null;
-    $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE id_mahasiswa = ?";
-    $params_kelompok = [$id_mahasiswa_logged_in];
+    $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?";
+    $params_kelompok = [$nim_mahasiswa_logged_in];
     $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
 
     if ($stmt_kelompok === false) {
         die("Error fetching group ID: " . print_r(sqlsrv_errors(), true));
     }
+    
     if ($row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
         $id_kelompok = $row['id_kelompok'];
     }
     sqlsrv_free_stmt($stmt_kelompok);
 
-    // If no group was found for the student, stop execution.
-    if ($id_kelompok === null) {
-        die("Fatal Error: Could not find a 'kelompok' (group) for the logged-in student.");
-    }
-    
     // Get form data
     $judul = $_POST['judul'];
-    $jenis_sidang_id = $_POST['matkul']; // This is now an ID from the dropdown
+    $jenis_sidang_name = $_POST['matkul'];
     $aksi = $_POST['aksi'];
     $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
-    $waktu_pengumpulan = date('Y-m-d H:i:s');
     
     // Handle file upload
-    $dok_laporan_filename = null; // Store only the filename
+    $dok_laporan_filename = null;
     if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['DokumenSidang'];
-        $uploadDir = '../../uploads/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
+        $uploadDir = '../../uploads/laporan/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
         $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
-        // --- CHANGE 2: STORE ONLY THE FILENAME, NOT THE FULL PATH ---
         $dok_laporan_filename = 'laporan_' . uniqid('', true) . '.' . $fileExt;
         $uploadPath = $uploadDir . $dok_laporan_filename;
-        
         move_uploaded_file($file['tmp_name'], $uploadPath);
     }
 
-    // --- CHANGE 3: MODIFIED INSERT STATEMENT ---
-    // We removed `id_sidang` because the database will generate it (IDENTITY column).
-    $sql = "INSERT INTO Sidang (
-        judul, 
-        waktu_pengumpulan, 
-        dok_laporan, 
-        status_ajuan, 
-        jenis_sidang, 
-        id_kelompok
-    ) VALUES (?, ?, ?, ?, ?, ?)";
+    // Determine jenis_sidang
+    $jenis_sidang_bit = ($jenis_sidang_name == 'Tugas Akhir') ? 0 : 1;
+
+    // Prepare SQL statement
+    $sql = "INSERT INTO dbo.Sidang (judul, waktu_pengumpulan, dok_laporan, status_ajuan, status_sidang, jenis_sidang, id_kelompok, dok_final) 
+            VALUES (?, GETDATE(), ?, ?, ?, ?, ?, NULL)";
     
-    // Create an array of parameters to bind
     $params = [
         $judul, 
-        $waktu_pengumpulan, 
-        $dok_laporan_filename, // Use the filename
+        $dok_laporan_filename,
         $status_ajuan, 
-        $jenis_sidang_id,    // Use the ID from the dropdown
-        $id_kelompok         // Use the looked-up group ID
+        0, // status_sidang (default)
+        $jenis_sidang_bit,
+        $id_kelompok
     ];
     
     $stmt = sqlsrv_prepare($conn, $sql, $params);
 
-    if ($stmt) {
-        if (sqlsrv_execute($stmt)) {
-            $message = ($status_ajuan == 1) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
-            echo "<script>
-                Swal.fire({
-                    title: '$message',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                }).then(() => {
-                    window.location.href = 'mPengajuan.php';
-                });
-            </script>";
-            exit;
-        } else {
-            // More detailed error for debugging
-            $errors = sqlsrv_errors();
-            $errorMessage = "Gagal menyimpan data. Error: " . $errors[0]['message'];
-            error_log($errorMessage); // Log error to server logs
-
-            echo "<script>
-                Swal.fire({
-                    title: 'Gagal menyimpan data',
-                    text: 'Terjadi kesalahan pada server. Silakan coba lagi. Cek log untuk detail.',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                });
-            </script>";
-        }
+    // Execute and handle result
+    if ($stmt && sqlsrv_execute($stmt)) {
+        $_SESSION['success_message'] = ($status_ajuan == 1) 
+            ? 'Pengajuan Berhasil Dikirim!' 
+            : 'Pengajuan Berhasil Disimpan!';
     } else {
-         $errors = sqlsrv_errors();
-         $errorMessage = "Gagal menyiapkan statement. Error: " . $errors[0]['message'];
-         error_log($errorMessage); // Log error to server logs
-
-         echo "<script>
-            Swal.fire({
-                title: 'Gagal menyiapkan data',
-                text: 'Terjadi kesalahan pada server. Silakan coba lagi.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-            });
-        </script>";
+        $_SESSION['error_message'] = "Gagal menyimpan data. Detail: " . print_r(sqlsrv_errors(), true);
     }
+    
+    // Redirect to avoid form resubmission
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -335,6 +288,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Display success/error messages
+    document.addEventListener('DOMContentLoaded', function() {
+        <?php if ($success_message): ?>
+            Swal.fire({
+                title: 'Berhasil!',
+                text: '<?php echo $success_message; ?>',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            });
+        <?php endif; ?>
+
+        <?php if ($error_message): ?>
+            Swal.fire({
+                title: 'Gagal!',
+                text: '<?php echo addslashes($error_message); ?>',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            });
+        <?php endif; ?>
+    });
     // Sidebar Toggle Logic 
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
@@ -456,6 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
       return true;
     }
+
   </script>
 </body>
 </html>

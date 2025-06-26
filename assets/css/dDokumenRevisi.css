@@ -1,0 +1,511 @@
+/* --- General and Body Styles --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+/* --- Base Sidebar, Main Content, and Info Card Styles --- */
+#NavSide {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.NavSide__sidebar {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  width: 280px;
+  border-radius: 1px;
+  box-sizing: border-box;
+  border-left: 5px solid #4b68fb;
+  background: #4b68fb;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
+}
+
+.NavSide__sidebar-brand {
+  padding: 10% 5% 50% 5%;
+  text-align: center;
+}
+
+.NavSide__sidebar-brand img {
+  width: 90%;
+  max-width: 180px;
+  height: auto;
+  display: inline-block;
+  filter: brightness(0) invert(1);
+}
+
+.NavSide__sidebar-nav {
+  width: 100%;
+  padding-left: 0;
+  padding-top: 0;
+  list-style: none;
+  flex-grow: 1;
+}
+
+.NavSide__sidebar-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-bottom: 15px;
+}
+
+.NavSide__sidebar-item a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+  color: rgb(252, 252, 252);
+  padding: 5% 2%;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.NavSide__sidebar-title {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.5;
+  color: white;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active {
+  background: #ffffff;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active a {
+  color: #4b68fb !important;
+}
+
+.NavSide__sidebar-item b:nth-child(1) {
+  position: absolute;
+  top: -20px;
+  height: 20px;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  display: none;
+}
+
+.NavSide__sidebar-item b:nth-child(1)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-bottom-right-radius: 20px;
+  background: #4b68fb;
+  display: block;
+}
+
+.NavSide__sidebar-item b:nth-child(2) {
+  position: absolute;
+  bottom: -20px;
+  height: 20px;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  display: none;
+}
+
+.NavSide__sidebar-item b:nth-child(2)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 20px;
+  background: #4b68fb;
+  display: block;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+  display: block;
+}
+
+.NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px 20px 20px calc(20px + 1cm);
+  margin-left: 280px;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+}
+
+.NavSide__main-content h2 {
+  margin-bottom: 1.2cm;
+  font-weight: 700;
+}
+
+/* ======================================================= */
+/* === CSS PERBAIKAN UNTUK KARTU INFORMASI === */
+/* ======================================================= */
+
+/* 1. Mengatur Kartu Utama (.info-card) */
+.info-card {
+  /* Layout Dasar */
+  display: flex;
+  /* Tetap gunakan flexbox untuk 2 kolom */
+  gap: 30px;
+  /* Jarak antar kolom */
+
+  /* Ukuran dan Jarak */
+  padding: 25px;
+  /* Ruang di dalam kartu */
+  margin-bottom: 2.5rem;
+  /* Jarak ke elemen di bawahnya */
+
+  /* Tampilan Visual */
+  background: #f0f4f7;
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+  /* --- PERBAIKAN UTAMA --- */
+  position: relative;
+  /* Ini penting agar ::after tidak keluar */
+  overflow: hidden;
+  /* Mencegah ::after keluar dari sudut tumpul */
+}
+
+/* 2. Garis Biru di Kanan pada .info-card */
+.info-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  /* Lebar awal garis biru */
+  height: 100%;
+  background-color: #4b68fb;
+
+  /* --- PERBAIKAN UTAMA --- */
+  /* Hapus border-radius dari ::after agar tidak aneh saat hover */
+  /* border-top-right-radius: 20px; */
+  /* border-bottom-right-radius: 20px; */
+
+  transition: width 0.4s ease;
+  /* Animasi saat hover */
+  z-index: 0;
+  /* Letakkan di belakang konten */
+}
+
+/* 3. Efek Hover */
+.info-card:hover::after {
+  width: 100%;
+  /* Lebar penuh saat di-hover */
+}
+
+.info-card:hover {
+  color: white;
+  /* Ubah warna teks menjadi putih saat hover */
+}
+
+.info-card:hover .info-item i {
+  color: white;
+  /* Ubah warna ikon menjadi putih juga */
+}
+
+/* 4. Mengatur Kolom (.section) */
+.info-card .section {
+  flex: 1;
+  /* Setiap kolom mengambil ruang yang sama */
+  z-index: 1;
+  /* Pastikan konten berada di atas garis biru */
+
+  /* --- PERBAIKAN UTAMA --- */
+  /* Hapus aturan flex yang mungkin ada di sini agar item di dalamnya (paragraf) bisa berjajar ke bawah secara normal */
+  /* display: flex; */
+  /* flex-direction: column; */
+}
+
+/* 4. Mengatur Setiap Baris Informasi (.info-item) - KUNCI UTAMA */
+.info-item {
+  position: relative;
+  /* Penting untuk posisi ikon absolut */
+  padding-left: 35px;
+  /* Dorong SEMUA teks ke kanan */
+
+  margin-bottom: 5px;
+  /* Jarak vertikal antar baris informasi */
+  line-height: 1.6;
+  /* Keterbacaan teks */
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+  /* Hapus margin pada item terakhir */
+}
+
+/* 5. Mengatur Ikon di dalam .info-item */
+.info-item i {
+  /* Posisikan ikon kembali ke kiri */
+  position: absolute;
+  left: 0;
+  top: 5px;
+  /* Sesuaikan agar sejajar dengan teks */
+
+  /* Ukuran dan perataan ikon */
+  width: 25px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #555;
+  /* Warna ikon awal */
+  transition: color 0.4s ease;
+  /* Transisi warna ikon saat hover */
+}
+
+/* 6. Mengatur Teks Label yang Tebal */
+.info-item strong {
+  font-weight: 600;
+  display: block;
+  /* <-- INI KUNCINYA, TAMBAHKAN KEMBALI */
+  margin-bottom: -18px;
+  /* Sesuaikan nilai ini, 30px mungkin terlalu besar */
+}
+
+/* --- Responsive Design Styles --- */
+.NavSide__toggle {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  z-index: 1100;
+  cursor: pointer;
+  transition: transform 0.5s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.NavSide__toggle i.bi {
+  position: absolute;
+  font-size: 28px;
+  color: #4b68fb;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.NavSide__toggle .bi.close {
+  opacity: 0;
+}
+
+.NavSide__toggle.active .bi.open {
+  opacity: 0;
+}
+
+.NavSide__toggle.active .bi.close {
+  opacity: 1;
+}
+
+.NavSide__toggle.active {
+  transform: translateX(50vw);
+}
+
+.NavSide__topbar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  align-items: center;
+  padding: 0 15px;
+  justify-content: space-between;
+}
+
+/* Responsive styles for screens smaller than 700px */
+@media (max-width: 700px) {
+  .NavSide__sidebar {
+    width: 50vw;
+    transform: translateX(-100%);
+  }
+
+  .NavSide__sidebar.active {
+    transform: translateX(0);
+  }
+
+  .NavSide__main-content {
+    margin-left: 0;
+    padding-top: 75px;
+  }
+
+  .NavSide__toggle {
+    display: flex;
+  }
+
+  .NavSide__toggle i.bi.open {
+    display: block;
+  }
+
+  .NavSide__toggle.NavSide__toggle--active {
+    color: #4b68fb;
+  }
+
+  .NavSide__topbar {
+    display: flex;
+  }
+
+  .info-card .section {
+    flex: 0 0 100%;
+    margin-bottom: 1rem;
+  }
+
+  .info-card .section:last-child {
+    margin-bottom: 0;
+  }
+
+  .button-group-bottom {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1.2cm;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  #grup-aksi-dokumen {
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    gap: 0 !important;
+    margin-top: 2.5rem;
+  }
+
+  #grup-aksi-dokumen .btn {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  #grup-aksi-dokumen .button-group {
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+    margin-top: 0 !important;
+  }
+}
+
+.button-group-bottom {
+  margin-top: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* File Button Styles */
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgb(235, 238, 245);
+  border-radius: 20px;
+  padding: 12px 20px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  text-decoration: none;
+  color: #4b68fb;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.file-button:hover {
+  background-color: #4b68fb;
+  color: white;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.file-button i {
+  font-size: 1.25rem;
+  margin-right: 10px;
+  color: #4b68fb;
+  transition: color 0.2s ease;
+}
+
+.file-button:hover i {
+  color: white;
+}
+
+/* Penyesuaian responsif untuk tombol berkas */
+@media (max-width: 576px) {
+  .file-button {
+    flex-basis: 100;
+    width: 100%;
+    display: flex;
+    margin-right: 0;
+  }
+}
+
+/* Modal Styles */
+.modal-content {
+  border-radius: 20px;
+  border: none;
+}
+
+.modal-body {
+  text-align: center;
+  padding: 2rem;
+}
+
+.modal-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.modal-buttons button {
+  min-width: 100px;
+}
+
+.custom-modal-content {
+  border-radius: 30px !important;
+  background-color: #f8f9fa;
+  border: none;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+
+.custom-modal-header {
+  border-bottom: none;
+  justify-content: center;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.custom-modal-body {
+  text-align: center;
+  padding: 0;
+}
+
+#confirmationModal .btn {
+  width: auto !important;
+  flex-grow: 0 !important;
+}
