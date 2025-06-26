@@ -109,7 +109,7 @@ include '../../koneksi/koneksiAndrew.php';
                     </div>
                     <div class="row mt-2">
                         <div class="col-12 d-flex justify-content-end">
-                            <button class="btn kelompok-btn" style="max-width:300px;" onclick="openKelompokModal()">
+                            <button class="btn kelompok-btn" style="max-width:300px;" onclick="openKelompokModal()" id="kelompokBtn">
                                 <i class="bi bi-people-fill me-2"></i>Kelompok
                             </button>
                         </div>
@@ -375,7 +375,7 @@ include '../../koneksi/koneksiAndrew.php';
                             for (let i = 1; i <= pageCount; i++) {
                                 const pageButton = document.createElement('li');
                                 pageButton.className = 'page-item';
-                                pageButton.innerHTML = <a class="page-link" href="#">${i}</a>;
+                                pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
                                 pageButton.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     currentPage = i;
@@ -490,11 +490,32 @@ include '../../koneksi/koneksiAndrew.php';
 
                     // Initialize modal and data
                     document.addEventListener('DOMContentLoaded', function() {
+                        console.log('DOMContentLoaded - Initializing modal');
                         const kelompokModalEl = document.getElementById('kelompokModal');
+                        console.log('kelompokModalEl:', kelompokModalEl);
+                        
                         if (kelompokModalEl) {
-                            kelompokModalInstance = new bootstrap.Modal(kelompokModalEl);
+                            // Check if Bootstrap is available
+                            if (typeof bootstrap !== 'undefined') {
+                                kelompokModalInstance = new bootstrap.Modal(kelompokModalEl);
+                                console.log('Modal instance created with Bootstrap:', kelompokModalInstance);
+                            } else {
+                                console.error('Bootstrap is not loaded');
+                                // Fallback: try to initialize after a short delay
+                                setTimeout(() => {
+                                    if (typeof bootstrap !== 'undefined') {
+                                        kelompokModalInstance = new bootstrap.Modal(kelompokModalEl);
+                                        console.log('Modal instance created with delayed Bootstrap:', kelompokModalInstance);
+                                    } else {
+                                        console.error('Bootstrap still not available after delay');
+                                    }
+                                }, 1000);
+                            }
+                            
                             // Event listener to reset form when modal is hidden
                             kelompokModalEl.addEventListener('hidden.bs.modal', resetKelompokForm);
+                        } else {
+                            console.error('kelompokModal element not found');
                         }
 
                         // Set up form submission
@@ -505,6 +526,15 @@ include '../../koneksi/koneksiAndrew.php';
 
                         // Initial data load for mahasiswa
                         fetchMahasiswaData();
+                        
+                        // Add event listener to kelompok button as backup
+                        const kelompokBtn = document.getElementById('kelompokBtn');
+                        if (kelompokBtn) {
+                            kelompokBtn.addEventListener('click', function(e) {
+                                console.log('Kelompok button clicked via event listener');
+                                openKelompokModal();
+                            });
+                        }
                     });
 
                     // Function to fetch mahasiswa data from the backend
@@ -524,6 +554,15 @@ include '../../koneksi/koneksiAndrew.php';
 
                     // Open Kelompok Modal
                     function openKelompokModal() {
+                        console.log('openKelompokModal called');
+                        console.log('kelompokModalInstance:', kelompokModalInstance);
+                        
+                        if (!kelompokModalInstance) {
+                            console.error('Modal instance not initialized');
+                            alert('Modal tidak dapat dibuka. Silakan refresh halaman.');
+                            return;
+                        }
+                        
                         resetKelompokForm(); // Ensure form is reset every time it opens
                         setNextKelompokId(); // Fetch and set the next Kelompok ID
                         switchTab('tambah'); // Default to 'Tambah Kelompok' tab
@@ -656,7 +695,7 @@ include '../../koneksi/koneksiAndrew.php';
                         const wrapper = document.getElementById('anggota-wrapper');
                         const div = document.createElement('div');
                         div.className = 'anggota-form-group';
-                        div.id = anggota-form-${anggotaCount};
+                        div.id = 'anggota-form-' + anggotaCount;
                         div.innerHTML = `
                         <label for="anggota_nim_${anggotaCount}">Anggota ${anggotaCount}:</label>
                         <div class="anggota-input-group">
@@ -678,7 +717,7 @@ include '../../koneksi/koneksiAndrew.php';
                     // Remove anggota (no changes needed)
                     function removeAnggota() {
                         if (anggotaCount > 1) {
-                            const lastForm = document.getElementById(anggota-form-${anggotaCount});
+                            const lastForm = document.getElementById('anggota-form-' + anggotaCount);
                             if (lastForm) {
                                 lastForm.remove();
                                 anggotaCount--;
@@ -837,7 +876,7 @@ include '../../koneksi/koneksiAndrew.php';
                         let hasAnggota = false;
                         const selectedNIMs = new Set(); // Use a Set to check for duplicates
                         for (let i = 1; i <= anggotaCount; i++) {
-                            const nimInput = document.getElementById(anggota_nim_${i});
+                            const nimInput = document.getElementById('anggota_nim_' + i);
                             if (nimInput.value.trim() !== '') {
                                 // Check if NIM exists in the fetched mahasiswaData
                                 const foundMahasiswa = mahasiswaData.find(mhs => String(mhs.nim) === nimInput.value.trim());
