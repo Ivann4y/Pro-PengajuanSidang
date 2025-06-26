@@ -1,6 +1,8 @@
 <?php
-include '../../koneksi/koneksiAndrew.php';
 session_start();
+// $nim = $_SESSION['user_data']['nim'];
+include '../../koneksi/koneksiAndrew.php';
+
 
 // Cek apakah sidang dipilih
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
@@ -18,7 +20,7 @@ $dataMahasiswa = [
     'dosen' => '-'
 ];
 
-// ===== Cek apakah kolom nilai_akhir ada di tabel Sidang =====
+//Cek kolom nilai_akhir ada di tabel Sidang
 $sqlCheck = "SELECT TOP 1 * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Sidang' AND COLUMN_NAME='nilai_akhir'";
 $stmtCol = sqlsrv_query($conn, $sqlCheck);
 $kolomAda = false;
@@ -26,7 +28,7 @@ if ($stmtCol !== false && ($colRow = sqlsrv_fetch_array($stmtCol, SQLSRV_FETCH_A
     $kolomAda = true;
 }
 
-// ===== Ambil nilai_akhir jika kolom tersedia =====
+//Ambil nilai akhir
 if ($kolomAda) {
     $sqlVal = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
     $stmtVal = sqlsrv_query($conn, $sqlVal, array($id_sidang));
@@ -37,7 +39,7 @@ if ($kolomAda) {
     }
 }
 
-// ===== Hitung manual jika nilai_akhir belum ada =====
+//Hitung manual jika nilai_akhir belum ada
 if ($nilaiAkhir === null) {
     $sqlCalc = "
         SELECT 
@@ -65,7 +67,7 @@ if ($nilaiAkhir === null) {
     }
 }
 
-// ===== Ambil catatan dari Detail_Sidang =====
+//Ambil catatan dari Detail_Sidang
 $sqlCatatan = "SELECT catatan FROM Detail_Sidang WHERE id_sidang = ?";
 $stmtCat = sqlsrv_query($conn, $sqlCatatan, array($id_sidang));
 if ($stmtCat && ($rowCat = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC))) {
@@ -74,7 +76,7 @@ if ($stmtCat && ($rowCat = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC))) {
     }
 }
 
-// ===== Ambil data mahasiswa dari relasi Sidang, Mahasiswa, MataKuliah, Dosen =====
+// Ambil data mahasiswa dari relasi Sidang, Mahasiswa, MataKuliah, Dosen
 $sqlMhs = "
     SELECT 
         m.nim, m.nama_mhs, mk.nama_matkul, d.nama_dosen
