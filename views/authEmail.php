@@ -48,19 +48,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: lupaPassword.php?error=notfound&role=$role");
         exit();
     }
-}
-
-// Send reset password email
-// $result = sendResetPasswordEmail($email, $email);
-
-// if ($result['success']) {
-//     $_SESSION['reset_email'] = $email;
-//     $_SESSION['reset_role'] = $role;
-//     // Tampilkan notifikasi sukses di lupaPassword.php
-//     header("Location: lupaPassword.php?success=1&role=$role");
-//     exit();
-// } else {
-//     header("Location: lupaPassword.php?error=mail&role=$role");
-//     exit();
-// }
-// }
+}                                                                                                                                                                                                                                                                         
