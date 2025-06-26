@@ -1,13 +1,67 @@
 <?php
+session_start();
 include '../../koneksi/koneksiAndrew.php';
+
+
+if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
+    header("Location: aSidang.php");
+    exit();
+}
+$id_sidang = $_SESSION['selected_sidang_id'];
+
+
+$dataMahasiswa = [
+    'nim' => '-', 'nama' => '-', 'matkul' => '-', 'dosen' => '-'
+];
+$sqlMhs = "
+    SELECT 
+        m.nim, m.nama_mhs, mk.nama_matkul, d.nama_dosen
+    FROM Sidang s
+    JOIN Mahasiswa m ON s.nim = m.nim
+    JOIN PenanggungJawab pj ON pj.id_sidang = s.id_sidang
+    JOIN MataKuliah mk ON mk.id_matkul = pj.id_matkul
+    JOIN Dosen d ON d.nomor_dosen = pj.nomor_dosen
+    WHERE s.id_sidang = ?
+";
+$stmtMhs = sqlsrv_query($conn, $sqlMhs, array($id_sidang));
+if ($stmtMhs && ($row = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
+    $dataMahasiswa = [
+        'nim' => $row['nim'],
+        'nama' => $row['nama_mhs'],
+        'matkul' => $row['nama_matkul'],
+        'dosen' => $row['nama_dosen']
+    ];
+}
+
+
+$nilaiAkhir = '-';
+$sqlAkhir = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
+$stmtAkhir = sqlsrv_query($conn, $sqlAkhir, array($id_sidang));
+if ($stmtAkhir && ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC))) {
+    $nilaiAkhir = $rowAkhir['nilai_akhir'] ?? '-';
+}
+
+
+$nilaiSementara = []; 
+$sqlDetail = "
+    SELECT d.nama_dosen, ds.nilai, ds.catatan
+    FROM Detail_Sidang ds
+    JOIN Dosen d ON d.nomor_dosen = ds.nomor_dosen
+    WHERE ds.id_sidang = ?
+";
+$stmtDetail = sqlsrv_query($conn, $sqlDetail, array($id_sidang));
+if ($stmtDetail) {
+    while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
+        $nilaiSementara[] = [
+            'dosen' => $rowDetail['nama_dosen'],
+            'nilai' => $rowDetail['nilai'],
+            'catatan' => $rowDetail['catatan'] ?? 'Tidak ada catatan.'
+        ];
+    }
+}
 ?>
 
 
-
-<?php
-
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">
