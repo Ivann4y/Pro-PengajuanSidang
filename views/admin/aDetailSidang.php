@@ -1,7 +1,30 @@
 <?php
+// Letakkan ini di baris paling atas file
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    // Arahkan ke halaman login utama di root
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    // Arahkan ke halaman login utama di root
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
 require "../../koneksi/koneksiAndrew.php";
 
-session_start();
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("Error: ID Sidang tidak valid.");
 } 
@@ -82,23 +105,55 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
             }
         }
     }
-} elseif ($data_sidang['jenis_sidang'] == 1) { // Sidang Semester
-    // ... (Logika untuk sidang semester tidak perlu diubah) ...
-    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul WHERE ds.id_sidang = ?";
+} elseif ($data_sidang['jenis_sidang'] == 1) { 
+    // [LANGKAH 1] Ambil id_matkul dari detail sidang.
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul 
+                   FROM MataKuliah mk 
+                   JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul 
+                   WHERE ds.id_sidang = ?";
     $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
-    if ($stmt_matkul) { $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); }
+    if ($stmt_matkul) { 
+        $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); 
+    }
 
+    // [LANGKAH 2] Jika mata kuliah ditemukan, cari dosen pengampunya dengan benar.
     if ($data_matkul) {
+        // Ambil variabel yang dibutuhkan dari data yang sudah ada
         $id_matkul = $data_matkul['id_matkul'];
-        $sql_pengampu = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
-        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
-        if ($stmt_pengampu) {
-            while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
-                $dosen_pengampu[] = $row['nama_dosen'];
-            }
+        $id_kelompok = $data_sidang['id_kelompok']; // Kita sudah punya id_kelompok
+
+        // [PERBAIKAN UTAMA] Query yang benar untuk mengambil dosen pengampu
+        $sql_pengampu = "SELECT d.nama_dosen 
+            FROM Dosen d 
+            JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen 
+            WHERE 
+                -- Filter 1: Mencocokkan mata kuliah dengan placeholder
+                pk.id_matkul = ?
+                
+                -- Filter 2: Mencocokkan kelas mahasiswa dengan subquery dan placeholder
+                AND pk.id_kelas = (
+                    SELECT TOP 1 km.id_kelas
+                    FROM Kelompok_Mahasiswa kpm
+                    JOIN Kelas_Mahasiswa km ON kpm.nim = km.nim
+                    WHERE kpm.id_kelompok = ?
+                )
+        ";
+
+        // [PERBAIKAN PARAMETER] Berikan DUA parameter yang dibutuhkan: id_matkul dan id_kelompok
+        $params_pengampu = array($id_matkul, $id_kelompok);
+        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, $params_pengampu);
+
+        if ($stmt_pengampu === false) {
+            die("Error pada query pengampu: " . print_r(sqlsrv_errors(), true));
+        }
+        
+        // Ambil semua nama dosen dan masukkan ke array
+        while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
+            $dosen_pengampu[] = $row['nama_dosen'];
         }
     }
 }
+
 
 // Ambil daftar semua dosen untuk autocomplete
 $dosen_list_penguji = [];
@@ -127,695 +182,9 @@ $dosen_list_json = json_encode($dosen_list_penguji);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/aDetailSidang.css">
 
-    <style>
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            background-color: #ffffff;
-        }
-
-        #NavSide {
-            display: flex;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        .NavSide__sidebar-brand {
-            padding: 10% 5% 50% 5%;
-            text-align: center;
-        }
-
-        .NavSide__sidebar-brand img {
-            width: 90%;
-            max-width: 180px;
-            height: auto;
-            display: inline-block;
-        }
-
-        .NavSide__sidebar {
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            bottom: 0px;
-            width: 280px;
-            border-radius: 1px;
-            box-sizing: border-box;
-            border-left: 5px solid #4B68FB;
-            background: #4B68FB;
-            overflow-x: hidden;
-            overflow-y: auto;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
-        }
-
-        .NavSide__sidebar-nav {
-            width: 100%;
-            padding-left: 0;
-            padding-top: 0;
-            list-style: none;
-            flex-grow: 1;
-        }
-
-        .NavSide__sidebar-item {
-            position: relative;
-            display: block;
-            width: 100%;
-            border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
-        }
-
-        .NavSide__sidebar-item a {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            text-decoration: none;
-            color: #ffffff;
-            padding: 5% 2%;
-            height: 60px;
-            box-sizing: border-box;
-        }
-
-        .NavSide__sidebar-title {
-            white-space: normal;
-            text-align: center;
-            line-height: 1.5;
-        }
-
-        .NavSide__sidebar-item.NavSide__sidebar-item--active {
-            background: #ffffff;
-        }
-
-        .NavSide__sidebar-item.NavSide__sidebar-item--active a {
-            color: #4B68FB;
-        }
-
-        .NavSide__sidebar-item b:nth-child(1) {
-            position: absolute;
-            top: -20px;
-            height: 20px;
-            width: 100%;
-            background: rgb(255, 255, 255);
-            display: none;
-        }
-
-        .NavSide__sidebar-item b:nth-child(1)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-bottom-right-radius: 20px;
-            background: #4B68FB;
-            display: block;
-        }
-
-        .NavSide__sidebar-item b:nth-child(2) {
-            position: absolute;
-            bottom: -20px;
-            height: 20px;
-            width: 100%;
-            background: rgb(255, 255, 255);
-            display: none;
-        }
-
-        .NavSide__sidebar-item b:nth-child(2)::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-top-right-radius: 20px;
-            background: #4B68FB;
-            display: block;
-        }
-
-        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
-        .NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
-            display: block;
-        }
-
-        /* === PERUBAHAN CSS BAGIAN 1: GAYA TOPBAR === */
-        .NavSide__topbar {
-            display: none;
-            /* Sembunyikan di desktop, muncul di mobile */
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            /* Dimulai dari kiri */
-            width: 100%;
-            /* Lebar penuh */
-            height: 60px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 1045;
-            /* Pastikan di atas sidebar saat mobile */
-            padding-left: 15px;
-            /* Beri sedikit jarak untuk tombol toggle */
-        }
-
-        .NavSide__main-content {
-            flex-grow: 1;
-            padding: 20px;
-            margin-left: 280px;
-            overflow-y: auto;
-            transition: margin-left 0.5s ease-in-out;
-            /* Tambahkan padding-top agar konten tidak tertutup topbar di mobile */
-            padding-top: calc(60px + 20px);
-        }
-
-        /* === PERUBAHAN CSS BAGIAN 2: GAYA H2 === */
-        .NavSide__main-content h2 {
-            margin-bottom: 1.2cm;
-            /* Menyamakan margin-bottom */
-            font-weight: 700;
-            /* Menyamakan ketebalan font */
-            margin-left: 30px;
-
-
-        }
-
-
-
-        .NavSide__toggle {
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            position: relative;
-            /* ubah ke relative agar ikon bisa absolute di dalamnya */
-        }
-
-        .NavSide__toggle i.bi {
-            position: absolute;
-            font-size: 28px;
-            display: none;
-            color: #4B68FB;
-            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
-        }
-
-        .NavSide__toggle i.bi.open {
-            display: block;
-        }
-
-        .NavSide__toggle.NavSide__toggle--active i.bi.open {
-            display: none;
-        }
-
-        .NavSide__toggle.NavSide__toggle--active i.bi.close {
-            display: block;
-        }
-
-        @media (max-width: 700px) {
-            .NavSide__topbar {
-                display: flex;
-            }
-
-            .NavSide__sidebar {
-                width: 50%;
-                transform: translateX(-100%);
-                border-left-width: 0;
-                z-index: 1040;
-                padding-top: 60px;
-                /* Sisakan ruang untuk topbar */
-            }
-
-            .NavSide__sidebar.NavSide__sidebar--active-mobile {
-                transform: translateX(0);
-                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
-            }
-
-            .NavSide__main-content {
-                margin-left: 0;
-                /* Konten memenuhi layar */
-                padding: 20px;
-                /* Reset padding */
-                padding-top: calc(60px + 20px);
-                /* Jaga jarak dari topbar */
-            }
-        }
-
-        /* Gaya lain yang sudah ada dipertahankan */
-        .status-badge {
-            background-color: #4fd382;
-            color: #f3f4f6;
-            border-radius: 20px;
-            padding: 8px 18px;
-            display: inline-block;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-            font-weight: 500;
-            margin-left: 30px;
-        }
-
-        .info-card {
-            position: relative;
-            background: rgb(235, 238, 245);
-            border-radius: 30px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-            overflow: hidden;
-            transition: background-color 0.4s ease;
-            margin-right: 30px;
-            margin-left: 30px;
-        }
-
-        .info-card::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px;
-            height: 100%;
-            background-color: #4B68FB;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-            transition: width 0.4s ease;
-            z-index: 0;
-        }
-
-        .info-card:hover::after {
-            width: 100%;
-            border-radius: 20px;
-        }
-
-        .info-card .section {
-            flex: 0 0 48%;
-            margin-bottom: 15px;
-            z-index: 1;
-            color: #333;
-            transition: color 0.4s ease;
-        }
-
-        .info-card:hover .section {
-            color: white;
-        }
-
-        .info-card .section i {
-            margin-right: 10px;
-            color: rgb(70, 70, 70);
-            transition: color 0.4s ease;
-            width: 20px;
-            text-align: center;
-        }
-
-        .info-card:hover .section i {
-            color: white;
-        }
-
-        .btn-ubah {
-            background-color: #4B68FB;
-            color: white;
-            border: 2px solid #4B68FB;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            padding: 12px 30px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-            margin-left: 30px;
-        }
-
-        .btn-ubah:hover {
-            background-color: rgb(255, 255, 255);
-            border: 2px solid #4B68FB;
-            color: #4B68FB;
-            position: relative;
-        }
-
-        .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            margin-top: 3cm;
-            margin-left: 30px;
-
-        }
-
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 25px;
-            height: 25px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-            font-size: 1rem;
-            transition: color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
-
-
-        /* Sisa CSS untuk modal dan lainnya dipertahankan seperti aslinya */
-        .modal-content-custom-form {
-            border-radius: 25px !important;
-        }
-
-        .modal-body .form-container {
-            padding: 15px;
-            background-color: rgb(255, 255, 255);
-            border-radius: 20px;
-        }
-
-        .modal-body .form-container h2 {
-            font-size: 1.25rem;
-            margin-bottom: 20px;
-            text-align: center;
-            color: rgb(51, 47, 47);
-        }
-
-        .modal-body .form-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .modal-body .form-group label {
-            width: 160px;
-            flex-shrink: 0;
-            color: rgb(51, 47, 47);
-            font-weight: bold;
-            font-size: 14px;
-            margin-right: 15px;
-            text-align: left;
-        }
-
-        .modal-body .form-group .input-with-buttons,
-        .modal-body .form-group .time-input-range,
-        .modal-body .form-group>input[type="text"] {
-            flex-grow: 1;
-            height: 35px;
-            display: flex;
-            align-items: center;
-        }
-
-        .modal-body .form-group>input[type="date"] {
-            flex-grow: 1;
-            height: 35px;
-        }
-
-        .modal-body .form-group input[type="text"],
-        .modal-body .form-group input[type="date"],
-        .modal-body .form-group input[type="time"] {
-            width: 100%;
-            height: 35px;
-            padding: 0 15px;
-            border: 1px solid #D1D5DB;
-            background-color: rgb(255, 255, 255);
-            box-sizing: border-box;
-            font-size: 14px;
-            color: #374151;
-            border-radius: 26px;
-        }
-
-        .modal-body .form-group input[readonly] {
-            background-color: #f3f4f6;
-            cursor: not-allowed;
-        }
-
-        .input-with-percent {
-            position: relative;
-            width: 120px;
-            flex-shrink: 0;
-        }
-
-        .form-control-bobot {
-            width: 100%;
-            height: 35px;
-            padding: 0 15px;
-            padding-right: 30px;
-            /* Beri ruang di kanan untuk simbol % */
-            text-align: right;
-            /* Agar angka menempel di kanan dekat simbol % */
-            border: 1px solid #D1D5DB;
-            border-radius: 26px;
-            box-sizing: border-box;
-            font-size: 14px;
-            color: #374151;
-        }
-
-        .form-control-bobot::-webkit-outer-spin-button,
-        .form-control-bobot::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .form-control-bobot {
-            -moz-appearance: textfield;
-        }
-
-        .percent-sign {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #888;
-            pointer-events: none;
-            /* Agar bisa diklik tembus */
-        }
-
-        .modal-body .input-with-buttons {
-            display: flex;
-            align-items: center;
-            /* Diubah ke center agar sejajar dengan textbox bobot */
-            gap: 15px;
-            width: 100%;
-        }
-
-        .modal-body .input-with-buttons input[type="text"] {
-            flex-grow: 1;
-        }
-
-        .modal-body .time-input-range {
-            display: flex;
-            /* Ditambahkan agar gap berfungsi */
-            gap: 10px;
-            width: 100%;
-        }
-
-        .modal-body .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 25px;
-            padding-left: calc(160px + 15px);
-        }
-
-        .modal-body .form-actions .btn-batal {
-            background-color: #ff5f5f;
-            color: rgb(255, 255, 255);
-            border: none;
-            border-radius: 20px;
-            padding: 5px 10px;
-            height: 40px;
-            width: 120px;
-            margin-right: 10px;
-        }
-
-        .modal-body .form-actions .btn-submit {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 5px 10px;
-            height: 40px;
-            width: 200px;
-        }
-
-        .modal-body .form-actions .btn-submit:hover {
-            background-color: rgb(106, 95, 255);
-        }
-
-        .modal-body>h2 {
-            font-size: 30px;
-            color: #374151;
-            font-weight: 600;
-            margin-bottom: 10px;
-            margin-left: 10px;
-        }
-
-        #penjadwalanSidangModal .modal-dialog {
-            max-width: 600px;
-        }
-
-        .modal-body .form-toggle-buttons {
-            display: inline-flex;
-            gap: 10px;
-            margin-top: 5px;
-            margin-bottom: 20px;
-            padding-left: 175px;
-        }
-
-        .modal-body .form-toggle-buttons button {
-            width: 175.5px;
-            height: 35px;
-            padding: 8px 15px;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border-radius: 35px;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            background-color: white;
-            transition: background-color 0.2s ease;
-        }
-
-        .modal-body .form-toggle-buttons button:hover {
-            background-color: #ddd;
-        }
-
-        .page-nama {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-top: -35px;
-            margin-bottom: 20px;
-            margin-left: 30px;
-
-        }
-
-        .mt-4 {
-            margin-left: 30px;
-        }
-.autocomplete-container {
-    position: relative;
-    flex-grow: 1;
-}
-
-.autocomplete-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    border: 1px solid #d1d5db;
-    background-color: white;
-    z-index: 9999;
-    border-radius: 8px; /* Dibuat lebih rounded */
-    max-height: 200px;
-    overflow-y: auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.autocomplete-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-    color: #333; /* Warna teks default */
-    transition: background-color 0.2s, color 0.2s; /* Transisi halus */
-}
-
-.autocomplete-item:last-child {
-    border-bottom: none;
-}
-
-/* [PERUBAHAN UTAMA] Efek hover yang baru */
-.autocomplete-item:hover {
-    background-color: #4B68FB; /* Background biru */
-    color: #ffffff;             /* Teks putih */
-}
-
-
-
-
-        @media (max-width: 768px) {
-
-
-            .modal-body .form-group {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .modal-body .form-group label {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 8px;
-                text-align: left;
-            }
-
-
-            .modal-body .form-toggle-buttons {
-                padding-left: 0;
-                justify-content: center;
-                width: 100%;
-            }
-
-            .modal-body .form-actions {
-                flex-direction: column;
-                padding-left: 0;
-                gap: 10px;
-            }
-
-            .modal-body .form-actions .btn-batal,
-            .modal-body .form-actions .btn-submit {
-                width: 100%;
-                margin-right: 0;
-            }
-
-            .info-card {
-                padding-right: 80px;
-                box-sizing: border-box;
-            }
-
-            .modal-body .form-toggle-buttons button {
-                font-size: 12px;
-                padding: 6px 10px;
-                gap: 5px;
-
-            }
-        }
-    </style>
+    
 </head>
 
 <body>

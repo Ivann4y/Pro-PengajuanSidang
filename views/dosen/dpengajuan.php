@@ -11,7 +11,6 @@ include '../../koneksi/koneksiAndrew.php';
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -109,7 +108,7 @@ include '../../koneksi/koneksiAndrew.php';
                     </div>
                     <div class="row mt-2">
                         <div class="col-12 d-flex justify-content-end">
-                            <button class="btn kelompok-btn" style="max-width:300px;" onclick="openKelompokModal()">
+                            <button class="btn kelompok-btn" style="max-width:300px;" onclick="openKelompokModal()" id="kelompokBtn">
                                 <i class="bi bi-people-fill me-2"></i>Kelompok
                             </button>
                         </div>
@@ -129,6 +128,7 @@ include '../../koneksi/koneksiAndrew.php';
 
                         <tbody id="dPengajuanTA">
                             <?php
+<<<<<<< HEAD
                            $no = 1;
                       $sqlTA = "SELECT s.id_sidang, s.id_kelompok, s.judul, m.nama_matkul, d.nama_dosen
                                 FROM Sidang s
@@ -190,15 +190,54 @@ include '../../koneksi/koneksiAndrew.php';
                                     </td>
                                 </tr>
                                 <?php
+=======
+                            $no = 1;
+                            $sqlTA = "SELECT DISTINCT 
+                                s.id_sidang, 
+                                s.id_kelompok, 
+                                mh.nama_mhs, 
+                                s.judul, 
+                                s.jenis_sidang, 
+                                d.nama_dosen, 
+                                mk.nama_matkul,
+                                s.dok_laporan
+                            FROM Sidang s
+                            JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+                            JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+                            LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+                            LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+                            JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+                            JOIN Mahasiswa mh ON km.nim = mh.nim
+                            WHERE d.nomor_dosen = '$nomorDosen' AND b.isPembimbing = 1 AND s.jenis_sidang = 'TA'
+                            ORDER BY s.id_sidang;";
+                            $resultTA = sqlsrv_query($conn, $sqlTA);
+                            if ($resultTA && sqlsrv_has_rows($resultTA)) {
+                                while ($row = sqlsrv_fetch_array($resultTA, SQLSRV_FETCH_ASSOC)) {
+                                    ?>
+                                    <tr class="isiTabel jadiBiru">
+                                        <td><?= $no++; ?></td>
+                                        <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
+                                        <td><?= htmlspecialchars($row['judul']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                        <td style="text-align: center;">
+                                            <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'TA')">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                            } else {
+                                echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
+>>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
                             }
-                        } else {
-                            echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
-                        }
                             ?>
                         </tbody>
                         <tbody id="dPengajuanSem" style="display: none;">
                             <?php
                             $no = 1;
+<<<<<<< HEAD
                             $sqlSem = "SELECT s.id_sidang, s.id_kelompok, s.judul, m.nama_matkul, d.nama_dosen
                                         FROM Sidang s
                                         JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
@@ -211,6 +250,29 @@ include '../../koneksi/koneksiAndrew.php';
                             $resultSem = sqlsrv_query($conn, $sqlSem, $paramsSem);
                             if ($resultSem && sqlsrv_has_rows($resultSem) > 0) {
                                 while ($row = sqlsrv_fetch_assoc($resultSem)) {
+=======
+                            $sqlSem = "SELECT DISTINCT 
+                                s.id_sidang, 
+                                s.id_kelompok, 
+                                mh.nama_mhs, 
+                                s.judul, 
+                                s.jenis_sidang, 
+                                d.nama_dosen, 
+                                mk.nama_matkul,
+                                s.dok_laporan
+                            FROM Sidang s
+                            JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+                            JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+                            LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+                            LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+                            JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+                            JOIN Mahasiswa mh ON km.nim = mh.nim
+                            WHERE d.nomor_dosen = '$nomorDosen' AND b.isPembimbing = 1 AND s.jenis_sidang = 'Semester'
+                            ORDER BY s.id_sidang;";
+                            $resultSem = sqlsrv_query($conn, $sqlSem);
+                            if ($resultSem && sqlsrv_has_rows($resultSem)) {
+                                while ($row = sqlsrv_fetch_array($resultSem, SQLSRV_FETCH_ASSOC)) {
+>>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
                                     ?>
                                     <tr class="isiTabel jadiBiru">
                                         <td><?= $no++; ?></td>
@@ -227,7 +289,7 @@ include '../../koneksi/koneksiAndrew.php';
                                     <?php
                                 }
                             } else {
-                                echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang Semester.</td></tr>';
+                                // echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang Semester.</td></tr>';
                             }
                             ?>
                         </tbody>
@@ -385,7 +447,7 @@ include '../../koneksi/koneksiAndrew.php';
                             for (let i = 1; i <= pageCount; i++) {
                                 const pageButton = document.createElement('li');
                                 pageButton.className = 'page-item';
-                                pageButton.innerHTML = <a class="page-link" href="#">${i}</a>;
+                                pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
                                 pageButton.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     currentPage = i;
@@ -500,11 +562,32 @@ include '../../koneksi/koneksiAndrew.php';
 
                     // Initialize modal and data
                     document.addEventListener('DOMContentLoaded', function() {
+                        console.log('DOMContentLoaded - Initializing modal');
                         const kelompokModalEl = document.getElementById('kelompokModal');
+                        console.log('kelompokModalEl:', kelompokModalEl);
+                        
                         if (kelompokModalEl) {
-                            kelompokModalInstance = new bootstrap.Modal(kelompokModalEl);
+                            // Check if Bootstrap is available
+                            if (typeof bootstrap !== 'undefined') {
+                                kelompokModalInstance = new bootstrap.Modal(kelompokModalEl);
+                                console.log('Modal instance created with Bootstrap:', kelompokModalInstance);
+                            } else {
+                                console.error('Bootstrap is not loaded');
+                                // Fallback: try to initialize after a short delay
+                                setTimeout(() => {
+                                    if (typeof bootstrap !== 'undefined') {
+                                        kelompokModalInstance = new bootstrap.Modal(kelompokModalEl);
+                                        console.log('Modal instance created with delayed Bootstrap:', kelompokModalInstance);
+                                    } else {
+                                        console.error('Bootstrap still not available after delay');
+                                    }
+                                }, 1000);
+                            }
+                            
                             // Event listener to reset form when modal is hidden
                             kelompokModalEl.addEventListener('hidden.bs.modal', resetKelompokForm);
+                        } else {
+                            console.error('kelompokModal element not found');
                         }
 
                         // Set up form submission
@@ -515,6 +598,15 @@ include '../../koneksi/koneksiAndrew.php';
 
                         // Initial data load for mahasiswa
                         fetchMahasiswaData();
+                        
+                        // Add event listener to kelompok button as backup
+                        const kelompokBtn = document.getElementById('kelompokBtn');
+                        if (kelompokBtn) {
+                            kelompokBtn.addEventListener('click', function(e) {
+                                console.log('Kelompok button clicked via event listener');
+                                openKelompokModal();
+                            });
+                        }
                     });
 
                     // Function to fetch mahasiswa data from the backend
@@ -534,6 +626,15 @@ include '../../koneksi/koneksiAndrew.php';
 
                     // Open Kelompok Modal
                     function openKelompokModal() {
+                        console.log('openKelompokModal called');
+                        console.log('kelompokModalInstance:', kelompokModalInstance);
+                        
+                        if (!kelompokModalInstance) {
+                            console.error('Modal instance not initialized');
+                            alert('Modal tidak dapat dibuka. Silakan refresh halaman.');
+                            return;
+                        }
+                        
                         resetKelompokForm(); // Ensure form is reset every time it opens
                         setNextKelompokId(); // Fetch and set the next Kelompok ID
                         switchTab('tambah'); // Default to 'Tambah Kelompok' tab
@@ -590,14 +691,13 @@ include '../../koneksi/koneksiAndrew.php';
                         const dropdown = document.getElementById(autocomplete_${anggotaIndex});
                         const namaDisplay = document.getElementById(anggota_nama_${anggotaIndex});
 
-                        // Debug logs
                         // console.log('currentProdi:', currentProdi);
                         // console.log('mahasiswaData sample:', mahasiswaData.slice(0, 5));
 
                         // Clear name display and hide dropdown if input is empty
                         if (query.length === 0) {
                             dropdown.style.display = 'none';
-                            namaDisplay.textContent = 'Nama akan muncul otomatis'; // Reset display
+                            namaDisplay.textContent = 'Nama mahasiswa'; // Reset display
                             return;
                         }
 
@@ -667,7 +767,7 @@ include '../../koneksi/koneksiAndrew.php';
                         const wrapper = document.getElementById('anggota-wrapper');
                         const div = document.createElement('div');
                         div.className = 'anggota-form-group';
-                        div.id = anggota-form-${anggotaCount};
+                        div.id = 'anggota-form-' + anggotaCount;
                         div.innerHTML = `
                         <label for="anggota_nim_${anggotaCount}">Anggota ${anggotaCount}:</label>
                         <div class="anggota-input-group">
@@ -689,7 +789,7 @@ include '../../koneksi/koneksiAndrew.php';
                     // Remove anggota (no changes needed)
                     function removeAnggota() {
                         if (anggotaCount > 1) {
-                            const lastForm = document.getElementById(anggota-form-${anggotaCount});
+                            const lastForm = document.getElementById('anggota-form-' + anggotaCount);
                             if (lastForm) {
                                 lastForm.remove();
                                 anggotaCount--;
@@ -848,7 +948,7 @@ include '../../koneksi/koneksiAndrew.php';
                         let hasAnggota = false;
                         const selectedNIMs = new Set(); // Use a Set to check for duplicates
                         for (let i = 1; i <= anggotaCount; i++) {
-                            const nimInput = document.getElementById(anggota_nim_${i});
+                            const nimInput = document.getElementById('anggota_nim_' + i);
                             if (nimInput.value.trim() !== '') {
                                 // Check if NIM exists in the fetched mahasiswaData
                                 const foundMahasiswa = mahasiswaData.find(mhs => String(mhs.nim) === nimInput.value.trim());
@@ -932,4 +1032,8 @@ include '../../koneksi/koneksiAndrew.php';
                 <script src="../../assets/js/main.js"></script>
 </body>
 
+<<<<<<< HEAD
 </html> 
+=======
+</html>
+>>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c

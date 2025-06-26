@@ -1,95 +1,123 @@
 <?php
-// Start the session to get the logged-in user's ID
-session_start();
-
-include '../../koneksi/koneksiAndrew.php'; // Your SQL Server connection
-
-$success_message = '';
-$error_message = '';
-
-// --- IMPORTANT ---
-// Assume the logged-in student's NIM is stored in the session.
-// You MUST set this variable after a successful login.
-// For this example, I'll hardcode it, but in your real app, it must come from the session.
-// $_SESSION['user_nim'] = '12345678'; // Example NIM
-if (!isset($_SESSION['user_nim'])) {
-    // For now, we will use a placeholder NIM. Replace '12345678' with a real NIM from your Mahasiswa table.
-    // die("Error: User is not logged in. Session 'user_nim' not set.");
-     $nim_mahasiswa_logged_in = '1000000001'; // <-- REPLACE WITH A REAL, EXISTING NIM FOR TESTING
-} else {
-    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
+$path_to_root = '../../';
 
-// Handle form submission
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+$success_message = '';
+$error_message = '';
+$nim_mahasiswa_logged_in = $_SESSION['user_data']['nim'];
+
+// Menangani pengiriman form
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
-    // --- DYNAMICALLY LOOK UP THE STUDENT'S GROUP ID (id_kelompok) ---
+    // LANGKAH 1: Buat ID Sidang baru secara manual
+    $next_id_sidang = 1;
+    $sql_id = "SELECT MAX(id_sidang) AS max_id FROM dbo.Sidang";
+    $stmt_id = sqlsrv_query($conn, $sql_id);
+    if ($stmt_id && $row_id = sqlsrv_fetch_array($stmt_id, SQLSRV_FETCH_ASSOC)) {
+        if ($row_id['max_id'] !== null) {
+            $next_id_sidang = $row_id['max_id'] + 1;
+        }
+    }
+
+    // LANGKAH 2: Cari ID Kelompok mahasiswa
     $id_kelompok = null;
-    
-    // *** FIX: Changed the query to use 'nim' which is a likely column name in Kelompok_Mahasiswa ***
-    // This query finds the group ID associated with the logged-in student's NIM.
     $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?";
     $params_kelompok = [$nim_mahasiswa_logged_in];
-    
     $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
-
-    if ($stmt_kelompok === false) {
-        // Stop execution and show the exact database error.
-        die("Error fetching group ID: " . print_r(sqlsrv_errors(), true));
+    if ($stmt_kelompok && $row_kel = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
+        $id_kelompok = $row_kel['id_kelompok'];
     }
-    
-    // Fetch the result
-    if ($row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
-        $id_kelompok = $row['id_kelompok'];
-    }
-    sqlsrv_free_stmt($stmt_kelompok);
 
-    // If no group was found for the student, we can either stop or allow the submission with a NULL id_kelompok.
-    // Since your Sidang table allows NULL for id_kelompok, we will proceed.
-
-    // Get the rest of the form data
-    $judul = $_POST['judul'];
-    $jenis_sidang_name = $_POST['matkul']; // The NAME of the course, e.g., "Tugas Akhir"
-    $aksi = $_POST['aksi'];
-    $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
-    
-    // Handle file upload
-    $dok_laporan_filename = null;
-    if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
-        $file = $_FILES['DokumenSidang'];
-        $uploadDir = '../../uploads/laporan/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
+    // LANGKAH 3: Cari Dosen Pembimbing untuk relasi ke Detail_Sidang
+    $nomor_dosen_pembimbing = null;
+    if ($id_kelompok) {
+        $sql_dosen = "SELECT nomor_dosen FROM dbo.Bimbingan WHERE id_kelompok = ? AND isPembimbing = 0x01";
+        $params_dosen = [$id_kelompok];
+        $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
+        if ($stmt_dosen && $row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
+            $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
         }
-        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $dok_laporan_filename = 'laporan_' . uniqid('', true) . '.' . $fileExt;
-        $uploadPath = $uploadDir . $dok_laporan_filename;
-        move_uploaded_file($file['tmp_name'], $uploadPath);
+    }
+    
+    // LANGKAH 4: Baca isi file (konten biner) ke dalam variabel
+    $dok_laporan_content = null;
+    if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
+        $fileTmpName = $_FILES['DokumenSidang']['tmp_name'];
+        // file_get_contents membaca seluruh isi file menjadi string biner
+        $dok_laporan_content = file_get_contents($fileTmpName);
     }
 
-    // Determine the 'jenis_sidang' bit value based on the course name
-    $jenis_sidang_bit = ($jenis_sidang_name == 'Tugas Akhir') ? 0 : 1;
-
-    // --- FINAL INSERT STATEMENT ---
-    $sql = "INSERT INTO dbo.Sidang (judul, waktu_pengumpulan, dok_laporan, status_ajuan, status_sidang, jenis_sidang, id_kelompok, dok_final) 
-            VALUES (?, GETDATE(), ?, ?, ?, ?, ?, NULL)";
+    // LANGKAH 5: Ambil data form lainnya
+    $judul = $_POST['judul'];
+    $id_matkul_terpilih = $_POST['matkul'];
+    $aksi = $_POST['aksi'];
+    $status_ajuan = ($aksi == 'Kirim') ? 0x01 : 0x00; // Gunakan format biner 0x01 / 0x00
     
-    $params = [
-        $judul, 
-        $dok_laporan_filename,
-        $status_ajuan, 
-        0, // status_sidang (default)
+    // Tentukan jenis sidang
+    $sql_get_matkul_name = "SELECT nama_matkul FROM dbo.MataKuliah WHERE id_matkul = ?";
+    $params_get_matkul_name = [$id_matkul_terpilih];
+    $stmt_get_matkul_name = sqlsrv_query($conn, $sql_get_matkul_name, $params_get_matkul_name);
+    $nama_matkul_terpilih = '';
+    if ($row_matkul = sqlsrv_fetch_array($stmt_get_matkul_name, SQLSRV_FETCH_ASSOC)) {
+        $nama_matkul_terpilih = $row_matkul['nama_matkul'];
+    }
+    $jenis_sidang_bit = ($nama_matkul_terpilih == 'Tugas Akhir') ? 0x00 : 0x01;
+    
+    // LANGKAH 6: INSERT PERTAMA KE TABEL 'Sidang'
+    $sql_sidang = "INSERT INTO dbo.Sidang (
+                    id_sidang, judul, waktu_pengumpulan, dok_laporan, 
+                    status_ajuan, jenis_sidang, id_kelompok
+                   ) 
+                   VALUES (?, ?, GETDATE(), ?, ?, ?, ?)";
+    
+    // Perhatikan urutan parameter dan penanganan data biner
+    $params_sidang = [
+        $next_id_sidang,
+        $judul,
+        array($dok_laporan_content, SQLSRV_PARAM_IN, SQLSRV_PHPTYPE_STREAM(SQLSRV_ENC_BINARY)),
+        $status_ajuan,
         $jenis_sidang_bit,
-        $id_kelompok // This will be the found ID or NULL if not found
+        $id_kelompok
     ];
     
-    $stmt = sqlsrv_prepare($conn, $sql, $params);
+    $stmt_sidang = sqlsrv_prepare($conn, $sql_sidang, $params_sidang);
 
-    if ($stmt && sqlsrv_execute($stmt)) {
-        $success_message = ($status_ajuan == 1) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
+    if ($stmt_sidang && sqlsrv_execute($stmt_sidang)) {
+        // Jika INSERT pertama berhasil, lanjut ke INSERT kedua
+        
+        // LANGKAH 7: INSERT KEDUA KE TABEL 'Detail_Sidang'
+        $sql_detail = "INSERT INTO dbo.Detail_Sidang (id_sidang, nomor_dosen, id_matkul) 
+                       VALUES (?, ?, ?)";
+        $params_detail = [$next_id_sidang, $nomor_dosen_pembimbing, $id_matkul_terpilih];
+        $stmt_detail = sqlsrv_prepare($conn, $sql_detail, $params_detail);
+
+        if ($stmt_detail && sqlsrv_execute($stmt_detail)) {
+            $success_message = ($status_ajuan == 0x01) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
+        } else {
+            // Jika insert kedua gagal, ini jadi masalah.
+            $error_message = "Data sidang utama tersimpan, tapi gagal menyimpan detail mata kuliah. Error: " . print_r(sqlsrv_errors(), true);
+        }
+
     } else {
-        $error_message = "Gagal menyimpan data. Detail: " . print_r(sqlsrv_errors(), true);
+        $error_message = "Gagal menyimpan data pengajuan. Detail: " . print_r(sqlsrv_errors(), true);
     }
 }
 ?>
@@ -109,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <title>Edit Pengajuan Sidang</title>
+  <title>Tambah Pengajuan Sidang</title>
   <style>
     .file-selected {
       background-color: #d1fae5 !important;
@@ -124,9 +152,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 </head>
 
 <body>
-  <!-- The rest of your HTML and JavaScript is correct and does not need to be changed. -->
-  <!-- I am including it here for completeness. -->
-
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
@@ -170,46 +195,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
             <hr>
           </div>
 
-          <?php
-          $judul = $_GET['judul'] ?? '';
-          $matkul = $_GET['matkul'] ?? '';
-          ?>
           <form action="" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="id_sidang" value="<?php echo $next_id; ?>">
             <input type="hidden" name="aksi" id="formAksi" value="">
             
             <div class="mb-3">
               <label for="judul" class="form-label">Judul Sidang
                 <span class="text-danger">* </span>
               </label>
-              <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo htmlspecialchars($judul); ?>" placeholder="Masukkan Judul Sidang" />
+              <input type="text" class="forM form-control" id="judul" name="judul" placeholder="Masukkan Judul Sidang" required />
             </div>
-                        <div class="mb-3">
+            <div class="mb-3">
               <label for="matkul" class="form-label">Mata Kuliah
                 <span class="text-danger">* </span>
               </label>
-              <select class="forM form-select" id="matkul" name="matkul">
-                <option selected disabled>Pilih Mata Kuliah</option>
+              <select class="forM form-select" id="matkul" name="matkul" required>
+                <option value="" selected disabled>Pilih Mata Kuliah</option>
                 <?php
-                  // Fetch all courses from the database to populate the dropdown
+                  // Mengambil semua mata kuliah dari database untuk mengisi dropdown
                   $sql_matkul = "SELECT id_matkul, nama_matkul FROM dbo.MataKuliah ORDER BY nama_matkul ASC";
                   $stmt_matkul = sqlsrv_query($conn, $sql_matkul);
-                  if ($stmt_matkul === false) {
-                      // Basic error handling
-                      echo '<option disabled>Error memuat mata kuliah</option>';
-                  } else {
-                      // Loop through the results and create an <option> for each one
-                      while ($matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC)) {
-                          echo '<option value="' . htmlspecialchars($matkul['id_matkul']) . '">' . htmlspecialchars($matkul['nama_matkul']) . '</option>';
+                  if ($stmt_matkul) {
+                      while ($matkul_row = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC)) {
+                          echo '<option value="' . htmlspecialchars($matkul_row['id_matkul']) . '">' . htmlspecialchars($matkul_row['nama_matkul']) . '</option>';
                       }
+                  } else {
+                      echo '<option disabled>Error memuat mata kuliah</option>';
                   }
-                  // Free the statement resource
                   sqlsrv_free_stmt($stmt_matkul);
                 ?>
               </select>
             </div>
 
-            <!-- Upload Dokumen Laporan Sidang -->
             <div class="row">
               <div class="mb-4">
                 <div class="p-4 rounded bg-light border text-start">
@@ -218,13 +234,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
                   </h6>
                   <div id="DokumenSidangForm">
                     <label class="upload-box w-100 mt-3 text-center">
-                      <input type="file" id="DokumenSidang" name="DokumenSidang" accept=".pdf,.docx,.pptx,.zip" hidden />
+                      <input type="file" id="DokumenSidang" name="DokumenSidang" accept=".pdf,.docx,.pptx,.zip" hidden required />
                       <div class="upload-content">
                         <svg id="uploadIcon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="bi bi-upload" viewBox="0 0 16 16">
                           <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z" />
                           <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z" />
                         </svg>
-                        <p class="mt-2 text-muted small DokumenLabelText">Upload file revisi dengan format pdf, docx, pptx, dan zip</p>
+                        <p class="mt-2 text-muted small DokumenLabelText">Upload file dengan format pdf, docx, pptx, dan zip</p>
                         <div id="fileNameDisplay" class="file-name mt-2"></div>
                       </div>
                     </label>
@@ -236,7 +252,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
               </div>
             </div>
 
-            <!-- Modal -->
             <div class="modal fade" id="modalValidasi" tabindex="-1" aria-labelledby="modalValidasiLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
@@ -244,7 +259,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
                     <h4 class="modal-title fw-bold" id="modalValidasiLabel" style="font-size: 24px;">Perhatian</h4>
                   </div>
                   <div class="modal-body">
-                    <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin mengajukan sidang?</p>
+                    <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah Anda yakin ingin mengajukan sidang?</p>
                     <div class="d-flex justify-content-between px-5">
                       <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
                       <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="btnLanjutkan">Lanjutkan</button>
@@ -254,18 +269,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
               </div>
             </div>
 
-            <!-- Tombol Kembali -->
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <button type="button" class="btn btn-kembali" onclick="history.back()">
+                <button type="button" class="btn btn-kembali" onclick="window.location.href='mPengajuan.php'">
                   <span class="icon-circle">
                     <i class="fa-solid fa-arrow-left"></i>
                   </span>
                   Kembali
                 </button>
               </div>
-
-              <!-- Tombol Simpan & Kirim -->
               <div class="d-flex gap-2">
                 <button type="button" name="aksi" value="Simpan" class="btn btn-secondary" id="btnSimpan">Simpan</button>
                 <button type="button" name="aksi" value="Kirim" class="btn-setuju" id="btnKirim">Kirim</button>
@@ -274,18 +286,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
           </form>
         </div>
 
-        <!-- Modal keluar-->
         <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div style="background-color: rgb(67, 54, 240);">
-                <div class="modal-header">
-                  <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                </div>
+                <div class="modal-header"><h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1></div>
               </div>
-              <div class="modal-body mx-auto">
-                Apakah anda yakin ingin keluar?
-              </div>
+              <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
               <div class="modal-footer justify-content-center border-0">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
                 <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
@@ -297,12 +304,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Sidebar Toggle Logic 
+    // Menampilkan notifikasi dari PHP
+    <?php if (!empty($success_message)): ?>
+    Swal.fire({
+        title: 'Berhasil!',
+        text: '<?php echo addslashes($success_message); ?>',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+    }).then(() => {
+        window.location.href = 'mPengajuan.php';
+    });
+    <?php elseif (!empty($error_message)): ?>
+    Swal.fire({
+        title: 'Gagal!',
+        html: '<?php echo addslashes($error_message); ?>', // Menggunakan html agar bisa menampilkan error detail
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+    });
+    <?php endif; ?>
+
+    // Logika Sidebar
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
-
     if (menuToggle) {
       menuToggle.onclick = function() {
         menuToggle.classList.toggle("NavSide__toggle--active");
@@ -310,20 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
       };
     }
 
-    // Sidebar Active Item Logic
-    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-    for (let i = 0; i < listItems.length; i++) {
-      listItems[i].onclick = function(event) {
-        if (!this.classList.contains("NavSide__sidebar-item--active")) {
-          for (let j = 0; j < listItems.length; j++) {
-            listItems[j].classList.remove("NavSide__sidebar-item--active");
-          }
-          this.classList.add("NavSide__sidebar-item--active");
-        }
-      };
-    }
-
-    // File upload handling
+    // Penanganan unggahan file
     const DokumenSidang = document.getElementById('DokumenSidang');
     const uploadBox = document.querySelector('.upload-box');
     const fileNameDisplay = document.getElementById('fileNameDisplay');
@@ -332,35 +345,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
     DokumenSidang.addEventListener('change', function() {
       if (this.files.length > 0) {
-        const fileName = this.files[0].name;
-        fileNameDisplay.textContent = fileName;
+        fileNameDisplay.textContent = this.files[0].name;
         fileNameDisplay.style.display = 'block';
-        
         uploadIcon.style.display = 'none';
         labelText.style.display = 'none';
-        
         uploadBox.classList.add('file-selected');
       } else {
         fileNameDisplay.textContent = '';
         fileNameDisplay.style.display = 'none';
-        
         uploadIcon.style.display = 'block';
         labelText.style.display = 'block';
-        
         uploadBox.classList.remove('file-selected');
       }
     });
 
-    // Form validation and submission
+    // Validasi dan pengiriman form
     const btnKirim = document.getElementById('btnKirim');
     const btnSimpan = document.getElementById('btnSimpan');
     const btnLanjutkan = document.getElementById('btnLanjutkan');
     const form = document.querySelector('form');
     const formAksi = document.getElementById('formAksi');
 
-    // Kirim button handler
-    btnKirim.addEventListener('click', function(event) {
-      event.preventDefault(); // Prevent immediate form submission
+    function validateForm() {
+      const judul = document.getElementById('judul').value;
+      const matkul = document.getElementById('matkul').value;
+      const laporan = document.getElementById('DokumenSidang').files.length;
+
+      if (judul.trim() === "") {
+        Swal.fire({ title: 'Judul tidak boleh kosong!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
+        return false;
+      }
+      if (matkul === "" || !matkul) {
+        Swal.fire({ title: 'Pilih mata kuliah!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
+        return false;
+      }
+      if (laporan === 0) {
+        Swal.fire({ title: 'Dokumen tidak boleh kosong!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
+        return false;
+      }
+      return true;
+    }
+    
+    btnKirim.addEventListener('click', function(e) {
+      e.preventDefault();
       if (validateForm()) {
         formAksi.value = 'Kirim';
         const modalValidasi = new bootstrap.Modal(document.getElementById('modalValidasi'));
@@ -368,58 +395,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
       }
     });
 
-    // Simpan button handler
-    btnSimpan.addEventListener('click', function(event) {
-      event.preventDefault(); // Prevent immediate form submission
+    btnSimpan.addEventListener('click', function(e) {
+      e.preventDefault();
       if (validateForm()) {
         formAksi.value = 'Simpan';
         form.submit();
       }
     });
 
-    // Lanjutkan button handler (inside modal)
     btnLanjutkan.addEventListener('click', function() {
-      form.submit(); // This is where the form submission happens for "Kirim"
+      form.submit();
     });
-
-    // Form validation function
-    function validateForm() {
-      const judul = document.getElementById('judul').value;
-      const matkul = document.getElementById('matkul').value;
-      const laporan = document.getElementById('DokumenSidang').files.length;
-
-      if (judul.trim() === "") {
-        Swal.fire({
-          title: 'Judul tidak boleh kosong!',
-          icon: 'error',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        });
-        return false;
-      }
-
-      if (matkul === "Pilih Mata Kuliah" || !matkul) {
-        Swal.fire({
-          title: 'Pilih mata kuliah!',
-          icon: 'error',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        });
-        return false;
-      }
-
-      if (laporan === 0) {
-        Swal.fire({
-          title: 'Dokumen tidak boleh kosong!',
-          icon: 'error',
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#4B68FB'
-        });
-        return false;
-      }
-
-      return true;
-    }
   </script>
 </body>
-</html>
+</html> 

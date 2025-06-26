@@ -1,38 +1,57 @@
 <?php
-include '../../koneksi/koneksiAndrew.php';
-session_start();
-
-// Validasi session / id_sidang
-if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    header("Location: mSidang.php");
-    exit();
+// Memulai sesi PHP jika belum aktif.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+
 $id_sidang = $_SESSION['selected_sidang_id'];
-
 $nilaiAkhir = null;
+$catatan = 'Tidak ada catatan.';
+$dataMahasiswa = [
+    'nim' => '-',
+    'nama' => '-',
+    'matkul' => '-',
+    'dosen' => '-'
+];
 
-// Cek kolom nilai_akhir di tabel Sidang
+//Cek kolom nilai_akhir ada di tabel Sidang
 $sqlCheck = "SELECT TOP 1 * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Sidang' AND COLUMN_NAME='nilai_akhir'";
 $stmtCol = sqlsrv_query($conn, $sqlCheck);
 $kolomAda = false;
-if ($stmtCol !== false) {
-    $colRow = sqlsrv_fetch_array($stmtCol, SQLSRV_FETCH_ASSOC);
-    if ($colRow) {
-        $kolomAda = true;
-    }
+if ($stmtCol !== false && ($colRow = sqlsrv_fetch_array($stmtCol, SQLSRV_FETCH_ASSOC))) {
+    $kolomAda = true;
 }
+
+//Ambil nilai akhir
 if ($kolomAda) {
-    // Jika kolom ada, coba SELECT nilai_akhir
     $sqlVal = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
     $stmtVal = sqlsrv_query($conn, $sqlVal, array($id_sidang));
-    if ($stmtVal !== false) {
-        $rowVal = sqlsrv_fetch_array($stmtVal, SQLSRV_FETCH_ASSOC);
-        if ($rowVal && array_key_exists('nilai_akhir', $rowVal) && $rowVal['nilai_akhir'] !== null) {
+    if ($stmtVal && ($rowVal = sqlsrv_fetch_array($stmtVal, SQLSRV_FETCH_ASSOC))) {
+        if (isset($rowVal['nilai_akhir']) && $rowVal['nilai_akhir'] !== null) {
             $nilaiAkhir = $rowVal['nilai_akhir'];
         }
     }
 }
-// Jika kolom tidak ada, atau kolom ada tapi NULL, lakukan perhitungan manual
+
+//Hitung manual jika nilai_akhir belum ada
 if ($nilaiAkhir === null) {
     $sqlCalc = "
         SELECT 
@@ -50,26 +69,59 @@ if ($nilaiAkhir === null) {
         WHERE id_sidang = ?
     ";
     $stmtCalc = sqlsrv_query($conn, $sqlCalc, array($id_sidang));
-    if ($stmtCalc !== false) {
-        $rowCalc = sqlsrv_fetch_array($stmtCalc, SQLSRV_FETCH_ASSOC);
-        if ($rowCalc && isset($rowCalc['tot_bobot']) && $rowCalc['tot_bobot'] > 0) {
+    if ($stmtCalc && ($rowCalc = sqlsrv_fetch_array($stmtCalc, SQLSRV_FETCH_ASSOC))) {
+        if (isset($rowCalc['tot_bobot']) && $rowCalc['tot_bobot'] > 0) {
             $nilaiHitung = floatval($rowCalc['tot_score']) / floatval($rowCalc['tot_bobot']);
-            // Contoh format 2 desimal:
             $nilaiAkhir = number_format($nilaiHitung, 2);
         } else {
             $nilaiAkhir = '';
         }
-    } else {
-        $nilaiAkhir = '';
     }
 }
 
+//Ambil catatan dari Detail_Sidang
+$sqlCatatan = "SELECT catatan FROM Detail_Sidang WHERE id_sidang = ?";
+$stmtCat = sqlsrv_query($conn, $sqlCatatan, array($id_sidang));
+if ($stmtCat && ($rowCat = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC))) {
+    if (!empty($rowCat['catatan'])) {
+        $catatan = $rowCat['catatan'];
+    }
+}
+
+// Ambil data mahasiswa dari relasi Sidang, Mahasiswa, MataKuliah, Dosen
+$sqlMhs = "
+    SELECT 
+        m.nim, m.nama_mhs, mk.nama_matkul, d.nama_dosen
+    FROM Sidang s
+    JOIN Mahasiswa m ON s.nim = m.nim
+    JOIN PenanggungJawab pj ON pj.id_sidang = s.id_sidang
+    JOIN MataKuliah mk ON mk.id_matkul = pj.id_matkul
+    JOIN Dosen d ON d.nomor_dosen = pj.nomor_dosen
+    WHERE s.id_sidang = ?
+";
+$stmtMhs = sqlsrv_query($conn, $sqlMhs, array($id_sidang));
+if ($stmtMhs && ($rowMhs = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
+    $dataMahasiswa = [
+        'nim' => $rowMhs['nim'],
+        'nama' => $rowMhs['nama_mhs'],
+        'matkul' => $rowMhs['nama_matkul'],
+        'dosen' => $rowMhs['nama_dosen']
+    ];
+}
 ?>
+
 
 
 <!DOCTYPE html> <!-- Mendeklarasikan bahwa dokumen ini adalah HTML5 -->
 <html lang="en"> <!-- Elemen root dari halaman HTML, dengan atribut bahasa "English" -->
   <head>
+            <?php
+    echo "Nilai akhir: " . $nilaiAkhir . "<br>";
+    echo "Catatan: " . $catatan . "<br>";
+    echo "Nama: " . $dataMahasiswa['nama'] . "<br>";
+    ?>
+
+
     <!-- Bagian <head> berisi metadata dan link ke resource eksternal, tidak terlihat di halaman -->
     <meta charset="UTF-8" /> <!-- Menentukan set karakter yang digunakan adalah UTF-8 (standar universal) -->
     <meta name="viewport" content="width=device-width, initial-scale=1" /> <!-- Membuat halaman menjadi responsif agar tampil baik di berbagai perangkat -->

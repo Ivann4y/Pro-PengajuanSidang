@@ -1,5 +1,25 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
 if ($_SESSION['role'] !== 'mahasiswa') {
     header("Location: ../../index.php");
     exit();
