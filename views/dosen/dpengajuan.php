@@ -128,84 +128,78 @@ include '../../koneksi/koneksiAndrew.php';
 
                         <tbody id="dPengajuanTA">
                             <?php
-                           $no = 1;
-                      $sqlTA = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
-                                FROM Sidang s
-                                JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
-                                WHERE s.jenis_sidang = '0'";
-                        $resultTA = sqlsrv_query($conn, $sqlTA);
-
-                        // Simulasi dummy data
-                        $dummyTA = [
-                            [
-                                'id_kelompok' => '001',
-                                'judul' => 'Sistem Informasi Penggajian',
-                                'jenis_sidang' => 'Sidang Akhir',
-                                'nama_dosen' => 'Timotius Victory'
-                            ],
-                            [
-                                'id_kelompok' => '002',
-                                'judul' => 'Aplikasi Kasir Modern',
-                                'jenis_sidang' => 'Sidang Semester',
-                                'nama_dosen' => 'Timotius Victory'
-                            ]
-                        ];
-                        $no = 1;
-                        foreach ($dummyTA as $row) {
-                            echo "<tr class='isiTabel jadiBiru'>
-                                <td>{$no}</td>
-                                <td>{$row['id_kelompok']}</td>
-                                <td>{$row['judul']}</td>
-                                <td>{$row['jenis_sidang']}</td>
-                                <td>{$row['nama_dosen']}</td>
-                                <td style='text-align: center;'>
-                                    <button class='detail-btn' onclick=\"goToDetail('{$row['id_kelompok']}', '0')\">
-                                        <i class='bi bi-eye'></i>
-                                    </button>
-                                </td>
-                            </tr>";
-                            $no++;
-                        }
-
-                        if ($resultTA && sqlsrv_has_rows($resultTA)) {
-                            while ($row = sqlsrv_fetch_array($resultTA, SQLSRV_FETCH_ASSOC)) {
-                                ?>
-                                <tr class="isiTabel jadiBiru">
-                                    <td><?= $no++; ?></td>
-                                    <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                    <td><?= htmlspecialchars($row['id_sidang']); ?></td>
-                                    <td><?= htmlspecialchars($row['jenis_sidang']); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', '0')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php
+                            $no = 1;
+                            $sqlTA = "SELECT DISTINCT 
+                                s.id_sidang, 
+                                s.id_kelompok, 
+                                mh.nama_mhs, 
+                                s.judul, 
+                                s.jenis_sidang, 
+                                d.nama_dosen, 
+                                mk.nama_matkul,
+                                s.dok_laporan
+                            FROM Sidang s
+                            JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+                            JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+                            LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+                            LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+                            JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+                            JOIN Mahasiswa mh ON km.nim = mh.nim
+                            WHERE d.nomor_dosen = '$nomorDosen' AND b.isPembimbing = 1 AND s.jenis_sidang = 'TA'
+                            ORDER BY s.id_sidang;";
+                            $resultTA = sqlsrv_query($conn, $sqlTA);
+                            if ($resultTA && sqlsrv_has_rows($resultTA)) {
+                                while ($row = sqlsrv_fetch_array($resultTA, SQLSRV_FETCH_ASSOC)) {
+                                    ?>
+                                    <tr class="isiTabel jadiBiru">
+                                        <td><?= $no++; ?></td>
+                                        <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
+                                        <td><?= htmlspecialchars($row['judul']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                        <td style="text-align: center;">
+                                            <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'TA')">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                            } else {
+                                echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
                             }
-                        } else {
-                            // echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
-                        }
                             ?>
                         </tbody>
                         <tbody id="dPengajuanSem" style="display: none;">
                             <?php
                             $no = 1;
-                            $sqlSem = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
-                                        FROM Sidang s
-                                        JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
-                                        WHERE s.jenis_sidang = '1'";
-
+                            $sqlSem = "SELECT DISTINCT 
+                                s.id_sidang, 
+                                s.id_kelompok, 
+                                mh.nama_mhs, 
+                                s.judul, 
+                                s.jenis_sidang, 
+                                d.nama_dosen, 
+                                mk.nama_matkul,
+                                s.dok_laporan
+                            FROM Sidang s
+                            JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+                            JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+                            LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+                            LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+                            JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+                            JOIN Mahasiswa mh ON km.nim = mh.nim
+                            WHERE d.nomor_dosen = '$nomorDosen' AND b.isPembimbing = 1 AND s.jenis_sidang = 'Semester'
+                            ORDER BY s.id_sidang;";
                             $resultSem = sqlsrv_query($conn, $sqlSem);
-                            if ($resultSem && sqlsrv_has_rows($resultSem) > 0) {
-                                while ($row = sqlsrv_fetch_assoc($resultSem)) {
+                            if ($resultSem && sqlsrv_has_rows($resultSem)) {
+                                while ($row = sqlsrv_fetch_array($resultSem, SQLSRV_FETCH_ASSOC)) {
                                     ?>
                                     <tr class="isiTabel jadiBiru">
                                         <td><?= $no++; ?></td>
                                         <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                        <td><?= htmlspecialchars($row['id_sidang']); ?></td>
-                                        <td><?= htmlspecialchars($row['jenis_sidang']); ?></td>
+                                        <td><?= htmlspecialchars($row['judul']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul']); ?></td>
                                         <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
                                         <td style="text-align: center;">
                                             <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'Semester')">
