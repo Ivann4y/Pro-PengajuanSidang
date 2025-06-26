@@ -21,7 +21,7 @@ $baseQuery = "
             s.id_sidang,
             s.id_kelompok,
             s.judul,
-            s.jenis_sidang,
+            s.jenis_sidang, 
             
             (SELECT TOP 1 mk.nama_matkul
              FROM [dbo].[Detail_Sidang] ds

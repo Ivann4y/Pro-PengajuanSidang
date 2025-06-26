@@ -139,13 +139,13 @@ include '../../koneksi/koneksiAndrew.php';
                         // Simulasi dummy data
                         $dummyTA = [
                             [
-                                'id_kelompok' => 'KEL001',
+                                'id_kelompok' => '001',
                                 'judul' => 'Sistem Informasi Penggajian',
                                 'jenis_sidang' => 'Sidang Akhir',
                                 'nama_dosen' => 'Timotius Victory'
                             ],
                             [
-                                'id_kelompok' => 'KEL002',
+                                'id_kelompok' => '002',
                                 'judul' => 'Aplikasi Kasir Modern',
                                 'jenis_sidang' => 'Sidang Semester',
                                 'nama_dosen' => 'Timotius Victory'
@@ -186,7 +186,7 @@ include '../../koneksi/koneksiAndrew.php';
                                 <?php
                             }
                         } else {
-                            echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
+                            // echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
                         }
                             ?>
                         </tbody>
@@ -217,7 +217,7 @@ include '../../koneksi/koneksiAndrew.php';
                                     <?php
                                 }
                             } else {
-                                echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang Semester.</td></tr>';
+                                // echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang Semester.</td></tr>';
                             }
                             ?>
                         </tbody>
@@ -580,14 +580,13 @@ include '../../koneksi/koneksiAndrew.php';
                         const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
                         const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
 
-                        // Debug logs
                         // console.log('currentProdi:', currentProdi);
                         // console.log('mahasiswaData sample:', mahasiswaData.slice(0, 5));
 
                         // Clear name display and hide dropdown if input is empty
                         if (query.length === 0) {
                             dropdown.style.display = 'none';
-                            namaDisplay.textContent = 'Nama akan muncul otomatis'; // Reset display
+                            namaDisplay.textContent = 'Nama mahasiswa'; // Reset display
                             return;
                         }
 
