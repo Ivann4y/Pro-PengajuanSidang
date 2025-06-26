@@ -206,7 +206,7 @@ include '../../koneksi/koneksiAndrew.php';
                                 <?php
                             }
                         } else {
-                            echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
+                            // echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
                         }
                             ?>
                         </tbody>
@@ -241,7 +241,7 @@ include '../../koneksi/koneksiAndrew.php';
                                     <?php
                                 }
                             } else {
-                                echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang Semester.</td></tr>';
+                                // echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang Semester.</td></tr>';
                             }
                             ?>
                         </tbody>
@@ -613,14 +613,13 @@ include '../../koneksi/koneksiAndrew.php';
                         const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
 >>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
 
-                        // Debug logs
                         // console.log('currentProdi:', currentProdi);
                         // console.log('mahasiswaData sample:', mahasiswaData.slice(0, 5));
 
                         // Clear name display and hide dropdown if input is empty
                         if (query.length === 0) {
                             dropdown.style.display = 'none';
-                            namaDisplay.textContent = 'Nama akan muncul otomatis'; // Reset display
+                            namaDisplay.textContent = 'Nama mahasiswa'; // Reset display
                             return;
                         }
 
