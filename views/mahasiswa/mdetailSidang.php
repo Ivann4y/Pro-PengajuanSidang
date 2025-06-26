@@ -4,9 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-<<<<<<< HEAD
-require "../../koneksi/koneksiAndrew.php";
-=======
 $path_to_root = '../../';
 
 // 1. Cek jika pengguna BELUM login.
@@ -24,7 +21,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 }
 
 include '../../koneksi/koneksiAndrew.php';
->>>>>>> 6bcb5c8f287c9773b01dbc9f0b32f7be29befc31
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
