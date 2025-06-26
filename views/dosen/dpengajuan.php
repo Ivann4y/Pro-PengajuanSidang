@@ -128,69 +128,6 @@ include '../../koneksi/koneksiAndrew.php';
 
                         <tbody id="dPengajuanTA">
                             <?php
-<<<<<<< HEAD
-                           $no = 1;
-                      $sqlTA = "SELECT s.id_sidang, s.id_kelompok, s.judul, m.nama_matkul, d.nama_dosen
-                                FROM Sidang s
-                                JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-                                JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-                                LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-                                LEFT JOIN MataKuliah m ON ds.id_matkul = m.id_matkul
-                                WHERE b.isPembimbing = 1 AND d.nomor_dosen = ? AND s.jenis_sidang = '0'";
-                        $paramsTA = array($nomorDosen);
-                        $resultTA = sqlsrv_query($conn, $sqlTA, $paramsTA);
-
-                        // Simulasi dummy data
-                        $dummyTA = [
-                            [
-                                'id_sidang' => '1001',
-                                'id_kelompok' => '001',
-                                'judul' => 'Sistem Informasi Penggajian',
-                                'nama_matkul' => 'Tugas Akhir',
-                                'nama_dosen' => 'Timotius Victory'
-                            ],
-                            [
-                                'id_sidang' => '1002',
-                                'id_kelompok' => '002',
-                                'judul' => 'Aplikasi Kasir Modern',
-                                'nama_matkul' => 'Tugas Akhir',
-                                'nama_dosen' => 'Timotius Victory'
-                            ]
-                        ];
-                        $no = 1;
-                        foreach ($dummyTA as $row) {
-                            echo "<tr class='isiTabel jadiBiru'>
-                                <td>{$no}</td>
-                                <td>{$row['id_kelompok']}</td>
-                                <td>{$row['judul']}</td>
-                                <td>{$row['nama_matkul']}</td>
-                                <td>{$row['nama_dosen']}</td>
-                                <td style='text-align: center;'>
-                                    <button class='detail-btn' onclick=\"goToDetail('{$row['id_sidang']}', '0')\">
-                                        <i class='bi bi-eye'></i>
-                                    </button>
-                                </td>
-                            </tr>";
-                            $no++;
-                        }
-
-                        if ($resultTA && sqlsrv_has_rows($resultTA)) {
-                            while ($row = sqlsrv_fetch_array($resultTA, SQLSRV_FETCH_ASSOC)) {
-                                ?>
-                                <tr class="isiTabel jadiBiru">
-                                    <td><?= $no++; ?></td>
-                                    <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                    <td><?= htmlspecialchars($row['judul']); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_matkul']); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '0')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php
-=======
                             $no = 1;
                             $sqlTA = "SELECT DISTINCT 
                                 s.id_sidang, 
@@ -230,27 +167,12 @@ include '../../koneksi/koneksiAndrew.php';
                                 }
                             } else {
                                 echo '<tr><td colspan="6" class="text-center">Tidak ada data Sidang TA.</td></tr>';
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
                             }
                             ?>
                         </tbody>
                         <tbody id="dPengajuanSem" style="display: none;">
                             <?php
                             $no = 1;
-<<<<<<< HEAD
-                            $sqlSem = "SELECT s.id_sidang, s.id_kelompok, s.judul, m.nama_matkul, d.nama_dosen
-                                        FROM Sidang s
-                                        JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-                                        JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-                                        LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-                                        LEFT JOIN MataKuliah m ON ds.id_matkul = m.id_matkul
-                                        WHERE b.isPembimbing = 1 AND d.nomor_dosen = ? AND s.jenis_sidang = '1'";
-
-                            $paramsSem = array($nomorDosen);
-                            $resultSem = sqlsrv_query($conn, $sqlSem, $paramsSem);
-                            if ($resultSem && sqlsrv_has_rows($resultSem) > 0) {
-                                while ($row = sqlsrv_fetch_assoc($resultSem)) {
-=======
                             $sqlSem = "SELECT DISTINCT 
                                 s.id_sidang, 
                                 s.id_kelompok, 
@@ -272,7 +194,6 @@ include '../../koneksi/koneksiAndrew.php';
                             $resultSem = sqlsrv_query($conn, $sqlSem);
                             if ($resultSem && sqlsrv_has_rows($resultSem)) {
                                 while ($row = sqlsrv_fetch_array($resultSem, SQLSRV_FETCH_ASSOC)) {
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
                                     ?>
                                     <tr class="isiTabel jadiBiru">
                                         <td><?= $no++; ?></td>
@@ -1032,8 +953,4 @@ include '../../koneksi/koneksiAndrew.php';
                 <script src="../../assets/js/main.js"></script>
 </body>
 
-<<<<<<< HEAD
-</html> 
-=======
 </html>
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
