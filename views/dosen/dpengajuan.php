@@ -130,36 +130,30 @@ include '../../koneksi/koneksiAndrew.php';
                         <tbody id="dPengajuanTA">
                             <?php
                            $no = 1;
-                      $sqlTA = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
+                      $sqlTA = "SELECT s.id_sidang, s.id_kelompok, s.judul, m.nama_matkul, d.nama_dosen
                                 FROM Sidang s
-                                JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
-<<<<<<< HEAD
-                                WHERE s.jenis_sidang = '0'";
-=======
-                                WHERE s.jenis_sidang = 'TA'";
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
-                        $resultTA = sqlsrv_query($conn, $sqlTA);
+                                JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+                                JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+                                LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+                                LEFT JOIN MataKuliah m ON ds.id_matkul = m.id_matkul
+                                WHERE b.isPembimbing = 1 AND d.nomor_dosen = ? AND s.jenis_sidang = '0'";
+                        $paramsTA = array($nomorDosen);
+                        $resultTA = sqlsrv_query($conn, $sqlTA, $paramsTA);
 
                         // Simulasi dummy data
                         $dummyTA = [
                             [
-<<<<<<< HEAD
+                                'id_sidang' => '1001',
                                 'id_kelompok' => '001',
-=======
-                                'id_kelompok' => 'KEL001',
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                 'judul' => 'Sistem Informasi Penggajian',
-                                'jenis_sidang' => 'Sidang Akhir',
+                                'nama_matkul' => 'Tugas Akhir',
                                 'nama_dosen' => 'Timotius Victory'
                             ],
                             [
-<<<<<<< HEAD
+                                'id_sidang' => '1002',
                                 'id_kelompok' => '002',
-=======
-                                'id_kelompok' => 'KEL002',
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                 'judul' => 'Aplikasi Kasir Modern',
-                                'jenis_sidang' => 'Sidang Semester',
+                                'nama_matkul' => 'Tugas Akhir',
                                 'nama_dosen' => 'Timotius Victory'
                             ]
                         ];
@@ -169,14 +163,10 @@ include '../../koneksi/koneksiAndrew.php';
                                 <td>{$no}</td>
                                 <td>{$row['id_kelompok']}</td>
                                 <td>{$row['judul']}</td>
-                                <td>{$row['jenis_sidang']}</td>
+                                <td>{$row['nama_matkul']}</td>
                                 <td>{$row['nama_dosen']}</td>
                                 <td style='text-align: center;'>
-<<<<<<< HEAD
-                                    <button class='detail-btn' onclick=\"goToDetail('{$row['id_kelompok']}', '0')\">
-=======
-                                    <button class='detail-btn' onclick=\"goToDetail('{$row['id_kelompok']}', 'TA')\">
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
+                                    <button class='detail-btn' onclick=\"goToDetail('{$row['id_sidang']}', '0')\">
                                         <i class='bi bi-eye'></i>
                                     </button>
                                 </td>
@@ -190,15 +180,11 @@ include '../../koneksi/koneksiAndrew.php';
                                 <tr class="isiTabel jadiBiru">
                                     <td><?= $no++; ?></td>
                                     <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                    <td><?= htmlspecialchars($row['id_sidang']); ?></td>
-                                    <td><?= htmlspecialchars($row['jenis_sidang']); ?></td>
+                                    <td><?= htmlspecialchars($row['judul']); ?></td>
+                                    <td><?= htmlspecialchars($row['nama_matkul']); ?></td>
                                     <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
                                     <td style="text-align: center;">
-<<<<<<< HEAD
-                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', '0')">
-=======
-                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'TA')">
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
+                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '0')">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </td>
@@ -213,27 +199,27 @@ include '../../koneksi/koneksiAndrew.php';
                         <tbody id="dPengajuanSem" style="display: none;">
                             <?php
                             $no = 1;
-                            $sqlSem = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
+                            $sqlSem = "SELECT s.id_sidang, s.id_kelompok, s.judul, m.nama_matkul, d.nama_dosen
                                         FROM Sidang s
-                                        JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
-<<<<<<< HEAD
-                                        WHERE s.jenis_sidang = '1'";
-=======
-                                        WHERE s.jenis_sidang = 'Semester'";
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
+                                        JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+                                        JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+                                        LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+                                        LEFT JOIN MataKuliah m ON ds.id_matkul = m.id_matkul
+                                        WHERE b.isPembimbing = 1 AND d.nomor_dosen = ? AND s.jenis_sidang = '1'";
 
-                            $resultSem = sqlsrv_query($conn, $sqlSem);
+                            $paramsSem = array($nomorDosen);
+                            $resultSem = sqlsrv_query($conn, $sqlSem, $paramsSem);
                             if ($resultSem && sqlsrv_has_rows($resultSem) > 0) {
                                 while ($row = sqlsrv_fetch_assoc($resultSem)) {
                                     ?>
                                     <tr class="isiTabel jadiBiru">
                                         <td><?= $no++; ?></td>
                                         <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                        <td><?= htmlspecialchars($row['id_sidang']); ?></td>
-                                        <td><?= htmlspecialchars($row['jenis_sidang']); ?></td>
+                                        <td><?= htmlspecialchars($row['judul']); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul']); ?></td>
                                         <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
                                         <td style="text-align: center;">
-                                            <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'Semester')">
+                                            <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '1')">
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                         </td>
@@ -536,11 +522,7 @@ include '../../koneksi/koneksiAndrew.php';
                         try {
                             const response = await fetch('../../control/get_mahasiswa.php');
                             if (!response.ok) {
-<<<<<<< HEAD
                                 throw new Error(HTTP error! status: ${response.status});
-=======
-                                throw new Error(`HTTP error! status: ${response.status}`);
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                             }
                             mahasiswaData = await response.json();
                             console.log('Loaded mahasiswaData:', mahasiswaData); // Debug log
@@ -605,13 +587,8 @@ include '../../koneksi/koneksiAndrew.php';
                     // Search mahasiswa for autocomplete
                     function searchMahasiswa(input, anggotaIndex) {
                         const query = input.value.toLowerCase().trim();
-<<<<<<< HEAD
                         const dropdown = document.getElementById(autocomplete_${anggotaIndex});
                         const namaDisplay = document.getElementById(anggota_nama_${anggotaIndex});
-=======
-                        const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
-                        const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
 
                         // Debug logs
                         // console.log('currentProdi:', currentProdi);
@@ -676,15 +653,9 @@ include '../../koneksi/koneksiAndrew.php';
 
                     // Select mahasiswa from autocomplete
                     function selectMahasiswa(mahasiswa, anggotaIndex) {
-<<<<<<< HEAD
                         const nimInput = document.getElementById(anggota_nim_${anggotaIndex});
                         const namaDisplay = document.getElementById(anggota_nama_${anggotaIndex});
                         const dropdown = document.getElementById(autocomplete_${anggotaIndex});
-=======
-                        const nimInput = document.getElementById(`anggota_nim_${anggotaIndex}`);
-                        const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
-                        const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                         nimInput.value = mahasiswa.nim;
                         namaDisplay.textContent = mahasiswa.nama_mhs;
                         dropdown.style.display = 'none';
@@ -783,11 +754,7 @@ include '../../koneksi/koneksiAndrew.php';
                         try {
                             const response = await fetch('../../control/get_kelompok_list.php'); // Create this new PHP file
                             if (!response.ok) {
-<<<<<<< HEAD
                                 throw new Error(HTTP error! status: ${response.status});
-=======
-                                throw new Error(`HTTP error! status: ${response.status}`);
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                             }
                             kelompokData = await response.json(); // Update global kelompokData
 
@@ -809,11 +776,7 @@ include '../../koneksi/koneksiAndrew.php';
                                     </div>
                                     <div class="kelompok-list-anggota">
                                         <strong>Anggota:</strong><br>
-<<<<<<< HEAD
                                         ${kelompok.anggota.map(angg => ${angg.nim} - ${angg.nama_mhs}).join('<br>')}
-=======
-                                        ${kelompok.anggota.map(angg => `${angg.nim} - ${angg.nama_mhs}`).join('<br>')}
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                     </div>
                                 `;
                                 container.appendChild(kelompokItem);
@@ -836,11 +799,7 @@ include '../../koneksi/koneksiAndrew.php';
                         const prodi = document.getElementById('kelompok_prodi').value;
                         const anggotaNIMs = [];
                         for (let i = 1; i <= anggotaCount; i++) {
-<<<<<<< HEAD
                             const nimInput = document.getElementById(anggota_nim_${i});
-=======
-                            const nimInput = document.getElementById(`anggota_nim_${i}`);
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                             if (nimInput.value.trim() !== '') {
                                 anggotaNIMs.push(nimInput.value.trim());
                             }
@@ -859,11 +818,7 @@ include '../../koneksi/koneksiAndrew.php';
                             });
 
                             if (!response.ok) {
-<<<<<<< HEAD
                                 throw new Error(HTTP error! status: ${response.status});
-=======
-                                throw new Error(`HTTP error! status: ${response.status}`);
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                             }
 
                             const result = await response.json();
@@ -898,19 +853,11 @@ include '../../koneksi/koneksiAndrew.php';
                                 // Check if NIM exists in the fetched mahasiswaData
                                 const foundMahasiswa = mahasiswaData.find(mhs => String(mhs.nim) === nimInput.value.trim());
                                 if (!foundMahasiswa) {
-<<<<<<< HEAD
                                     alert(NIM ${nimInput.value.trim()} tidak ditemukan.);
                                     return false;
                                 }
                                 if (selectedNIMs.has(nimInput.value.trim())) {
                                     alert(NIM ${nimInput.value.trim()} sudah ditambahkan.);
-=======
-                                    alert(`NIM ${nimInput.value.trim()} tidak ditemukan.`);
-                                    return false;
-                                }
-                                if (selectedNIMs.has(nimInput.value.trim())) {
-                                    alert(`NIM ${nimInput.value.trim()} sudah ditambahkan.`);
->>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                     return false;
                                 }
                                 selectedNIMs.add(nimInput.value.trim());
@@ -985,4 +932,4 @@ include '../../koneksi/koneksiAndrew.php';
                 <script src="../../assets/js/main.js"></script>
 </body>
 
-</html>
+</html> 
