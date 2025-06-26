@@ -3,16 +3,29 @@ session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
 // ===================================================================================
-// BAGIAN 1: KEAMANAN DAN INISIALISASI
+// BAGIAN 1: AMBIL ID SIDANG DARI GET SEKALI SAJA, LALU SIMPAN KE SESSION
 // ===================================================================================
-// Ambil ID dari URL. Ini adalah gerbang utama.
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid.");
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    header("Location: dEvaluasiSidang.php");
+   
 }
-$id_sidang = (int)$_GET['id'];
 
+<<<<<<< HEAD
 // Simulasi Dosen yang Login (nantinya ganti dengan session asli)
 $nomor_dosen_login = '1001';
+=======
+if (!isset($_SESSION['id_sidang_aktif'])) {
+    die("ID sidang tidak tersedia.");
+}
+$id_sidang = $_SESSION['id_sidang_aktif'];
+
+// ===================================================================================
+// SIMULASI DOSEN LOGIN (GANTI DENGAN SESSION ASLI NANTI)
+// ===================================================================================
+$nomor_dosen_login = '1001';
+
+>>>>>>> 4fb23ddc18540aa1be83f38567fea9cfc9da6d36
 // if (!isset($_SESSION['user']['nomor_dosen'])) { die("Akses ditolak."); }
 // $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
 
@@ -64,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ### INI BAGIAN YANG DIPERBAIKI ###
     // Pastikan ada tanda "=" setelah "id"
-    header("Location: dEvaluasiSidang.php?id=" . $id_sidang . "&status=sukses");
+    header("Location: dEvaluasiSidang.php?id=" .$id_sidang . "&status=sukses");
     exit();
 }
 
@@ -141,6 +154,9 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 
 
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="id">
 <!-- KODE HTML LANJUTANNYA TETAP SAMA -->
@@ -154,6 +170,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<<<<<<< HEAD
     <style>
         /* --- STYLE DASAR & FONT --- */
         /* Reset margin, padding, dan box-sizing untuk semua elemen agar konsisten di semua browser */
@@ -936,6 +953,11 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             }
         }
     </style>
+=======
+
+    <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
+   
+>>>>>>> 4fb23ddc18540aa1be83f38567fea9cfc9da6d36
 </head>
 
 <body>
@@ -1162,6 +1184,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             });
         });
     </script>
+    \end{code}<script src="/Projek/Pro-PengajuanSidang/assets/js/dDaftarSidang.js"></script>
 </body>
 
 </html>
