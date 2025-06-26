@@ -522,3 +522,24 @@ body {
 .info-card .section .spacer {
     flex-grow: 1; 
 }
+
+/* Existing styles in mdetailsidang.css ... */
+
+.status-badge {
+    padding: 8px 12px;
+    border-radius: 50px;
+    font-weight: bold;
+    color: #fff;
+    display: inline-block; /* Ensures it only takes as much width as needed */
+    margin-bottom: 20px; /* Adds space below the badge */
+}
+
+.status-badge.belum-disetujui {
+    background-color: #FFA3A3; /* Reddish color for not approved */
+}
+
+.status-badge.disetujui {
+    background-color: #4BFBAF; /* Greenish color for approved */
+}
+
+/* Other styles for your layout (NavSide, main-content, info-card, etc.) should already be here */
