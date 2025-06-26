@@ -1,16 +1,29 @@
 <?php
-session_start();
-// $nim = $_SESSION['user_data']['nim'];
+
+// Memulai sesi PHP jika belum aktif.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
 include '../../koneksi/koneksiAndrew.php';
 
-
-// Cek apakah sidang dipilih
-if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    header("Location: mSidang.php");
-    exit();
-}
 $id_sidang = $_SESSION['selected_sidang_id'];
-
 $nilaiAkhir = null;
 $catatan = 'Tidak ada catatan.';
 $dataMahasiswa = [
