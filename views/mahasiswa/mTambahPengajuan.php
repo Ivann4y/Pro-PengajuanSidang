@@ -1,19 +1,27 @@
 <?php
-// Mulai sesi untuk mendapatkan ID pengguna yang login
-session_start();
+session_start(); // Selalu mulai sesi terlebih dahulu
 
+// Cek apakah ada sesi 'is_logged_in' dan nilainya true
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    // Jika tidak, redirect ke halaman login
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    // Gunakan path absolut dari root web server Anda
+    header("Location: /Sidang/Pro-PengajuanSidang/index.php"); 
+    exit(); // Hentikan eksekusi skrip
+}
+
+// Cek apakah role-nya adalah 'mahasiswa'
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    // Jika bukan mahasiswa, tendang keluar
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: /Sidang/Pro-PengajuanSidang/index.php");
+    exit(); // Hentikan eksekusi skrip
+}
 include '../../koneksi/koneksiAndrew.php'; // Koneksi ke SQL Server Anda
 
 $success_message = '';
 $error_message = '';
-
-// Asumsikan NIM mahasiswa yang login disimpan di dalam sesi.
-if (!isset($_SESSION['user_nim'])) {
-    // Ganti '1000000001' dengan NIM yang valid dari tabel Mahasiswa Anda untuk pengujian.
-    $nim_mahasiswa_logged_in = '1000000001'; 
-} else {
-    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
-}
+$nim_mahasiswa_logged_in = $_SESSION['user_data']['nim'];
 
 // Menangani pengiriman form
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
