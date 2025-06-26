@@ -101,6 +101,13 @@ if ($stmtMhs && ($rowMhs = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
 <!DOCTYPE html> <!-- Mendeklarasikan bahwa dokumen ini adalah HTML5 -->
 <html lang="en"> <!-- Elemen root dari halaman HTML, dengan atribut bahasa "English" -->
   <head>
+            <?php
+    echo "Nilai akhir: " . $nilaiAkhir . "<br>";
+    echo "Catatan: " . $catatan . "<br>";
+    echo "Nama: " . $dataMahasiswa['nama'] . "<br>";
+    ?>
+
+
     <!-- Bagian <head> berisi metadata dan link ke resource eksternal, tidak terlihat di halaman -->
     <meta charset="UTF-8" /> <!-- Menentukan set karakter yang digunakan adalah UTF-8 (standar universal) -->
     <meta name="viewport" content="width=device-width, initial-scale=1" /> <!-- Membuat halaman menjadi responsif agar tampil baik di berbagai perangkat -->
