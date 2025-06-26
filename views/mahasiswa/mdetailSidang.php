@@ -1,8 +1,24 @@
 <?php
 
-session_start();
+session_start(); // Selalu mulai sesi terlebih dahulu
 
-require "../../koneksi/koneksiAndrew.php";
+// Cek apakah ada sesi 'is_logged_in' dan nilainya true
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    // Jika tidak, redirect ke halaman login
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    // Gunakan path absolut dari root web server Anda
+    header("Location: /Sidang/Pro-PengajuanSidang/index.php"); 
+    exit(); // Hentikan eksekusi skrip
+}
+
+// Cek apakah role-nya adalah 'mahasiswa'
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    // Jika bukan mahasiswa, tendang keluar
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: /Sidang/Pro-PengajuanSidang/index.php");
+    exit(); // Hentikan eksekusi skrip
+}
+include '../../koneksi/koneksiAndrew.php'; // Koneksi ke SQL Server Anda
 
 // TINGKATKAN LAPORAN ERROR UNTUK DEBUGGING - Hapus baris ini setelah selesai debugging
 error_reporting(E_ALL);
