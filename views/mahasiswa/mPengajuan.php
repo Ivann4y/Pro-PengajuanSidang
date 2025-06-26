@@ -1,7 +1,73 @@
-<?php 
+<?php
+include '../../koneksi/koneksiAndrew.php';
 
- include '../../koneksi/koneksiAndrew.php';
- ?>
+// Pagination settings
+$rowsPerPage = 10;
+$page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $rowsPerPage;
+
+// Filter settings
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
+$filterClause = '';
+if ($filter === 'TA') {
+    $filterClause = " AND s.jenis_sidang = 1";
+} elseif ($filter === 'Semester') {
+    $filterClause = " AND s.jenis_sidang = 2";
+}
+
+// Count total rows for pagination
+$countQuery = "
+    SELECT COUNT(DISTINCT s.id_sidang) as total
+    FROM Sidang s
+    JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+    WHERE b.isPembimbing = 0x01
+    $filterClause
+";
+$countResult = sqlsrv_query($conn, $countQuery);
+if ($countResult === false) {
+    die(print_r(sqlsrv_errors(), true));
+}
+$totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
+$totalPages = ceil($totalRows / $rowsPerPage);
+
+// Main query with pagination and filter
+$query = "
+    SELECT DISTINCT
+        s.id_sidang, 
+        s.judul, 
+        s.jenis_sidang, 
+        s.id_kelompok, 
+        d.nama_dosen, 
+        m.nama_matkul
+    FROM Sidang s
+    JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+    LEFT JOIN MataKuliah m ON ds.id_matkul = m.id_matkul
+    WHERE b.isPembimbing = 0x01
+    $filterClause
+    ORDER BY s.id_sidang
+    OFFSET $offset ROWS FETCH NEXT $rowsPerPage ROWS ONLY
+";
+
+$result = sqlsrv_query($conn, $query);
+
+if ($result === false) {
+    die(print_r(sqlsrv_errors(), true));
+}
+
+$dataSidang = [];
+while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+    $dataSidang[] = [
+        "id_sidang" => $row['id_sidang'],
+        "judul" => $row['judul'],
+        "matkul" => $row['nama_matkul'] ?? 'Tidak ada mata kuliah',
+        "dosen" => $row['nama_dosen'],
+        "jenis_sidang" => is_null($row['jenis_sidang']) ? null : (int)$row['jenis_sidang']
+    ];
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,17 +82,14 @@
     <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
-
 </head>
 
 <body>
     <div id="NavSide">
-
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
-
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -52,7 +115,6 @@
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
             </div>
-
             <div class="header-icons">
                 <i class="bi bi-bell-fill"></i>
                 <div class="profile-icon">
@@ -62,7 +124,6 @@
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-
             <div class="container-fluid">
                 <div class="row">
                     <div class="dashboard-header">
@@ -80,22 +141,18 @@
             <div class="row">
                 <div class="d-flex flex-column">
                     <div class="d-flex align-items-center gap-2">
-
                         <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
                         <div class="dropdown">
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                    Semua
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semua')">Semua</a></li>
-                                    <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('TA')">Sidang TA</a></li>
-                                    <li><a class="dropdown-item" href="#" onclick="switchDdaftarPengajuan('Semester')">Sidang Semester</a></li>
-                                </ul>
-                            </div>
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                <?php echo htmlspecialchars($filter === 'TA' ? 'Sidang TA' : ($filter === 'Semester' ? 'Sidang Semester' : 'Semua')); ?>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?filter=Semua&page=1">Semua</a></li>
+                                <li><a class="dropdown-item" href="?filter=TA&page=1">Sidang TA</a></li>
+                                <li><a class="dropdown-item" href="?filter=Semester&page=1">Sidang Semester</a></li>
+                            </ul>
                         </div>
                     </div>
-                    
                     <div class="mobile-add-button-container">
                         <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
                     </div>
@@ -118,11 +175,80 @@
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="mSidangTableBody"></tbody> 
+                            <tbody id="mSidangTableBody">
+                                <?php if (empty($dataSidang)): ?>
+                                    <tr class="isiTabel">
+                                        <td colspan="5" class="text-center py-4">Tidak ada data untuk ditampilkan.</td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($dataSidang as $index => $sidang): ?>
+                                        <tr class="isiTabel jadiBiru">
+                                            <td><?php echo ($page - 1) * $rowsPerPage + $index + 1; ?></td>
+                                            <td><?php echo htmlspecialchars($sidang['judul']); ?></td>
+                                            <td><?php echo htmlspecialchars($sidang['matkul']); ?></td>
+                                            <td><?php echo htmlspecialchars($sidang['dosen']); ?></td>
+                                            <td>
+                                                <i class="fa-solid fa-file-signature" style="cursor: pointer;" onclick="editData(<?php echo $sidang['id_sidang']; ?>, '<?php echo htmlspecialchars($sidang['matkul']); ?>', '<?php echo htmlspecialchars($sidang['judul']); ?>')"></i>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody> 
                         </table>
                         <div class="pagination-container">
                             <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-center" id="pagination-controls"></ul>
+                                <ul class="pagination justify-content-center">
+                                    <?php if ($totalPages > 1): ?>
+                                        <!-- Previous Button -->
+                                        <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                                            <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page - 1; ?>" aria-label="Previous">
+                                                <span aria-hidden="true">«</span>
+                                            </a>
+                                        </li>
+
+                                        <?php
+                                        // Calculate page range
+                                        $startPage = max(1, $page - 1);
+                                        $endPage = min($totalPages, $page + 1);
+
+                                        if ($page <= 2) {
+                                            $endPage = min($totalPages, 3);
+                                        } elseif ($page >= $totalPages - 1) {
+                                            $startPage = max(1, $totalPages - 2);
+                                        }
+
+                                        // First page
+                                        if ($startPage > 1) {
+                                            echo "<li class='page-item'><a class='page-link' href='?filter=" . urlencode($filter) . "&page=1'>1</a></li>";
+                                            if ($startPage > 2) {
+                                                echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
+                                            }
+                                        }
+
+                                        // Page numbers
+                                        for ($i = $startPage; $i <= $endPage; $i++) {
+                                            echo "<li class='page-item " . ($i == $page ? 'active' : '') . "'>";
+                                            echo "<a class='page-link' href='?filter=" . urlencode($filter) . "&page=$i'>$i</a>";
+                                            echo "</li>";
+                                        }
+
+                                        // Last page
+                                        if ($endPage < $totalPages) {
+                                            if ($endPage < $totalPages - 1) {
+                                                echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
+                                            }
+                                            echo "<li class='page-item'><a class='page-link' href='?filter=" . urlencode($filter) . "&page=$totalPages'>$totalPages</a></li>";
+                                        }
+                                        ?>
+
+                                        <!-- Next Button -->
+                                        <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
+                                            <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page + 1; ?>" aria-label="Next">
+                                                <span aria-hidden="true">»</span>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
                             </nav>
                         </div>
                     </div>
@@ -151,212 +277,28 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Sidebar Toggle Logic
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Sidebar Toggle Logic
-    const menuToggle = document.querySelector(".NavSide__toggle");
-    const sidebar = document.getElementById("main-sidebar");
+            if (menuToggle) {
+                menuToggle.onclick = function () {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
 
-    if (menuToggle) {
-        menuToggle.onclick = function () {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-    }
-
-    // Data
-    const dataTA = [
-        { judul: "Sistem Pengajuan Sidang", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Pengembangan Aplikasi Mobile Learning", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Sistem Manajemen Perpustakaan Digital", matkul: "Tugas Akhir", dosen: "Suhendra" },
-        { judul: "Aplikasi IoT untuk Smart Home", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Sistem Informasi Akademik Terintegrasi", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Platform E-Learning Adaptif", matkul: "Tugas Akhir", dosen: "Suhendra" },
-        { judul: "Sistem Keamanan Berbasis AI", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Aplikasi Manajemen Proyek Agile", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Sistem Monitoring Kesehatan IoT", matkul: "Tugas Akhir", dosen: "Suhendra" },
-        { judul: "Platform Social Learning", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Sistem Analisis Data Pendidikan", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Aplikasi AR untuk Pembelajaran", matkul: "Tugas Akhir", dosen: "Suhendra" },
-        { judul: "Sistem Manajemen Aset Digital", matkul: "Tugas Akhir", dosen: "Rida Indah Fariani" },
-        { judul: "Platform Kolaborasi Online", matkul: "Tugas Akhir", dosen: "Timotius Victory" },
-        { judul: "Sistem Otomasi Smart Campus", matkul: "Tugas Akhir", dosen: "Suhendra" }
-    ];
-
-    const dataSemester = [
-        { judul: "Implementasi Database NoSQL", matkul: "Basis Data Lanjut", dosen: "Timotius Victory" },
-        { judul: "Pengembangan Web Service", matkul: "Pemrograman Web", dosen: "Suhendra" },
-        { judul: "Analisis Algoritma", matkul: "Struktur Data", dosen: "Rida Indah Fariani" },
-        { judul: "Implementasi Machine Learning", matkul: "Kecerdasan Buatan", dosen: "Timotius Victory" },
-        { judul: "Arsitektur Microservices", matkul: "Sistem Terdistribusi", dosen: "Suhendra" },
-        { judul: "Keamanan Jaringan", matkul: "Jaringan Komputer", dosen: "Rida Indah Fariani" },
-        { judul: "Cloud Computing", matkul: "Komputasi Awan", dosen: "Timotius Victory" },
-        { judul: "Mobile App Development", matkul: "Pemrograman Mobile", dosen: "Suhendra" },
-        { judul: "Data Mining", matkul: "Analisis Data", dosen: "Rida Indah Fariani" },
-        { judul: "UI/UX Design", matkul: "Interaksi Manusia Komputer", dosen: "Timotius Victory" },
-        { judul: "Software Testing", matkul: "Pengujian Perangkat Lunak", dosen: "Suhendra" },
-        { judul: "Computer Vision", matkul: "Pengolahan Citra", dosen: "Rida Indah Fariani" },
-        { judul: "Network Programming", matkul: "Pemrograman Jaringan", dosen: "Timotius Victory" },
-        { judul: "Embedded Systems", matkul: "Sistem Tertanam", dosen: "Suhendra" },
-        { judul: "Big Data Analytics", matkul: "Analisis Big Data", dosen: "Rida Indah Fariani" }
-    ];
-
-    // Element references
-    const mainTableBody = document.getElementById("mSidangTableBody"); // Menggunakan satu tbody utama
-    const dropdownButton = document.getElementById("ddMSidang");
-    const paginationControls = document.getElementById("pagination-controls");
-
-    let currentFilteredData = []; // Data yang sedang ditampilkan setelah filter
-    let currentPage = 1;
-    const rowsPerPage = 10;
-
-    // Render table
-    function renderTable(dataToRender) {
-        if (!mainTableBody) {
-            console.error("Main table body element not found!");
-            return;
-        }
-        mainTableBody.innerHTML = ''; // Bersihkan isi tabel
-
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        const pageData = dataToRender.slice(start, end);
-
-        if (pageData.length === 0) {
-            mainTableBody.innerHTML = `
-                <tr class="isiTabel">
-                    <td colspan="5" class="text-center py-4">Tidak ada data untuk ditampilkan.</td>
-                </tr>
-            `;
-        } else {
-            pageData.forEach((item, index) => {
-                const globalIndex = start + index;
-                mainTableBody.innerHTML += `
-                    <tr class="isiTabel jadiBiru">
-                        <td>${globalIndex + 1}</td>
-                        <td>${item.judul}</td>
-                        <td>${item.matkul}</td>
-                        <td>${item.dosen}</td>
-                        <td>
-                            <i class="fa-solid fa-file-signature" style="cursor: pointer;" onclick="editData(${globalIndex}, '${item.matkul}', '${item.judul}')"></i>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-    }
-
-    // Pagination
-    function setupPagination() {
-        paginationControls.innerHTML = '';
-        const pageCount = Math.ceil(currentFilteredData.length / rowsPerPage);
-        
-        // If there's no data or only one page, hide pagination or show only page 1
-        if (currentFilteredData.length === 0) {
-            return; // Don't show pagination if no data
-        }
-        if (pageCount <= 1) {
-            const li = document.createElement("li");
-            li.className = `page-item active`;
-            li.innerHTML = `<a class="page-link" href="#">1</a>`;
-            paginationControls.appendChild(li);
-            return;
-        }
-
-        const createBtn = (label, disabled, onClick, isActive = false) => {
-            const li = document.createElement("li");
-            li.className = `page-item ${disabled ? "disabled" : ""} ${isActive ? "active" : ""}`;
-            li.innerHTML = `<a class="page-link" href="#">${label}</a>`;
-            li.onclick = (e) => {
-                e.preventDefault();
-                if (!disabled) onClick();
+            // Edit and Add functions
+            window.editData = function (idSidang, matkul, judul) {
+                window.location.href = `mEditPengajuan.php?id_sidang=${idSidang}&matkul=${encodeURIComponent(matkul)}&judul=${encodeURIComponent(judul)}`;
             };
-            return li;
-        };
 
-        // Previous button
-        paginationControls.appendChild(createBtn("«", currentPage === 1, () => changePage(currentPage - 1)));
-
-        // Page numbers
-        let startPage = Math.max(1, currentPage - 1);
-        let endPage = Math.min(pageCount, currentPage + 1);
-
-        if (currentPage === 1) {
-            endPage = Math.min(pageCount, 3);
-        } else if (currentPage === pageCount) {
-            startPage = Math.max(1, pageCount - 2);
-        }
-
-        if (startPage > 1) {
-            paginationControls.appendChild(createBtn(1, false, () => changePage(1), 1 === currentPage));
-            if (startPage > 2) {
-                const li = document.createElement("li");
-                li.className = "page-item disabled";
-                li.innerHTML = `<span class="page-link">...</span>`;
-                paginationControls.appendChild(li);
-            }
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            paginationControls.appendChild(createBtn(i, false, () => changePage(i), i === currentPage));
-        }
-
-        if (endPage < pageCount) {
-            if (endPage < pageCount - 1) {
-                const li = document.createElement("li");
-                li.className = "page-item disabled";
-                li.innerHTML = `<span class="page-link">...</span>`;
-                paginationControls.appendChild(li);
-            }
-            paginationControls.appendChild(createBtn(pageCount, false, () => changePage(pageCount), pageCount === currentPage));
-        }
-
-        // Next button
-        paginationControls.appendChild(createBtn("»", currentPage === pageCount, () => changePage(currentPage + 1)));
-    }
-
-    function changePage(page) {
-        currentPage = page;
-        renderTable(currentFilteredData);
-        setupPagination();
-    }
-
-    // Dropdown handler
-    window.switchDdaftarPengajuan = function (tipe) {
-        if (tipe === 'TA') {
-            currentFilteredData = dataTA;
-            dropdownButton.textContent = 'Sidang TA';
-        } else if (tipe === 'Semester') {
-            currentFilteredData = dataSemester;
-            dropdownButton.textContent = 'Sidang Semester';
-        } else { // Semua
-            currentFilteredData = dataTA.concat(dataSemester); // Gabungkan semua data
-            dropdownButton.textContent = 'Semua';
-        }
-
-        currentPage = 1; // Reset halaman ke 1 setiap kali filter berubah
-        renderTable(currentFilteredData);
-        setupPagination();
-    };
-
-    // Edit dan Tambah
-    window.editData = function (index, matkul, judul) {
-        // `index` di sini adalah index pada `currentFilteredData` yang sedang ditampilkan.
-        // Anda mungkin perlu menyesuaikan `mEditPengajuan.php` untuk menangani ini.
-        window.location.href = `mEditPengajuan.php?index=${index}&matkul=${encodeURIComponent(matkul)}&judul=${encodeURIComponent(judul)}`;
-    };
-
-    window.tambahData = function () {
-        window.location.href = 'mEditPengajuan.php';
-    };
-
-    // Initial load: Display "Semua" data
-    // Panggil switchDdaftarPengajuan('Semua') untuk inisialisasi tabel dengan semua data
-    switchDdaftarPengajuan('Semua');
-});
-</script>
-
+            window.tambahData = function () {
+                window.location.href = 'mEditPengajuan.php';
+            };
+        });
+    </script>
 </body>
-
 </html>

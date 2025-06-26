@@ -40,6 +40,8 @@ thead th:nth-child(6) {
     vertical-align: middle;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Tambahkan transisi agar perubahan warna lebih halus */
+    transition: all 0.3s ease;
 }
 .isiTabel td:first-child {
     border-radius: 10px 0 0 10px;
@@ -48,11 +50,28 @@ thead th:nth-child(6) {
 .isiTabel td:last-child {
     border-radius: 0 10px 10px 0;
 }
+
+/* ===== [START] KODE BARU UNTUK EFEK HOVER BIRU ===== */
+/* Aturan ini akan membuat seluruh sel di baris yang di-hover menjadi biru */
+.isiTabel:hover td {
+    background-color: #4b68fb;
+    color: #fff;
+    /* Optional: Memberi shadow biru agar terlihat lebih modern saat di-hover */
+    box-shadow: 0 4px 12px rgba(75, 104, 251, 0.35);
+}
+
+/* Aturan ini memastikan tombol/ikon Aksi juga berubah warna menjadi putih */
+.isiTabel:hover .detail-btn {
+    color: #fff;
+}
+/* ===== [END] KODE BARU UNTUK EFEK HOVER BIRU ===== */
+
 .detail-btn {
     border: none !important;
     background-color: transparent !important;
     color: #4b68fb;
     padding: .25rem .5rem;
+    transition: opacity 0.3s ease; /* Menambahkan transisi pada tombol */
 }
 .detail-btn:hover {
     opacity: .7;
@@ -141,6 +160,15 @@ tr.jadiBiru:hover .detail-btn i {
         overflow: hidden;
         background-color: #ffffff;
     }
+    
+    /* ===== [START] PERBAIKAN HOVER DI MOBILE ===== */
+    /* Hapus efek hover biru di mobile karena interaksi hover tidak umum */
+    .isiTabel:hover td {
+        background-color: transparent;
+        color: inherit; /* Kembalikan ke warna teks asli */
+        box-shadow: none;
+    }
+    /* ===== [END] PERBAIKAN HOVER DI MOBILE ===== */
 
     /* Atur ulang gaya sel (td) */
     .isiTabel td {
@@ -184,7 +212,8 @@ tr.jadiBiru:hover .detail-btn i {
     }
     
     /* Atur agar tombol Aksi di mobile tidak berubah warna saat hover */
-    tr.jadiBiru:hover .detail-btn i {
+    tr.jadiBiru:hover .detail-btn i,
+    .isiTabel:hover .detail-btn {
         color: #4b68fb !important;
     }
 

@@ -133,19 +133,31 @@ include '../../koneksi/koneksiAndrew.php';
                       $sqlTA = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
                                 FROM Sidang s
                                 JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
+<<<<<<< HEAD
+                                WHERE s.jenis_sidang = '0'";
+=======
                                 WHERE s.jenis_sidang = 'TA'";
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                         $resultTA = sqlsrv_query($conn, $sqlTA);
 
                         // Simulasi dummy data
                         $dummyTA = [
                             [
+<<<<<<< HEAD
                                 'id_kelompok' => '001',
+=======
+                                'id_kelompok' => 'KEL001',
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                 'judul' => 'Sistem Informasi Penggajian',
                                 'jenis_sidang' => 'Sidang Akhir',
                                 'nama_dosen' => 'Timotius Victory'
                             ],
                             [
+<<<<<<< HEAD
                                 'id_kelompok' => '002',
+=======
+                                'id_kelompok' => 'KEL002',
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                 'judul' => 'Aplikasi Kasir Modern',
                                 'jenis_sidang' => 'Sidang Semester',
                                 'nama_dosen' => 'Timotius Victory'
@@ -160,7 +172,11 @@ include '../../koneksi/koneksiAndrew.php';
                                 <td>{$row['jenis_sidang']}</td>
                                 <td>{$row['nama_dosen']}</td>
                                 <td style='text-align: center;'>
+<<<<<<< HEAD
+                                    <button class='detail-btn' onclick=\"goToDetail('{$row['id_kelompok']}', '0')\">
+=======
                                     <button class='detail-btn' onclick=\"goToDetail('{$row['id_kelompok']}', 'TA')\">
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                         <i class='bi bi-eye'></i>
                                     </button>
                                 </td>
@@ -178,7 +194,11 @@ include '../../koneksi/koneksiAndrew.php';
                                     <td><?= htmlspecialchars($row['jenis_sidang']); ?></td>
                                     <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
                                     <td style="text-align: center;">
+<<<<<<< HEAD
+                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', '0')">
+=======
                                         <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', 'TA')">
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </td>
@@ -196,7 +216,11 @@ include '../../koneksi/koneksiAndrew.php';
                             $sqlSem = "SELECT s.id_kelompok, s.judul, s.jenis_sidang, d.nama_dosen
                                         FROM Sidang s
                                         JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
+<<<<<<< HEAD
+                                        WHERE s.jenis_sidang = '1'";
+=======
                                         WHERE s.jenis_sidang = 'Semester'";
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
 
                             $resultSem = sqlsrv_query($conn, $sqlSem);
                             if ($resultSem && sqlsrv_has_rows($resultSem) > 0) {
@@ -375,7 +399,7 @@ include '../../koneksi/koneksiAndrew.php';
                             for (let i = 1; i <= pageCount; i++) {
                                 const pageButton = document.createElement('li');
                                 pageButton.className = 'page-item';
-                                pageButton.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                                pageButton.innerHTML = <a class="page-link" href="#">${i}</a>;
                                 pageButton.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     currentPage = i;
@@ -512,7 +536,11 @@ include '../../koneksi/koneksiAndrew.php';
                         try {
                             const response = await fetch('../../control/get_mahasiswa.php');
                             if (!response.ok) {
+<<<<<<< HEAD
+                                throw new Error(HTTP error! status: ${response.status});
+=======
                                 throw new Error(`HTTP error! status: ${response.status}`);
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                             }
                             mahasiswaData = await response.json();
                             console.log('Loaded mahasiswaData:', mahasiswaData); // Debug log
@@ -577,8 +605,13 @@ include '../../koneksi/koneksiAndrew.php';
                     // Search mahasiswa for autocomplete
                     function searchMahasiswa(input, anggotaIndex) {
                         const query = input.value.toLowerCase().trim();
+<<<<<<< HEAD
+                        const dropdown = document.getElementById(autocomplete_${anggotaIndex});
+                        const namaDisplay = document.getElementById(anggota_nama_${anggotaIndex});
+=======
                         const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
                         const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
 
                         // console.log('currentProdi:', currentProdi);
                         // console.log('mahasiswaData sample:', mahasiswaData.slice(0, 5));
@@ -642,9 +675,15 @@ include '../../koneksi/koneksiAndrew.php';
 
                     // Select mahasiswa from autocomplete
                     function selectMahasiswa(mahasiswa, anggotaIndex) {
+<<<<<<< HEAD
+                        const nimInput = document.getElementById(anggota_nim_${anggotaIndex});
+                        const namaDisplay = document.getElementById(anggota_nama_${anggotaIndex});
+                        const dropdown = document.getElementById(autocomplete_${anggotaIndex});
+=======
                         const nimInput = document.getElementById(`anggota_nim_${anggotaIndex}`);
                         const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
                         const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                         nimInput.value = mahasiswa.nim;
                         namaDisplay.textContent = mahasiswa.nama_mhs;
                         dropdown.style.display = 'none';
@@ -656,7 +695,7 @@ include '../../koneksi/koneksiAndrew.php';
                         const wrapper = document.getElementById('anggota-wrapper');
                         const div = document.createElement('div');
                         div.className = 'anggota-form-group';
-                        div.id = `anggota-form-${anggotaCount}`;
+                        div.id = anggota-form-${anggotaCount};
                         div.innerHTML = `
                         <label for="anggota_nim_${anggotaCount}">Anggota ${anggotaCount}:</label>
                         <div class="anggota-input-group">
@@ -678,7 +717,7 @@ include '../../koneksi/koneksiAndrew.php';
                     // Remove anggota (no changes needed)
                     function removeAnggota() {
                         if (anggotaCount > 1) {
-                            const lastForm = document.getElementById(`anggota-form-${anggotaCount}`);
+                            const lastForm = document.getElementById(anggota-form-${anggotaCount});
                             if (lastForm) {
                                 lastForm.remove();
                                 anggotaCount--;
@@ -743,7 +782,11 @@ include '../../koneksi/koneksiAndrew.php';
                         try {
                             const response = await fetch('../../control/get_kelompok_list.php'); // Create this new PHP file
                             if (!response.ok) {
+<<<<<<< HEAD
+                                throw new Error(HTTP error! status: ${response.status});
+=======
                                 throw new Error(`HTTP error! status: ${response.status}`);
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                             }
                             kelompokData = await response.json(); // Update global kelompokData
 
@@ -765,7 +808,11 @@ include '../../koneksi/koneksiAndrew.php';
                                     </div>
                                     <div class="kelompok-list-anggota">
                                         <strong>Anggota:</strong><br>
+<<<<<<< HEAD
+                                        ${kelompok.anggota.map(angg => ${angg.nim} - ${angg.nama_mhs}).join('<br>')}
+=======
                                         ${kelompok.anggota.map(angg => `${angg.nim} - ${angg.nama_mhs}`).join('<br>')}
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                     </div>
                                 `;
                                 container.appendChild(kelompokItem);
@@ -788,7 +835,11 @@ include '../../koneksi/koneksiAndrew.php';
                         const prodi = document.getElementById('kelompok_prodi').value;
                         const anggotaNIMs = [];
                         for (let i = 1; i <= anggotaCount; i++) {
+<<<<<<< HEAD
+                            const nimInput = document.getElementById(anggota_nim_${i});
+=======
                             const nimInput = document.getElementById(`anggota_nim_${i}`);
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                             if (nimInput.value.trim() !== '') {
                                 anggotaNIMs.push(nimInput.value.trim());
                             }
@@ -807,7 +858,11 @@ include '../../koneksi/koneksiAndrew.php';
                             });
 
                             if (!response.ok) {
+<<<<<<< HEAD
+                                throw new Error(HTTP error! status: ${response.status});
+=======
                                 throw new Error(`HTTP error! status: ${response.status}`);
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                             }
 
                             const result = await response.json();
@@ -837,16 +892,24 @@ include '../../koneksi/koneksiAndrew.php';
                         let hasAnggota = false;
                         const selectedNIMs = new Set(); // Use a Set to check for duplicates
                         for (let i = 1; i <= anggotaCount; i++) {
-                            const nimInput = document.getElementById(`anggota_nim_${i}`);
+                            const nimInput = document.getElementById(anggota_nim_${i});
                             if (nimInput.value.trim() !== '') {
                                 // Check if NIM exists in the fetched mahasiswaData
                                 const foundMahasiswa = mahasiswaData.find(mhs => String(mhs.nim) === nimInput.value.trim());
                                 if (!foundMahasiswa) {
+<<<<<<< HEAD
+                                    alert(NIM ${nimInput.value.trim()} tidak ditemukan.);
+                                    return false;
+                                }
+                                if (selectedNIMs.has(nimInput.value.trim())) {
+                                    alert(NIM ${nimInput.value.trim()} sudah ditambahkan.);
+=======
                                     alert(`NIM ${nimInput.value.trim()} tidak ditemukan.`);
                                     return false;
                                 }
                                 if (selectedNIMs.has(nimInput.value.trim())) {
                                     alert(`NIM ${nimInput.value.trim()} sudah ditambahkan.`);
+>>>>>>> f0d830a94a4557f73996c524bbfc7a533ef21015
                                     return false;
                                 }
                                 selectedNIMs.add(nimInput.value.trim());
