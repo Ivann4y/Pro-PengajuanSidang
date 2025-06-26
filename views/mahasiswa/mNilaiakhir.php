@@ -21,8 +21,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     exit(); 
 }
 
-$user_data = $_SESSION['user_data'];
-$nim_mahasiswa_logged_in = $_SESSION['user_data']['nim'];
 include '../../koneksi/koneksiAndrew.php';
 
 $id_sidang = $_SESSION['selected_sidang_id'];

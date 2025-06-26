@@ -1,24 +1,25 @@
 <?php
-session_start(); // Selalu mulai sesi terlebih dahulu
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Cek apakah ada sesi 'is_logged_in' dan nilainya true
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
-    // Jika tidak, redirect ke halaman login
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    // Gunakan path absolut dari root web server Anda
-    header("Location: /Sidang/Pro-PengajuanSidang/index.php"); 
-    exit(); // Hentikan eksekusi skrip
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
 }
 
-// Cek apakah role-nya adalah 'mahasiswa'
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
-    // Jika bukan mahasiswa, tendang keluar
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
-    header("Location: /Sidang/Pro-PengajuanSidang/index.php");
-    exit(); // Hentikan eksekusi skrip
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
 }
-include '../../koneksi/koneksiAndrew.php'; // Koneksi ke SQL Server Anda
 
+include '../../koneksi/koneksiAndrew.php';
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
     $pesan = $_SESSION['pesan'];
