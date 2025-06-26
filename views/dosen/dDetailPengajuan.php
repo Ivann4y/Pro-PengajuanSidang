@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 session_start();
 if (!isset($_SESSION['nomor_dosen'])) {
   // fallback sementara untuk testing
@@ -19,14 +18,6 @@ $tipe = isset($_GET['tipe']) ? $_GET['tipe'] : null;
 //     exit;
 // }
 
-=======
-ob_start(); // Buffer output agar header() dan session_start tidak error
-session_start();
-include '../../koneksi/koneksiAndrew.php';
-
-// Get parameters
-$id_sidang = $_GET['id_sidang'] ?? null;
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
 
 // Initialize
 $sidang = [];
@@ -37,7 +28,6 @@ $anggota = []; // Initialize anggota array
 
 // Fetch submission details
 if ($id_sidang) {
-<<<<<<< HEAD
   // 1. Ambil info judul, jenis sidang, dan nama kelompok
   $sql = "SELECT s.judul, s.jenis_sidang, s.id_sidang, k.nama_kelompok
           FROM Sidang s
@@ -101,51 +91,10 @@ if ($id_sidang) {
   }
 
   // 6. Handle aksi Approve / Reject
-=======
-  // Get main submission
-  $stmt = sqlsrv_query($conn, "SELECT * FROM Sidang WHERE id_sidang = ?", [$id_sidang]);
-  if ($stmt === false) die(print_r(sqlsrv_errors(), true));
-  $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
-
-  // Detail/Revisions
-  $stmt = sqlsrv_query($conn, "
-        SELECT ds.*, d.nama_dosen 
-        FROM Detail_Sidang ds
-        JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-        WHERE ds.id_sidang = ?", [$id_sidang]);
-  while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-    $detail_sidang[] = $row;
-    if (!empty($row['dok_revisi'])) {
-      $revisions[] = [
-        'dokumen' => $row['dok_revisi'],
-        'dosen' => $row['nama_dosen'],
-        'catatan' => $row['catatan_sidang'],
-        'status' => $row['status_revisi'],
-        'id' => $row['id'] ?? null
-      ];
-    }
-  }
-
-  // Check approval
-  $stmt = sqlsrv_query($conn, "
-        SELECT COUNT(*) as total, 
-               SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved
-        FROM Persetujuan_Sidang WHERE id_sidang = ?", [$id_sidang]);
-  $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
-  $all_approved = ($row['total'] > 0 && $row['approved'] == $row['total']);
-
-  // Update status if needed
-  if ($all_approved) {
-    sqlsrv_query($conn, "UPDATE Detail_Sidang SET status_revisi = 'Approved' WHERE id_sidang = ?", [$id_sidang]);
-  }
-
-  // Handle approval/rejection
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['nomor_dosen'])) {
     $nomor_dosen = $_SESSION['nomor_dosen'];
 
     if (isset($_POST['approve'])) {
-<<<<<<< HEAD
       // Cek apakah sudah pernah disetujui/ditolak
       $sql = "SELECT id FROM Persetujuan_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
       $params = [$id_sidang, $nomor_dosen];
@@ -200,31 +149,6 @@ if ($id_sidang) {
 
         $_SESSION['success'] = "Sidang berhasil ditolak";
         header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang);
-=======
-      // Approval
-      $cek = sqlsrv_query($conn, "SELECT id FROM Persetujuan_Sidang WHERE id_sidang = ? AND nomor_dosen = ?", [$id_sidang, $nomor_dosen]);
-      if (sqlsrv_has_rows($cek)) {
-        sqlsrv_query($conn, "UPDATE Persetujuan_Sidang SET status = 'Approved', catatan = NULL WHERE id_sidang = ? AND nomor_dosen = ?", [$id_sidang, $nomor_dosen]);
-      } else {
-        sqlsrv_query($conn, "INSERT INTO Persetujuan_Sidang (id_sidang, nomor_dosen, status) VALUES (?, ?, 'Approved')", [$id_sidang, $nomor_dosen]);
-      }
-      $_SESSION['success'] = "Sidang berhasil disetujui";
-      header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=$id_sidang");
-      exit();
-    } elseif (isset($_POST['reject'])) {
-      $catatan = trim($_POST['catatan'] ?? '');
-      if (empty($catatan)) {
-        $_SESSION['error'] = "Silakan isi catatan penolakan";
-      } else {
-        $cek = sqlsrv_query($conn, "SELECT id FROM Persetujuan_Sidang WHERE id_sidang = ? AND nomor_dosen = ?", [$id_sidang, $nomor_dosen]);
-        if (sqlsrv_has_rows($cek)) {
-          sqlsrv_query($conn, "UPDATE Persetujuan_Sidang SET status = 'Rejected', catatan = ? WHERE id_sidang = ? AND nomor_dosen = ?", [$catatan, $id_sidang, $nomor_dosen]);
-        } else {
-          sqlsrv_query($conn, "INSERT INTO Persetujuan_Sidang (id_sidang, nomor_dosen, status, catatan) VALUES (?, ?, 'Rejected', ?)", [$id_sidang, $nomor_dosen, $catatan]);
-        }
-        $_SESSION['success'] = "Sidang berhasil ditolak";
-        header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=$id_sidang");
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
         exit();
       }
     }
@@ -269,35 +193,10 @@ if (isset($_GET['download'])) {
 // $stmt = sqlsrv_query($conn, $sql, $params);
 // $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 
-<<<<<<< HEAD
 // if (!$sidang) {
 //     echo "Data sidang tidak ditemukan!";
 //     exit;
 // }
-=======
-// Dummy lengkap sesuai id dan tipe
-$dummyData = [
-  '001' => [
-    'no_kelompok' => 'KEL001',
-    'anggota' => ['M. Haaris', 'Rudi Nur Salim', 'Siti Rahayu'],
-    'mata_kuliah' => 'Tugas Akhir',
-    'judul_sidang' => 'Sistem Informasi Penggajian',
-    'dosen_pembimbing' => 'Timotius Victory'
-  ],
-  '002' => [
-    'no_kelompok' => 'KEL002',
-    'anggota' => ['Maya Sari', 'Fikri Ramadhan', 'Gilang Pratama'],
-    'mata_kuliah' => 'Pemrograman 2',
-    'judul_sidang' => 'Aplikasi Kasir Modern',
-    'dosen_pembimbing' => 'Timotius Victory'
-  ]
-];
-
-if (isset($dummyData[$id_sidang])) {
-  $mahasiswa = $dummyData[$id_sidang];
-}
-
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
 ?>
 
 <!DOCTYPE html>
@@ -360,11 +259,7 @@ if (isset($dummyData[$id_sidang])) {
         </div>
      </div>
 
-<<<<<<< HEAD
       <h2 class="mb-4">Detail Pengajuan</h2>
-=======
-  <h3 class="mb-4">Detail Pengajuan</h3>
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
 
       <div class="card mb-3 info-pengajuan">
         <h5 class="fw-semibold section">Informasi Pengajuan</h5>
@@ -413,7 +308,6 @@ if (isset($dummyData[$id_sidang])) {
       </div>
 
 
-<<<<<<< HEAD
       <div class="card mb-3 dokumen-sidang position-relative">
         <h5 class="fw-semibold">Dokumen Sidang</h5>
         <div class="mt-2">
@@ -426,31 +320,6 @@ if (isset($dummyData[$id_sidang])) {
           <?php else: ?>
             <p class="text-muted">Tidak ada dokumen yang diunggah</p>
           <?php endif; ?>
-=======
-<div class="card mb-3 dokumen-sidang position-relative">
-  <h5 class="fw-semibold">Dokumen Sidang</h5>
-  <div class="mt-2">
-    <a class="file-pill text-decoration-none file-link berkas-laporan" href="#" download>
-      <i class="fa-solid fa-file-lines"></i> berkas_laporan_kel-1.pdf
-    </a>
-  </div>
-</div> 
-
-<div class="d-flex justify-content-between">
-  <button class="btn-kembali" onclick="location.href='dpengajuan.php'">
-    <span class="icon-circle"> <i class="fa-solid fa-arrow-left"></i></span>Kembali</button>
-  <div class="d-flex justify-content-between ">
-    <button class="btn btn-danger btn-circle me-2" id="btnTolak">Tolak</button>
-    <button class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
-  </div>
-</div>
-
-    <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center p-4">
-        <img src="../../assets/img/centang.svg" width="200" class="mx-auto mb-3" alt="Check Icon">
-        <h5 class="modal-title fw-bold" id="notifModalLabel"></h5>
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
         </div>
     </div>
   </div>
@@ -472,13 +341,11 @@ if (isset($dummyData[$id_sidang])) {
               </div>
             </div>
 
-<<<<<<< HEAD
             <button class="btn btn-danger btn-circle me-2" id="btnTolak" data-bs-toggle="modal" data-bs-target="#modalTolak">Tolak</button>
             <form method="POST" style="display: inline;">
               <button type="submit" name="approve" class="btn btn-success btn-circle" id="btnSetujui">Setujui</button>
             </form>
           </div>
-        <?php endif; ?>
       </div>
 
       <!-- Form untuk rejection -->
@@ -501,13 +368,6 @@ if (isset($dummyData[$id_sidang])) {
         <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
           <div class="modal-header border-0 justify-content-center">
             <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
-=======
-<div class="modal fade" id="modalTolak" tabindex="-1" aria-labelledby="modalTolakLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-      <div class="modal-header border-0 justify-content-center">
-        <h4 class="modal-title fw-bold" id="modalTolakLabel" style="font-size: 24px;">Perhatian</h4>
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
           </div>
           <div class="modal-body">
           <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin ingin menolak?</p>
@@ -546,25 +406,17 @@ if (isset($dummyData[$id_sidang])) {
     const modalKonfirmasi = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
     const modalTolak = new bootstrap.Modal(document.getElementById('modalTolak'));
 
-<<<<<<< HEAD
       // Buka modal konfirmasi ketika klik tombol Setujui
       document.getElementById('btnSetujui').addEventListener('click', function(e) {
         e.preventDefault();
         modalKonfirmasi.show();
       });
-=======
-    // Buka modal konfirmasi ketika klik tombol Setujui
-    document.getElementById('btnSetujui').addEventListener('click', function () {
-      modalKonfirmasi.show();
-    });
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
 
     // Buka modal tolak ketika klik tombol Tolak
     document.getElementById('btnTolak').addEventListener('click', function () {
       modalTolak.show();
     });
 
-<<<<<<< HEAD
       // Jika tekan "Lanjutkan" di modal Setujui
       document.getElementById('submitBtn').addEventListener('click', function() {
         // Submit the approve form
@@ -588,19 +440,6 @@ if (isset($dummyData[$id_sidang])) {
         // Set the catatan value and submit the reject form
         document.getElementById('catatanInput').value = alasan;
         document.getElementById('rejectForm').submit();
-=======
-    // Jika tekan "Lanjutkan" di modal Setujui
-    document.getElementById('submitBtn').addEventListener('click', function () {
-      Swal.fire({
-        title: 'Pengajuan Berhasil Dikirim!',
-        icon: 'success',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#4B68FB'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          history.back(); 
-        }
->>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
       });
     });
 
