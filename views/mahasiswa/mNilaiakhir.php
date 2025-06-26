@@ -1,7 +1,4 @@
 <?php
-// ===================================================================
-//      BLOK VERIFIKASI SESI MAHASISWA (FINAL)
-// ===================================================================
 
 // Memulai sesi PHP jika belum aktif.
 if (session_status() === PHP_SESSION_NONE) {
