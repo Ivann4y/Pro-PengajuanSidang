@@ -145,7 +145,6 @@ function sendResetPasswordEmail($recipientEmail, $recipientName, $token) {
                     <h2>Reset Password</h2>
                 </div>
                 <div class="content">
-                    <p>Assalamu\'alaikum Wr. Wb.</p>
                     <p>Yth. ' . htmlspecialchars($recipientName) . ',</p>
                     <br>
                     <p>Kami menerima permintaan untuk mereset password akun Anda. Untuk melanjutkan proses reset password, silakan klik tombol di bawah ini:</p>
@@ -165,7 +164,6 @@ function sendResetPasswordEmail($recipientEmail, $recipientName, $token) {
                         * Link reset password ini hanya berlaku selama 15 menit dan hanya dapat digunakan satu kali.
                     </div>
                     <br>
-                    <p>Wassalamu\'alaikum Wr. Wb.</p>
                 </div>
                 <div class="footer">
                     Email ini dikirim kepada ' . htmlspecialchars($recipientName) . ' (' . htmlspecialchars($recipientEmail) . ')

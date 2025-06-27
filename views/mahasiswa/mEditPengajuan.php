@@ -1,6 +1,30 @@
 <?php
+<<<<<<< HEAD
 include '../../koneksi/koneksiAndrew.php'; // This now correctly includes your SQL Server connection
+session_start();
+=======
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+>>>>>>> 0e34b81016c2628f7e7e764536750ce922b6066c
 // Get next ID
 $next_id = 1;
 // --- SQLSRV CHANGE: Use sqlsrv_query and sqlsrv_fetch_array ---
@@ -22,7 +46,8 @@ sqlsrv_free_stmt($stmt_id); // Free the statement resource
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $judul = $_POST['judul'];
     $matkul = $_POST['matkul'];
-    $id_kelompok = 5001; // Should come from session
+    $id_kelompok = $_SESSION['id_kelompok']; // Should come from session
+    //$id_kelompok = 5001;
     $aksi = $_POST['aksi'];
     $status_ajuan = ($aksi == 'Kirim') ? 1 : 0;
     $waktu_pengumpulan = date('Y-m-d H:i:s');
