@@ -144,13 +144,6 @@ $role = "mahasiswa";
         });
         // --- BATAS KODE TAMBAHAN ---
 
-        function toLupaPassword() {
-            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';
-        }
-
-        function kembaliKePilihRole() {
-            window.location.href = '../../index.php';
-        }
     </script>
 </body>
 
