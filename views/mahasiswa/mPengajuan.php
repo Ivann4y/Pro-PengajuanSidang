@@ -38,6 +38,9 @@ if ($filter === 'TA') {
     $filterClause = " AND s.jenis_sidang = 1";
 }
 
+$subQueryIdKelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in'";
+
+
 // Count total rows for pagination 
 $countQuery = "
     SELECT COUNT(DISTINCT s.id_sidang) as total
@@ -85,9 +88,8 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
     $dataSidang[] = [
         "id_sidang" => $row['id_sidang'],
         "judul" => $row['judul'],
-        "matkul" => $row['nama_matkul'] ?? 'Tidak ada mata kuliah',
-        "dosen" => $row['nama_dosen'],
-        "jenis_sidang" => is_null($row['jenis_sidang']) ? null : (int)$row['jenis_sidang']
+        "matkul" => $row['nama_matkul'] ?? 'N/A',
+        "dosen" => $row['nama_dosen'] ?? 'N/A'
     ];
 }
 ?>
