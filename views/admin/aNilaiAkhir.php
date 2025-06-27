@@ -463,12 +463,9 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
     <!-- Top bar desktop -->
       
             <div class="dashboard-header p-3">
-        <!-- GROUP 1: Title and Tabs (aligned to the left) -->
         <div>
-          <!-- The class causing the large gap has been removed and replaced with mb-3 -->
           <h2 class="text-heading text-black mb-3" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
 
-          <!-- STEP 1: Update the Navigation Tabs -->
             <ul class="nav nav-tabs" id="myTab" role="tablist">
               <li class="nav-item" role="presentation">
                 <a class="nav-link active" id="mahasiswa1-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa1-tab-pane" role="tab" aria-controls="mahasiswa1-tab-pane" aria-selected="true" href="#">mahasiswa1</a>
@@ -483,7 +480,6 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
         </div>
 
         
-        <!-- GROUP 2: Icons (aligned to the right) -->
         <div class="header-icons d-none d-md-flex">
             <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
             <div class="profile-icon">
