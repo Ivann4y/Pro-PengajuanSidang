@@ -11,15 +11,12 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
    
 }
 
-<<<<<<< HEAD
 
 
 // Simulasi Dosen yang Login (nantinya ganti dengan session asli)
 $nomor_dosen_login = '1001';
 
 
-=======
->>>>>>> 507e20032a574e179fb187c2d71f9e3d95a3b89b
 if (!isset($_SESSION['id_sidang_aktif'])) {
     die("ID sidang tidak tersedia.");
 }
@@ -30,11 +27,8 @@ $id_sidang = $_SESSION['id_sidang_aktif'];
 // ===================================================================================
 $nomor_dosen_login = '1001';
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 507e20032a574e179fb187c2d71f9e3d95a3b89b
 // if (!isset($_SESSION['user']['nomor_dosen'])) { die("Akses ditolak."); }
 // $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
 
