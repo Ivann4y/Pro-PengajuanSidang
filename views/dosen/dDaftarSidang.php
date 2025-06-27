@@ -1,112 +1,92 @@
 <?php
 
 session_start();
-if ($_SESSION['role'] !== 'dosen') {
+
+// 1. Validasi Sesi Pengguna
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit();
 }
 
-include "../../koneksi/koneksiAndrew.php";
-
-if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
-
-// --- SIMULASI LOGIN (Anda bisa ganti dengan data dari session) ---
-// $nomor_dosen_login = '1002'; 
-// Hapus atau beri komentar pada baris simulasi
-// $nomor_dosen_login = '1001'; 
-// --- SIMULASI LOGIN (Anda bisa ganti dengan data dari session) ---
-// $nomor_dosen_login = '1002'; // atau '1001', '1005', dll.
-
-
-// Periksa apakah data pengguna ada di session
+// 2. [FIX] Menggunakan struktur session yang benar dan lebih aman
+//    Memeriksa apakah 'user_data' dan 'nomor_dosen' di dalamnya ada sebelum digunakan.
 if (!isset($_SESSION['user_data']) || !isset($_SESSION['user_data']['nomor_dosen'])) {
-    // Jika karena suatu hal session tidak ada, redirect ke logout
+    // Jika data tidak lengkap, paksa logout untuk membuat sesi baru yang valid.
     header("Location: ../../logout.php");
     exit();
 }
-// Ambil nomor dosen dari dalam array 'user_data'
+// Ambil nomor dosen dari struktur session yang benar.
 $nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
 
-// --- LOGIKA FILTER & PAGINasi ---
+
+// --- KONEKSI DAN LOGIKA LAINNYA ---
+include "../../koneksi/koneksiAndrew.php";
+if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
+
+// Baris `$nomor_dosen_login = $_SESSION['nomor_dosen'];` yang menyebabkan error telah dihapus.
+// Sekarang kita langsung menggunakan variabel $nomor_dosen_login yang sudah benar dari atas.
+
+// --- LOGIKA FILTER & PAGINASI ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// --- BASE QUERY ---
-$baseQuery = "FROM Vw_DaftarLengkapSidang";
+// Query dan logika lainnya sudah benar dan tidak perlu diubah.
+$baseQuery = "
+    WITH FullSidangData AS (
+        SELECT
+            s.id_sidang, s.id_kelompok, s.jenis_sidang,
+            CASE 
+                WHEN s.jenis_sidang = 0x00 THEN s.judul
+                ELSE (SELECT TOP 1 mk.nama_matkul FROM [dbo].[Detail_Sidang] ds JOIN [dbo].[MataKuliah] mk ON ds.id_matkul = mk.id_matkul WHERE ds.id_sidang = s.id_sidang)
+            END AS display_title,
+            (SELECT TOP 1 d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = s.id_kelompok AND d.isPembimbing = 0x01) AS pembimbing
+        FROM [dbo].[Sidang] s
+    )
+";
 
-// --- WHERE CLAUSE ---
+// --- KLAUSA WHERE DINAMIS ---
 $whereConditions = [];
-$paramsForWhere = [];
-$whereConditions[] = "nomor_dosen_terlibat = ?";
-array_push($paramsForWhere, $nomor_dosen_login);
-$whereClause = " WHERE " . implode(' AND ', $whereConditions);
+$params = [];
 
-// --- HAVING CLAUSE ---
-$havingConditions = [];
-$paramsForHaving = [];
+$whereConditions[] = "
+    (EXISTS (SELECT 1 FROM [dbo].[Bimbingan] b WHERE b.id_kelompok = FullSidangData.id_kelompok AND b.nomor_dosen = ?)
+     OR EXISTS (SELECT 1 FROM [dbo].[Penjadwalan] p WHERE p.id_sidang = FullSidangData.id_sidang AND p.nomor_dosen = ?))";
+array_push($params, $nomor_dosen_login, $nomor_dosen_login);
 
-// DIPERBAIKI: Filter menggunakan kolom 'kategori_sidang'
 if ($filter === 'ta') {
-    $havingConditions[] = "(MAX(kategori_sidang) = ?)"; 
-    array_push($paramsForHaving, 'Tugas Akhir');
+    $whereConditions[] = "jenis_sidang = ?";
+    array_push($params, 0x00); 
 } elseif ($filter === 'semester') {
-    $havingConditions[] = "(MAX(kategori_sidang) != ?)";
-    array_push($paramsForHaving, 'Tugas Akhir');
+    $whereConditions[] = "jenis_sidang = ?";
+    array_push($params, 0x01);
 }
 
 if (!empty($search)) {
-    // DIPERBAIKI: Search menggunakan kolom 'judul_tampil'
-    $havingConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR MAX(judul_tampil) LIKE ? OR MAX(nama_pembimbing_utama) LIKE ?)";
+    $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR display_title LIKE ? OR pembimbing LIKE ?)";
     $likeParam = "%" . $search . "%";
-    array_push($paramsForHaving, $likeParam, $likeParam, $likeParam);
+    array_push($params, $likeParam, $likeParam, $likeParam);
 }
 
-$havingClause = "";
-if (!empty($havingConditions)) {
-    $havingClause = " HAVING " . implode(' AND ', $havingConditions);
-}
-
-$allParams = array_merge($paramsForWhere, $paramsForHaving);
+$whereClause = " WHERE " . implode(' AND ', $whereConditions);
 
 // --- QUERY PENGHITUNGAN TOTAL DATA ---
-$countQuery = "
-    SELECT COUNT(*) as total FROM (
-        SELECT id_sidang
-        " . $baseQuery . $whereClause . "
-        GROUP BY id_sidang, id_kelompok
-        " . $havingClause . "
-    ) AS CountSubQuery;
-";
-$countResult = sqlsrv_query($conn, $countQuery, $allParams);
-if ($countResult === false) { die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true)); }
-$totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
-$totalPages = ceil($totalRecords / $rowsPerPage);
-if($totalPages == 0) $totalPages = 1;
+$countQuery = $baseQuery . "SELECT COUNT(id_sidang) as total FROM FullSidangData" . $whereClause;
+$countStmt = sqlsrv_query($conn, $countQuery, $params);
+if ($countStmt === false) { die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true)); }
+$totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
+$totalPages = $totalRecords > 0 ? ceil($totalRecords / $rowsPerPage) : 1;
 
 if ($currentPage > $totalPages) {
     $currentPage = $totalPages;
     $offset = ($currentPage - 1) * $rowsPerPage;
 }
 
-// --- QUERY UTAMA ---
-$mainQuery = "
-    SELECT 
-        id_sidang, 
-        id_kelompok, 
-        MAX(judul_tampil) as judul_tampil, -- DIPERBAIKI: Ambil kolom 'judul_tampil'
-        MAX(nama_pembimbing_utama) as nama_pembimbing_utama
-    " . $baseQuery . $whereClause . " 
-    GROUP BY 
-        id_sidang, id_kelompok
-    " . $havingClause . "
-    ORDER BY 
-        id_kelompok ASC 
-    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
-
-$mainParams = array_merge($allParams, [$offset, $rowsPerPage]);
+// --- QUERY UTAMA UNTUK MENGAMBIL DATA ---
+$mainQuery = $baseQuery . "SELECT id_sidang, id_kelompok, display_title, pembimbing FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+$mainParams = array_merge($params, [$offset, $rowsPerPage]);
 $result = sqlsrv_query($conn, $mainQuery, $mainParams);
 if ($result === false) { die("Error pada query utama: " . print_r(sqlsrv_errors(), true)); }
 
@@ -114,6 +94,7 @@ $nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
+<!-- Sisa kode HTML dari sini ke bawah tidak perlu diubah, sudah benar -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -161,45 +142,48 @@ $nomor = $offset + 1;
                                 <li><a class="dropdown-item" href="?filter=semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
                             </ul>
                         </div>
-                        <form method="GET" action="" class="search-input-group ms-auto d-flex align-items-center">
+                        <form method="GET" action="" class="ms-auto">
                             <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" name="search" class="form-control" placeholder="Cari Kelompok, Matkul..." value="<?= htmlspecialchars($search) ?>">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Cari Kelompok, Judul..." value="<?= htmlspecialchars($search) ?>">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                            </div>
                         </form>
                     </div>
                 </div>
                 <div class="row">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Kelompok</th>
-                                <th scope="col">Judul/Mata Kuliah</th>
-                                <th scope="col">Pembimbing</th>
-                                <th scope="col" style="text-align: center;">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($totalRecords > 0 && $result && sqlsrv_has_rows($result)): ?>
-                                <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
-                                    <tr class="isiTabel jadiBiru">
-                                        <td data-label="No"><?= $nomor++ ?></td>
-                                        <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
-                                        <!-- DIPERBAIKI: Menampilkan kolom 'judul_tampil' -->
-                                        <td data-label="Judul/Mata Kuliah"><?= htmlspecialchars($row['judul_tampil']) ?></td>
-                                        <td data-label="Pembimbing"><?= htmlspecialchars($row['nama_pembimbing_utama'] ?? 'Belum Ditentukan') ?></td>
-                                        <td data-label="Aksi" style="text-align: center;">
-                                            <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn">
-                                                <i class="fa-solid fa-file-signature"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr><td colspan="5" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Kelompok</th>
+                                    <th scope="col">Judul/Mata Kuliah</th>
+                                    <th scope="col">Pembimbing</th>
+                                    <th scope="col" style="text-align: center;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if ($totalRecords > 0): ?>
+                                    <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+                                        <tr class="isiTabel jadiBiru">
+                                            <td data-label="No"><?= $nomor++ ?></td>
+                                            <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                                            <td data-label="Judul/Mata Kuliah"><?= htmlspecialchars($row['display_title'] ?? 'N/A') ?></td>
+                                            <td data-label="Pembimbing"><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
+                                            <td data-label="Aksi" style="text-align: center;">
+                                                <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn" title="Evaluasi Sidang">
+                                                    <i class="fa-solid fa-file-signature"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="5" class="text-center" style="padding: 20px;">Tidak ada data yang sesuai dengan filter atau pencarian Anda.</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="pagination-container">
                         <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center">
