@@ -24,15 +24,16 @@ $role = "mahasiswa";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/button-styles.css">
     <link rel="stylesheet" href="../../assets/css/login.css">
+
+  
+
 </head>
 
 <body>
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
-            <img src="../../assets/img/awan.png"
-                class="background-awan position-absolute"
-                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
-                alt="Background">
+            <img src="../../assets/img/awan.png" class="background-awan position-absolute"
+                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;" alt="Background">
             <div class="position-absolute"
                 style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
             </div>
@@ -40,23 +41,29 @@ $role = "mahasiswa";
                 <label for="">Sistem Pengajuan Sidang</label>
                 <label for="">Politeknik Astra</label>
             </div>
-            <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000" style="padding: 5% 10% 5% 10%;">
+            <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel"
+                data-bs-interval="2000" style="padding: 5% 10% 5% 10%;">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="../../assets/img/img6.png" class="imgPertama rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../../assets/img/img6.png" class="imgPertama rounded-circle d-block mx-auto" alt="..."
+                            style="height: 50vh; width: 50vh;">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/img2.png" class="imgKedua rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../../assets/img/img2.png" class="imgKedua rounded-circle d-block mx-auto" alt="..."
+                            style="height: 50vh; width: 50vh;">
                     </div>
                     <div class="carousel-item">
-                        <img src="../../assets/img/img5.png" class="imgKetiga rounded-circle d-block mx-auto" alt="..." style="height: 50vh; width: 50vh;">
+                        <img src="../../assets/img/img5.png" class="imgKetiga rounded-circle d-block mx-auto" alt="..."
+                            style="height: 50vh; width: 50vh;">
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
+                    data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying"
+                    data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
@@ -78,12 +85,9 @@ $role = "mahasiswa";
                     <input type="hidden" name="role" value="<?= $role ?>">
 
                     <div class="mb-3">
-                        <input
-                            type="text"
+                        <input type="text"
                             class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
-                            id="username"
-                            name="username"
-                            placeholder="NIM"
+                            id="username" name="username" placeholder="NIM"
                             value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
                         <?php if ($error === 'empty'): ?>
                             <small class="text-danger">NIM dan Kata Sandi harus diisi!</small>
@@ -93,14 +97,13 @@ $role = "mahasiswa";
                     </div>
 
                     <div class="mb-3">
-                        <!-- Tanda input selain text -->
-                        <input
-                            type="password"
-                            class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
-                            id="password"
-                            name="password"
-                            placeholder="Kata Sandi">
-                        <a href="#" class="float-end" onclick="toLupaPassword()"> Lupa kata sandi?</a>
+                        <div class="password-wrap">
+                            <input type="password"
+                                class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                                id="password" name="password" placeholder="Kata Sandi">
+                            <i class="bi bi-eye-fill" id="togglePassword"></i>
+                        </div>
+                        <a href="#" class="float-end mt-1" onclick="toLupaPassword()"> Lupa kata sandi?</a>
                     </div>
                     <button type="submit" class="btnMasuk btn w-100 mt-5">Masuk</button>
                 </form>
@@ -115,7 +118,9 @@ $role = "mahasiswa";
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+        crossorigin="anonymous"></script>
     <script>
         function toLupaPassword() {
             window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';
@@ -124,6 +129,21 @@ $role = "mahasiswa";
         function kembaliKePilihRole() {
             window.location.href = '../../index.php';
         }
+
+        // --- TAMBAHKAN KODE INI ---
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function (e) {
+            // Toggle tipe input
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+
+            // Toggle ikon mata
+            this.classList.toggle('bi-eye-slash-fill');
+        });
+        // --- BATAS KODE TAMBAHAN ---
+
     </script>
 </body>
 

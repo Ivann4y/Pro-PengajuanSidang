@@ -396,7 +396,71 @@ body {
     
     /* Pesan Error Validasi */
     .error-message { color: red; font-size: 0.9rem; font-weight: 500; display: none; margin-top: 10px; margin-left: 0; text-align: left; }
+.penilaian-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Agar bisa turun baris jika tidak muat */
+    gap: 20px; /* Jarak antar item */
+}
+.penilaian-item {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Jarak antara label dan input */
+}
+.penilaian-item label {
+    font-weight: 500;
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+.penilaian-item .form-control-custom {
+    width: 80px; /* Lebar input box di desktop */
+    height: 45px;
+    border-radius: 10px;
+}
 
+/* --- 2. Pengaturan untuk Tampilan Tablet/Mobile (Vertikal) --- */
+.penilaian-grid-vertical {
+    display: grid;
+    /* Tiga kolom: [Label] [:] [Input] */
+    grid-template-columns: 150px auto 1fr;
+    gap: 15px 10px; /* Jarak baris 15px, jarak kolom 10px */
+    align-items: center;
+}
+.penilaian-grid-vertical label,
+.penilaian-grid-vertical span {
+    font-weight: 500;
+    color: #555;
+    margin: 0;
+}
+.penilaian-grid-vertical label {
+    justify-self: start; /* Rata kiri */
+}
+.penilaian-grid-vertical .form-control-custom {
+    width: 100px ; /* Lebar input box di mobile */
+    height: 45px;
+    border-radius: 10px;
+    justify-self: end; /* Paksa input box untuk rata kanan */
+}
+
+/* --- 3. Logika Switcher (Paling Penting!) --- */
+
+/* Secara default (layar > 1416px), sembunyikan tampilan vertikal */
+.penilaian-grid-vertical {
+    display: none;
+}
+
+/* Saat layar 1416px atau lebih kecil, lakukan penukaran */
+@media (max-width: 1416px) {
+    /* Sembunyikan tampilan horizontal */
+    .penilaian-container {
+        display: none;
+    }
+    /* Tampilkan tampilan vertikal */
+    .penilaian-grid-vertical {
+        display: grid;
+    }
+}
 
 
 
@@ -413,7 +477,7 @@ body {
         .penilaian-row { margin-left: 0 !important; margin-right: 0 !important; gap: 15px 0; }
         .penilaian-row .col-3 { width: 100%; justify-content: flex-start; padding: 0 !important; margin-bottom: 0; }
         .penilaian-row label { min-width: unset; text-align: left; margin-right: 10px; }
-        .form-card .form-control-custom.input-nilai { flex-grow: 1; width: auto; }
+        .form-card .form-control-custom.input-nilai { flex-grow: 1;}
         .form-group-custom { flex-direction: column; align-items: flex-start; }
         .form-group-custom label { flex: none; width: 100%; margin-bottom: 0.5rem; margin-right: 0; }
         .form-group-custom .form-control-custom { width: 100%; min-width: unset; }
@@ -455,9 +519,7 @@ body {
         text-align: left;
     }
 
-    input.form-control-custom.input-nilai {
-        width: 100%; /* Buat input memenuhi sisa ruang */
-    }
+   
     
     /* ===== [END] PERBAIKAN HOVER DI MOBILE ===== */
 
@@ -481,7 +543,7 @@ body {
         .btn-kembali .icon-circle { width: 25px; height: 25px; margin-right: 8px; }
         .btn-kembali .icon-circle i { font-size: 1.1rem; }
         .penilaian-row label { width: 150px; flex-shrink: 0; white-space: nowrap; margin-right: 10px; text-align: left; }
-        input.form-control-custom.input-nilai { flex-grow: 1; width: auto; min-width: unset; }
+        input.form-control-custom.input-nilai { flex-grow: 1; }
 
         .col-lg-49 {
      flex: 0 0 100%;
@@ -516,9 +578,6 @@ body {
         text-align: left;
     }
 
-    input.form-control-custom.input-nilai {
-        width: 100%; /* Buat input memenuhi sisa ruang */
-    }
     }
 
     

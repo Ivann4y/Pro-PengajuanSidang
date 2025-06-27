@@ -88,13 +88,13 @@ $role = "dosen";
                     </div>
 
                     <div class="mb-3">
-                        <input
-                            type="password"
-                            class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
-                            id="password"
-                            name="password"
-                            placeholder="Kata Sandi">
-                        <a href="#" class="float-end" onclick="toLupaPassword()"> Lupa kata sandi?</a>
+                        <div class="password-wrap">
+                            <input type="password"
+                                class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                                id="password" name="password" placeholder="Kata Sandi">
+                            <i class="bi bi-eye-fill" id="togglePassword"></i>
+                        </div>
+                        <a href="#" class="float-end mt-1" onclick="toLupaPassword()"> Lupa kata sandi?</a>
                     </div>
                     <button type="submit" class="btnMasuk btn w-100 mt-5">Masuk</button>
                 </form>
@@ -118,6 +118,18 @@ $role = "dosen";
         function kembaliKePilihRole() {
             window.location.href = '../../index.php';
         }
+
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function (e) {
+            // Toggle tipe input
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+
+            // Toggle ikon mata
+            this.classList.toggle('bi-eye-slash-fill');
+        });
     </script>
 </body>
 </html>

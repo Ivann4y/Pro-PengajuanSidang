@@ -64,7 +64,6 @@ require "../../koneksi/koneksiAndrew.php";
           <b></b><b></b>
           <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
         </li>
-
       </ul>
     </div>
         <div id="main-sidebar" class="NavSide__sidebar">
