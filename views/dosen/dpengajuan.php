@@ -5,107 +5,113 @@ if ($_SESSION['role'] !== 'dosen') {
     exit();
 }
 
-// Ensure user_data and nomor_dosen are set
+// Pastikan data user dan nomor_dosen ada di session
 if (!isset($_SESSION['user_data']['nomor_dosen'])) {
-    // Redirect to login or show an error if session data is missing
     die("Error: Data dosen tidak ditemukan di session. Silakan login kembali.");
 }
 $nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
 include '../../koneksi/koneksiAndrew.php';
 if ($conn === false) {
-    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
+    die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-// --- CONFIGURATION FOR PAGINATION, SEARCH, AND FILTER ---
+// --- KONFIGURASI UNTUK PAGINASI, PENCARIAN, DAN FILTER ---
 $rowsPerPage = 10;
-
-// Get current state from URL parameters
 $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// --- BUILD THE DYNAMIC QUERY ---
-$params = [];
-$whereConditions = [];
 
-// Base condition: Only show data related to the logged-in lecturer
-$whereConditions[] = "b.nomor_dosen = ? AND b.isPembimbing = 1";
+$baseQuery = "
+    WITH SidangData AS (
+        SELECT DISTINCT
+            s.id_sidang,
+            s.id_kelompok,
+            s.judul,
+            s.jenis_sidang,
+            d.nomor_dosen,
+            d.nama_dosen,
+            mk.nama_matkul
+        FROM
+            Sidang s
+        JOIN
+            Bimbingan b ON s.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
+        JOIN
+            Dosen d ON b.nomor_dosen = d.nomor_dosen
+        LEFT JOIN
+            Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+        LEFT JOIN
+            MataKuliah mk ON ds.id_matkul = mk.id_matkul
+    )
+";
+
+// Kumpulan kondisi WHERE dan parameternya
+$whereConditions = [];
+$params = [];
+
+// Kondisi dasar: Dosen yang login
+$whereConditions[] = "nomor_dosen = ?";
 array_push($params, $nomorDosen);
 
-// Apply filter condition
+// Terapkan kondisi filter
 if ($filter === 'TA') {
-    $whereConditions[] = "s.jenis_sidang = '0'";
+    $whereConditions[] = "jenis_sidang = 0";
 } elseif ($filter === 'Semester') {
-    $whereConditions[] = "s.jenis_sidang = '1'";
+    $whereConditions[] = "jenis_sidang = 1";
 }
 
-// Apply search condition
+// Terapkan kondisi pencarian
 if (!empty($search)) {
-    // Search across multiple relevant fields
-    $whereConditions[] = "(s.id_kelompok LIKE ? OR s.judul LIKE ? OR mk.nama_matkul LIKE ?)";
+    $whereConditions[] = "(
+        CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR 
+        ISNULL(judul, '') LIKE ? OR 
+        ISNULL(nama_matkul, '') LIKE ?
+    )";
     $likeParam = "%" . $search . "%";
     array_push($params, $likeParam, $likeParam, $likeParam);
 }
 
-// Combine all conditions into a single WHERE clause string
-$whereClause = "WHERE " . implode(' AND ', $whereConditions);
+// Gabungkan semua kondisi menjadi satu string WHERE clause
+$whereClause = "WHERE " . implode(" AND ", $whereConditions);
 
 
-// --- QUERY TO COUNT TOTAL RECORDS FOR PAGINATION ---
-$countSql = "
-    SELECT COUNT(DISTINCT s.id_sidang) as total
-    FROM Sidang s
-    JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
-    $whereClause
-";
+// --- QUERY UNTUK MENGHITUNG TOTAL DATA UNTUK PAGINASI ---
+$countSql = $baseQuery . "SELECT COUNT(*) as total FROM SidangData " . $whereClause;
 
 $countStmt = sqlsrv_query($conn, $countSql, $params);
 if ($countStmt === false) {
-    die("Error counting records: " . print_r(sqlsrv_errors(), true));
+    die("Error saat menghitung data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 $totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'];
-$totalPages = ceil($totalRecords / $rowsPerPage);
-if($totalPages == 0) $totalPages = 1;
+$totalPages = ceil($totalRecords / $rowsPerPage) ?: 1;
 
-// Adjust current page if it's out of bounds
+// Sesuaikan halaman saat ini jika melebihi total halaman
 if ($currentPage > $totalPages) {
     $currentPage = $totalPages;
     $offset = ($currentPage - 1) * $rowsPerPage;
 }
 
 
-// --- MAIN QUERY TO FETCH DATA FOR THE CURRENT PAGE ---
-$mainSql = "
-    SELECT DISTINCT 
-        s.id_sidang, 
-        s.id_kelompok, 
-        s.judul, 
-        d.nama_dosen, 
-        mk.nama_matkul,
-        s.jenis_sidang
-    FROM Sidang s
-    JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
-    $whereClause
-    ORDER BY s.id_sidang
+// --- QUERY UTAMA UNTUK MENGAMBIL DATA SESUAI HALAMAN ---
+$mainSql = $baseQuery . "
+    SELECT id_sidang, id_kelompok, judul, nama_dosen, nama_matkul, jenis_sidang 
+    FROM SidangData 
+    " . $whereClause . "
+    ORDER BY id_sidang DESC
     OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
 ";
 
-// Add pagination parameters to the parameter array for the main query
+// Tambahkan parameter paginasi (offset, rowsPerPage) ke array parameter utama
 $mainParams = array_merge($params, [$offset, $rowsPerPage]);
 $result = sqlsrv_query($conn, $mainSql, $mainParams);
 
 if ($result === false) {
-    die("Error fetching data: " . print_r(sqlsrv_errors(), true));
+    die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
+// Set nomor awal untuk tabel
 $nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
@@ -180,7 +186,7 @@ $nomor = $offset + 1;
                 <div class="row">
                 </div><br><br>
                 <div class="row">
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2 mb-4">
                         <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
@@ -191,13 +197,11 @@ $nomor = $offset + 1;
                                 ?>
                             </button>
                             <ul class="dropdown-menu">
-                                <!-- The filter links now reload the page with the correct parameters -->
                                 <li><a class="dropdown-item" href="?filter=Semua&search=<?= urlencode($search) ?>">Semua</a></li>
                                 <li><a class="dropdown-item" href="?filter=TA&search=<?= urlencode($search) ?>">Sidang TA</a></li>
                                 <li><a class="dropdown-item" href="?filter=Semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
                             </ul>
                         </div>
-                        <!-- The search input is now inside a form that uses GET method -->
                         <form method="GET" action="" class="search-input-group ms-auto d-flex align-items-center">
                             <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -226,7 +230,7 @@ $nomor = $offset + 1;
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if ($totalRecords > 0): ?>
+                            <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
                                 <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                 <tr class="isiTabel jadiBiru">
                                     <td><?= $nomor++; ?></td>
@@ -251,17 +255,14 @@ $nomor = $offset + 1;
                         <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center">
                                 <?php if ($totalPages > 1): ?>
-                                    <!-- Previous Button -->
                                     <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
                                         <a class="page-link" href="?page=<?= $currentPage - 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">«</a>
                                     </li>
-                                    <!-- Page Number Links -->
                                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                     <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
                                         <a class="page-link" href="?page=<?= $i ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>"><?= $i ?></a>
                                     </li>
                                     <?php endfor; ?>
-                                    <!-- Next Button -->
                                     <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
                                         <a class="page-link" href="?page=<?= $currentPage + 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">»</a>
                                     </li>
@@ -356,9 +357,6 @@ $nomor = $offset + 1;
         </main>
     </div>
     <script>
-        // The client-side search and filter logic has been removed as it's now handled by PHP.
-        // All the JavaScript for the modals and sidebar remains.
-
         // Sidebar Toggle Logic
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
@@ -629,7 +627,7 @@ $nomor = $offset + 1;
                     alert(result.message);
                     resetKelompokForm();
                     kelompokModalInstance.hide();
-                    window.location.reload(); // Reload the page to show the new data in the main table
+                    window.location.reload(); // Muat ulang halaman untuk menampilkan data baru
                 } else {
                     alert('Error: ' + result.message);
                 }
