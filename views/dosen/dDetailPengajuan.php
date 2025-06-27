@@ -7,38 +7,18 @@ if (!isset($_SESSION['nomor_dosen'])) {
 include '../../koneksi/koneksiAndrew.php';
 
 // Get parameters
-$id_kelompok = isset($_GET['id_sidang']) ? $_GET['id_sidang'] : null;
+$id_sidang = isset($_GET['id_sidang']) ? $_GET['id_sidang'] : null;
 $jenis_sidang = isset($_GET['tipe']) ? $_GET['tipe'] : null;
 $nomorDosen = $_SESSION['user_data']['nomor_dosen'];
-
-// // Ambil id_sidang dari URL
-// $id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : null;
-
-// if (!$id_sidang) {
-//     echo "ID sidang tidak ditemukan!";
-//     exit;
-// }
-
 
 // Initialize
 $sidang = [];
 $detail_sidang = [];
 $revisions = [];
 $all_approved = false;
-$anggota = []; // Initialize anggota array
+$anggota = [];
 
-// Ambil id_sidang berdasarkan id_kelompok dan jenis_sidang
-$id_sidang = null;
-if ($id_sidang && $jenis_sidang) {
-    $sql = "SELECT TOP 1 id_sidang FROM Sidang WHERE id_kelompok = ? AND jenis_sidang = ?";
-    $stmt = sqlsrv_query($conn, $sql, [$id_kelompok, $jenis_sidang]);
-    if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $id_sidang = $row['id_sidang'];
-    }
-}
-
-// Fetch submission details
-if ($id_sidang && $jenis_sidang) {
+if ($id_sidang) {
   // 1. Ambil info judul, jenis sidang, dan nama kelompok
   $sql = "SELECT DISTINCT 
     s.id_sidang,
@@ -58,24 +38,19 @@ JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
 JOIN Mahasiswa mh ON km.nim = mh.nim
 WHERE d.nomor_dosen = ? 
   AND b.isPembimbing = 1 
-  AND s.id_kelompok = ? 
   AND s.jenis_sidang = ?
   AND s.id_sidang = ?
 ORDER BY s.id_sidang";
-  $params = [$nomorDosen, $id_kelompok, $jenis_sidang];
+  $params = [$nomorDosen, $jenis_sidang, $id_sidang];
   $stmt = sqlsrv_query($conn, $sql, $params);
-
-  $info_sidang = [];
-  if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-      $info_sidang = $row;
-  }
+  $info_sidang = ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) ? $row : [];
 
   // 2. Ambil data utama sidang
   $sql = "SELECT * FROM Sidang WHERE id_sidang = ?";
-  $stmt = sqlsrv_query($conn, $sql, $params);
+  $stmt = sqlsrv_query($conn, $sql, [$id_sidang]);
   if ($stmt === false) {
     echo "QUERY ERROR: $sql<br>";
-    print_r($params);
+    print_r([$id_sidang]);
     die(print_r(sqlsrv_errors(), true));
   }
   $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
@@ -85,13 +60,13 @@ ORDER BY s.id_sidang";
           FROM Detail_Sidang ds
           JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
           WHERE ds.id_sidang = ?";
-  $stmt = sqlsrv_query($conn, $sql, $params);
+  $stmt = sqlsrv_query($conn, $sql, [$id_sidang]);
   if ($stmt !== false) {
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
       $detail_sidang[] = $row;
       if (!empty($row['dok_revisi'])) {
         $revisions[] = [
-          'id' => $row['id'], // tambahkan kalau kamu ingin mendukung download by ID
+          'id' => $row['id'],
           'dokumen' => $row['dok_revisi'],
           'dosen' => $row['nama_dosen'],
           'catatan' => $row['catatan_sidang'],
@@ -106,7 +81,7 @@ ORDER BY s.id_sidang";
                  SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved
           FROM Persetujuan_Sidang 
           WHERE id_sidang = ?";
-  $stmt = sqlsrv_query($conn, $sql, $params);
+  $stmt = sqlsrv_query($conn, $sql, [$id_sidang]);
   if ($stmt !== false) {
     $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
     $all_approved = ($row['total'] > 0 && $row['approved'] == $row['total']);
@@ -116,18 +91,18 @@ ORDER BY s.id_sidang";
       $sql = "UPDATE Detail_Sidang 
               SET status_revisi = 'Approved' 
               WHERE id_sidang = ?";
-      sqlsrv_query($conn, $sql, $params);
+      sqlsrv_query($conn, $sql, [$id_sidang]);
     }
   }
 
   // 6. Handle aksi Approve / Reject
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['nomor_dosen'])) {
-    $nomor_dosen = $_SESSION['nomor_dosen'];
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_data']['nomor_dosen'])) {
+    $nomor_dosen = $_SESSION['user_data']['nomor_dosen'];
 
     if (isset($_POST['approve'])) {
       // Cek apakah sudah pernah disetujui/ditolak
       $sql = "SELECT id FROM Persetujuan_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-      $params = [$id_kelompok, $nomor_dosen];
+      $params = [$id_sidang, $nomor_dosen];
       $stmt = sqlsrv_query($conn, $sql, $params);
 
       if ($stmt === false) {
@@ -146,7 +121,7 @@ ORDER BY s.id_sidang";
       }
       sqlsrv_query($conn, $sql, $params);
       $_SESSION['success'] = "Sidang berhasil disetujui";
-      header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_kelompok . "&tipe=" . $jenis_sidang);
+      header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang . "&tipe=" . $jenis_sidang);
       exit();
     }
 
@@ -156,7 +131,7 @@ ORDER BY s.id_sidang";
         $_SESSION['error'] = "Silakan isi catatan penolakan";
       } else {
         $sql = "SELECT id FROM Persetujuan_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-        $params = [$id_kelompok, $nomor_dosen];
+        $params = [$id_sidang, $nomor_dosen];
         $stmt = sqlsrv_query($conn, $sql, $params);
 
         if ($stmt === false) {
@@ -168,17 +143,16 @@ ORDER BY s.id_sidang";
           $sql = "UPDATE Persetujuan_Sidang 
                   SET status = 'Rejected', catatan = ? 
                   WHERE id_sidang = ? AND nomor_dosen = ?";
+          $params = [$catatan, $id_sidang, $nomor_dosen];
         } else {
           $sql = "INSERT INTO Persetujuan_Sidang 
                   (id_sidang, nomor_dosen, status, catatan) 
                   VALUES (?, ?, 'Rejected', ?)";
+          $params = [$id_sidang, $nomor_dosen, $catatan];
         }
-
-        $params = [$catatan, $id_kelompok, $nomor_dosen];
         sqlsrv_query($conn, $sql, $params);
-
         $_SESSION['success'] = "Sidang berhasil ditolak";
-        header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_kelompok . "&tipe=" . $jenis_sidang);
+        header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang . "&tipe=" . $jenis_sidang);
         exit();
       }
     }
@@ -215,18 +189,6 @@ if (isset($_GET['download'])) {
   }
 }
 
-// Query data sidang
-// $sql = "SELECT s.*, k.nama_kelompok FROM Sidang s
-//         LEFT JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-//         WHERE s.id_sidang = ?";
-// $params = [$id_sidang];
-// $stmt = sqlsrv_query($conn, $sql, $params);
-// $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
-
-// if (!$sidang) {
-//     echo "Data sidang tidak ditemukan!";
-//     exit;
-// }
 ?>
 
 <!DOCTYPE html>

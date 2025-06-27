@@ -236,7 +236,7 @@ $nomor = $offset + 1;
                                     <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
                                     <td><?= $row['jenis_sidang'] == 0 ? 'TA' : 'Semester'; ?></td>
                                     <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_kelompok']; ?>', '<?= $row['jenis_sidang']; ?>')">
+                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $row['jenis_sidang']; ?>')">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </td>
@@ -367,11 +367,6 @@ $nomor = $offset + 1;
             menuToggle.classList.toggle("NavSide__toggle--active");
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
-        
-        // Go To Detail Page
-        function goToDetail(kelompokId, jenisSidang) {
-            window.location.href = `dDetailPengajuan.php?id_kelompok=${kelompokId}&jenis_sidang=${jenisSidang}`;
-        }
 
         // --- All Kelompok Modal Javascript (Unchanged) ---
         let kelompokModalInstance;
@@ -680,5 +675,6 @@ $nomor = $offset + 1;
             });
         });
     </script>
+    <script src="../../assets/js/main.js"></script>
 </body>
 </html>
