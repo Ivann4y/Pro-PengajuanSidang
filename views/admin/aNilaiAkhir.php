@@ -24,19 +24,23 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // 5. Koneksi ke database
 require "../../koneksi/koneksiAndrew.php";
 
+// 6. Pastikan sidang dipilih
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    // Pastikan kita tidak mengalihkan ke halaman yang sama
     if (basename($_SERVER['PHP_SELF']) != 'aNilaiAkhir.php') {
         header("Location: aNilaiAkhir.php");
         exit();
     }
 }
-// ======================= 1. DATA MAHASISWA & SIDANG (PERBAIKAN) =======================
+$id_sidang = $_SESSION['selected_sidang_id'];
+
+// ======================= 1. DATA MAHASISWA & SIDANG =======================
 $dataSidang = [
-    'judul' => '-', 'mahasiswa' => [], 'matkul' => '-', 'pembimbing' => '-'
+    'judul' => '-', 
+    'mahasiswa' => [], 
+    'matkul' => '-', 
+    'pembimbing' => '-'
 ];
 
-// PERBAIKAN: Query untuk mendapatkan data sidang, mahasiswa dalam kelompok, dan pembimbing.
 $sqlSidangInfo = "
     SELECT 
         s.judul,
@@ -53,32 +57,28 @@ $sqlSidangInfo = "
     LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
     WHERE s.id_sidang = ?;
 ";
+
 $stmtSidangInfo = sqlsrv_query($conn, $sqlSidangInfo, array($id_sidang));
 if ($stmtSidangInfo === false) {
-    die(print_r(sqlsrv_errors(), true)); // Debug error SQL
+    die("Error query data sidang: " . print_r(sqlsrv_errors(), true));
 }
 
-if ($stmtSidangInfo) {
-    while ($row = sqlsrv_fetch_array($stmtSidangInfo, SQLSRV_FETCH_ASSOC)) {
-        if (empty($dataSidang['judul']) || $dataSidang['judul'] === '-') {
-            $dataSidang['judul'] = $row['judul'];
-            $dataSidang['pembimbing'] = $row['nama_pembimbing'];
-            $dataSidang['matkul'] = $row['nama_matkul'];
-        }
-        $dataSidang['mahasiswa'][] = [
-            'nim' => $row['nim'],
-            'nama' => $row['nama_mhs']
-        ];
+while ($row = sqlsrv_fetch_array($stmtSidangInfo, SQLSRV_FETCH_ASSOC)) {
+    if (empty($dataSidang['judul']) || $dataSidang['judul'] === '-') {
+        $dataSidang['judul'] = $row['judul'];
+        $dataSidang['pembimbing'] = $row['nama_pembimbing'];
+        $dataSidang['matkul'] = $row['nama_matkul'];
     }
-    // Menghapus duplikasi mahasiswa jika query menghasilkan multiple rows
-    $dataSidang['mahasiswa'] = array_unique($dataSidang['mahasiswa'], SORT_REGULAR);
+    $dataSidang['mahasiswa'][] = [
+        'nim' => $row['nim'],
+        'nama' => $row['nama_mhs']
+    ];
 }
+$dataSidang['mahasiswa'] = array_unique($dataSidang['mahasiswa'], SORT_REGULAR);
 
-
-// ======================= 2. NILAI AKHIR MAHASISWA (PERBAIKAN) =======================
+// ======================= 2. NILAI AKHIR MAHASISWA =======================
 $nilaiAkhir = '-';
 
-// PERBAIKAN: Menghitung nilai akhir dari tabel Penilaian
 $sqlAkhir = "
     SELECT
         p.nim,
@@ -92,19 +92,21 @@ $sqlAkhir = "
     WHERE p.id_sidang = ?
     GROUP BY p.nim
 ";
+
 $stmtAkhir = sqlsrv_query($conn, $sqlAkhir, array($id_sidang));
+if ($stmtAkhir === false) {
+    die("Error query nilai akhir: " . print_r(sqlsrv_errors(), true));
+}
+
 if ($stmtAkhir && ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC))) {
     if (!is_null($rowAkhir['nilai_akhir_calculated'])) {
-        // Format nilai menjadi 2 angka desimal
         $nilaiAkhir = number_format($rowAkhir['nilai_akhir_calculated'], 2);
     }
 }
 
-
-// ======================= 3. NILAI & CATATAN SETIAP PENGUJI (PERBAIKAN) =======================
+// ======================= 3. NILAI & CATATAN SETIAP PENGUJI =======================
 $dataPenguji = [];
 
-// PERBAIKAN: Menggabungkan tabel Penilaian dan Detail_Sidang
 $sqlDetail = "
     SELECT 
         d.nama_dosen,
@@ -122,24 +124,25 @@ $sqlDetail = "
     WHERE p.id_sidang = ?
     ORDER BY d.nama_dosen, m.nama_mhs;
 ";
+
 $stmtDetail = sqlsrv_query($conn, $sqlDetail, array($id_sidang));
-if ($stmtDetail) {
-    while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
-        $dataPenguji[] = [
-            'dosen' => $rowDetail['nama_dosen'],
-            'nim_dinilai' => $rowDetail['nim'],
-            'mahasiswa_dinilai' => $rowDetail['nama_mhs'],
-            'n_dokumen' => $rowDetail['n_dokumen'] ?? '-',
-            'n_presentasi' => $rowDetail['n_presentasi'] ?? '-',
-            'n_tanyajawab' => $rowDetail['n_tanyajawab'] ?? '-',
-            'n_proyek' => $rowDetail['n_proyek'] ?? '-',
-            'catatan' => $rowDetail['catatan_sidang'] ?? 'Tidak ada catatan.'
-        ];
-    }
+if ($stmtDetail === false) {
+    die("Error query data penguji: " . print_r(sqlsrv_errors(), true));
 }
 
+while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
+    $dataPenguji[] = [
+        'dosen' => $rowDetail['nama_dosen'],
+        'nim_dinilai' => $rowDetail['nim'],
+        'mahasiswa_dinilai' => $rowDetail['nama_mhs'],
+        'n_dokumen' => $rowDetail['n_dokumen'] ?? '-',
+        'n_presentasi' => $rowDetail['n_presentasi'] ?? '-',
+        'n_tanyajawab' => $rowDetail['n_tanyajawab'] ?? '-',
+        'n_proyek' => $rowDetail['n_proyek'] ?? '-',
+        'catatan' => $rowDetail['catatan_sidang'] ?? 'Tidak ada catatan.'
+    ];
+}
 ?>
-
 
 
 
