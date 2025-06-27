@@ -83,7 +83,7 @@ $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
 // Query utama untuk mengambil data
-$query = "SELECT 
+$query = "SELECT DISTINCT
         s.id_sidang,
         s.judul,
         s.id_kelompok,

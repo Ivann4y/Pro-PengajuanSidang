@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 // Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
 $path_to_root = '../../';
 
@@ -25,10 +26,26 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 require "../../koneksi/koneksiAndrew.php";
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid.");
-} 
-$id_sidang = (int)$_GET['id'];
+// Langkah 1: Jika ada 'id' di URL, simpan ke session dan redirect.
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    // Simpan ID yang valid dari URL ke dalam session
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    
+    // Redirect ke halaman yang sama TAPI TANPA parameter GET
+    header("Location: aDetailSidang.php");
+    exit();
+}
+
+// Langkah 2: Jika TIDAK ada 'id' di URL, ambil dari session.
+if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif'])) {
+    $id_sidang = (int)$_SESSION['id_sidang_aktif'];
+} else {
+    // Jika tidak ada di URL dan tidak ada di session, maka akses tidak valid.
+    // Arahkan kembali ke halaman daftar sidang.
+    $_SESSION['error_message'] = "ID Sidang tidak valid atau tidak ditemukan. Silakan pilih sidang dari daftar.";
+    header("Location: aDaftarSidang.php");
+    exit();
+}
 
 // Variabel penampung
 $data_nim = [];
