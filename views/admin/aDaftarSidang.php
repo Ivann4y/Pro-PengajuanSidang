@@ -82,6 +82,12 @@ if($countResult === false) { die(print_r(sqlsrv_errors(), true)); }
 $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
+        // Ketika memilih sidang: deirect ke halaman aNilaiAkhir.php
+        $_SESSION['selected_sidang_id'] = $id_sidang_terpilih;
+        header("Location: aNilaiAkhir.php");
+        exit();
+
+
 // Query utama untuk mengambil data
 $query = "SELECT DISTINCT
         s.id_sidang,
