@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // FUNGSI UNTUK DOSEN
 function goToDetail(id_sidang, tipe) {
-  window.location.href = `dDetailPengajuan.php?id_sidang=${id_sidang}&tipe=${tipe}`;
+  window.location.href = `dDetailPengajuan.php?id_sidang=${id_sidang}&jenis_sidang=${jenis_sidang}`;
 }
 
 function goToEvaluasi(nim, tipe) {

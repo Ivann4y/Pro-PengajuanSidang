@@ -7,8 +7,9 @@ if (!isset($_SESSION['nomor_dosen'])) {
 include '../../koneksi/koneksiAndrew.php';
 
 // Get parameters
-$id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : null;
-$tipe = isset($_GET['tipe']) ? $_GET['tipe'] : null;
+$id_kelompok = isset($_GET['id_sidang']) ? $_GET['id_sidang'] : null;
+$jenis_sidang = isset($_GET['tipe']) ? $_GET['tipe'] : null;
+$nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
 // // Ambil id_sidang dari URL
 // $id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : null;
@@ -26,15 +27,44 @@ $revisions = [];
 $all_approved = false;
 $anggota = []; // Initialize anggota array
 
+// Ambil id_sidang berdasarkan id_kelompok dan jenis_sidang
+$id_sidang = null;
+if ($id_sidang && $jenis_sidang) {
+    $sql = "SELECT TOP 1 id_sidang FROM Sidang WHERE id_kelompok = ? AND jenis_sidang = ?";
+    $stmt = sqlsrv_query($conn, $sql, [$id_kelompok, $jenis_sidang]);
+    if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $id_sidang = $row['id_sidang'];
+    }
+}
+
 // Fetch submission details
-if ($id_sidang) {
+if ($id_sidang && $jenis_sidang) {
   // 1. Ambil info judul, jenis sidang, dan nama kelompok
-  $sql = "SELECT s.judul, s.jenis_sidang, s.id_sidang, k.nama_kelompok
-          FROM Sidang s
-          LEFT JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-          WHERE s.id_sidang = ?";
-  $params = [$id_sidang];
+  $sql = "SELECT DISTINCT 
+    s.id_sidang,
+    s.id_kelompok, 
+    mh.nama_mhs, 
+    s.judul, 
+    s.jenis_sidang, 
+    d.nama_dosen, 
+    mk.nama_matkul,
+    s.dok_laporan
+FROM Sidang s
+JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+JOIN Mahasiswa mh ON km.nim = mh.nim
+WHERE d.nomor_dosen = ? 
+  AND b.isPembimbing = 1 
+  AND s.id_kelompok = ? 
+  AND s.jenis_sidang = ?
+  AND s.id_sidang = ?
+ORDER BY s.id_sidang";
+  $params = [$nomorDosen, $id_kelompok, $jenis_sidang];
   $stmt = sqlsrv_query($conn, $sql, $params);
+
   $info_sidang = [];
   if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
       $info_sidang = $row;
@@ -97,7 +127,7 @@ if ($id_sidang) {
     if (isset($_POST['approve'])) {
       // Cek apakah sudah pernah disetujui/ditolak
       $sql = "SELECT id FROM Persetujuan_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-      $params = [$id_sidang, $nomor_dosen];
+      $params = [$id_kelompok, $nomor_dosen];
       $stmt = sqlsrv_query($conn, $sql, $params);
 
       if ($stmt === false) {
@@ -116,7 +146,7 @@ if ($id_sidang) {
       }
       sqlsrv_query($conn, $sql, $params);
       $_SESSION['success'] = "Sidang berhasil disetujui";
-      header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang);
+      header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_kelompok . "&tipe=" . $jenis_sidang);
       exit();
     }
 
@@ -126,7 +156,7 @@ if ($id_sidang) {
         $_SESSION['error'] = "Silakan isi catatan penolakan";
       } else {
         $sql = "SELECT id FROM Persetujuan_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-        $params = [$id_sidang, $nomor_dosen];
+        $params = [$id_kelompok, $nomor_dosen];
         $stmt = sqlsrv_query($conn, $sql, $params);
 
         if ($stmt === false) {
@@ -144,11 +174,11 @@ if ($id_sidang) {
                   VALUES (?, ?, 'Rejected', ?)";
         }
 
-        $params = [$catatan, $id_sidang, $nomor_dosen];
+        $params = [$catatan, $id_kelompok, $nomor_dosen];
         sqlsrv_query($conn, $sql, $params);
 
         $_SESSION['success'] = "Sidang berhasil ditolak";
-        header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang);
+        header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_kelompok . "&tipe=" . $jenis_sidang);
         exit();
       }
     }
@@ -228,7 +258,7 @@ if (isset($_GET['download'])) {
           <b></b><b></b>
           <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
         </li>
-        <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
+        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
           <b></b><b></b>
           <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
         </li>
