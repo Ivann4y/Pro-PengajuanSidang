@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         date_default_timezone_set('Asia/Jakarta');
         $expires = date('Y-m-d H:i:s', strtotime('+15 minutes'));
         sqlsrv_query($conn, "INSERT INTO password_resets (email, role, token, expires_at) VALUES (?, ?, ?, ?)", [$email, $role, $token, $expires]);
-        $resetLink = "http://localhost/PRG2/Pro-PengajuanSidang/views/inputPasswordBaru.php?token=$token";
+        // $resetLink = "http://localhost/PRG2/Pro-PengajuanSidang/views/inputPasswordBaru.php?token=$token";
         $result = sendResetPasswordEmail($email, $user['username'], $token);
 
 
