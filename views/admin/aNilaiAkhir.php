@@ -1,88 +1,145 @@
 <?php
-// Letakkan ini di baris paling atas file
+// 1. Mulai session jika belum aktif
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
+// 2. Path ke root project
 $path_to_root = '../../';
 
-// 1. Cek jika pengguna BELUM login.
+// 3. Cek login
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    // Arahkan ke halaman login utama di root
-    header("Location: " . $path_to_root . "index.php"); 
-    exit(); 
-}
-
-// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
-    // Arahkan ke halaman login utama di root
     header("Location: " . $path_to_root . "index.php");
-    exit(); 
-}
-
-require "../../koneksi/koneksiAndrew.php";
-
-
-if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    header("Location: aSidang.php");
     exit();
 }
-$id_sidang = $_SESSION['selected_sidang_id'];
 
+// 4. Cek role: hanya admin yang boleh
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit();
+}
 
-$dataMahasiswa = [
-    'nim' => '-', 'nama' => '-', 'matkul' => '-', 'dosen' => '-'
+// 5. Koneksi ke database
+require "../../koneksi/koneksiAndrew.php";
+
+if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
+    // Pastikan kita tidak mengalihkan ke halaman yang sama
+    if (basename($_SERVER['PHP_SELF']) != 'aNilaiAkhir.php') {
+        header("Location: aNilaiAkhir.php");
+        exit();
+    }
+}
+// ======================= 1. DATA MAHASISWA & SIDANG (PERBAIKAN) =======================
+$dataSidang = [
+    'judul' => '-', 'mahasiswa' => [], 'matkul' => '-', 'pembimbing' => '-'
 ];
-$sqlMhs = "
+
+// PERBAIKAN: Query untuk mendapatkan data sidang, mahasiswa dalam kelompok, dan pembimbing.
+$sqlSidangInfo = "
     SELECT 
-        m.nim, m.nama_mhs, mk.nama_matkul, d.nama_dosen
+        s.judul,
+        m.nim,
+        m.nama_mhs,
+        d_pembimbing.nama_dosen as nama_pembimbing,
+        mk.nama_matkul
     FROM Sidang s
-    JOIN Mahasiswa m ON s.nim = m.nim
-    JOIN PenanggungJawab pj ON pj.id_sidang = s.id_sidang
-    JOIN MataKuliah mk ON mk.id_matkul = pj.id_matkul
-    JOIN Dosen d ON d.nomor_dosen = pj.nomor_dosen
-    WHERE s.id_sidang = ?
+    LEFT JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+    LEFT JOIN Mahasiswa m ON km.nim = m.nim
+    LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+    LEFT JOIN Dosen d_pembimbing ON b.nomor_dosen = d_pembimbing.nomor_dosen
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+    WHERE s.id_sidang = ?;
 ";
-$stmtMhs = sqlsrv_query($conn, $sqlMhs, array($id_sidang));
-if ($stmtMhs && ($row = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
-    $dataMahasiswa = [
-        'nim' => $row['nim'],
-        'nama' => $row['nama_mhs'],
-        'matkul' => $row['nama_matkul'],
-        'dosen' => $row['nama_dosen']
-    ];
+$stmtSidangInfo = sqlsrv_query($conn, $sqlSidangInfo, array($id_sidang));
+if ($stmtSidangInfo === false) {
+    die(print_r(sqlsrv_errors(), true)); // Debug error SQL
+}
+
+if ($stmtSidangInfo) {
+    while ($row = sqlsrv_fetch_array($stmtSidangInfo, SQLSRV_FETCH_ASSOC)) {
+        if (empty($dataSidang['judul']) || $dataSidang['judul'] === '-') {
+            $dataSidang['judul'] = $row['judul'];
+            $dataSidang['pembimbing'] = $row['nama_pembimbing'];
+            $dataSidang['matkul'] = $row['nama_matkul'];
+        }
+        $dataSidang['mahasiswa'][] = [
+            'nim' => $row['nim'],
+            'nama' => $row['nama_mhs']
+        ];
+    }
+    // Menghapus duplikasi mahasiswa jika query menghasilkan multiple rows
+    $dataSidang['mahasiswa'] = array_unique($dataSidang['mahasiswa'], SORT_REGULAR);
 }
 
 
+// ======================= 2. NILAI AKHIR MAHASISWA (PERBAIKAN) =======================
 $nilaiAkhir = '-';
-$sqlAkhir = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
+
+// PERBAIKAN: Menghitung nilai akhir dari tabel Penilaian
+$sqlAkhir = "
+    SELECT
+        p.nim,
+        AVG(
+            (p.n_dokumen * 0.25) +
+            (p.n_presentasi * 0.25) +
+            (p.n_tanyajawab * 0.30) +
+            (p.n_proyek * 0.20)
+        ) AS nilai_akhir_calculated
+    FROM Penilaian p
+    WHERE p.id_sidang = ?
+    GROUP BY p.nim
+";
 $stmtAkhir = sqlsrv_query($conn, $sqlAkhir, array($id_sidang));
 if ($stmtAkhir && ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC))) {
-    $nilaiAkhir = $rowAkhir['nilai_akhir'] ?? '-';
+    if (!is_null($rowAkhir['nilai_akhir_calculated'])) {
+        // Format nilai menjadi 2 angka desimal
+        $nilaiAkhir = number_format($rowAkhir['nilai_akhir_calculated'], 2);
+    }
 }
 
 
-$nilaiSementara = []; 
+// ======================= 3. NILAI & CATATAN SETIAP PENGUJI (PERBAIKAN) =======================
+$dataPenguji = [];
+
+// PERBAIKAN: Menggabungkan tabel Penilaian dan Detail_Sidang
 $sqlDetail = "
-    SELECT d.nama_dosen, ds.nilai, ds.catatan
-    FROM Detail_Sidang ds
-    JOIN Dosen d ON d.nomor_dosen = ds.nomor_dosen
-    WHERE ds.id_sidang = ?
+    SELECT 
+        d.nama_dosen,
+        p.nim,
+        m.nama_mhs,
+        p.n_dokumen, 
+        p.n_presentasi, 
+        p.n_tanyajawab, 
+        p.n_proyek,
+        ds.catatan_sidang
+    FROM Penilaian p
+    JOIN Dosen d ON d.nomor_dosen = p.nomor_dosen
+    JOIN Mahasiswa m ON p.nim = m.nim
+    LEFT JOIN Detail_Sidang ds ON p.id_sidang = ds.id_sidang AND p.nomor_dosen = ds.nomor_dosen
+    WHERE p.id_sidang = ?
+    ORDER BY d.nama_dosen, m.nama_mhs;
 ";
 $stmtDetail = sqlsrv_query($conn, $sqlDetail, array($id_sidang));
 if ($stmtDetail) {
     while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
-        $nilaiSementara[] = [
+        $dataPenguji[] = [
             'dosen' => $rowDetail['nama_dosen'],
-            'nilai' => $rowDetail['nilai'],
-            'catatan' => $rowDetail['catatan'] ?? 'Tidak ada catatan.'
+            'nim_dinilai' => $rowDetail['nim'],
+            'mahasiswa_dinilai' => $rowDetail['nama_mhs'],
+            'n_dokumen' => $rowDetail['n_dokumen'] ?? '-',
+            'n_presentasi' => $rowDetail['n_presentasi'] ?? '-',
+            'n_tanyajawab' => $rowDetail['n_tanyajawab'] ?? '-',
+            'n_proyek' => $rowDetail['n_proyek'] ?? '-',
+            'catatan' => $rowDetail['catatan_sidang'] ?? 'Tidak ada catatan.'
         ];
     }
 }
+
 ?>
+
 
 
 
