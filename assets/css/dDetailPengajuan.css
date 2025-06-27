@@ -8,14 +8,21 @@ body {
   padding: 24px;
 }
 
+/* GANTI CSS LAMA ANDA DENGAN YANG INI */
+
+/* 1. Perbaikan untuk .btn-circle */
 .btn-circle {
   border-radius: 12px;
-  padding: 6px 24px;
+  /* Sesuaikan padding vertikal (10px) agar TINGGINYA SAMA dengan .btn-kembali */
+  padding: 10px 24px; 
   font-weight: 500;
-  margin-top: 1cm;
+  /* HAPUS margin-top agar alignment rapi */
+  /* margin-top: 1cm; */ 
   transition: all 0.3s ease;
+  vertical-align: middle; /* Membantu perataan vertikal */
 }
 
+/* Warna untuk tombol danger (bisa tetap) */
 .btn-danger.btn-circle {
   background-color: #fd7d7d;
   color: white;
@@ -27,6 +34,7 @@ body {
   border: 2px solid #e56a6a;
 }
 
+/* Warna untuk tombol success (bisa tetap) */
 .btn-success.btn-circle {
   background-color: #4fd382;
   color: white;
@@ -38,13 +46,14 @@ body {
   border: 2px solid #3ab070;
 }
 
-/* Tombol Kembali */
+
+/* 2. Perbaikan untuk .btn-kembali */
 .btn-kembali {
   background-color: #4b68fb;
   color: white;
   border: none;
   border-radius: 20px;
-  padding: 10px 25px;
+  padding: 10px 25px; /* Padding vertikal (10px) sudah sama dengan .btn-circle */
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
@@ -52,8 +61,12 @@ body {
   transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
   display: inline-flex;
   align-items: center;
-  margin-top: 1cm;
+  /* HAPUS margin-top agar alignment rapi */
+  /* margin-top: 1cm; */
+  vertical-align: middle; /* Membantu perataan vertikal */
 }
+
+/* Sisa style untuk .btn-kembali:hover dan icon-nya bisa dibiarkan sama */
 .btn-kembali:hover {
   background-color: white;
   color: #4b68fb;
@@ -80,7 +93,6 @@ body {
 .btn-kembali:hover .icon-circle i {
   color: white;
 }
-
 /* Tombol File (base-tombol) */
 .base-tombol {
   display: inline-flex;
