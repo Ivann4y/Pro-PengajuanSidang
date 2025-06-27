@@ -80,12 +80,12 @@ body {
 }
 
 /* Style khusus untuk item menu yang aktif */
-.NavSide__sidebar-item.NavSide__sidebar-item--active {
+.NavSide_sidebar-item.NavSide_sidebar-item--active {
   background: #ffffff; /* Latar belakang putih */
 }
 
 /* Warna teks biru untuk link pada item aktif */
-.NavSide__sidebar-item.NavSide__sidebar-item--active a {
+.NavSide_sidebar-item.NavSide_sidebar-item--active a {
   color: #4b68fb;
 }
 
@@ -132,8 +132,8 @@ body {
 }
 
 /* Menampilkan elemen lengkungan hanya pada item yang aktif */
-.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
-.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+.NavSide_sidebar-item.NavSide_sidebar-item--active b:nth-child(1),
+.NavSide_sidebar-item.NavSide_sidebar-item--active b:nth-child(2) {
   display: block;
 }
 
@@ -174,11 +174,11 @@ body {
   display: none;
 }
 
-.NavSide__toggle.NavSide__toggle--active .open {
+.NavSide_toggle.NavSide_toggle--active .open {
   display: none;
 }
 
-.NavSide__toggle.NavSide__toggle--active .close {
+.NavSide_toggle.NavSide_toggle--active .close {
   display: block;
 }
 
@@ -412,7 +412,7 @@ body {
   }
 
   /* Tampilkan sidebar saat kelas aktif ditambahkan (via JS) */
-  .NavSide__sidebar.NavSide__sidebar--active-mobile {
+  .NavSide_sidebar.NavSide_sidebar--active-mobile {
     transform: translateX(0);
   }
 
@@ -434,7 +434,7 @@ body {
   }
 
   /* Pindahkan tombol toggle bersamaan dengan sidebar */
-  .NavSide__toggle.NavSide__toggle--active {
+  .NavSide_toggle.NavSide_toggle--active {
     transform: translateX(280px);
   }
 

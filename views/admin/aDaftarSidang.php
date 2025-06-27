@@ -82,12 +82,6 @@ if($countResult === false) { die(print_r(sqlsrv_errors(), true)); }
 $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
-        // Ketika memilih sidang: deirect ke halaman aNilaiAkhir.php
-        $_SESSION['selected_sidang_id'] = $id_sidang_terpilih;
-        header("Location: aNilaiAkhir.php");
-        exit();
-
-
 // Query utama untuk mengambil data
 $query = "SELECT DISTINCT
         s.id_sidang,
@@ -142,8 +136,6 @@ if ($result === false) {
     die("Error di main query: " . print_r(sqlsrv_errors(), true));
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -167,7 +159,7 @@ if ($result === false) {
                             class="fw-semibold">Beranda</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span
                             class="fw-semibold">Penjadwalan</span></a></li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
+                <li class="NavSide_sidebar-item NavSide_sidebar-item--active"><b></b><b></b><a href="#"><span
                             class="fw-semibold">Daftar Sidang</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
                         data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
