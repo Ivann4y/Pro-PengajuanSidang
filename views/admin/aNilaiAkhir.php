@@ -1,38 +1,37 @@
 <?php
-// Letakkan ini di baris paling atas file
+// 1. Mulai session jika belum aktif
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
+// 2. Path ke root project
 $path_to_root = '../../';
 
-// 1. Cek jika pengguna BELUM login.
+// 3. Cek login
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    // Arahkan ke halaman login utama di root
-    header("Location: " . $path_to_root . "index.php"); 
-    exit(); 
+    header("Location: " . $path_to_root . "index.php");
+    exit();
 }
 
-// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
+// 4. Cek role: hanya admin yang boleh
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
-    // Arahkan ke halaman login utama di root
     header("Location: " . $path_to_root . "index.php");
-    exit(); 
+    exit();
 }
 
+// 5. Koneksi ke database
 require "../../koneksi/koneksiAndrew.php";
 
-
+// 6. Pastikan sidang dipilih
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    header("Location: aSidang.php");
+    header("Location: aEvaluasi.php"); // atau halaman lain yang pilih sidang
     exit();
 }
 $id_sidang = $_SESSION['selected_sidang_id'];
 
-
+// ======================= 1. DATA MAHASISWA =======================
 $dataMahasiswa = [
     'nim' => '-', 'nama' => '-', 'matkul' => '-', 'dosen' => '-'
 ];
@@ -56,18 +55,23 @@ if ($stmtMhs && ($row = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
     ];
 }
 
-
+// ======================= 2. NILAI AKHIR MAHASISWA =======================
 $nilaiAkhir = '-';
 $sqlAkhir = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
 $stmtAkhir = sqlsrv_query($conn, $sqlAkhir, array($id_sidang));
 if ($stmtAkhir && ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC))) {
-    $nilaiAkhir = $rowAkhir['nilai_akhir'] ?? '-';
+    if (!empty($rowAkhir['nilai_akhir'])) {
+        $nilaiAkhir = $rowAkhir['nilai_akhir'];
+    }
 }
 
-
-$nilaiSementara = []; 
+// ======================= 3. NILAI SEMENTARA & CATATAN SETIAP PENGUJI =======================
+$nilaiSementara = [];
 $sqlDetail = "
-    SELECT d.nama_dosen, ds.nilai, ds.catatan
+    SELECT 
+        d.nama_dosen, 
+        ds.n_dokumen, ds.n_presentasi, ds.n_tanyajawab, ds.n_proyek, 
+        ds.catatan
     FROM Detail_Sidang ds
     JOIN Dosen d ON d.nomor_dosen = ds.nomor_dosen
     WHERE ds.id_sidang = ?
@@ -77,12 +81,16 @@ if ($stmtDetail) {
     while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
         $nilaiSementara[] = [
             'dosen' => $rowDetail['nama_dosen'],
-            'nilai' => $rowDetail['nilai'],
+            'n_dokumen' => $rowDetail['n_dokumen'],
+            'n_presentasi' => $rowDetail['n_presentasi'],
+            'n_tanyajawab' => $rowDetail['n_tanyajawab'],
+            'n_proyek' => $rowDetail['n_proyek'],
             'catatan' => $rowDetail['catatan'] ?? 'Tidak ada catatan.'
         ];
     }
 }
 ?>
+
 
 
 
