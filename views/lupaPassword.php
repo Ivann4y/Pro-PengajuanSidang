@@ -36,16 +36,25 @@ switch ($role) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/button-styles.css">
-    <link rel="stylesheet" href="../assets/css/LupaPassword.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
+    <style>
+        .btn-setujui {
+            background-color: #4fd382;
+            color: white;
+        }
+        .btn-setujui:hover {
+            background-color: #3ab070;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 
 <body>
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
-            <img src="../assets/img/awan.png"
-                class="position-absolute"
-                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;"
-                alt="Background">
+            <img src="../assets/img/awan.png" class="background-awan position-absolute"
+                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;" alt="Background">
             <div class="position-absolute"
                 style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
             </div>
@@ -76,19 +85,20 @@ switch ($role) {
             </div>
         </div>
 
-        <div class="right-column-wrapper">
-            <div class="log">
-                <?php
-                $error = $_GET['error'] ?? '';
-                $success = $_GET['success'] ?? '';
-                ?>
+        <div class="log row pt-5">
+            <?php
+            $error = $_GET['error'] ?? '';
+            $success = $_GET['success'] ?? '';
+            ?>
+            <div class="col-md-7 d-flex justify-content-center align-items-center mt-5">
                 <form action="authEmail.php" method="POST">
-                    <h2 class="fs-2 fw-bold text-center"><?= $judul ?></h2>
+                    <div class="text-center pt-5 mb-4">
+                        <h2 class="fs-2 fw-bold text-center"><?= $judul ?></h2>
+                    </div>
                     <label for="emailAstra" class="mt-3">Masukkan Email Politeknik Astra</label>
                     <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
                     <input type="hidden" name="tableNama" value="<?= htmlspecialchars($tableNama) ?>">
                     <input type="hidden" name="emailKolom" value="<?= htmlspecialchars($emailKolom) ?>">
-                    
                     <?php if ($error === 'empty'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Email harus diisi!</div>
@@ -107,14 +117,12 @@ switch ($role) {
                     <?php else: ?>
                         <input type="text" class="form-control form-control-lg" id="emailAstra" name="emailAstra">
                     <?php endif; ?>
-
                     <button class="btn btn-setujui float-end mt-2" id="btnKirim" <?= ($success === '1') ? 'disabled' : '' ?>>
                         Kirim
                     </button>
                 </form>
             </div>
-
-            <div class="back-button-container">
+            <div class="back-button-container bottom-50">
                 <button type="submit" class="btn btn-kembali" onclick="kembaliKeLogin()">
                     <span class="icon-circle">
                         <i class="fa-solid fa-arrow-left"></i>
