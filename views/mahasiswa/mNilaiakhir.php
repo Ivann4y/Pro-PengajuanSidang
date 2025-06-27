@@ -21,93 +21,125 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 }
 
 include '../../koneksi/koneksiAndrew.php';
+// Tambahkan kode ini untuk tes koneksi
 
-$id_sidang = $_SESSION['selected_sidang_id'];
-$nilaiAkhir = null;
-$catatan = 'Tidak ada catatan.';
-$dataMahasiswa = [
-    'nim' => '-',
-    'nama' => '-',
-    'matkul' => '-',
-    'dosen' => '-'
-];
 
-//Cek kolom nilai_akhir ada di tabel Sidang
-$sqlCheck = "SELECT TOP 1 * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Sidang' AND COLUMN_NAME='nilai_akhir'";
-$stmtCol = sqlsrv_query($conn, $sqlCheck);
-$kolomAda = false;
-if ($stmtCol !== false && ($colRow = sqlsrv_fetch_array($stmtCol, SQLSRV_FETCH_ASSOC))) {
-    $kolomAda = true;
+// Pastikan id_sidang ada
+if (!isset($_SESSION['selected_sidang_id'])) {
+    die("ID Sidang tidak ditemukan dalam sesi.");
 }
+$id_sidang = $_SESSION['selected_sidang_id'];
 
-//Ambil nilai akhir
+echo "ID Sidang yang sedang diproses: " . htmlspecialchars($id_sidang) . "<br>";
+
+// Inisialisasi variabel
+$nilaiAkhir = null;
+$catatanText = 'Tidak ada catatan.';
+$dataMahasiswa = [];
+
+// 1. Cek kolom nilai_akhir
+$sqlCheck = "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Sidang' AND COLUMN_NAME = 'nilai_akhir'";
+$stmtCol = sqlsrv_query($conn, $sqlCheck);
+if ($stmtCol === false) {
+    die("Error cek kolom: " . print_r(sqlsrv_errors(), true));
+}
+$kolomAda = sqlsrv_has_rows($stmtCol);
+
+// 2. Ambil nilai akhir
 if ($kolomAda) {
     $sqlVal = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
     $stmtVal = sqlsrv_query($conn, $sqlVal, array($id_sidang));
-    if ($stmtVal && ($rowVal = sqlsrv_fetch_array($stmtVal, SQLSRV_FETCH_ASSOC))) {
-        if (isset($rowVal['nilai_akhir']) && $rowVal['nilai_akhir'] !== null) {
-            $nilaiAkhir = $rowVal['nilai_akhir'];
-        }
+    if ($stmtVal === false) {
+        die("Error ambil nilai: " . print_r(sqlsrv_errors(), true));
+    }
+    if ($rowVal = sqlsrv_fetch_array($stmtVal, SQLSRV_FETCH_ASSOC)) {
+        $nilaiAkhir = $rowVal['nilai_akhir'] ?? null;
     }
 }
-
-//Hitung manual jika nilai_akhir belum ada
+// 3. Hitung manual jika nilai_akhir tidak ada
 if ($nilaiAkhir === null) {
+    // Perhitungan nilai akhir dengan merata-ratakan nilai dari semua penguji
     $sqlCalc = "
-        SELECT 
-            SUM(
-                (
-                    ISNULL(n_dokumen,0) 
-                    + ISNULL(n_presentasi,0) 
-                    + ISNULL(n_tanyajawab,0) 
-                    + ISNULL(n_proyek,0)
-                ) / 4.0 
-                * ISNULL(bobot_penilaian,0)
-            ) AS tot_score,
-            SUM(ISNULL(bobot_penilaian,0)) AS tot_bobot
+        SELECT AVG(
+            (ISNULL(n_dokumen, 0) * ISNULL(bobot_penilaian, 0) / 100) +
+            (ISNULL(n_presentasi, 0) * ISNULL(bobot_penilaian, 0) / 100) +
+            (ISNULL(n_tanyajawab, 0) * ISNULL(bobot_penilaian, 0) / 100) +
+            (ISNULL(n_proyek, 0) * ISNULL(bobot_penilaian, 0) / 100)
+        ) AS nilai_akhir
         FROM Penilaian
         WHERE id_sidang = ?
+        -- Penting: Kita anggap setiap baris di Penilaian adalah nilai dari satu dosen untuk satu komponen.
+        -- Jika setiap dosen mengisi satu baris dengan semua komponen, query ini sudah benar.
+        -- Jika ada satu baris untuk setiap komponen per dosen, maka perlu GROUP BY
     ";
+    
     $stmtCalc = sqlsrv_query($conn, $sqlCalc, array($id_sidang));
-    if ($stmtCalc && ($rowCalc = sqlsrv_fetch_array($stmtCalc, SQLSRV_FETCH_ASSOC))) {
-        if (isset($rowCalc['tot_bobot']) && $rowCalc['tot_bobot'] > 0) {
-            $nilaiHitung = floatval($rowCalc['tot_score']) / floatval($rowCalc['tot_bobot']);
-            $nilaiAkhir = number_format($nilaiHitung, 2);
-        } else {
-            $nilaiAkhir = '';
-        }
+    if ($stmtCalc === false) {
+        // Tambahkan pesan error yang lebih jelas
+        die("Error saat menghitung nilai akhir: " . print_r(sqlsrv_errors(), true));
+    }
+    
+    if ($rowCalc = sqlsrv_fetch_array($stmtCalc, SQLSRV_FETCH_ASSOC)) {
+        // Pastikan nilai di-format jika tidak null
+        $nilaiAkhir = $rowCalc['nilai_akhir'] !== null ? number_format($rowCalc['nilai_akhir'], 2) : 'N/A';
+    } else {
+        // Jika tidak ada data penilaian, set ke N/A
+        $nilaiAkhir = 'N/A';
     }
 }
 
-//Ambil catatan dari Detail_Sidang
-$sqlCatatan = "SELECT catatan FROM Detail_Sidang WHERE id_sidang = ?";
+// 4. Ambil catatan
+$sqlCatatan = "
+    SELECT d.nama_dosen, ds.catatan_sidang 
+    FROM Detail_Sidang ds
+    JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE ds.id_sidang = ?
+";
 $stmtCat = sqlsrv_query($conn, $sqlCatatan, array($id_sidang));
-if ($stmtCat && ($rowCat = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC))) {
-    if (!empty($rowCat['catatan'])) {
-        $catatan = $rowCat['catatan'];
+if ($stmtCat === false) {
+    die("Error ambil catatan: " . print_r(sqlsrv_errors(), true));
+}
+$catatan = [];
+while ($rowCat = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC)) {
+    if (!empty($rowCat['catatan_sidang'])) {
+        $catatan[] = $rowCat['nama_dosen'] . ': ' . trim($rowCat['catatan_sidang']);
     }
 }
+$catatanText = !empty($catatan) ? implode(" | ", $catatan) : "Tidak ada catatan.";
 
-// Ambil data mahasiswa dari relasi Sidang, Mahasiswa, MataKuliah, Dosen
+// 5. Ambil data mahasiswa
 $sqlMhs = "
     SELECT 
-        m.nim, m.nama_mhs, mk.nama_matkul, d.nama_dosen
+        m.nim, 
+        m.nama_mhs, 
+        mk.nama_matkul,
+        STRING_AGG(d.nama_dosen, ', ') AS dosen_penguji
     FROM Sidang s
-    JOIN Mahasiswa m ON s.nim = m.nim
-    JOIN PenanggungJawab pj ON pj.id_sidang = s.id_sidang
-    JOIN MataKuliah mk ON mk.id_matkul = pj.id_matkul
-    JOIN Dosen d ON d.nomor_dosen = pj.nomor_dosen
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    JOIN Kelompok_Mahasiswa km ON k.id_kelompok = km.id_kelompok
+    JOIN Mahasiswa m ON km.nim = m.nim
+    JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+    JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
     WHERE s.id_sidang = ?
+    GROUP BY m.nim, m.nama_mhs, mk.nama_matkul
 ";
 $stmtMhs = sqlsrv_query($conn, $sqlMhs, array($id_sidang));
-if ($stmtMhs && ($rowMhs = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
-    $dataMahasiswa = [
+if ($stmtMhs === false) {
+    die("Error ambil data mahasiswa: " . print_r(sqlsrv_errors(), true));
+}
+$dataMahasiswa = [];
+while ($rowMhs = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC)) {
+    $dataMahasiswa[] = [
         'nim' => $rowMhs['nim'],
         'nama' => $rowMhs['nama_mhs'],
         'matkul' => $rowMhs['nama_matkul'],
-        'dosen' => $rowMhs['nama_dosen']
+        'dosen_penguji' => $rowMhs['dosen_penguji']
     ];
 }
+
+// Tutup koneksi
+sqlsrv_close($conn);
 ?>
 
 
@@ -115,12 +147,6 @@ if ($stmtMhs && ($rowMhs = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
 <!DOCTYPE html> <!-- Mendeklarasikan bahwa dokumen ini adalah HTML5 -->
 <html lang="en"> <!-- Elemen root dari halaman HTML, dengan atribut bahasa "English" -->
   <head>
-            <?php
-    echo "Nilai akhir: " . $nilaiAkhir . "<br>";
-    echo "Catatan: " . $catatan . "<br>";
-    echo "Nama: " . $dataMahasiswa['nama'] . "<br>";
-    ?>
-
 
     <!-- Bagian <head> berisi metadata dan link ke resource eksternal, tidak terlihat di halaman -->
     <meta charset="UTF-8" /> <!-- Menentukan set karakter yang digunakan adalah UTF-8 (standar universal) -->

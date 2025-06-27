@@ -400,6 +400,27 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
 </head>
 <body>
 
+      <div id="NavSide">
+    <div id="main-sidebar" class="NavSide__sidebar">
+      <div class="NavSide__sidebar-brand">
+        <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+      </div>
+      <ul class="NavSide__sidebar-nav">
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+        </li>
+        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+          <b></b><b></b>
+          <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+        </li>
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+        </li>
+      </ul>
+    </div>
+
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
@@ -435,6 +456,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
         <i class="bi bi-x-lg close"></i>
       </div>
     </div>
+    
 
     <main class="NavSide__main-content">
 
