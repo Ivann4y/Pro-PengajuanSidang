@@ -4,6 +4,7 @@ if ($_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit();
 }
+include "../../koneksi/koneksiAndrew.php";
 
 ?>
 
@@ -401,7 +402,8 @@ if ($_SESSION['role'] !== 'dosen') {
                     <i class="bi bi-bell-fill"></i>
                 </a>
                 <div class="profile-icon-desktop">
-                    <i class="bi bi-person-fill"></i>
+                    <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
+                    <!-- <i class="bi bi-person-fill"></i> -->
                 </div>
             </div>
             <div class="dashboardTitle">Beranda Dosen</div>

@@ -1,5 +1,28 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
 include '../../koneksi/koneksiAndrew.php';
+$success_message = '';
+$error_message = '';
+$nim_mahasiswa_logged_in = $_SESSION['user_data']['nim'];
 
 // Pagination settings
 $rowsPerPage = 10;
@@ -10,12 +33,15 @@ $offset = ($page - 1) * $rowsPerPage;
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $filterClause = '';
 if ($filter === 'TA') {
-    $filterClause = " AND s.jenis_sidang = 1";
+    $filterClause = " AND s.jenis_sidang = 0";
 } elseif ($filter === 'Semester') {
-    $filterClause = " AND s.jenis_sidang = 2";
+    $filterClause = " AND s.jenis_sidang = 1";
 }
 
-// Count total rows for pagination
+$subQueryIdKelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in'";
+
+
+// Count total rows for pagination 
 $countQuery = "
     SELECT COUNT(DISTINCT s.id_sidang) as total
     FROM Sidang s
@@ -62,9 +88,8 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
     $dataSidang[] = [
         "id_sidang" => $row['id_sidang'],
         "judul" => $row['judul'],
-        "matkul" => $row['nama_matkul'] ?? 'Tidak ada mata kuliah',
-        "dosen" => $row['nama_dosen'],
-        "jenis_sidang" => is_null($row['jenis_sidang']) ? null : (int)$row['jenis_sidang']
+        "matkul" => $row['nama_matkul'] ?? 'N/A',
+        "dosen" => $row['nama_dosen'] ?? 'N/A'
     ];
 }
 ?>

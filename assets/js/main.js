@@ -101,8 +101,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // FUNGSI UNTUK DOSEN
-function goToDetail(id, tipe) {
-  window.location.href = `dDetailPengajuan.php?id_kelompok=${id}&tipe=${tipe}`;
+function goToDetail(id_sidang, jenis_sidang){
+    window.location.href = `dDetailPengajuan.php?id_sidang=${encodeURIComponent(id_sidang)}&tipe=${encodeURIComponent(jenis_sidang)}`;
 }
 
 function goToEvaluasi(nim, tipe) {

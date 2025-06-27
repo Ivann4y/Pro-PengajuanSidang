@@ -1,11 +1,30 @@
 <?php
-// Mulai sesi dan cek apakah user adalah admin
-session_start();
-if ($_SESSION['role'] !== 'admin') {
-    // Jika bukan admin, redirect ke halaman login
-    header("Location: ../../index.php");
-    exit();
+// Letakkan ini di baris paling atas file
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    // Arahkan ke halaman login utama di root
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    // Arahkan ke halaman login utama di root
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+require "../../koneksi/koneksiAndrew.php";
+
 ?>
 
 <!DOCTYPE html>

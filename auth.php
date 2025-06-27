@@ -23,7 +23,7 @@ $redirectPath = '';
 switch ($role) {
     case 'mahasiswa':
         $tableNama = 'Mahasiswa';
-        $usernameKolom = 'nim';
+        $usernameKolom = 'username';
         $redirectPath = 'views/mahasiswa/mBeranda.php';
         break;
     case 'dosen':
