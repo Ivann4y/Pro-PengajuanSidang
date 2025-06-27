@@ -1,3 +1,44 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+
+// if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'mahasiswa') {
+//     header("Location: ../../index.php");
+//     exit();
+// }
+
+$user = $_SESSION['user_data'];
+$nim = $user['nim'];
+$nama = $user['nama_mhs'];
+$prodi = $user['prodi']; 
+$email = $user['email']; 
+$no_telepon = $user['no_telepon']; 
+
+if ($user['jenis_kelamin'] === 'L') {
+    $jk = 'Laki-laki';
+} elseif ($user['jenis_kelamin'] === 'P') {
+    $jk = 'Perempuan';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -78,11 +119,11 @@
                 padding: 1.5rem;
                 margin-top: 1rem;
             }
-            
+
             .profil-img {
                 margin-bottom: 2rem;
             }
-            
+
             .profil-img img {
                 width: 60%;
             }
@@ -111,11 +152,12 @@
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
+            
             </ul>
         </div>
-        
+
         <div class="NavSide__topbar">
             <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
@@ -143,31 +185,37 @@
                         <div class="row mData">
                             <div class="col-12">
                                 <p>NIM</p>
-                                <p class="value">123456789</p>
+                                <p class="value"><?= $nim ?></p>
                             </div>
                         </div>
                         <div class="row mData">
                             <div class="col-12">
                                 <p>Nama</p>
-                                <p class="value">John Doe</p>
+                                <p class="value"><?= $nama ?></p>
+                            </div>
+                        </div>
+                        <div class="row mData">
+                            <div class="col-12">
+                                <p>Program Studi</p>
+                                <p class="value"><?= $prodi ?></p>
                             </div>
                         </div>
                         <div class="row mData">
                             <div class="col-12">
                                 <p>Email</p>
-                                <p class="value">123456789@polytechnic.astra.ac.id</p>
+                                <p class="value"><?= $email ?></p>
                             </div>
                         </div>
                         <div class="row mData">
                             <div class="col-12">
                                 <p>No. Telepon</p>
-                                <p class="value">08123456789</p>
+                                <p class="value"><?= $no_telepon ?></p>
                             </div>
                         </div>
                         <div class="row mData">
                             <div class="col-12">
                                 <p>Jenis Kelamin</p>
-                                <p class="value">Laki-laki</p>
+                                <p class="value"><?= $jk ?></p>
                             </div>
                         </div>
                     </div>
@@ -175,6 +223,25 @@
             </div>
         </main>
     </div>
+
+    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div style="background-color: rgb(67, 54, 240);">
+                                <div class="modal-header">
+                                    <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                                </div>
+                            </div>
+                            <div class="modal-body mx-auto">
+                                Apakah anda yakin ingin keluar?
+                            </div>
+                            <div class="modal-footer justify-content-center border-0">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -190,20 +257,19 @@
         }
 
         // Sidebar Active Item Logic 
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function(event) {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
-
-        
+        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        // for (let i = 0; i < listItems.length; i++) {
+        //     listItems[i].onclick = function(event) {
+        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+        //             for (let j = 0; j < listItems.length; j++) {
+        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+        //             }
+        //             this.classList.add("NavSide__sidebar-item--active");
+        //         }
+        //     };
+        // }
     </script>
     <script src="../../assets/js/main.js"></script>
 </body>
+
 </html>

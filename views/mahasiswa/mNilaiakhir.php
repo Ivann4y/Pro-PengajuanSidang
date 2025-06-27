@@ -1,14 +1,28 @@
 <?php
-include '../../koneksi/koneksiAndrew.php';
-session_start();
-
-// Cek apakah sidang dipilih
-if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    header("Location: mSidang.php");
-    exit();
+// Memulai sesi PHP jika belum aktif.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-$id_sidang = $_SESSION['selected_sidang_id'];
 
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+
+$id_sidang = $_SESSION['selected_sidang_id'];
 $nilaiAkhir = null;
 $catatan = 'Tidak ada catatan.';
 $dataMahasiswa = [
@@ -18,7 +32,7 @@ $dataMahasiswa = [
     'dosen' => '-'
 ];
 
-// ===== Cek apakah kolom nilai_akhir ada di tabel Sidang =====
+//Cek kolom nilai_akhir ada di tabel Sidang
 $sqlCheck = "SELECT TOP 1 * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Sidang' AND COLUMN_NAME='nilai_akhir'";
 $stmtCol = sqlsrv_query($conn, $sqlCheck);
 $kolomAda = false;
@@ -26,7 +40,7 @@ if ($stmtCol !== false && ($colRow = sqlsrv_fetch_array($stmtCol, SQLSRV_FETCH_A
     $kolomAda = true;
 }
 
-// ===== Ambil nilai_akhir jika kolom tersedia =====
+//Ambil nilai akhir
 if ($kolomAda) {
     $sqlVal = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
     $stmtVal = sqlsrv_query($conn, $sqlVal, array($id_sidang));
@@ -37,7 +51,7 @@ if ($kolomAda) {
     }
 }
 
-// ===== Hitung manual jika nilai_akhir belum ada =====
+//Hitung manual jika nilai_akhir belum ada
 if ($nilaiAkhir === null) {
     $sqlCalc = "
         SELECT 
@@ -65,7 +79,7 @@ if ($nilaiAkhir === null) {
     }
 }
 
-// ===== Ambil catatan dari Detail_Sidang =====
+//Ambil catatan dari Detail_Sidang
 $sqlCatatan = "SELECT catatan FROM Detail_Sidang WHERE id_sidang = ?";
 $stmtCat = sqlsrv_query($conn, $sqlCatatan, array($id_sidang));
 if ($stmtCat && ($rowCat = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC))) {
@@ -74,7 +88,7 @@ if ($stmtCat && ($rowCat = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC))) {
     }
 }
 
-// ===== Ambil data mahasiswa dari relasi Sidang, Mahasiswa, MataKuliah, Dosen =====
+// Ambil data mahasiswa dari relasi Sidang, Mahasiswa, MataKuliah, Dosen
 $sqlMhs = "
     SELECT 
         m.nim, m.nama_mhs, mk.nama_matkul, d.nama_dosen
