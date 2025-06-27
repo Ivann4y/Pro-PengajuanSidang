@@ -141,20 +141,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /></div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mdetailSidang.php"><span
-                            class="fw-semibold">Detail Pengajuan</span></a></li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
-                            class="fw-semibold">Perbaikan</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mNilaiakhir.php"><span
-                            class="fw-semibold">Nilai Akhir</span></a></li>
-                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span
-                            class="fw-semibold">Kembali</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mdetailSidang.php"><span class="fw-semibold">Detail Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span class="fw-semibold">Perbaikan</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mNilaiakhir.php"><span class="fw-semibold">Nilai Akhir</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="fw-semibold">Kembali</span></a></li>
             </ul>
         </div>
-        <div class="NavSide__topbar">
-            <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
-        </div>
-        <main class="NavSide__main-content">
+        
+        <div id="page-content-wrapper">
+            <div class="NavSide__topbar">
+                <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+            </div>
+            <main class="NavSide__main-content">
             <div
                 class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
                 <h1 class="fs-2">Detail Sidang - Sistem Pengajuan Sidang</h1>

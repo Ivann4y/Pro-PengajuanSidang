@@ -66,6 +66,26 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
 $sql_revisi = "SELECT dok_revisi FROM Detail_Sidang WHERE id_sidang = ?";
 $stmt_revisi = sqlsrv_query($conn, $sql_revisi, [$id_sidang]);
 $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
+
+if (isset($_POST['approve'])) {
+    $id_sidang = $_POST['id_sidang']; // pastikan form mengirimkan id_sidang
+    $nomor_dosen = $_SESSION['nomor_dosen']; // ambil dari session login
+
+    // Update status revisi hanya untuk dosen ini
+    $sql = "UPDATE Detail_Sidang SET status_revisi = 0x01 WHERE id_sidang = ? AND nomor_dosen = ?";
+    $stmt = sqlsrv_query($conn, $sql, [$id_sidang, $nomor_dosen]);
+
+    if ($stmt) {
+        // Redirect ke halaman nilai akhir
+        header("Location: dNilaiAkhir.php?id=$id_sidang");
+        exit;
+    } else {
+        echo "Gagal menyimpan status revisi.";
+    }
+}
+
+
+
 ?>
 
 
@@ -134,83 +154,83 @@ $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
 
 
             <div class="info-card">
-    <div class="section">
-        <?php if (!empty($dosenPembimbing)): ?>
-            <div class="info-group">
-                <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
-                <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'Belum ada judul'; ?></div>
-            </div>
+                <div class="section">
+                    <?php if (!empty($dosenPembimbing)): ?>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
+                            <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'Belum ada judul'; ?></div>
+                        </div>
 
-            <div class="info-group">
-                <div class="label-row"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
-                <div class="value-row">
-                    <?php
-                    if (!empty($dosenPembimbing)) {
-                        echo implode('<br>', array_map('htmlspecialchars', $dosenPembimbing));
-                    } else {
-                        echo 'Belum ditentukan';
-                    }
-                    ?>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
+                            <div class="value-row">
+                                <?php
+                                if (!empty($dosenPembimbing)) {
+                                    echo implode('<br>', array_map('htmlspecialchars', $dosenPembimbing));
+                                } else {
+                                    echo 'Belum ditentukan';
+                                }
+                                ?>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Penguji</span></div>
+                            <div class="value-row">
+                                <?php
+                                if (!empty($dosenPenguji)) {
+                                    echo implode('<br>', array_map('htmlspecialchars', $dosenPenguji));
+                                } else {
+                                    echo 'Belum ditentukan';
+                                }
+                                ?>
+                            </div>
+                        </div>
+
+                    <?php elseif (!empty($dosen_pengampu)): ?>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div>
+                            <div class="value-row"><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'N/A'; ?></div>
+                        </div>
+
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Pengampu</span></div>
+                            <div class="value-row">
+                                <?php
+                                if (!empty($dosen_pengampu)) {
+                                    echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu));
+                                } else {
+                                    echo 'Belum ditentukan';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <p class="info-item">Data sidang tidak lengkap atau tidak dikenali.</p>
+                    <?php endif; ?>
+                </div>
+
+                <div class="section">
+                    <div class="info-group">
+                        <div class="label-row"><i class="fa-solid fa-door-open"></i><span class="fw-bold">Ruangan</span></div>
+                        <div class="value-row"><?php echo !empty($ruangan) ? htmlspecialchars($ruangan) : 'Belum Dijadwalkan'; ?></div>
+                    </div>
+
+                    <div class="info-group">
+                        <div class="label-row"><i class="fa-solid fa-calendar-days"></i><span class="fw-bold">Tanggal</span></div>
+                        <div class="value-row">
+                            <?php echo !empty($tanggal_formatted) ? htmlspecialchars($tanggal_formatted) : 'Belum Dijadwalkan'; ?>
+                        </div>
+                    </div>
+
+                    <div class="info-group">
+                        <div class="label-row"><i class="fa-solid fa-clock"></i><span class="fw-bold">Jam</span></div>
+                        <div class="value-row">
+                            <?php echo !empty($jam) ? htmlspecialchars($jam) : 'Belum Dijadwalkan'; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="info-group">
-                <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Penguji</span></div>
-                <div class="value-row">
-                    <?php
-                    if (!empty($dosenPenguji)) {
-                        echo implode('<br>', array_map('htmlspecialchars', $dosenPenguji));
-                    } else {
-                        echo 'Belum ditentukan';
-                    }
-                    ?>
-                </div>
-            </div>
-
-        <?php elseif (!empty($dosen_pengampu)): ?>
-            <div class="info-group">
-                <div class="label-row"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div>
-                <div class="value-row"><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'N/A'; ?></div>
-            </div>
-
-            <div class="info-group">
-                <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Pengampu</span></div>
-                <div class="value-row">
-                    <?php
-                    if (!empty($dosen_pengampu)) {
-                        echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu));
-                    } else {
-                        echo 'Belum ditentukan';
-                    }
-                    ?>
-                </div>
-            </div>
-        <?php else: ?>
-            <p class="info-item">Data sidang tidak lengkap atau tidak dikenali.</p>
-        <?php endif; ?>
-    </div>
-
-    <div class="section">
-        <div class="info-group">
-            <div class="label-row"><i class="fa-solid fa-door-open"></i><span class="fw-bold">Ruangan</span></div>
-            <div class="value-row"><?php echo !empty($ruangan) ? htmlspecialchars($ruangan) : 'Belum Dijadwalkan'; ?></div>
-        </div>
-
-        <div class="info-group">
-            <div class="label-row"><i class="fa-solid fa-calendar-days"></i><span class="fw-bold">Tanggal</span></div>
-            <div class="value-row">
-                <?php echo !empty($tanggal_formatted) ? htmlspecialchars($tanggal_formatted) : 'Belum Dijadwalkan'; ?>
-            </div>
-        </div>
-
-        <div class="info-group">
-            <div class="label-row"><i class="fa-solid fa-clock"></i><span class="fw-bold">Jam</span></div>
-            <div class="value-row">
-                <?php echo !empty($jam) ? htmlspecialchars($jam) : 'Belum Dijadwalkan'; ?>
-            </div>
-        </div>
-    </div>
-</div>
 
 
             <h5>Dokumen Sidang</h5>
@@ -343,9 +363,23 @@ $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
                             confirmButtonText: 'OK',
                             confirmButtonColor: '#4B68FB'
                         }).then(() => {
-                            // --- PERUBAHAN 2: NAVIGASI SETELAH SETUJUI ---
-                            window.location.href = 'dNilaiAkhir.php';
+                            // Kirim request ke server
+                            fetch(window.location.href, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded'
+                                    },
+                                    body: new URLSearchParams({
+                                        approve: true,
+                                        id_sidang: <?= $id_sidang ?>
+                                    })
+                                })
+                                .then(() => {
+                                    // Redirect setelah update berhasil
+                                    window.location.href = 'dNilaiAkhir.php?id=<?= $id_sidang ?>';
+                                });
                         });
+
                     }
                 }, 500);
             });
