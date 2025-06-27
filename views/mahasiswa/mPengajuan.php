@@ -10,12 +10,12 @@ $offset = ($page - 1) * $rowsPerPage;
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $filterClause = '';
 if ($filter === 'TA') {
-    $filterClause = " AND s.jenis_sidang = 1";
+    $filterClause = " AND s.jenis_sidang = 0";
 } elseif ($filter === 'Semester') {
-    $filterClause = " AND s.jenis_sidang = 2";
+    $filterClause = " AND s.jenis_sidang = 1";
 }
 
-// Count total rows for pagination
+// Count total rows for pagination 
 $countQuery = "
     SELECT COUNT(DISTINCT s.id_sidang) as total
     FROM Sidang s
