@@ -11,13 +11,12 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
    
 }
 
-<<<<<<< HEAD
-=======
+
 
 // Simulasi Dosen yang Login (nantinya ganti dengan session asli)
 $nomor_dosen_login = '1001';
 
->>>>>>> 0f96d6f9dc059d960c788e0efdd61a91a189ced3
+
 if (!isset($_SESSION['id_sidang_aktif'])) {
     die("ID sidang tidak tersedia.");
 }
@@ -28,10 +27,8 @@ $id_sidang = $_SESSION['id_sidang_aktif'];
 // ===================================================================================
 $nomor_dosen_login = '1001';
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 0f96d6f9dc059d960c788e0efdd61a91a189ced3
+
 // if (!isset($_SESSION['user']['nomor_dosen'])) { die("Akses ditolak."); }
 // $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
 
@@ -270,27 +267,46 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     </div>
                     
                     <h3>Nilai Sidang (Sementara)</h3>
-
 <div class="form-card">
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h4>Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
     </div>
 
-    <!-- Container ini yang akan kita atur dengan CSS -->
-    <div class="penilaian-row">
-        <div class="col-item">
-          <div class="col-item"><label for="nilaiLaporan">Nilai laporan :</label><input type="number" id="nilaiLaporan" name="nilaiLaporan" class="form-control-custom input-nilai" min="0" max="100"></div>
-        </div>
-        <div class="col-item">
-            <div class="col-item"><label for="materiPresentasi">Materi Presentasi :</label><input type="number" id="materiPresentasi" name="materiPresentasi" class="form-control-custom input-nilai" min="0" max="100"></div>
-        </div>
-        <div class="col-item">
-             <div class="col-item"><label for="nilaiPenyampaian">Penyampaian :</label><input type="number" id="nilaiPenyampaian" name="nilaiPenyampaian" class="form-control-custom input-nilai" min="0" max="100"></div>
-        </div>
-        <div class="col-item">
-           <div class="col-item"><label for="nilaiProyek">Nilai Proyek :</label><input type="number" id="nilaiProyek" name="nilaiProyek" class="form-control-custom input-nilai" min="0" max="100"></div>
-                        </div>
+    <!-- Wadah untuk tampilan desktop (horizontal) -->
+   <div class="penilaian-container">
+    <div class="penilaian-item">
+        <label for="nilaiLaporan">Nilai Laporan :</label>
+        <input type="text" class="form-control-custom text-center input-nilai" name="nilaiLaporan" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? '') ?>">
     </div>
+    <div class="penilaian-item">
+        <label for="materiPresentasi">Materi Presentasi :</label>
+        <input type="text" class="form-control-custom text-center input-nilai" name="materiPresentasi" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? '') ?>">
+    </div>
+    <div class="penilaian-item">
+        <label for="nilaiPenyampaian">Penyampaian :</label>
+        <input type="text" class="form-control-custom text-center input-nilai" name="nilaiPenyampaian" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? '') ?>">
+    </div>
+    <div class="penilaian-item">
+        <label for="nilaiProyek">Nilai Proyek :</label>
+        <input type="text" class="form-control-custom text-center input-nilai" name="nilaiProyek" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>">
+    </div>
+</div>
+
+<!-- Wadah BARU untuk tampilan tablet/mobile (vertikal) -->
+<div class="penilaian-grid-vertical">
+    <label for="nilaiLaporan_v">Nilai Laporan</label> <span>:</span>
+    <input type="text" class="form-control-custom text-center input-nilai" name="nilaiLaporan_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? '') ?>">
+    
+    <label for="materiPresentasi_v">Materi Presentasi</label> <span>:</span>
+    <input type="text" class="form-control-custom text-center input-nilai" name="materiPresentasi_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? '') ?>">
+    
+    <label for="nilaiPenyampaian_v">Penyampaian</label> <span>:</span>
+    <input type="text" class="form-control-custom text-center input-nilai" name="nilaiPenyampaian_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? '') ?>">
+    
+    <label for="nilaiProyek_v">Nilai Proyek</label> <span>:</span>
+    <input type="text" class="form-control-custom text-center input-nilai" name="nilaiProyek_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>">
+</div>
+    
     <p class="error-message" id="nilaiSidangErrorMessage"> *Semua nilai harus diisi!</p>
 </div>
 
@@ -335,98 +351,118 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            let menuToggle = document.querySelector(".NavSide__toggle");
-            let sidebar = document.getElementById("main-sidebar");
-            if (menuToggle && sidebar) {
-                menuToggle.onclick = function() {
-                    menuToggle.classList.toggle("NavSide__toggle--active");
-                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                };
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- FUNGSI UTILITAS UNTUK SINKRONISASI INPUT ---
+    function syncInputs(name1, name2) {
+        const input1 = document.getElementsByName(name1)[0];
+        const input2 = document.getElementsByName(name2)[0];
+        if (input1 && input2) {
+            input1.addEventListener('input', () => {
+                if (document.activeElement !== input2) input2.value = input1.value;
+            });
+            input2.addEventListener('input', () => {
+                if (document.activeElement !== input1) input1.value = input2.value;
+            });
+        }
+    }
+
+    // --- TERAPKAN VALIDASI 'HANYA ANGKA' ---
+    document.querySelectorAll('.input-nilai').forEach(function(input) {
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 3) this.value = this.value.slice(0, 3);
+            if (this.value.length > 1 && this.value.startsWith('0')) {
+                this.value = this.value.replace(/^0+/, '');
             }
-            let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-            if (listItems.length > 0) {
-                listItems.forEach(item => {
-                    item.addEventListener('click', function(event) {
-                        listItems.forEach(innerItem => {
-                            innerItem.classList.remove("NavSide__sidebar-item--active");
-                        });
-                        this.classList.add("NavSide__sidebar-item--active");
-                    });
-                });
-                const currentPath = window.location.pathname.split('/').pop();
-                listItems.forEach(item => {
-                    const link = item.querySelector('a');
-                    if (link) {
-                        const linkHref = link.getAttribute('href');
-                        if (linkHref && linkHref.toLowerCase().includes(currentPath.toLowerCase())) {
-                            item.classList.add("NavSide__sidebar-item--active");
-                        }
-                    }
-                });
+            if (parseInt(this.value, 10) > 100) {
+                this.value = '100';
             }
-            const btnKirim = document.getElementById('btnKirim');
-            const nilaiLaporan = document.getElementById('nilaiLaporan');
-            const materiPresentasi = document.getElementById('materiPresentasi');
-            const nilaiPenyampaian = document.getElementById('nilaiPenyampaian');
-            const nilaiProyek = document.getElementById('nilaiProyek');
-            const catatanEvaluasi = document.getElementById('catatanEvaluasi');
-            const nilaiSidangError = document.getElementById('nilaiSidangErrorMessage');
-            const catatanEvaluasiError = document.getElementById('catatanEvaluasiErrorMessage');
-            const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
-            if (confirmationKirimModalElement) {
-                const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
-                btnKirim.addEventListener('click', function(event) {
-                    let isValid = true;
-                    nilaiSidangError.style.display = 'none';
-                    catatanEvaluasiError.style.display = 'none';
-                    if (nilaiLaporan.value.trim() === '' || materiPresentasi.value.trim() === '' || nilaiPenyampaian.value.trim() === '' || nilaiProyek.value.trim() === '') {
-                        nilaiSidangError.style.display = 'block';
-                        isValid = false;
-                    }
-                    if (catatanEvaluasi.value.trim() === '') {
-                        catatanEvaluasiError.style.display = 'block';
-                        isValid = false;
-                    }
-                    if (!isValid) {
-                        event.preventDefault();
-                        Swal.fire({
-                            title: 'Harap mengisi kolom nilai dan catatan terlebih dahulu sebelum mengirim!',
-                            icon: 'error',
-                            confirmButtonText: 'OK',
-                            confirmButtonColor: '#4B68FB'
-                        });
-                    } else {
-                        const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
-                        confirmationKirimModal.show();
-                    }
-                });
-                btnKonfirmasiKirim.addEventListener('click', function() {
-                    const confirmationKirimModalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
-                    if (confirmationKirimModalInstance) {
-                        confirmationKirimModalInstance.hide();
-                    }
-                    Swal.fire({
-                        title: 'Evaluasi Sidang Berhasil Dikirim!',
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#4B68FB'
-                    }).then(() => {
-                        document.getElementById('evaluasiForm').submit();
-                    });
-                });
+        });
+    });
+
+    // --- PANGGIL FUNGSI SINKRONISASI ---
+    syncInputs('nilaiLaporan', 'nilaiLaporan_v');
+    syncInputs('materiPresentasi', 'materiPresentasi_v');
+    syncInputs('nilaiPenyampaian', 'nilaiPenyampaian_v');
+    syncInputs('nilaiProyek', 'nilaiProyek_v');
+
+    // --- LOGIKA UNTUK SIDEBAR ---
+    const menuToggle = document.querySelector(".NavSide__toggle");
+    const sidebar = document.getElementById("main-sidebar");
+    if (menuToggle && sidebar) {
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+    }
+
+    // --- LOGIKA UNTUK TOMBOL KIRIM FORM ---
+    const btnKirim = document.getElementById('btnKirim');
+    const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
+
+    if (btnKirim && confirmationKirimModalElement) {
+        btnKirim.addEventListener('click', function() {
+            
+            // --- VARIABEL DIAMBIL DI SINI (SAAT DIKLIK), BUKAN DI LUAR ---
+            const nilaiLaporan = document.getElementsByName('nilaiLaporan')[0].value;
+            const materiPresentasi = document.getElementsByName('materiPresentasi')[0].value;
+            const nilaiPenyampaian = document.getElementsByName('nilaiPenyampaian')[0].value;
+            const nilaiProyek = document.getElementsByName('nilaiProyek')[0].value;
+            const catatanEvaluasi = document.getElementById('catatanEvaluasi').value;
+
+            // Sembunyikan pesan error sebelumnya
+            document.getElementById('nilaiSidangErrorMessage').style.display = 'none';
+            document.getElementById('catatanEvaluasiErrorMessage').style.display = 'none';
+
+            let isValid = true;
+
+            // Lakukan validasi
+            if ([nilaiLaporan, materiPresentasi, nilaiPenyampaian, nilaiProyek].some(val => val.trim() === '')) {
+                document.getElementById('nilaiSidangErrorMessage').style.display = 'block';
+                isValid = false;
             }
-            document.querySelectorAll('.input-nilai').forEach(function(input) {
-                input.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.value.length > 3) this.value = this.value.slice(0, 3);
-                    if (this.value.length > 1 && this.value.startsWith('0')) this.value = this.value.replace(/^0+/, '');
-                    if (parseInt(this.value) > 100) this.value = '100';
+            if (catatanEvaluasi.trim() === '') {
+                document.getElementById('catatanEvaluasiErrorMessage').style.display = 'block';
+                isValid = false;
+            }
+
+            // Tampilkan peringatan atau modal
+            if (!isValid) {
+                Swal.fire({
+                    title: 'Harap mengisi semua kolom nilai dan catatan!',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4B68FB'
+                });
+            } else {
+                const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
+                confirmationKirimModal.show();
+            }
+        });
+
+        // Event listener untuk tombol konfirmasi di dalam modal
+        const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
+        if (btnKonfirmasiKirim) {
+            btnKonfirmasiKirim.addEventListener('click', function() {
+                const modalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+                Swal.fire({
+                    title: 'Evaluasi Sidang Berhasil Dikirim!',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    document.getElementById('evaluasiForm').submit();
                 });
             });
-        });
+        }
+    }
+});
     </script>
-    \end{code}<script src="/Projek/Pro-PengajuanSidang/assets/js/dDaftarSidang.js"></script>
+<script src="/Projek/Pro-PengajuanSidang/assets/js/dDaftarSidang.js"></script>
 </body>
 
 </html>
