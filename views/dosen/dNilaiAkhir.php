@@ -60,17 +60,19 @@ if ($stmt_detail === false) {
     }
 }
 
-// --- Ambil data mahasiswa dalam kelompok ---
-if ($id_kelompok) {
-    $sql_mhs = "SELECT m.nim, m.nama_mhs
-                FROM Mahasiswa m
-                JOIN Kelompok_Mahasiswa km ON m.nim = km.nim
-                WHERE km.id_kelompok = ? ORDER BY m.nim ASC";
-    $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($id_kelompok));
+// --- Ambil data mahasiswa dari tabel Penilaian dan cocokkan dengan tabel Mahasiswa ---
+if ($id_sidang) {
+    // Ambil semua NIM yang ada di tabel Penilaian untuk sidang ini
+    $sql_mhs = "SELECT DISTINCT p.nim, m.nama_mhs
+                FROM Penilaian p
+                JOIN Mahasiswa m ON p.nim = m.nim
+                WHERE p.id_sidang = ? 
+                ORDER BY p.nim ASC";
+    $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($id_sidang));
     
     if ($stmt_mhs === false) {
-        error_log("Query mahasiswa gagal: " . print_r(sqlsrv_errors(), true));
-        $error_message = "Terjadi kesalahan saat mengambil data mahasiswa.";
+        error_log("Query mahasiswa dari Penilaian gagal: " . print_r(sqlsrv_errors(), true));
+        $error_message = "Terjadi kesalahan saat mengambil data mahasiswa dari penilaian.";
         $mahasiswa = []; 
     } else {
         while ($row = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {
@@ -85,8 +87,9 @@ if ($id_kelompok) {
         $current_nim = $mahasiswa[0]['nim']; // Default ke mahasiswa pertama
     }
 } else {
-    // Jika id_kelompok null atau tidak valid, mahasiswa akan kosong
-    // Pesan error sudah ditangani di atas jika sidang tidak ditemukan
+    // Jika id_sidang tidak valid, mahasiswa akan kosong
+    $mahasiswa = [];
+    $error_message = "ID Sidang tidak valid.";
 }
 
 
