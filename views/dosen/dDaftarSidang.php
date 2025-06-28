@@ -8,23 +8,18 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     exit();
 }
 
-// 2. [FIX] Menggunakan struktur session yang benar dan lebih aman
-//    Memeriksa apakah 'user_data' dan 'nomor_dosen' di dalamnya ada sebelum digunakan.
-if (!isset($_SESSION['user_data']) || !isset($_SESSION['user_data']['nomor_dosen'])) {
-    // Jika data tidak lengkap, paksa logout untuk membuat sesi baru yang valid.
-    header("Location: ../../logout.php");
-    exit();
-}
-// Ambil nomor dosen dari struktur session yang benar.
-$nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
-
+// // 2. [FIX] Menggunakan struktur session yang benar dan lebih aman
+// if (!isset($_SESSION['user_data']) || !isset($_SESSION['user_data']['nomor_dosen'])) {
+//     header("Location: ../../logout.php");
+//     exit();
+// }
+// $nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
+$nomor_dosen_login = "1002";
 
 // --- KONEKSI DAN LOGIKA LAINNYA ---
 include "../../koneksi/koneksiAndrew.php";
 if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
 
-// Baris `$nomor_dosen_login = $_SESSION['nomor_dosen'];` yang menyebabkan error telah dihapus.
-// Sekarang kita langsung menggunakan variabel $nomor_dosen_login yang sudah benar dari atas.
 
 // --- LOGIKA FILTER & PAGINASI ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
@@ -33,7 +28,7 @@ $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// Query dan logika lainnya sudah benar dan tidak perlu diubah.
+// Query ini tidak perlu diubah.
 $baseQuery = "
     WITH FullSidangData AS (
         SELECT
@@ -47,15 +42,16 @@ $baseQuery = "
     )
 ";
 
-// --- KLAUSA WHERE DINAMIS ---
+// --- [PERUBAHAN UTAMA] KLAUSA WHERE DINAMIS DISIMPLIFIKASI ---
 $whereConditions = [];
 $params = [];
 
-$whereConditions[] = "
-    (EXISTS (SELECT 1 FROM [dbo].[Bimbingan] b WHERE b.id_kelompok = FullSidangData.id_kelompok AND b.nomor_dosen = ?)
-     OR EXISTS (SELECT 1 FROM [dbo].[Penjadwalan] p WHERE p.id_sidang = FullSidangData.id_sidang AND p.nomor_dosen = ?))";
-array_push($params, $nomor_dosen_login, $nomor_dosen_login);
+// [DIUBAH] Kondisi sekarang HANYA memeriksa jika dosen yang login adalah pembimbing.
+// Tidak ada lagi 'OR EXISTS' untuk penguji.
+$whereConditions[] = "EXISTS (SELECT 1 FROM [dbo].[Bimbingan] b WHERE b.id_kelompok = FullSidangData.id_kelompok AND b.nomor_dosen = ?)";
+array_push($params, $nomor_dosen_login);
 
+// Filter jenis sidang tetap sama
 if ($filter === 'ta') {
     $whereConditions[] = "jenis_sidang = ?";
     array_push($params, 0x00); 
@@ -64,6 +60,7 @@ if ($filter === 'ta') {
     array_push($params, 0x01);
 }
 
+// Filter pencarian tetap sama
 if (!empty($search)) {
     $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR display_title LIKE ? OR pembimbing LIKE ?)";
     $likeParam = "%" . $search . "%";
@@ -94,7 +91,7 @@ $nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<!-- Sisa kode HTML dari sini ke bawah tidak perlu diubah, sudah benar -->
+<!-- Sisa kode HTML tidak perlu diubah sama sekali -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -168,7 +165,7 @@ $nomor = $offset + 1;
                                     <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                         <tr class="isiTabel jadiBiru">
                                             <td data-label="No"><?= $nomor++ ?></td>
-                                            <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                                            <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok'] ?? '-') ?></td>
                                             <td data-label="Judul/Mata Kuliah"><?= htmlspecialchars($row['display_title'] ?? 'N/A') ?></td>
                                             <td data-label="Pembimbing"><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
                                             <td data-label="Aksi" style="text-align: center;">
