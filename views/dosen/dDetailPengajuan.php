@@ -118,74 +118,51 @@ if ($stmt_anggota) {
 // ... (Sisa dari logika PHP untuk handle Approve/Reject Anda tidak perlu diubah) ...
 // 6. Handle aksi Approve / Reject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nomor_dosen_session = $_SESSION['user_data']['nomor_dosen'];
 
-if (isset($_POST['approve'])) {
-    $sql_check = "SELECT s.id_sidang, d.nomor_dosen 
-                  FROM Sidang s 
-                  JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen 
-                  WHERE s.id_sidang = ? AND d.nomor_dosen = ?";
-    $params_check = [$id_sidang, $nomor_dosen_session];
-    $stmt_check = sqlsrv_query($conn, $sql_check, $params_check);
-    
-    // Pastikan pengecekan awal tidak error
-    if($stmt_check === false) {
-        die("Error saat mengecek persetujuan: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+    // --- LOGIKA UNTUK APPROVE ---
+    if (isset($_POST['approve'])) {
+        
+        // PERBAIKAN: Tambahkan CONVERT(binary(1), ?) untuk mencocokkan tipe data kolom
+        $sql_action = "UPDATE Sidang SET status_ajuan = CONVERT(binary(1), ?) WHERE id_sidang = ?";
+        
+        // Mengirim nilai sebagai string '1' lebih aman dan mudah dibaca
+        $params_action = ["1", $id_sidang]; 
+        
+        $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
+
+        if ($stmt_action === false) {
+            die("GAGAL MENYETUJUI SIDANG: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+        }
+
+        $_SESSION['success'] = "Sidang berhasil disetujui";
     }
 
-    if (sqlsrv_has_rows($stmt_check)) {
-        $sql_action = "UPDATE Sidang 
-        SET status = 'Approved', catatan = NULL 
-        WHERE id_sidang = ? AND nomor_dosen = ?";
-        $params_action = [$id_sidang, $nomor_dosen_session];
-    } else {
-        $sql_action = "INSERT INTO Sidang (id_sidang, nomor_dosen, status) VALUES (?, ?, 'Approved')";
-        $params_action = [$id_sidang, $nomor_dosen_session];
-    }
-    
-    // ================== PENAMBAHAN PENTING DI SINI ==================
-    // Eksekusi query aksi dan langsung periksa hasilnya
-    $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
-
-    // Jika query aksi GAGAL, tampilkan error dan hentikan program
-    if ($stmt_action === false) {
-        die("GAGAL MENJALANKAN AKSI: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
-    }
-    // ================================================================
-
-    // Jika berhasil, baru lanjutkan ke redirect
-    $_SESSION['success'] = "Sidang berhasil disetujui";
-    header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang . "&tipe=" . $jenis_sidang_url);
-    exit();
-}
-
+    // --- LOGIKA UNTUK REJECT ---
     elseif (isset($_POST['reject'])) {
         $catatan = $_POST['catatan'] ?? '';
-        if (empty($catatan)) {
-            $_SESSION['error'] = "Silakan isi catatan penolakan";
-        } else {
-            $sql_check = "SELECT s.id_sidang, d.nomor_dosen
-            FROM Sidang s
-            JOIN Dosen d ON s.nomor_dosen = d.nomor_dosen
-            WHERE id_sidang = ? AND nomor_dosen = ?";
-            $params_check = [$id_sidang, $nomor_dosen_session];
-            $stmt_check = sqlsrv_query($conn, $sql_check, $params_check);
 
-            if (sqlsrv_has_rows($stmt_check)) {
-                $sql_action = "UPDATE Sidang 
-                SET status = 'Rejected', catatan = ? 
-                WHERE id_sidang = ? AND nomor_dosen = ?";
-                $params_action = [$catatan, $id_sidang, $nomor_dosen_session];
-            } else {
-                $sql_action = "INSERT INTO Sidang (id_sidang, nomor_dosen, status, catatan) VALUES (?, ?, 'Rejected', ?)";
-                $params_action = [$id_sidang, $nomor_dosen_session, $catatan];
+        if (empty($catatan)) {
+            $_SESSION['error'] = "Silakan isi catatan penolakan."; // Catatan tidak disimpan, tapi validasi tetap baik
+        } else {
+            // PERBAIKAN: Tambahkan CONVERT(binary(1), ?) di sini juga
+            $sql_action = "UPDATE Sidang SET status_ajuan = CONVERT(binary(1), ?) WHERE id_sidang = ?";
+            
+            // Mengirim nilai sebagai string '0' untuk status ditolak
+            $params_action = ["0", $id_sidang];
+
+            $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
+
+            if ($stmt_action === false) {
+                die("GAGAL MENOLAK SIDANG: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
             }
-            sqlsrv_query($conn, $sql_action, $params_action);
+            
             $_SESSION['success'] = "Sidang berhasil ditolak";
-            header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang . "&tipe=" . $jenis_sidang_url);
-            exit();
         }
     }
+    
+    // Redirect kembali ke halaman yang sama untuk me-refresh data
+    header("Location: " . $_SERVER['PHP_SELF'] . "?id_sidang=" . $id_sidang . "&tipe=" . $jenis_sidang_url);
+    exit();
 }
 ?>
 <!DOCTYPE html>
