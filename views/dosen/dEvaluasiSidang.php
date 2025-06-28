@@ -211,7 +211,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                 <!-- PERBAIKAN: Nama kelas diperbaiki -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dNilaiAkhir.php?id=<?= $id_sidang ?>">
+                    <a href="dNilaiAkhir.php?id_sidang=<?= $id_sidang ?>">
                         <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                     </a>
                 </li>
