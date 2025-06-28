@@ -26,62 +26,6 @@ if ($_SESSION['role'] !== 'mahasiswa') {
 }
 
 $nim = $_SESSION['nim'];
-
-// SIDANG STATUS CARD
-$sidang_status = 0;
-$sql = "SELECT COUNT(*) AS sidang_berlangsung FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang WHERE s.id_kelompok IN (SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?) AND s.status_sidang = 1 AND j.tanggal_sidang > GETDATE();";
-$stmt = sqlsrv_query($conn, $sql, [$nim]);
-if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-    $sidang_status = $row['sidang_berlangsung'];
-}
-
-// PENILAIAN STATUS CARD
-$penilaian_status = 0;
-$sql = "SELECT COUNT(DISTINCT s.id_sidang) AS menunggu_penilaian FROM Sidang s JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang WHERE s.id_kelompok IN (SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?) AND s.status_sidang = 1 AND ds.status_revisi != 1;";
-$stmt = sqlsrv_query($conn, $sql, [$nim]);
-if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-    $penilaian_status = $row['menunggu_penilaian'];
-}
-
-// TANGGUNGAN CARD
-$tanggungan = [];
-$sql = "SELECT DISTINCT s.id_sidang, s.judul FROM Sidang s JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang WHERE s.id_kelompok IN (SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?) AND s.status_sidang = 1 AND ds.dok_revisi IS NULL;";
-$stmt = sqlsrv_query($conn, $sql, [$nim]);
-if ($stmt) {
-    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $tanggungan[] = [
-            'id_sidang' => $row['id_sidang'],
-            'judul' => $row['judul']
-        ];
-    }
-}
-
-// SIDANG MENDATANG CARD
-$sidang_mendatang = [];
-$sql = "SELECT s.id_sidang, s.judul, j.tanggal_sidang FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang WHERE s.id_kelompok IN (SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?) AND s.status_sidang = 1 AND j.tanggal_sidang > GETDATE() ORDER BY j.tanggal_sidang ASC;";
-$stmt = sqlsrv_query($conn, $sql, [$nim]);
-if ($stmt) {
-    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $tanggal = $row['tanggal_sidang'];
-        if ($tanggal instanceof DateTime) {
-            $tanggal = $tanggal->format('Y-m-d');
-        } else {
-            $tanggal = date('Y-m-d', strtotime($tanggal));
-        }
-        $sidang_mendatang[] = [
-            'id_sidang' => $row['id_sidang'],
-            'judul' => $row['judul'],
-            'tanggal_sidang' => $tanggal
-        ];
-    }
-}
-
-$dashboard_json = json_encode([
-    'sidang_status' => $sidang_status,
-    'penilaian_status' => $penilaian_status,
-    'tanggungan' => $tanggungan,
-    'sidang_mendatang' => $sidang_mendatang
-]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -209,14 +153,7 @@ $dashboard_json = json_encode([
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <?php include '../../assets/js/mahasiswa-dashboard.php'; ?>
-    <script>
-    const mahasiswaInfo = <?php echo $mahasiswa_info_json; ?>;
-    const cardDashboard = <?php echo $card_dashboard_json; ?>;
-    const tugasList = <?php echo $tugas_list_json; ?>;
-    const sidangData = <?php echo $sidang_mendatang_json; ?>;
-    window.dashboardData = <?php echo $dashboard_json; ?>;
-    </script>
+    <script src="../../assets/js/mahasiswa-dashboard-ajax.js"></script>
 </body>
 
 </html>
