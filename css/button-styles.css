@@ -159,3 +159,16 @@ button.btn-kembali .icon-circle i.fa-arrow-left {
 button.btn-kembali:hover .icon-circle i.fa-arrow-left {
   color: white !important;
 }
+
+/* punya lupapassword.php */
+
+.btn-setujui {
+background-color: #4fd382;
+color: white;
+ }
+ 
+.btn-setujui:hover {
+  background-color: #3ab070;
+  color: white;
+  transform: translateY(-2px);
+  }
