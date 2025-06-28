@@ -399,6 +399,7 @@ body {
   justify-content: flex-end;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-right: 0.9cm;
 }
 
 /* File Button Styles */

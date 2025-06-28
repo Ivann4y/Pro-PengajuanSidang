@@ -19,4 +19,16 @@
                 handleIconPlacement();
                 window.addEventListener('resize', handleIconPlacement);
             }
-        });
+ });
+        document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const tableRows = document.querySelectorAll('.table-admin-custom tbody tr.isiTabel');
+
+  searchInput.addEventListener('input', function() {
+    const keyword = searchInput.value.toLowerCase();
+    tableRows.forEach(row => {
+      const rowText = row.innerText.toLowerCase();
+      row.style.display = rowText.includes(keyword) ? '' : 'none';
+    });
+  });
+});

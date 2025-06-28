@@ -259,13 +259,14 @@ if ($result === false) {
         <?php
         $counter = ($currentPage - 1) * $rowsPerPage + 1;
         while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
+             $jenis_sidang_int = ord($row['jenis_sidang']);
         ?>
             <tr class="isiTabel">
                 <td data-label="Nomor"><?= $counter ?></td>
                 <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                 <td data-label="Judul/MK">
                     <?php 
-                    echo htmlspecialchars(($row['jenis_sidang'] == 1) ? $row['nama_matkul'] : $row['judul']); 
+                    echo htmlspecialchars(($jenis_sidang_int == 1) ? $row['nama_matkul'] : $row['judul']); 
                     ?>
                 </td>
                 <td data-label="Pembimbing/Pengampu">
@@ -274,10 +275,11 @@ if ($result === false) {
                     ?>
                 </td>
                 <td data-label="Aksi">
-                    <button type="button" class="btn detail-btn"
-                        onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
-                        <i class="fa-solid fa-file-signature"></i>
-                    </button>
+                       <div class="action-wrapper">  
+                         <button type="button" class="btn detail-btn" onclick="...">
+                          <i class="fa-solid fa-file-signature"></i>
+                         </button>
+                      </div>
                 </td>
             </tr>
             <?php
