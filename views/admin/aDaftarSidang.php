@@ -146,7 +146,9 @@ if ($result === false) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/aDaftarSidang.css">
+
 </head>
 
 <body>
@@ -159,8 +161,8 @@ if ($result === false) {
                             class="fw-semibold">Beranda</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span
                             class="fw-semibold">Penjadwalan</span></a></li>
-                <li class="NavSide_sidebar-item NavSide_sidebar-item--active"><b></b><b></b><a href="#"><span
-                            class="fw-semibold">Daftar Sidang</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
+                            class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
                         data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
             </ul>

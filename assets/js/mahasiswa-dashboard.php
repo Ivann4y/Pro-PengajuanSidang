@@ -40,101 +40,82 @@ $sidang_mendatang_json = json_encode($sidang_mendatang);
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Logika untuk toggle sidebar pada halaman dibawah 700px
+    // Sidebar toggle logic
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
-
-    // Toggle sidebar untuk mobile
     menuToggle.onclick = function() {
         menuToggle.classList.toggle("NavSide__toggle--active");
         sidebar.classList.toggle("NavSide__sidebar--active-mobile");
     };
 
-    // Mengambil data dari PHP 
-    const mahasiswaInfo = <?php echo $mahasiswa_info_json; ?>;
-    const cardDashboard = <?php echo $card_dashboard_json; ?>;
-    const tugasList = <?php echo $tugas_list_json; ?>;
-    const sidangData = <?php echo $sidang_mendatang_json; ?>;
-    const sidangDates = sidangData.map(item => item.tanggal_sidang);
+    // Use dashboardData from PHP
+    const data = window.dashboardData;
 
-    // Mengisi data pada card dashboard
-    document.querySelector('.sidang-status-card .number').textContent = cardDashboard.sidang_berlangsung;
-    document.querySelector('.penilaian-status-card .number').textContent = cardDashboard.menunggu_penilaian;
+    // SIDANG STATUS CARD
+    document.querySelector('.sidang-status-card .number').textContent = data.sidang_status ?? 0;
 
-    // Update nama pada welcome text
-    document.querySelector('.welcome-text').textContent = `Selamat Datang, ${mahasiswaInfo.nama}!`;
+    // PENILAIAN STATUS CARD
+    document.querySelector('.penilaian-status-card .number').textContent = data.penilaian_status ?? 0;
 
-    // Render tugas list
+    // TANGGUNGAN CARD
     const tugasContainer = document.querySelector('.tanggungan-card');
-    if (tugasList.length === 0) {
-        tugasContainer.innerHTML += '<p class="text-center text-muted mt-3">Tidak ada tugas yang perlu dikerjakan.</p>';
+    tugasContainer.querySelectorAll('.tanggungan-item, .text-muted').forEach(e => e.remove());
+    if (!data.tanggungan || data.tanggungan.length === 0) {
+        const p = document.createElement('p');
+        p.className = 'text-center text-muted mt-3';
+        p.textContent = 'Tidak ada tugas yang perlu dikerjakan.';
+        tugasContainer.appendChild(p);
     } else {
-        tugasList.forEach(tugas => {
+        data.tanggungan.forEach(item => {
             const div = document.createElement('div');
             div.className = 'tanggungan-item';
-            div.textContent = tugas;
+            div.textContent = `Revisi ${item.judul}`;
             tugasContainer.appendChild(div);
         });
     }
 
-    // Kalender Real-time
+    // SIDANG MENDATANG CARD & CALENDAR
+    let sidangDates = (data.sidang_mendatang || []).map(item => item.tanggal_sidang);
+    let sidangData = data.sidang_mendatang || [];
+
+    // Declare all calendar variables BEFORE calling renderCalendar
     const calendarTableBody = document.querySelector("#calendarTable tbody");
     const currentMonthYearHeader = document.getElementById("currentMonthYear");
     const prevMonthBtn = document.getElementById("prevMonth");
     const nextMonthBtn = document.getElementById("nextMonth");
-
-    // Tanggal hari ini dan tanggal aktif
     let currentDate = new Date();
     let activeDate = new Date();
-
-    // Nama-nama bulan dalam bahasa Indonesia
     const monthNames = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
 
-    // Fungsi untuk merender kalender
     function renderCalendar() {
         calendarTableBody.innerHTML = "";
         currentMonthYearHeader.textContent = `${monthNames[activeDate.getMonth()]} ${activeDate.getFullYear()}`;
-
         const year = activeDate.getFullYear();
         const month = activeDate.getMonth();
-
-        // Hari pertama dalam bulan (0 = Minggu)
         const firstDayOfMonth = new Date(year, month, 1).getDay();
-        // Jumlah hari dalam bulan
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-
         let date = 1;
-        // Render 6 baris (minggu)
         for (let i = 0; i < 6; i++) {
             const row = document.createElement("tr");
-
-            // Render 7 kolom (hari)
             for (let j = 0; j < 7; j++) {
                 const cell = document.createElement("td");
-                // Kosongkan sel sebelum tanggal 1
                 if (i === 0 && j < firstDayOfMonth) {
                     cell.innerHTML = "";
                 } else if (date > daysInMonth) {
-                    // Kosongkan sel setelah akhir bulan
                     cell.innerHTML = "";
                 } else {
-                    // Isi tanggal
                     const daySpan = document.createElement("span");
                     daySpan.classList.add("calendar-day");
                     daySpan.textContent = date;
-
-                    // Format tanggal untuk pencocokan (YYYY-MM-DD)
                     const thisDate = new Date(year, month, date);
                     const dateStr = [
                         thisDate.getFullYear(),
                         String(thisDate.getMonth() + 1).padStart(2, "0"),
                         String(thisDate.getDate()).padStart(2, "0")
                     ].join("-");
-
-                    // Tandai hari ini
                     if (
                         date === currentDate.getDate() &&
                         month === currentDate.getMonth() &&
@@ -142,12 +123,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     ) {
                         daySpan.classList.add("current-day");
                     }
-
-                    // Tandai tanggal yang ada sidang
                     if (sidangDates.includes(dateStr)) {
                         daySpan.classList.add("has-sidang");
                     }
-
                     cell.appendChild(daySpan);
                     date++;
                 }
@@ -156,14 +134,9 @@ document.addEventListener("DOMContentLoaded", function() {
             calendarTableBody.appendChild(row);
         }
     }
-
-    // Generate item card sidang mendatang dari data
     function renderSidangMendatang(data) {
         const sidangContainer = document.querySelector(".sidang-mendatang-card");
-        // Hapus semua .item lama, kecuali judul
-        sidangContainer.querySelectorAll(".item").forEach(e => e.remove());
-
-        // jika tidak ada sidang mendatang
+        sidangContainer.querySelectorAll(".item, .text-muted").forEach(e => e.remove());
         if (!data.length) {
             const p = document.createElement("p");
             p.className = "text-center text-muted mt-3";
@@ -171,12 +144,10 @@ document.addEventListener("DOMContentLoaded", function() {
             sidangContainer.appendChild(p);
             return;
         }
-
         data.forEach(item => {
             const tgl = new Date(item.tanggal_sidang);
             const day = String(tgl.getDate()).padStart(2, "0");
             const month = tgl.toLocaleString("default", { month: "short" });
-
             const div = document.createElement("div");
             div.className = "item";
             div.innerHTML = `
@@ -187,36 +158,28 @@ document.addEventListener("DOMContentLoaded", function() {
                 <span class="info">${item.judul}</span>
                 <span class="arrow"><i class="bi bi-chevron-right"></i></span>
             `;
-            // Jika ada link_detail, jadikan clickable
-            if (item.link_detail) {
-                const a = document.createElement("a");
-                a.href = item.link_detail;
-                a.style.textDecoration = "none";
-                a.style.color = "inherit";
-                a.appendChild(div);
-                sidangContainer.appendChild(a);
-            } else {
-                sidangContainer.appendChild(div);
-            }
+            const a = document.createElement("a");
+            a.href = `mdetailsidangta.php?id_sidang=${item.id_sidang}`;
+            a.style.textDecoration = "none";
+            a.style.color = "inherit";
+            a.appendChild(div);
+            sidangContainer.appendChild(a);
         });
     }
 
-    // Navigasi bulan sebelumnya
+    // Now call the functions after all variables are declared
+    renderSidangMendatang(sidangData);
+    renderCalendar();
+
     prevMonthBtn.addEventListener("click", () => {
         activeDate.setMonth(activeDate.getMonth() - 1);
         activeDate.setDate(1);
         renderCalendar();
     });
-
-    // Navigasi bulan berikutnya
     nextMonthBtn.addEventListener("click", () => {
         activeDate.setMonth(activeDate.getMonth() + 1);
         activeDate.setDate(1);
         renderCalendar();
     });
-
-    // Render kalender dan sidang mendatang saat halaman dimuat
-    renderCalendar();
-    renderSidangMendatang(sidangData);
 });
 </script> 

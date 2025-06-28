@@ -24,37 +24,64 @@ if ($_SESSION['role'] !== 'mahasiswa') {
     header("Location: ../../index.php");
     exit();
 }
-// Dummy data as before
-$mahasiswa_info = [
-    'nama' => 'Nayaka'
-];
-$card_dashboard = [
-    'sidang_berlangsung' => 3,
-    'menunggu_penilaian' => 2
-];
-$tugas_list = [
-    'Revisi Sidang PRG',
-    'Revisi Sidang Basdat',
-    'Revisi Sidang TA',
-    'Revisi Sidang Orkom',
-    'Revisi Sidang Jaringan Komputer',
-    'Revisi Sidang Sistem Informasi',
-    'Revisi Sidang Sistem Terdistribusi',
-    'Revisi Sidang Sistem Operasi',
-    'Revisi Sidang Kecerdasan Buatan',
-    'Revisi Sidang Pemrograman Web',
-];
-$sidang_mendatang = [
-    ['tanggal_sidang' => '2025-06-18', 'judul' => 'Sistem Pengajuan Skripsi', 'link_detail' => 'mdetailsidangta.php'],
-    ['tanggal_sidang' => '2025-06-20', 'judul' => 'Revisi Proposal KP', 'link_detail' => 'mdetailsidangta.php'],
-    ['tanggal_sidang' => '2025-06-24', 'judul' => 'Sidang Akhir TA', 'link_detail' => 'mdetailsidangta.php'],
-    ['tanggal_sidang' => '2025-06-30', 'judul' => 'Presentasi Proyek', 'link_detail' => 'mdetailsidangta.php'],
-    ['tanggal_sidang' => '2025-07-02', 'judul' => 'Pengumpulan Laporan', 'link_detail' => 'mdetailsidangta.php'],
-];
-$mahasiswa_info_json = json_encode($mahasiswa_info);
-$card_dashboard_json = json_encode($card_dashboard);
-$tugas_list_json = json_encode($tugas_list);
-$sidang_mendatang_json = json_encode($sidang_mendatang);
+
+$nim = $_SESSION['nim'];
+
+// SIDANG STATUS CARD
+$sidang_status = 0;
+$sql = "SELECT COUNT(*) AS sidang_berlangsung FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang WHERE s.id_kelompok IN (SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?) AND s.status_sidang = 1 AND j.tanggal_sidang > GETDATE();";
+$stmt = sqlsrv_query($conn, $sql, [$nim]);
+if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+    $sidang_status = $row['sidang_berlangsung'];
+}
+
+// PENILAIAN STATUS CARD
+$penilaian_status = 0;
+$sql = "SELECT COUNT(DISTINCT s.id_sidang) AS menunggu_penilaian FROM Sidang s JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang WHERE s.id_kelompok IN (SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?) AND s.status_sidang = 1 AND ds.status_revisi != 1;";
+$stmt = sqlsrv_query($conn, $sql, [$nim]);
+if ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+    $penilaian_status = $row['menunggu_penilaian'];
+}
+
+// TANGGUNGAN CARD
+$tanggungan = [];
+$sql = "SELECT DISTINCT s.id_sidang, s.judul FROM Sidang s JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang WHERE s.id_kelompok IN (SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?) AND s.status_sidang = 1 AND ds.dok_revisi IS NULL;";
+$stmt = sqlsrv_query($conn, $sql, [$nim]);
+if ($stmt) {
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $tanggungan[] = [
+            'id_sidang' => $row['id_sidang'],
+            'judul' => $row['judul']
+        ];
+    }
+}
+
+// SIDANG MENDATANG CARD
+$sidang_mendatang = [];
+$sql = "SELECT s.id_sidang, s.judul, j.tanggal_sidang FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang WHERE s.id_kelompok IN (SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?) AND s.status_sidang = 1 AND j.tanggal_sidang > GETDATE() ORDER BY j.tanggal_sidang ASC;";
+$stmt = sqlsrv_query($conn, $sql, [$nim]);
+if ($stmt) {
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $tanggal = $row['tanggal_sidang'];
+        if ($tanggal instanceof DateTime) {
+            $tanggal = $tanggal->format('Y-m-d');
+        } else {
+            $tanggal = date('Y-m-d', strtotime($tanggal));
+        }
+        $sidang_mendatang[] = [
+            'id_sidang' => $row['id_sidang'],
+            'judul' => $row['judul'],
+            'tanggal_sidang' => $tanggal
+        ];
+    }
+}
+
+$dashboard_json = json_encode([
+    'sidang_status' => $sidang_status,
+    'penilaian_status' => $penilaian_status,
+    'tanggungan' => $tanggungan,
+    'sidang_mendatang' => $sidang_mendatang
+]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,7 +128,7 @@ $sidang_mendatang_json = json_encode($sidang_mendatang);
                 </div>
             </div>
 
-            <h1 class="welcome-text">Selamat Datang!</h1>
+            <h1 class="welcome-text">Selamat Datang, <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?>!</h1>
 
             <div class="row">
                 <div class="col-lg-7">
@@ -188,7 +215,7 @@ $sidang_mendatang_json = json_encode($sidang_mendatang);
     const cardDashboard = <?php echo $card_dashboard_json; ?>;
     const tugasList = <?php echo $tugas_list_json; ?>;
     const sidangData = <?php echo $sidang_mendatang_json; ?>;
-    // ... rest of your JS ...
+    window.dashboardData = <?php echo $dashboard_json; ?>;
     </script>
 </body>
 

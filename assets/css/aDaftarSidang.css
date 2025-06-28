@@ -80,12 +80,12 @@ body {
 }
 
 /* Style khusus untuk item menu yang aktif */
-.NavSide_sidebar-item.NavSide_sidebar-item--active {
+.NavSide__sidebar-item.NavSide__sidebar-item--active {
   background: #ffffff; /* Latar belakang putih */
 }
 
 /* Warna teks biru untuk link pada item aktif */
-.NavSide_sidebar-item.NavSide_sidebar-item--active a {
+.NavSide__sidebar-item.NavSide__sidebar-item--active a {
   color: #4b68fb;
 }
 
@@ -132,8 +132,8 @@ body {
 }
 
 /* Menampilkan elemen lengkungan hanya pada item yang aktif */
-.NavSide_sidebar-item.NavSide_sidebar-item--active b:nth-child(1),
-.NavSide_sidebar-item.NavSide_sidebar-item--active b:nth-child(2) {
+.NavSide_sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
   display: block;
 }
 

@@ -27,7 +27,7 @@ require "../../koneksi/koneksiAndrew.php";
 // 6. Pastikan sidang dipilih
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
     if (basename($_SERVER['PHP_SELF']) != 'aNilaiAkhir.php') {
-        header("Location: aNilaiAkhir.php");
+        header("Location: aSidang.php");
         exit();
     }
 }
