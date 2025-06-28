@@ -11,7 +11,7 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     header("Location: " . $path_to_root . "index.php"); 
     exit(); 
 }
-
+    
 // 2. Cek jika role pengguna BUKAN 'mahasiswa'.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';

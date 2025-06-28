@@ -10,7 +10,8 @@ error_reporting(E_ALL);
 // PENTING: ID Dosen yang sedang login. Ganti ini dengan mekanisme autentikasi Anda!
 // Misalnya: $_SESSION['nomor_dosen']
 // Untuk testing, pastikan ID ini sesuai dengan nomor_dosen yang ada di tabel Dosen dan Penilaian.
-$loggedInNomorDosen = 1001; // !!! GANTI DENGAN ID DOSEN ASLI DARI SESI LOGIN ANDA !!!
+$user_session = $_SESSION['user_data'];
+$loggedInNomorDosen = $user_session['nomor_dosen'];
 // ===========================================================================
 
 // Sertakan file koneksi database. Jika koneksi gagal, hentikan skrip di sini.
@@ -144,43 +145,6 @@ if ($jenis_sidang === 0x00) { // Sidang Tugas Akhir
 }
 
 // ===========================================================================
-// BAGIAN AJAX ENDPOINT UNTUK MENGAMBIL NILAI MAHASISWA
-// ===========================================================================
-if (isset($_GET['action']) && $_GET['action'] == 'get_student_grades' && isset($_GET['nim']) && isset($_GET['id_sidang']) && isset($_GET['nomor_dosen'])) {
-    ob_clean(); 
-    header('Content-Type: application/json'); 
-
-    $req_nim = $_GET['nim'];
-    $req_id_sidang = (int)$_GET['id_sidang'];
-    $req_nomor_dosen = (int)$_GET['nomor_dosen'];
-
-    $sql_penilaian_ajax = "SELECT n_dokumen, n_presentasi, n_tanyajawab, n_proyek
-                           FROM Penilaian
-                           WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
-    $stmt_penilaian_ajax = sqlsrv_query($conn, $sql_penilaian_ajax, array($req_id_sidang, $req_nim, $req_nomor_dosen));
-
-    if ($stmt_penilaian_ajax === false) {
-        error_log("AJAX Query Penilaian Gagal: " . print_r(sqlsrv_errors(), true));
-        echo json_encode(['error' => 'Gagal mengambil data penilaian dari database. Detail: ' . strip_tags(print_r(sqlsrv_errors(), true))]);
-        exit;
-    }
-
-    $grades = sqlsrv_fetch_array($stmt_penilaian_ajax, SQLSRV_FETCH_ASSOC);
-    
-    if (!$grades) {
-        $grades = [
-            'n_dokumen' => null,
-            'n_presentasi' => null,
-            'n_tanyajawab' => null,
-            'n_proyek' => null,
-        ];
-    }
-    
-    echo json_encode($grades);
-    exit; 
-}
-
-// ===========================================================================
 // LOGIKA VALIDASI UNTUK TOMBOL "KIRIM" (Interpretasi B: semua mahasiswa telah dinilai oleh dosen ini)
 // ===========================================================================
 $allStudentsGradesComplete = true; // Asumsi awal semua sudah lengkap
@@ -276,6 +240,35 @@ if (isset($_GET['status'])) {
         $display_success_message = $_GET['msg'] ?? "Penilaian berhasil disimpan/diperbarui.";
     } elseif ($_GET['status'] == 'error') {
         $display_error_message = $_GET['msg'] ?? "Gagal menyimpan/memperbarui penilaian.";
+    }
+}
+
+// --- Ambil nilai yang sudah ada untuk mahasiswa yang sedang aktif ---
+$existing_grades = [
+    'n_dokumen' => '',
+    'n_presentasi' => '',
+    'n_tanyajawab' => '',
+    'n_proyek' => ''
+];
+
+if (!empty($current_nim) && $id_sidang) {
+    $sql_existing_grades = "SELECT n_dokumen, n_presentasi, n_tanyajawab, n_proyek
+                           FROM Penilaian
+                           WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
+    $stmt_existing_grades = sqlsrv_query($conn, $sql_existing_grades, array($id_sidang, $current_nim, $loggedInNomorDosen));
+    
+    if ($stmt_existing_grades === false) {
+        error_log("Query nilai yang sudah ada gagal: " . print_r(sqlsrv_errors(), true));
+    } else {
+        $grades_row = sqlsrv_fetch_array($stmt_existing_grades, SQLSRV_FETCH_ASSOC);
+        if ($grades_row) {
+            $existing_grades = [
+                'n_dokumen' => $grades_row['n_dokumen'] ?? '',
+                'n_presentasi' => $grades_row['n_presentasi'] ?? '',
+                'n_tanyajawab' => $grades_row['n_tanyajawab'] ?? '',
+                'n_proyek' => $grades_row['n_proyek'] ?? ''
+            ];
+        }
     }
 }
 ?>
@@ -375,9 +368,7 @@ if (isset($_GET['status'])) {
             <?php foreach ($mahasiswa as $index => $mhs): ?>
                 <li class="nav-item">
                     <a class="nav-link <?php echo ($mhs['nim'] == $current_nim) ? 'active active-student-tab' : ''; ?>"
-                       href="dNilaiAkhir.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>&nim=<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>"
-                       data-nim="<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>"
-                       onclick="loadStudentData('<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>', '<?php echo htmlspecialchars($id_sidang); ?>'); return false;">
+                       href="dNilaiAkhir.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>&nim=<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>">
                        Mahasiswa <?php echo $index + 1; ?>
                     </a>
                 </li>
@@ -498,34 +489,34 @@ if (isset($_GET['status'])) {
      <div class="penilaian-container">
          <div class="penilaian-item">
              <label for="nilaiLaporanInput">Nilai laporan :</label> 
-             <input type="text" class="form-control text-center input-nilai" name="nilaiLaporan" id="nilaiLaporanInput" maxlength="3"> 
+             <input type="text" class="form-control text-center input-nilai" name="nilaiLaporan" id="nilaiLaporanInput" maxlength="3" value="<?php echo htmlspecialchars($existing_grades['n_dokumen']); ?>"> 
          </div>
          <div class="penilaian-item">
              <label for="materiPresentasiInput">Materi Presentasi :</label> 
-             <input type="text" class="form-control text-center input-nilai" name="MateriPresentasi" id="materiPresentasiInput" maxlength="3"> 
+             <input type="text" class="form-control text-center input-nilai" name="MateriPresentasi" id="materiPresentasiInput" maxlength="3" value="<?php echo htmlspecialchars($existing_grades['n_presentasi']); ?>"> 
          </div>
          <div class="penilaian-item">
              <label for="tanyaJawabInput">Tanya Jawab :</label> 
-             <input type="text" class="form-control text-center input-nilai" name="TanyaJawab" id="tanyaJawabInput" maxlength="3"> 
+             <input type="text" class="form-control text-center input-nilai" name="TanyaJawab" id="tanyaJawabInput" maxlength="3" value="<?php echo htmlspecialchars($existing_grades['n_tanyajawab']); ?>"> 
          </div>
          <div class="penilaian-item">
              <label for="nilaiProyekInput">Nilai Proyek :</label> 
-             <input type="text" class="form-control text-center input-nilai" name="NilaiProyek" id="nilaiProyekInput" maxlength="3"> 
+             <input type="text" class="form-control text-center input-nilai" name="NilaiProyek" id="nilaiProyekInput" maxlength="3" value="<?php echo htmlspecialchars($existing_grades['n_proyek']); ?>"> 
          </div>
      </div>
 
      <div class="penilaian-grid-vertical">
          <label for="nilaiLaporanInput_v">Nilai laporan</label> <span>:</span> 
-         <input type="text" class="form-control text-center input-nilai" name="nilaiLaporan_v" id="nilaiLaporanInput_v" maxlength="3"> 
+         <input type="text" class="form-control text-center input-nilai" name="nilaiLaporan_v" id="nilaiLaporanInput_v" maxlength="3" value="<?php echo htmlspecialchars($existing_grades['n_dokumen']); ?>"> 
          
          <label for="materiPresentasiInput_v">Materi Presentasi</label> <span>:</span> 
-         <input type="text" class="form-control text-center input-nilai" name="MateriPresentasi_v" id="materiPresentasiInput_v" maxlength="3"> 
+         <input type="text" class="form-control text-center input-nilai" name="MateriPresentasi_v" id="materiPresentasiInput_v" maxlength="3" value="<?php echo htmlspecialchars($existing_grades['n_presentasi']); ?>"> 
          
          <label for="tanyaJawabInput_v">Tanya Jawab</label> <span>:</span> 
-         <input type="text" class="form-control text-center input-nilai" name="TanyaJawab_v" id="tanyaJawabInput_v" maxlength="3"> 
+         <input type="text" class="form-control text-center input-nilai" name="TanyaJawab_v" id="tanyaJawabInput_v" maxlength="3" value="<?php echo htmlspecialchars($existing_grades['n_tanyajawab']); ?>"> 
          
          <label for="nilaiProyekInput_v">Nilai Proyek</label> <span>:</span> 
-         <input type="text" class="form-control text-center input-nilai" name="NilaiProyek_v" id="nilaiProyekInput_v" maxlength="3"> 
+         <input type="text" class="form-control text-center input-nilai" name="NilaiProyek_v" id="nilaiProyekInput_v" maxlength="3" value="<?php echo htmlspecialchars($existing_grades['n_proyek']); ?>"> 
      </div>
 </div>
              </div>
@@ -594,8 +585,8 @@ if (isset($_GET['status'])) {
         // Logika saat halaman dimuat pertama kali
         const initialNim = document.getElementById('currentNimInput').value;
         if (initialNim) {
-            updateStudentInfo(initialNim); // Update info mahasiswa
-            loadStudentGrades(initialNim); // Muat nilai yang sudah ada untuk mahasiswa ini
+            // Nilai sudah dimuat dari PHP, hitung rata-rata
+            calculateAndDisplayAverage();
         }
 
         // Perbarui status tombol "Kirim" saat halaman dimuat
@@ -620,24 +611,6 @@ if (isset($_GET['status'])) {
     });
 
     /**
-     * Memperbarui tampilan informasi mahasiswa (NIM dan Nama)
-     * @param {string} nim - NIM mahasiswa yang akan ditampilkan
-     */
-    function updateStudentInfo(nim) {
-        const student = allMahasiswa.find(m => m.nim === nim);
-        if (student) {
-            document.getElementById('displayNim').textContent = student.nim;
-            document.getElementById('displayNama').textContent = student.nama_mhs;
-            document.getElementById('currentNimInput').value = student.nim; // Update hidden input
-        } else {
-            // Jika mahasiswa tidak ditemukan, set ke 'N/A'
-            document.getElementById('displayNim').textContent = 'N/A';
-            document.getElementById('displayNama').textContent = 'N/A';
-            document.getElementById('currentNimInput').value = '';
-        }
-    }
-
-    /**
      * Mengosongkan semua input nilai.
      */
     function clearGradeInputs() {
@@ -655,93 +628,6 @@ if (isset($_GET['status'])) {
 
         // Mengosongkan nilai akhir
         document.getElementById('nilaiMahasiswa').value = '--';
-    }
-
-    /**
-     * Memuat data mahasiswa baru saat tab diklik.
-     * Memperbarui URL, tampilan, dan memuat nilai dari database via AJAX.
-     * @param {string} nim - NIM mahasiswa yang dipilih
-     * @param {number} idSidang - ID sidang yang sedang aktif
-     */
-    function loadStudentData(nim, idSidang) {
-        // Perbarui URL browser dan history untuk state yang benar
-        const url = new URL(window.location.href);
-        url.searchParams.set('nim', nim);
-        url.searchParams.set('id_sidang', idSidang);
-        window.history.pushState({ nim: nim, id_sidang: idSidang }, '', url.toString());
-
-        // Atur kelas 'active' pada tab navigasi yang dipilih
-        document.querySelectorAll('.nav-link').forEach(tab => {
-            tab.classList.remove('active', 'active-student-tab');
-        });
-        document.querySelector(`.nav-link[data-nim="${nim}"]`).classList.add('active', 'active-student-tab');
-
-        updateStudentInfo(nim); // Perbarui informasi mahasiswa di card
-        clearGradeInputs(); // Kosongkan input nilai sebelum memuat yang baru
-        loadStudentGrades(nim); // Panggil fungsi untuk memuat nilai dari database
-    }
-
-    /**
-     * Memuat nilai penilaian dari database untuk mahasiswa tertentu via AJAX.
-     * Mengisi input form dengan nilai yang ditemukan.
-     * @param {string} nim - NIM mahasiswa yang nilainya akan dimuat
-     */
-    function loadStudentGrades(nim) {
-        // Lakukan fetch API ke endpoint PHP untuk mengambil nilai
-        fetch(`dNilaiAkhir.php?action=get_student_grades&nim=${nim}&id_sidang=${currentSidangId}&nomor_dosen=${loggedInNomorDosen}`)
-            .then(response => {
-                // Tangani respon jika tidak OK (misal 404, 500)
-                if (!response.ok) {
-                    // Jika respons tidak OK, lempar Error agar ditangkap di .catch
-                    return response.text().then(text => { // Coba baca respons sebagai teks untuk debugging
-                        throw new Error(`HTTP error! Status: ${response.status}. Response: ${text}`);
-                    });
-                }
-                return response.json(); // Parse respon sebagai JSON
-            })
-            .then(data => {
-                if (data && !data.error) {
-                    // Isi input nilai desktop dengan data yang diterima (jika ada, jika tidak kosong)
-                    document.getElementById('nilaiLaporanInput').value = data.n_dokumen || '';
-                    document.getElementById('materiPresentasiInput').value = data.n_presentasi || '';
-                    document.getElementById('tanyaJawabInput').value = data.n_tanyajawab || '';
-                    document.getElementById('nilaiProyekInput').value = data.n_proyek || '';
-
-                    // Isi input nilai mobile/tablet (jaga konsistensi)
-                    document.getElementById('nilaiLaporanInput_v').value = data.n_dokumen || '';
-                    document.getElementById('materiPresentasiInput_v').value = data.n_presentasi || '';
-                    document.getElementById('tanyaJawabInput_v').value = data.n_tanyajawab || '';
-                    document.getElementById('nilaiProyekInput_v').value = data.n_proyek || '';
-                    
-                    calculateAndDisplayAverage(); // Hitung dan tampilkan rata-rata setelah nilai dimuat
-                } else if (data && data.error) {
-                    // Tampilkan error dari PHP via SweetAlert
-                    console.error("Error fetching grades (server-side):", data.error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error Memuat Nilai!',
-                        html: `Terjadi kesalahan saat memuat nilai: <br>${data.error}`,
-                        confirmButtonText: 'OK'
-                    });
-                    clearGradeInputs(); // Kosongkan input jika ada error spesifik
-                } else {
-                    // Jika tidak ada data atau data null, kosongkan input
-                    clearGradeInputs(); 
-                    document.getElementById('nilaiMahasiswa').value = '--';
-                }
-            })
-            .catch(error => {
-                // Tangani error jaringan atau parsing JSON (ini yang sering muncul)
-                console.error('Fetch Error (network/parsing):', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Kesalahan Jaringan!',
-                    text: `Tidak dapat terhubung ke server atau memproses data. Detail: ${error.message}. Mohon coba lagi.`,
-                    confirmButtonText: 'OK'
-                });
-                clearGradeInputs(); // Kosongkan input jika ada error jaringan
-                document.getElementById('nilaiMahasiswa').value = '--';
-            });
     }
 
     /**
@@ -814,11 +700,8 @@ if (isset($_GET['status'])) {
      * Memuat ulang nilai mahasiswa dan memperbarui tampilan.
      */
     function checkAndFillGrades() {
-        const currentNim = document.getElementById('currentNimInput').value;
-        if (currentNim) {
-            // Memuat ulang nilai dari database untuk memastikan konsistensi
-            loadStudentGrades(currentNim); 
-        }
+        // Nilai sudah dimuat dari PHP, tidak perlu load ulang
+        // Hanya tutup modal
         TutupKonfirmasiModal();
     }
 

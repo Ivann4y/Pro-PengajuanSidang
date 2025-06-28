@@ -61,8 +61,7 @@ include "../../koneksi/koneksiAndrew.php";
                 </div>
             </div>
             <div class="dashboardTitle">Beranda Dosen</div>
-            <h2 class="welcomeText">Selamat Datang, Evan Wahyu!</h2>
-
+               <h2 class="welcomeText">Selamat Datang, <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?>!</h2>
             <div class="row gy-4">
             <div class="col-lg-3">
                 <div class="mb-4">

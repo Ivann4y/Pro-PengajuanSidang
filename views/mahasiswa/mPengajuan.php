@@ -3,9 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 if (!isset($_SESSION['user_nim'])) {
-    // Untuk PENGUJIAN, Anda bisa set NIM manual di sini.
-    // Pastikan NIM ini adalah NIM yang sama dengan pemilik data draf di SSMS.
-    // Ganti '1000000001' dengan NIM yang benar jika perlu.
     $nim_mahasiswa_logged_in = '1000000001'; 
 } else {
     $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
@@ -30,7 +27,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 include '../../koneksi/koneksiAndrew.php';
 $success_message = '';
 $error_message = '';
-//$nim_mahasiswa_logged_in = $_SESSION['user_data']['nim'];
 
 // Pagination settings
 $rowsPerPage = 10;
@@ -41,21 +37,21 @@ $offset = ($page - 1) * $rowsPerPage;
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $filterClause = '';
 if ($filter === 'TA') {
+    // 0 adalah untuk Tugas Akhir
     $filterClause = " AND s.jenis_sidang = 0";
 } elseif ($filter === 'Semester') {
+    // 1 adalah untuk Sidang Mata Kuliah lain
     $filterClause = " AND s.jenis_sidang = 1";
 }
 
-$subQueryIdKelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in'";
-
-
-// Count total rows for pagination 
+// Count total rows for pagination - DENGAN FILTER
 $countQuery = "
     SELECT COUNT(s.id_sidang) as total
     FROM dbo.Sidang s
     WHERE
         s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
-        AND s.status_ajuan = 0x00 -- <-- Filter yang sama dengan kueri utama
+        AND s.status_ajuan = 0x00 -- Hanya DRAF
+        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
 ";
 $countResult = sqlsrv_query($conn, $countQuery);
 if ($countResult === false) {
@@ -65,11 +61,12 @@ $totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRows / $rowsPerPage);
 
 
-// Kueri utama untuk menampilkan DRAF milik mahasiswa yang login
+// Kueri utama untuk menampilkan DRAF milik mahasiswa yang login - DENGAN FILTER
 $query = "
     SELECT
         s.id_sidang,
         s.judul,
+        s.jenis_sidang,
         ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
         ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
     FROM
@@ -83,6 +80,7 @@ $query = "
     WHERE
         s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
         AND s.status_ajuan = 0x00 -- Filter utama untuk menampilkan HANYA DRAF
+        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
     ORDER BY
         s.id_sidang DESC
     OFFSET $offset ROWS FETCH NEXT $rowsPerPage ROWS ONLY
@@ -95,10 +93,17 @@ if ($result === false) {
 
 $dataSidang = [];
 while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+    // Logika untuk menampilkan nama matkul yang benar berdasarkan jenis sidang
+    if ($row['jenis_sidang'] == 0) {
+        $nama_matkul_display = 'Tugas Akhir';
+    } else {
+        $nama_matkul_display = $row['nama_matkul'];
+    }
+
     $dataSidang[] = [
         "id_sidang" => $row['id_sidang'],
         "judul" => $row['judul'],
-        "matkul" => $row['nama_matkul'] ?? 'N/A',
+        "matkul" => $nama_matkul_display, // Gunakan variabel yang sudah diproses
         "dosen" => $row['nama_dosen'] ?? 'N/A'
     ];
 }
@@ -234,7 +239,6 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                             <nav aria-label="Page navigation">
                                 <ul class="pagination justify-content-center">
                                     <?php if ($totalPages > 1): ?>
-                                        <!-- Previous Button -->
                                         <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
                                             <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page - 1; ?>" aria-label="Previous">
                                                 <span aria-hidden="true">«</span>
@@ -276,7 +280,6 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                                         }
                                         ?>
 
-                                        <!-- Next Button -->
                                         <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
                                             <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page + 1; ?>" aria-label="Next">
                                                 <span aria-hidden="true">»</span>
