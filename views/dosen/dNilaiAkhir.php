@@ -31,7 +31,7 @@ $error_message = '';
 // Inisialisasi variabel
 $mahasiswa = []; // Array untuk menyimpan data mahasiswa dalam kelompok
 $nama_matkul = ''; // Menyimpan nama mata kuliah
-$dosen_terkait_sidang = []; // Array untuk menyimpan nama dosen terkait sidang (pembimbing/penguji)
+$dosen_terkait_sidang = ''; // Menyimpan nama dosen terkait sidang (pembimbing/penguji) - sekarang string, bukan array
 $id_kelompok = null; // Menyimpan ID kelompok
 $id_matkul = null; // Menyimpan ID mata kuliah
 $jenis_sidang = null; // Menyimpan jenis sidang (binary)
@@ -63,17 +63,16 @@ if ($stmt_detail === false) {
 
 // --- Ambil data mahasiswa dari tabel Penilaian dan cocokkan dengan tabel Mahasiswa ---
 if ($id_sidang) {
-    // Ambil semua NIM yang ada di tabel Penilaian untuk sidang ini
-    $sql_mhs = "SELECT DISTINCT p.nim, m.nama_mhs
-                FROM Penilaian p
-                JOIN Mahasiswa m ON p.nim = m.nim
-                WHERE p.id_sidang = ? 
-                ORDER BY p.nim ASC";
-    $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($id_sidang));
+    $sql_mhs = "SELECT km.nim, m.nama_mhs
+                FROM Kelompok_Mahasiswa km
+                JOIN Mahasiswa m ON km.nim = m.nim
+                WHERE km.id_kelompok = ?
+                ORDER BY km.nim";
+    $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($id_kelompok));
     
     if ($stmt_mhs === false) {
-        error_log("Query mahasiswa dari Penilaian gagal: " . print_r(sqlsrv_errors(), true));
-        $error_message = "Terjadi kesalahan saat mengambil data mahasiswa dari penilaian.";
+        error_log("Query mahasiswa dari Kelompok_Mahasiswa gagal: " . print_r(sqlsrv_errors(), true));
+        $error_message = "Terjadi kesalahan saat mengambil data mahasiswa dari kelompok.";
         $mahasiswa = []; 
     } else {
         while ($row = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {
@@ -112,36 +111,53 @@ if ($id_matkul) {
 }
 
 // --- Ambil dosen terkait sidang berdasarkan jenis sidang ---
-if ($jenis_sidang === 0x00) { // Sidang Tugas Akhir
-    $sql_dosen_ta = "SELECT d.nama_dosen
-                     FROM Dosen d
-                     JOIN Penjadwalan pj ON d.nomor_dosen = pj.nomor_dosen
-                     WHERE pj.id_sidang = ? AND pj.peran_dosen = 0x01"; 
-    $stmt_dosen_ta = sqlsrv_query($conn, $sql_dosen_ta, array($id_sidang));
+if ((int)$jenis_sidang === 0) { // Sidang Tugas Akhir
+    // Debug: Log the variables
+    error_log("Debug - jenis_sidang: " . $jenis_sidang . ", id_kelompok: " . $id_kelompok);
+    
+    $sql_dosen_ta = "SELECT d.nama_dosen 
+                     FROM Dosen d 
+                     JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen 
+                     WHERE b.id_kelompok = ? AND b.isPembimbing = 1"; 
+    $stmt_dosen_ta = sqlsrv_query($conn, $sql_dosen_ta, array($id_kelompok));
     if ($stmt_dosen_ta === false) {
         error_log("Query dosen TA gagal: " . print_r(sqlsrv_errors(), true));
         $error_message = "Terjadi kesalahan saat mengambil data dosen terkait sidang TA.";
-        $dosen_terkait_sidang = [];
+        $dosen_terkait_sidang = '';
     } else {
-        while ($row = sqlsrv_fetch_array($stmt_dosen_ta, SQLSRV_FETCH_ASSOC)) {
-            $dosen_terkait_sidang[] = $row['nama_dosen'];
+        $row = sqlsrv_fetch_array($stmt_dosen_ta, SQLSRV_FETCH_ASSOC);
+        if ($row) {
+            $dosen_terkait_sidang = $row['nama_dosen'];
+            error_log("Debug - Dosen TA ditemukan: " . $dosen_terkait_sidang);
+        } else {
+            $dosen_terkait_sidang = 'Dosen tidak ditemukan';
+            error_log("Debug - Dosen TA tidak ditemukan untuk id_kelompok: " . $id_kelompok);
         }
     }
-} elseif ($jenis_sidang === 0x01 && $id_matkul) { // Sidang Semester
-    $sql_dosen_semester = "SELECT d.nama_dosen
-                           FROM Dosen d
-                           JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen
-                           WHERE pk.id_matkul = ?";
-    $stmt_dosen_semester = sqlsrv_query($conn, $sql_dosen_semester, array($id_matkul));
+} elseif ((int)$jenis_sidang === 1 && $id_matkul) {
+    // Debug: Log the variables
+    error_log("Debug - jenis_sidang: " . $jenis_sidang . ", id_sidang: " . $id_sidang . ", id_matkul: " . $id_matkul);
+    
+    $sql_dosen_semester = "SELECT TOP 1 d.nama_dosen FROM Dosen d, Pengampu_Kelas pk, Detail_Sidang ds WHERE ds.id_sidang = ? AND pk.id_matkul = ds.id_matkul AND pk.nomor_dosen = d.nomor_dosen";
+    $stmt_dosen_semester = sqlsrv_query($conn, $sql_dosen_semester, array($id_sidang));
     if ($stmt_dosen_semester === false) {
         error_log("Query dosen semester gagal: " . print_r(sqlsrv_errors(), true));
         $error_message = "Terjadi kesalahan saat mengambil data dosen terkait sidang semester.";
-        $dosen_terkait_sidang = [];
+        $dosen_terkait_sidang = '';
     } else {
-        while ($row = sqlsrv_fetch_array($stmt_dosen_semester, SQLSRV_FETCH_ASSOC)) {
-            $dosen_terkait_sidang[] = $row['nama_dosen'];
+        $row = sqlsrv_fetch_array($stmt_dosen_semester, SQLSRV_FETCH_ASSOC);
+        if ($row) {
+            $dosen_terkait_sidang = $row['nama_dosen'];
+            error_log("Debug - Dosen Semester ditemukan: " . $dosen_terkait_sidang);
+        } else {
+            $dosen_terkait_sidang = 'Dosen tidak ditemukan';
+            error_log("Debug - Dosen Semester tidak ditemukan untuk id_sidang: " . $id_sidang);
         }
     }
+} else {
+    // Debug: Log when no condition is met
+    error_log("Debug - Tidak ada kondisi yang terpenuhi. jenis_sidang: " . $jenis_sidang . ", id_matkul: " . $id_matkul);
+    $dosen_terkait_sidang = 'Jenis sidang tidak valid';
 }
 
 // ===========================================================================
@@ -442,13 +458,14 @@ if (!empty($current_nim) && $id_sidang) {
                <span class="fw-bold">Dosen Terkait Sidang</span>
              </div>
              <div class="value-row text-secondary fw-bold">
-                 <?php 
-                    if (!empty($dosen_terkait_sidang)) { 
-                        echo htmlspecialchars(implode(', ', array_map('htmlspecialchars', $dosen_terkait_sidang)) ?? ''); // Perbaikan: handle implode result
-                    } else {
-                        echo 'N/A';
-                    }
-                 ?>
+                 <?php echo htmlspecialchars($dosen_terkait_sidang ?? ''); ?>
+             </div>
+             <!-- Debug Info -->
+             <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                 Debug: jenis_sidang=<?php echo $jenis_sidang; ?>, 
+                 id_kelompok=<?php echo $id_kelompok; ?>, 
+                 id_matkul=<?php echo $id_matkul; ?>, 
+                 dosen_terkait_sidang=<?php echo $dosen_terkait_sidang; ?>
              </div>
            </div>
          </div>
