@@ -24,13 +24,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // 5. Koneksi ke database
 require "../../koneksi/koneksiAndrew.php";
 
-// 6. Pastikan sidang dipilih
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    if (basename($_SERVER['PHP_SELF']) != 'aNilaiAkhir.php') {
-        header("Location: aSidang.php");
-        exit();
-    }
+    // If the session ID is missing, ALWAYS redirect and stop. No exceptions.
+    // klo id session nya itu msh blom ada bakalan dipentalin
+    header("Location: aDaftarSidang.php");
+    exit();
 }
+
+
 $id_sidang = $_SESSION['selected_sidang_id'];
 
 // ======================= 1. DATA MAHASISWA & SIDANG =======================
