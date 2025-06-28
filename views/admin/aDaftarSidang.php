@@ -333,34 +333,9 @@ if ($result === false) {
             </div>
         </div>
     </div>
-
+    <script src="../../assets/js/aDaftarSidang.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // JS untuk sidebar toggle
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuToggle = document.querySelector(".NavSide__toggle");
-            const sidebar = document.getElementById("main-sidebar");
-            const desktopIconsContainer = document.getElementById('desktop-icons-container');
-            const mobileIconsContainer = document.getElementById('mobile-icons-container');
-            if (desktopIconsContainer) {
-                const headerIcons = desktopIconsContainer.querySelector('.header-icons');
-                function handleIconPlacement() {
-                    if (window.innerWidth <= 992) {
-                        if (mobileIconsContainer && !mobileIconsContainer.contains(headerIcons)) mobileIconsContainer.appendChild(headerIcons);
-                    } else { if (!desktopIconsContainer.contains(headerIcons)) desktopIconsContainer.appendChild(headerIcons); }
-                }
-                if (menuToggle && sidebar) {
-                    menuToggle.onclick = () => {
-                        menuToggle.classList.toggle("NavSide__toggle--active");
-                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                    };
-                }
-                handleIconPlacement();
-                window.addEventListener('resize', handleIconPlacement);
-            }
-        });
 
-    </script>
 </body>
 
 </html>
