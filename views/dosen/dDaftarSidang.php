@@ -9,12 +9,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
 }
 
 // // 2. [FIX] Menggunakan struktur session yang benar dan lebih aman
-// if (!isset($_SESSION['user_data']) || !isset($_SESSION['user_data']['nomor_dosen'])) {
-//     header("Location: ../../logout.php");
-//     exit();
-// }
-// $nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
-$nomor_dosen_login = "1002";
+if (!isset($_SESSION['user_data']) || !isset($_SESSION['user_data']['nomor_dosen'])) {
+    header("Location: ../../logout.php");
+    exit();
+}
+$nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
+// $nomor_dosen_login = "1003";
 
 // --- KONEKSI DAN LOGIKA LAINNYA ---
 include "../../koneksi/koneksiAndrew.php";
