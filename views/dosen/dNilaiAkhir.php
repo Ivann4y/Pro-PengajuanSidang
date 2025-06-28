@@ -1,6 +1,10 @@
 <?php
 session_start();
-require_once "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar dan koneksi berhasil
+// Aktifkan error reporting penuh di awal skrip untuk debugging.
+// PASTIKAN UNTUK MENONAKTIFKANNYA DI LINGKUNGAN PRODUKSI (misalnya set ke 0 atau Off)!
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // ===========================================================================
 // PENTING: ID Dosen yang sedang login. Ganti ini dengan mekanisme autentikasi Anda!
@@ -9,13 +13,19 @@ require_once "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar dan k
 $loggedInNomorDosen = 1001; // !!! GANTI DENGAN ID DOSEN ASLI DARI SESI LOGIN ANDA !!!
 // ===========================================================================
 
-// Aktifkan error reporting untuk debugging selama pengembangan
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Sertakan file koneksi database. Jika koneksi gagal, hentikan skrip di sini.
+require_once "../../koneksi/koneksiAndrew.php"; 
 
-// Ambil id_sidang dari GET parameter
-$id_sidang = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($conn === false) {
+    // Tangani kegagalan koneksi database dengan pesan yang jelas dan hentikan skrip.
+    // Ini adalah satu-satunya die() yang aman di sini karena tidak ada operasi lain yang bisa dilakukan.
+    die("Koneksi ke database gagal: " . print_r(sqlsrv_errors(), true));
+}
+
+// Ambil id_sidang dari GET parameter. Pastikan menggunakan 'id_sidang' bukan 'id'.
+$id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : 0;
+// Variabel $error_message untuk pesan global
+$error_message = ''; 
 
 // Inisialisasi variabel
 $mahasiswa = []; // Array untuk menyimpan data mahasiswa dalam kelompok
@@ -25,10 +35,9 @@ $id_kelompok = null; // Menyimpan ID kelompok
 $id_matkul = null; // Menyimpan ID mata kuliah
 $jenis_sidang = null; // Menyimpan jenis sidang (binary)
 $current_nim = ''; // Menyimpan NIM mahasiswa yang sedang aktif/dipilih
-$allStudentsGradedByThisDosen = false; // Flag untuk status kelengkapan nilai semua mahasiswa oleh dosen ini
+$allStudentsGradesComplete = false; // Flag untuk status kelengkapan nilai semua mahasiswa oleh dosen ini
 
 // --- Ambil id_kelompok, id_matkul, dan jenis_sidang dari Sidang & Detail_Sidang ---
-// Menggunakan LEFT JOIN agar data sidang tetap bisa diambil meskipun belum ada detailnya
 $sql_detail = "SELECT s.id_kelompok, s.jenis_sidang, ds.id_matkul
                 FROM Sidang s
                 LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
@@ -36,17 +45,19 @@ $sql_detail = "SELECT s.id_kelompok, s.jenis_sidang, ds.id_matkul
 $stmt_detail = sqlsrv_query($conn, $sql_detail, array($id_sidang));
 
 if ($stmt_detail === false) {
-    die("Query detail sidang gagal: " . print_r(sqlsrv_errors(), true));
-}
-
-$detail = sqlsrv_fetch_array($stmt_detail, SQLSRV_FETCH_ASSOC);
-if ($detail) {
-    $id_kelompok = $detail['id_kelompok'];
-    $id_matkul = $detail['id_matkul'];
-    $jenis_sidang = $detail['jenis_sidang']; // Ini adalah binary, 0x00 atau 0x01
+    error_log("Query detail sidang gagal: " . print_r(sqlsrv_errors(), true));
+    $error_message = "Terjadi kesalahan saat mengambil detail sidang. Mohon coba lagi.";
+    $id_sidang = 0; // Invalidasi id_sidang agar query selanjutnya tidak jalan
 } else {
-    // Jika sidang tidak ditemukan, bisa jadi error atau id_sidang tidak valid
-    die("Data Sidang dengan ID: " . htmlspecialchars($id_sidang) . " tidak ditemukan.");
+    $detail = sqlsrv_fetch_array($stmt_detail, SQLSRV_FETCH_ASSOC);
+    if ($detail) {
+        $id_kelompok = $detail['id_kelompok'];
+        $id_matkul = $detail['id_matkul'];
+        $jenis_sidang = $detail['jenis_sidang']; // Ini adalah binary, 0x00 atau 0x01
+    } else {
+        $error_message = "Data Sidang dengan ID: " . htmlspecialchars($id_sidang ?? '') . " tidak ditemukan."; // Perbaikan: handle null
+        $id_sidang = 0; // Invalidasi id_sidang
+    }
 }
 
 // --- Ambil data mahasiswa dalam kelompok ---
@@ -58,11 +69,13 @@ if ($id_kelompok) {
     $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($id_kelompok));
     
     if ($stmt_mhs === false) {
-        die("Query mahasiswa gagal: " . print_r(sqlsrv_errors(), true));
-    }
-    
-    while ($row = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {
-        $mahasiswa[] = $row;
+        error_log("Query mahasiswa gagal: " . print_r(sqlsrv_errors(), true));
+        $error_message = "Terjadi kesalahan saat mengambil data mahasiswa.";
+        $mahasiswa = []; 
+    } else {
+        while ($row = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {
+            $mahasiswa[] = $row;
+        }
     }
 
     // Tentukan NIM mahasiswa yang akan ditampilkan secara default
@@ -72,9 +85,10 @@ if ($id_kelompok) {
         $current_nim = $mahasiswa[0]['nim']; // Default ke mahasiswa pertama
     }
 } else {
-    // Jika id_kelompok null, berarti tidak ada mahasiswa terkait langsung
-    // Anda bisa menambahkan penanganan khusus atau menampilkan pesan
+    // Jika id_kelompok null atau tidak valid, mahasiswa akan kosong
+    // Pesan error sudah ditangani di atas jika sidang tidak ditemukan
 }
+
 
 // --- Ambil nama mata kuliah ---
 if ($id_matkul) {
@@ -82,30 +96,32 @@ if ($id_matkul) {
     $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_matkul));
     
     if ($stmt_matkul === false) {
-        die("Query mata kuliah gagal: " . print_r(sqlsrv_errors(), true));
-    }
-    
-    $row_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC);
-    if ($row_matkul) {
-        $nama_matkul = $row_matkul['nama_matkul'];
+        error_log("Query mata kuliah gagal: " . print_r(sqlsrv_errors(), true));
+        $error_message = "Terjadi kesalahan saat mengambil nama mata kuliah.";
+        $nama_matkul = '';
+    } else {
+        $row_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC);
+        if ($row_matkul) {
+            $nama_matkul = $row_matkul['nama_matkul'];
+        }
     }
 }
 
 // --- Ambil dosen terkait sidang berdasarkan jenis sidang ---
-// Jenis sidang TA (0x00) -> Dosen dari Penjadwalan dengan peran_dosen = 0x01
-// Jenis sidang Semester (0x01) -> Dosen dari Pengampu_Kelas
 if ($jenis_sidang === 0x00) { // Sidang Tugas Akhir
-    // Konfirmasi: menampilkan dosen yang tercatat di tabel Penjadwalan yang peran_dosen bernilai 1
     $sql_dosen_ta = "SELECT d.nama_dosen
                      FROM Dosen d
                      JOIN Penjadwalan pj ON d.nomor_dosen = pj.nomor_dosen
-                     WHERE pj.id_sidang = ? AND pj.peran_dosen = 0x01"; // Mengambil hanya yang peran_dosen = 0x01
+                     WHERE pj.id_sidang = ? AND pj.peran_dosen = 0x01"; 
     $stmt_dosen_ta = sqlsrv_query($conn, $sql_dosen_ta, array($id_sidang));
     if ($stmt_dosen_ta === false) {
-        die("Query dosen TA gagal: " . print_r(sqlsrv_errors(), true));
-    }
-    while ($row = sqlsrv_fetch_array($stmt_dosen_ta, SQLSRV_FETCH_ASSOC)) {
-        $dosen_terkait_sidang[] = $row['nama_dosen'];
+        error_log("Query dosen TA gagal: " . print_r(sqlsrv_errors(), true));
+        $error_message = "Terjadi kesalahan saat mengambil data dosen terkait sidang TA.";
+        $dosen_terkait_sidang = [];
+    } else {
+        while ($row = sqlsrv_fetch_array($stmt_dosen_ta, SQLSRV_FETCH_ASSOC)) {
+            $dosen_terkait_sidang[] = $row['nama_dosen'];
+        }
     }
 } elseif ($jenis_sidang === 0x01 && $id_matkul) { // Sidang Semester
     $sql_dosen_semester = "SELECT d.nama_dosen
@@ -114,10 +130,13 @@ if ($jenis_sidang === 0x00) { // Sidang Tugas Akhir
                            WHERE pk.id_matkul = ?";
     $stmt_dosen_semester = sqlsrv_query($conn, $sql_dosen_semester, array($id_matkul));
     if ($stmt_dosen_semester === false) {
-        die("Query dosen semester gagal: " . print_r(sqlsrv_errors(), true));
-    }
-    while ($row = sqlsrv_fetch_array($stmt_dosen_semester, SQLSRV_FETCH_ASSOC)) {
-        $dosen_terkait_sidang[] = $row['nama_dosen'];
+        error_log("Query dosen semester gagal: " . print_r(sqlsrv_errors(), true));
+        $error_message = "Terjadi kesalahan saat mengambil data dosen terkait sidang semester.";
+        $dosen_terkait_sidang = [];
+    } else {
+        while ($row = sqlsrv_fetch_array($stmt_dosen_semester, SQLSRV_FETCH_ASSOC)) {
+            $dosen_terkait_sidang[] = $row['nama_dosen'];
+        }
     }
 }
 
@@ -125,44 +144,42 @@ if ($jenis_sidang === 0x00) { // Sidang Tugas Akhir
 // BAGIAN AJAX ENDPOINT UNTUK MENGAMBIL NILAI MAHASISWA
 // ===========================================================================
 if (isset($_GET['action']) && $_GET['action'] == 'get_student_grades' && isset($_GET['nim']) && isset($_GET['id_sidang']) && isset($_GET['nomor_dosen'])) {
+    ob_clean(); 
+    header('Content-Type: application/json'); 
+
     $req_nim = $_GET['nim'];
     $req_id_sidang = (int)$_GET['id_sidang'];
     $req_nomor_dosen = (int)$_GET['nomor_dosen'];
 
-    // Query ke tabel Penilaian, mencocokkan id_sidang, nim, DAN nomor_dosen (nilai per dosen)
-    $sql_penilaian_ajax = "SELECT n_dokumen, n_presentasi, n_tanyajawab, n_proyek, catatan
+    $sql_penilaian_ajax = "SELECT n_dokumen, n_presentasi, n_tanyajawab, n_proyek
                            FROM Penilaian
                            WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
     $stmt_penilaian_ajax = sqlsrv_query($conn, $sql_penilaian_ajax, array($req_id_sidang, $req_nim, $req_nomor_dosen));
 
     if ($stmt_penilaian_ajax === false) {
         error_log("AJAX Query Penilaian Gagal: " . print_r(sqlsrv_errors(), true));
-        echo json_encode(['error' => 'Gagal mengambil data penilaian dari database: ' . print_r(sqlsrv_errors(), true)]);
+        echo json_encode(['error' => 'Gagal mengambil data penilaian dari database. Detail: ' . strip_tags(print_r(sqlsrv_errors(), true))]);
         exit;
     }
 
     $grades = sqlsrv_fetch_array($stmt_penilaian_ajax, SQLSRV_FETCH_ASSOC);
     
-    // Jika tidak ada nilai yang ditemukan untuk dosen dan mahasiswa ini, kirim null/kosong
     if (!$grades) {
         $grades = [
             'n_dokumen' => null,
             'n_presentasi' => null,
             'n_tanyajawab' => null,
             'n_proyek' => null,
-            'catatan' => null
         ];
     }
     
     echo json_encode($grades);
-    exit; // Penting: Hentikan eksekusi script setelah mengirim respon JSON untuk AJAX
+    exit; 
 }
 
 // ===========================================================================
 // LOGIKA VALIDASI UNTUK TOMBOL "KIRIM" (Interpretasi B: semua mahasiswa telah dinilai oleh dosen ini)
 // ===========================================================================
-// Ambil status nilai untuk SEMUA mahasiswa dalam kelompok ini, khusus untuk dosen yang login
-$gradesStatusPerStudent = [];
 $allStudentsGradesComplete = true; // Asumsi awal semua sudah lengkap
 if (!empty($mahasiswa)) {
     foreach ($mahasiswa as $mhs_item) {
@@ -173,8 +190,9 @@ if (!empty($mahasiswa)) {
         $stmt_check_all_grades = sqlsrv_query($conn, $sql_check_all_grades, array($id_sidang, $nim_check, $loggedInNomorDosen));
         
         if ($stmt_check_all_grades === false) {
-            error_log("Query cek kelengkapan nilai gagal: " . print_r(sqlsrv_errors(), true));
-            $allStudentsGradesComplete = false; // Jika query error, anggap tidak lengkap
+            error_log("Query cek kelengkapan nilai gagal (all students): " . print_r(sqlsrv_errors(), true));
+            $allStudentsGradesComplete = false; 
+            $error_message = "Terjadi kesalahan saat memeriksa kelengkapan nilai.";
             break; 
         }
         
@@ -183,17 +201,16 @@ if (!empty($mahasiswa)) {
         // Cek apakah semua nilai (dokumen, presentasi, tanya jawab, proyek) terisi (tidak NULL atau kosong)
         if (
             !$grade_row || // Jika tidak ada baris penilaian sama sekali
-            empty($grade_row['n_dokumen']) || 
-            empty($grade_row['n_presentasi']) || 
-            empty($grade_row['n_tanyajawab']) || 
-            empty($grade_row['n_proyek'])
+            !isset($grade_row['n_dokumen']) || $grade_row['n_dokumen'] === null || $grade_row['n_dokumen'] === '' ||
+            !isset($grade_row['n_presentasi']) || $grade_row['n_presentasi'] === null || $grade_row['n_presentasi'] === '' ||
+            !isset($grade_row['n_tanyajawab']) || $grade_row['n_tanyajawab'] === null || $grade_row['n_tanyajawab'] === '' ||
+            !isset($grade_row['n_proyek']) || $grade_row['n_proyek'] === null || $grade_row['n_proyek'] === ''
         ) {
-            $allStudentsGradesComplete = false; // Ada mahasiswa yang belum lengkap
-            break; // Hentikan loop karena sudah ada yang tidak lengkap
+            $allStudentsGradesComplete = false; 
+            break; 
         }
     }
 } else {
-    // Jika tidak ada mahasiswa dalam kelompok, tombol kirim harus disabled
     $allStudentsGradesComplete = false;
 }
 
@@ -203,62 +220,59 @@ if (!empty($mahasiswa)) {
 // ===========================================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
     $nim = $_POST['nim'];
-    // Gunakan null coalescing operator (??) untuk menangani jika input tidak ada
     $n_dokumen = $_POST['nilaiLaporan'] ?? null;
     $n_presentasi = $_POST['MateriPresentasi'] ?? null;
     $n_tanyajawab = $_POST['TanyaJawab'] ?? null;
     $n_proyek = $_POST['NilaiProyek'] ?? null;
-    $catatan = $_POST['catatan'] ?? null;
 
-    // Periksa apakah sudah ada catatan penilaian dari DOSEN INI untuk SIDANG dan MAHASISWA ini
     $sql_check_penilaian_exists = "SELECT COUNT(*) AS count FROM Penilaian WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
     $stmt_check_penilaian_exists = sqlsrv_query($conn, $sql_check_penilaian_exists, array($id_sidang, $nim, $loggedInNomorDosen));
     
     if ($stmt_check_penilaian_exists === false) {
-        $error = "Error saat memeriksa data penilaian: " . print_r(sqlsrv_errors(), true);
+        $error_message = "Error saat memeriksa data penilaian: " . print_r(sqlsrv_errors(), true);
     } else {
         $check_result = sqlsrv_fetch_array($stmt_check_penilaian_exists, SQLSRV_FETCH_ASSOC);
 
         if ($check_result['count'] > 0) {
             // Jika ada, lakukan UPDATE
-            $sql_upsert_penilaian = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ?, catatan = ?
+            $sql_upsert_penilaian = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ?
                                    WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
-            $params_upsert_penilaian = array($n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek, $catatan, $id_sidang, $nim, $loggedInNomorDosen);
+            $params_upsert_penilaian = array($n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek, $id_sidang, $nim, $loggedInNomorDosen);
             $stmt_upsert_penilaian = sqlsrv_query($conn, $sql_upsert_penilaian, $params_upsert_penilaian);
 
             if ($stmt_upsert_penilaian === false) {
-                $error = "Gagal memperbarui penilaian: " . print_r(sqlsrv_errors(), true);
+                $error_message = "Gagal memperbarui penilaian: " . print_r(sqlsrv_errors(), true);
             } else {
-                $success = "Penilaian berhasil diperbarui untuk NIM " . htmlspecialchars($nim);
+                $success = "Penilaian berhasil diperbarui untuk NIM " . htmlspecialchars($nim ?? ''); // Perbaikan: handle null
             }
         } else {
             // Jika belum ada, lakukan INSERT
-            // bobot_penilaian di-set NULL karena diabaikan untuk role dosen pada tahap ini
-            $sql_upsert_penilaian = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, n_dokumen, n_presentasi, n_tanyajawab, n_proyek, catatan, bobot_penilaian)
-                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)";
-            $params_upsert_penilaian = array($id_sidang, $nim, $loggedInNomorDosen, $n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek, $catatan);
+            $sql_upsert_penilaian = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, n_dokumen, n_presentasi, n_tanyajawab, n_proyek, bobot_penilaian)
+                                   VALUES (?, ?, ?, ?, ?, ?, ?, NULL)";
+            $params_upsert_penilaian = array($id_sidang, $nim, $loggedInNomorDosen, $n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek);
             $stmt_upsert_penilaian = sqlsrv_query($conn, $sql_upsert_penilaian, $params_upsert_penilaian);
 
             if ($stmt_upsert_penilaian === false) {
-                $error = "Gagal menyimpan penilaian: " . print_r(sqlsrv_errors(), true);
+                $error_message = "Gagal menyimpan penilaian: " . print_r(sqlsrv_errors(), true);
             } else {
-                $success = "Penilaian berhasil disimpan untuk NIM " . htmlspecialchars($nim);
+                $success = "Penilaian berhasil disimpan untuk NIM " . htmlspecialchars($nim ?? ''); // Perbaikan: handle null
             }
         }
     }
     
     // Redirect setelah POST untuk mencegah re-submission form saat refresh
-    // Tambahkan parameter status kelengkapan nilai agar JS bisa langsung update tombol "Kirim"
-    header("Location: dNilaiAkhir.php?id_sidang=" . $id_sidang . "&nim=" . $nim . "&status=" . (isset($success) ? 'success' : 'error'));
+    header("Location: dNilaiAkhir.php?id_sidang=" . $id_sidang . "&nim=" . $nim . "&status=" . (isset($success) ? 'success' : 'error') . "&msg=" . urlencode($error_message ?? ($success ?? ''))); 
     exit();
 }
 
 // Menangani pesan status dari redirect
+$display_success_message = '';
+$display_error_message = '';
 if (isset($_GET['status'])) {
     if ($_GET['status'] == 'success') {
-        $success = "Penilaian berhasil disimpan/diperbarui.";
+        $display_success_message = $_GET['msg'] ?? "Penilaian berhasil disimpan/diperbarui.";
     } elseif ($_GET['status'] == 'error') {
-        $error = "Gagal menyimpan/memperbarui penilaian.";
+        $display_error_message = $_GET['msg'] ?? "Gagal menyimpan/memperbarui penilaian.";
     }
 }
 ?>
@@ -345,19 +359,22 @@ if (isset($_GET['status'])) {
       </div>
 
       <main class="NavSide__main-content">
-      <div class="container-fluid">
+        <div class="col-12">
+          <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+        </div>
+          <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;">
+              Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($id_kelompok ?? ''); ?>
+          </h2><br>
+          <div class="container-fluid">
            <div class="row mb-3">
-       <div class="col-12">
-         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-       </div>
        <div class="col-12">
          <ul class="nav nav-tabs">
             <?php foreach ($mahasiswa as $index => $mhs): ?>
                 <li class="nav-item">
                     <a class="nav-link <?php echo ($mhs['nim'] == $current_nim) ? 'active active-student-tab' : ''; ?>"
-                       href="dNilaiAkhir.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>&nim=<?php echo htmlspecialchars($mhs['nim']); ?>"
-                       data-nim="<?php echo htmlspecialchars($mhs['nim']); ?>"
-                       onclick="loadStudentData('<?php echo htmlspecialchars($mhs['nim']); ?>', '<?php echo htmlspecialchars($id_sidang); ?>'); return false;">
+                       href="dNilaiAkhir.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>&nim=<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>"
+                       data-nim="<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>"
+                       onclick="loadStudentData('<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>', '<?php echo htmlspecialchars($id_sidang); ?>'); return false;">
                        Mahasiswa <?php echo $index + 1; ?>
                     </a>
                 </li>
@@ -372,7 +389,7 @@ if (isset($_GET['status'])) {
      </div>
      <br>
         <form method="POST" id="penilaianForm">
-         <input type="hidden" name="nim" id="currentNimInput" value="<?php echo htmlspecialchars($current_nim); ?>">
+         <input type="hidden" name="nim" id="currentNimInput" value="<?php echo htmlspecialchars($current_nim ?? ''); ?>">
          
          <div class="row align-items-stretch">
            <div class="col-lg-49 mb-4 d-flex">
@@ -389,7 +406,7 @@ if (isset($_GET['status'])) {
                <span class="fw-bold">NIM</span>
              </div>
              <div class="value-row text-secondary fw-bold" id="displayNim">
-                <?php echo htmlspecialchars($current_nim); ?>
+                <?php echo htmlspecialchars($current_nim ?? ''); ?>
              </div>
            </div>
            
@@ -407,7 +424,7 @@ if (isset($_GET['status'])) {
                             break;
                         }
                     }
-                    echo htmlspecialchars($initial_mhs_name);
+                    echo htmlspecialchars($initial_mhs_name ?? '');
                 ?>
              </div>
            </div>
@@ -421,7 +438,7 @@ if (isset($_GET['status'])) {
                <span class="fw-bold">Mata Kuliah</span>
              </div>
              <div class="value-row text-secondary fw-bold">
-                <?php echo htmlspecialchars($nama_matkul); ?>
+                <?php echo htmlspecialchars($nama_matkul ?? ''); ?>
              </div>
            </div>
            
@@ -433,7 +450,7 @@ if (isset($_GET['status'])) {
              <div class="value-row text-secondary fw-bold">
                  <?php 
                     if (!empty($dosen_terkait_sidang)) { 
-                        echo implode(', ', array_map('htmlspecialchars', $dosen_terkait_sidang));
+                        echo htmlspecialchars(implode(', ', array_map('htmlspecialchars', $dosen_terkait_sidang)) ?? ''); // Perbaikan: handle implode result
                     } else {
                         echo 'N/A';
                     }
@@ -512,22 +529,7 @@ if (isset($_GET['status'])) {
            </div>
            
            
-             <div class="col-12 mb-4 d-flex">
-               <div class="card flex-fill" id="cardcatatan">
-                 <div class="card-body">
-                   <h3 class="card-title text-black">Catatan:</h3>
-                   <textarea
-                     class="form-control form-control-lg"
-                     id="catatan"
-                     name="catatan"
-                     placeholder="Masukan catatan di sini...(Opsional)"
-                     rows="4"
-                   ></textarea>
-                 </div>
-               </div>
              </div>
-           
-           </div>
           <div class="row mt-5 justify-content-between">
            </div>
            <div class="col-12 d-flex justify-content-end">
@@ -583,7 +585,7 @@ if (isset($_GET['status'])) {
     const loggedInNomorDosen = <?php echo json_encode($loggedInNomorDosen); ?>; // ID Dosen yang login
 
     // Status kelengkapan nilai semua mahasiswa oleh dosen ini
-    let allStudentsGradedByThisDosen = <?php echo json_encode($allStudentsGradedByThisDosen); ?>;
+    let allStudentsGradedByThisDosen = <?php echo json_encode($allStudentsGradesComplete); ?>; // Initial status from PHP
 
     document.addEventListener('DOMContentLoaded', function() {
         // Logika saat halaman dimuat pertama kali
@@ -597,18 +599,18 @@ if (isset($_GET['status'])) {
         updateKirimButtonStatus();
 
         // Menampilkan pesan SweetAlert jika ada status dari redirect
-        <?php if (isset($success)): ?>
+        <?php if (!empty($display_success_message)): ?>
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
-                text: '<?php echo $success; ?>',
+                text: '<?php echo htmlspecialchars($display_success_message); ?>', // Perbaikan
                 confirmButtonText: 'OK'
             });
-        <?php elseif (isset($error)): ?>
+        <?php elseif (!empty($display_error_message)): ?>
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal!',
-                html: '<?php echo $error; ?>', // Menggunakan html untuk menampilkan pesan error lengkap dari PHP
+                html: '<?php echo htmlspecialchars($display_error_message); ?>', // Perbaikan
                 confirmButtonText: 'OK'
             });
         <?php endif; ?>
@@ -633,7 +635,7 @@ if (isset($_GET['status'])) {
     }
 
     /**
-     * Mengosongkan semua input nilai dan catatan.
+     * Mengosongkan semua input nilai.
      */
     function clearGradeInputs() {
         // Mengosongkan input nilai desktop
@@ -648,8 +650,7 @@ if (isset($_GET['status'])) {
         document.getElementById('tanyaJawabInput_v').value = '';
         document.getElementById('nilaiProyekInput_v').value = '';
 
-        // Mengosongkan catatan dan nilai akhir
-        document.getElementById('catatan').value = '';
+        // Mengosongkan nilai akhir
         document.getElementById('nilaiMahasiswa').value = '--';
     }
 
@@ -688,7 +689,10 @@ if (isset($_GET['status'])) {
             .then(response => {
                 // Tangani respon jika tidak OK (misal 404, 500)
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    // Jika respons tidak OK, lempar Error agar ditangkap di .catch
+                    return response.text().then(text => { // Coba baca respons sebagai teks untuk debugging
+                        throw new Error(`HTTP error! Status: ${response.status}. Response: ${text}`);
+                    });
                 }
                 return response.json(); // Parse respon sebagai JSON
             })
@@ -706,12 +710,10 @@ if (isset($_GET['status'])) {
                     document.getElementById('tanyaJawabInput_v').value = data.n_tanyajawab || '';
                     document.getElementById('nilaiProyekInput_v').value = data.n_proyek || '';
                     
-                    document.getElementById('catatan').value = data.catatan || ''; // Isi catatan
-
                     calculateAndDisplayAverage(); // Hitung dan tampilkan rata-rata setelah nilai dimuat
                 } else if (data && data.error) {
                     // Tampilkan error dari PHP via SweetAlert
-                    console.error("Error fetching grades:", data.error);
+                    console.error("Error fetching grades (server-side):", data.error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error Memuat Nilai!',
@@ -726,12 +728,12 @@ if (isset($_GET['status'])) {
                 }
             })
             .catch(error => {
-                // Tangani error jaringan atau parsing JSON
-                console.error('Fetch Error:', error);
+                // Tangani error jaringan atau parsing JSON (ini yang sering muncul)
+                console.error('Fetch Error (network/parsing):', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Kesalahan Jaringan!',
-                    text: 'Tidak dapat terhubung ke server atau memproses data. Mohon coba lagi.',
+                    text: `Tidak dapat terhubung ke server atau memproses data. Detail: ${error.message}. Mohon coba lagi.`,
                     confirmButtonText: 'OK'
                 });
                 clearGradeInputs(); // Kosongkan input jika ada error jaringan
@@ -819,11 +821,11 @@ if (isset($_GET['status'])) {
 
     /**
      * Membuka modal konfirmasi sebelum mengirim nilai akhir.
-     * Melakukan validasi sederhana pada input nilai.
+     * Melakukan validasi sederhana pada input nilai untuk mahasiswa aktif.
      */
     function bukaKonfirmasiModalKirim() {
-        // PENTING: Validasi ini hanya memastikan nilai mahasiswa AKTIF sudah terisi.
-        // Validasi bahwa SEMUA mahasiswa sudah dinilai dilakukan di PHP.
+        // Validasi ini hanya memastikan nilai mahasiswa AKTIF sudah terisi.
+        // Validasi bahwa SEMUA mahasiswa sudah dinilai dilakukan di PHP (allStudentsGradedByThisDosen).
         const nilaiLaporan = document.getElementById('nilaiLaporanInput').value;
         const materiPresentasi = document.getElementById('materiPresentasiInput').value;
         const tanyaJawab = document.getElementById('tanyaJawabInput').value;
@@ -858,13 +860,18 @@ if (isset($_GET['status'])) {
     function updateKirimButtonStatus() {
         const btnKirim = document.getElementById('btnKirim');
         if (btnKirim) {
-            // Tombol aktif jika semua mahasiswa telah dinilai oleh dosen ini DAN ada mahasiswa di kelompok
+            // Tombol aktif jika allStudentsGradedByThisDosen adalah TRUE DAN ada mahasiswa di kelompok
             btnKirim.disabled = !(allStudentsGradedByThisDosen && allMahasiswa.length > 0);
-            if (btnKirim.disabled && allMahasiswa.length > 0) {
-                 // Anda bisa tambahkan tooltip atau indikator visual di UI jika disabled karena belum lengkap
-                 // Misalnya: btnKirim.title = "Belum semua mahasiswa dalam kelompok ini dinilai.";
-            } else if (allMahasiswa.length === 0) {
-                 btnKirim.title = "Tidak ada mahasiswa dalam kelompok ini.";
+            
+            // Opsional: Tambahkan tooltip informatif
+            if (btnKirim.disabled) {
+                if (allMahasiswa.length === 0) {
+                    btnKirim.title = "Tidak ada mahasiswa dalam kelompok ini untuk dinilai.";
+                } else {
+                    btnKirim.title = "Harap selesaikan penilaian untuk semua mahasiswa dalam kelompok ini.";
+                }
+            } else {
+                btnKirim.title = ""; // Hapus tooltip jika tombol aktif
             }
         }
     }
