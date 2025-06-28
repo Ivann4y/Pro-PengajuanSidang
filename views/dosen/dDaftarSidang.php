@@ -139,11 +139,13 @@ $nomor = $offset + 1;
                                 <li><a class="dropdown-item" href="?filter=semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
                             </ul>
                         </div>
-                        <form method="GET" action="" class="ms-auto">
+                        <!-- [PERUBAHAN] Form pencarian disesuaikan -->
+                        <form method="GET" action="" class="search-form ms-auto">
                             <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
-                            <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Cari Kelompok, Judul..." value="<?= htmlspecialchars($search) ?>">
-                                <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                            <div class="search-input-wrapper">
+                                <i class="bi bi-search search-icon"></i>
+                                <input type="text" name="search" class="form-control search-input" placeholder="Cari Kelompok, Judul..." value="<?= htmlspecialchars($search) ?>">
+                                <button type="submit" class="search-submit-btn"></button>
                             </div>
                         </form>
                     </div>
