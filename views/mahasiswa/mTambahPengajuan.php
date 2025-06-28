@@ -235,7 +235,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         <main class="NavSide__main-content" id="mPengajuan">
             <div class="container-fluid">
                 <div class="dashboard-header">
-                    <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                    <h2 class="text-heading"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
+                    <div class="header-icons d-none d-md-flex">
+                        <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                        <div class="profile-icon">
+                            <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
