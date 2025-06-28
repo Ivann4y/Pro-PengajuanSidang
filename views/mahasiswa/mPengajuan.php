@@ -152,7 +152,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
             <div class="container-fluid">
                 <div class="row">
                     <div class="dashboard-header">
-                        <h2 class="text-heading" style="color:black;">Nayaka Ivana Putra (Mahasiswa)</h2>
+                        <h2 class="text-heading" style="color:black;"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
                         <div class="header-icons d-none d-md-flex">
                             <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
                             <div class="profile-icon">

@@ -134,15 +134,15 @@ if ($user['jenis_kelamin'] === 'L') {
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Daftar Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
@@ -175,10 +175,10 @@ if ($user['jenis_kelamin'] === 'L') {
                         <img src="../../assets/img/img3-nobg.png" alt="">
                     </div>
                     <div class="col-md-6 data-mahasiswa">
-                        <h2>Data Mahasiswa</h2>
+                        <h2>Data Dosen</h2>
                         <div class="row mData">
                             <div class="col-12">
-                                <p>NIM</p>
+                                <p>NIP</p>
                                 <p class="value"><?= $nim ?></p>
                             </div>
                         </div>

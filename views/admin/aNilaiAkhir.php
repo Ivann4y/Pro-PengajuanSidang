@@ -24,13 +24,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // 5. Koneksi ke database
 require "../../koneksi/koneksiAndrew.php";
 
-// 6. Pastikan sidang dipilih
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    if (basename($_SERVER['PHP_SELF']) != 'aNilaiAkhir.php') {
-        header("Location: aSidang.php");
-        exit();
-    }
+    // If the session ID is missing, ALWAYS redirect and stop. No exceptions.
+    // klo id session nya itu msh blom ada bakalan dipentalin
+    header("Location: aDaftarSidang.php");
+    exit();
 }
+
+
 $id_sidang = $_SESSION['selected_sidang_id'];
 
 // ======================= 1. DATA MAHASISWA & SIDANG =======================
@@ -170,6 +171,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet"
   />
+  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="../../css/style.css" />
   <link rel="stylesheet" href="../../css/button-styles.css" />
@@ -421,6 +423,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
       </ul>
     </div>
 
+    
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
