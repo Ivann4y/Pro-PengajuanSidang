@@ -238,7 +238,17 @@ $nomor = $offset + 1;
                                     <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
                                     <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
                                     <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
-                                    <td><?= $row['jenis_sidang'] == 0 ? 'TA' : 'Semester'; ?></td>
+                                    <td>
+                                        <?php
+                                            // Cek apakah nama_matkul adalah 'Tugas Akhir'
+                                            if ($row['nama_matkul'] === 'Tugas Akhir') {
+                                                echo 'TA';
+                                            } else {
+                                                // Jika tidak, baru ikuti flag jenis_sidang
+                                                echo $row['jenis_sidang'] == 0 ? 'TA' : 'Semester';
+                                            }
+                                        ?>
+                                    </td>
                                     <td style="text-align: center;">
                                         <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $row['jenis_sidang']; ?>')">
                                             <i class="bi bi-eye"></i>
