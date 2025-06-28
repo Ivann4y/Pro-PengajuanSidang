@@ -6,6 +6,25 @@ if ($_SESSION['role'] !== 'dosen') {
 }
 include "../../koneksi/koneksiAndrew.php";
 
+// Hitung jumlah pengajuan menunggu persetujuan
+// Logika: Menghitung dari tabel Sidang dimana status_ajuan = 0 (Menunggu)
+$sqlPengajuan = "SELECT COUNT(*) AS total FROM Sidang WHERE status_ajuan = 0x00";
+$stmtPengajuan = sqlsrv_query($conn, $sqlPengajuan);
+$jumlahPengajuan = ($stmtPengajuan && $row = sqlsrv_fetch_array($stmtPengajuan)) ? $row['total'] : 0;
+
+// Hitung jumlah perbaikan menunggu penilaian
+// Logika: Menghitung dari tabel Detail_Sidang dimana status_revisi = 0 (Menunggu)
+$sqlPerbaikan = "SELECT COUNT(*) AS total FROM Detail_Sidang WHERE status_revisi = 0x00";
+$stmtPerbaikan = sqlsrv_query($conn, $sqlPerbaikan);
+$jumlahPerbaikan = ($stmtPerbaikan && $row = sqlsrv_fetch_array($stmtPerbaikan)) ? $row['total'] : 0;
+
+// Hitung jumlah penilaian menunggu
+// Logika: Menghitung dari tabel Penilaian dimana salah satu komponen nilai masih NULL
+$sqlPenilaian = "SELECT COUNT(*) AS total FROM Penilaian WHERE n_dokumen IS NULL OR n_presentasi IS NULL OR n_tanyajawab IS NULL OR n_proyek IS NULL";
+$stmtPenilaian = sqlsrv_query($conn, $sqlPenilaian);
+$jumlahPenilaian = ($stmtPenilaian && $row = sqlsrv_fetch_array($stmtPenilaian)) ? $row['total'] : 0;
+
+
 ?>
 
 <!DOCTYPE html>
@@ -413,7 +432,8 @@ include "../../koneksi/koneksiAndrew.php";
             <div class="col-lg-3">
                 <div class="mb-4">
                     <a href="dpengajuan.php" style="text-decoration: none; color: inherit;">
-                        <div class="dashboard-card card-pengajuan status-card-common hover-effect-card"> <div class="number">3</div>
+                        <div class="dashboard-card card-pengajuan status-card-common hover-effect-card"> 
+                            <div class="number"><?= $jumlahPengajuan ?></div>
                             <div class="text-content">
                                 <span class="title">Pengajuan</span>
                                 <span class="description">Menunggu Persetujuan</span>
@@ -423,7 +443,8 @@ include "../../koneksi/koneksiAndrew.php";
                 </div>
                 <div class="mb-4">
                     <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
-                        <div class="dashboard-card card-perbaikan status-card-common hover-effect-card"> <div class="number">2</div>
+                        <div class="dashboard-card card-perbaikan status-card-common hover-effect-card"> 
+                            <div class="number"><?= $jumlahPerbaikan ?></div>
                             <div class="text-content">
                                 <span class="title">Perbaikan</span>
                                 <span class="description">Menunggu untuk Dinilai</span>
@@ -433,7 +454,8 @@ include "../../koneksi/koneksiAndrew.php";
                 </div>
                 <div>
                     <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
-                        <div class="dashboard-card card-penilaian status-card-common hover-effect-card"> <div class="number">2</div>
+                        <div class="dashboard-card card-penilaian status-card-common hover-effect-card"> 
+                            <div class="number"><?= $jumlahPenilaian ?></div>
                             <div class="text-content">
                                 <span class="title">Penilaian</span>
                                 <span class="description">Menunggu untuk Dinilai</span>
