@@ -70,15 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $sql_dosen = "SELECT nomor_dosen FROM dbo.Bimbingan WHERE id_kelompok = ? AND isPembimbing = 0x01";
         $params_dosen = [$id_kelompok];
         $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
-        if ($stmt_dosen === false) {
-            throw new Exception("Gagal mengambil nomor_dosen: " . print_r(sqlsrv_errors(), true));
-        }
-        if ($row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
-            $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
-        }
-        sqlsrv_free_stmt($stmt_dosen);
-        if (!$nomor_dosen_pembimbing) {
-            throw new Exception("Dosen pembimbing tidak ditemukan untuk id_kelompok: $id_kelompok");
+        if ($stmt_dosen) {
+            if ($row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
+                $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
+            }
+            sqlsrv_free_stmt($stmt_dosen);
         }
 
         // LANGKAH 4: Baca isi file (konten biner) ke dalam variabel dengan validasi

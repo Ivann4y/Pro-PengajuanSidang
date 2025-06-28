@@ -2,6 +2,14 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['user_nim'])) {
+    // Untuk PENGUJIAN, Anda bisa set NIM manual di sini.
+    // Pastikan NIM ini adalah NIM yang sama dengan pemilik data draf di SSMS.
+    // Ganti '1000000001' dengan NIM yang benar jika perlu.
+    $nim_mahasiswa_logged_in = '1000000001'; 
+} else {
+    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
+}
 
 $path_to_root = '../../';
 
@@ -22,7 +30,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 include '../../koneksi/koneksiAndrew.php';
 $success_message = '';
 $error_message = '';
-$nim_mahasiswa_logged_in = $_SESSION['user_data']['nim'];
+//$nim_mahasiswa_logged_in = $_SESSION['user_data']['nim'];
 
 // Pagination settings
 $rowsPerPage = 10;
@@ -43,12 +51,11 @@ $subQueryIdKelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim 
 
 // Count total rows for pagination 
 $countQuery = "
-    SELECT COUNT(DISTINCT s.id_sidang) as total
-    FROM Sidang s
-    JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-    WHERE b.isPembimbing = 0x01
-    $filterClause
+    SELECT COUNT(s.id_sidang) as total
+    FROM dbo.Sidang s
+    WHERE
+        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
+        AND s.status_ajuan = 0x00 -- <-- Filter yang sama dengan kueri utama
 ";
 $countResult = sqlsrv_query($conn, $countQuery);
 if ($countResult === false) {
@@ -57,26 +64,29 @@ if ($countResult === false) {
 $totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRows / $rowsPerPage);
 
-// Main query with pagination and filter
+
+// Kueri utama untuk menampilkan DRAF milik mahasiswa yang login
 $query = "
-    SELECT DISTINCT
-        s.id_sidang, 
-        s.judul, 
-        s.jenis_sidang, 
-        s.id_kelompok, 
-        d.nama_dosen, 
-        m.nama_matkul
-    FROM Sidang s
-    JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-    LEFT JOIN MataKuliah m ON ds.id_matkul = m.id_matkul
-    WHERE b.isPembimbing = 0x01
-    $filterClause
-    ORDER BY s.id_sidang
+    SELECT
+        s.id_sidang,
+        s.judul,
+        ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
+        ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
+    FROM
+        dbo.Sidang AS s
+    LEFT JOIN 
+        dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang
+    LEFT JOIN 
+        dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
+    LEFT JOIN 
+        dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE
+        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
+        AND s.status_ajuan = 0x00 -- Filter utama untuk menampilkan HANYA DRAF
+    ORDER BY
+        s.id_sidang DESC
     OFFSET $offset ROWS FETCH NEXT $rowsPerPage ROWS ONLY
 ";
-
 $result = sqlsrv_query($conn, $query);
 
 if ($result === false) {
