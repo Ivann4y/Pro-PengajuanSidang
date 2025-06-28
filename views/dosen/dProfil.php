@@ -175,10 +175,10 @@ if ($user['jenis_kelamin'] === 'L') {
                         <img src="../../assets/img/img3-nobg.png" alt="">
                     </div>
                     <div class="col-md-6 data-mahasiswa">
-                        <h2>Data Mahasiswa</h2>
+                        <h2>Data Dosen</h2>
                         <div class="row mData">
                             <div class="col-12">
-                                <p>NIM</p>
+                                <p>NIP</p>
                                 <p class="value"><?= $nim ?></p>
                             </div>
                         </div>
