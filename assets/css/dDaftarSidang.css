@@ -68,7 +68,6 @@
     thead th {
         padding: 12px 15px;
         text-align: left;
-        border-bottom: 2px solid #dee2e6;
     }
 
     /* Penyesuaian lebar kolom untuk 5 kolom */
@@ -79,7 +78,7 @@
     thead th:nth-child(5) { width: 10%; text-align: center; }
 
     tr.isiTabel {
-        background-color: #f5f5f5;
+        background-color: #eaeef7;
         transition: background-color 0.3s ease, color 0.3s ease;
     }
 
@@ -94,7 +93,6 @@
 
     tr.isiTabel td:last-child {
         border-radius: 0 10px 10px 0;
-        display: flex; /* Untuk memusatkan ikon */
         justify-content: center;
         align-items: center;
     }
