@@ -84,7 +84,7 @@ include '../../koneksi/koneksiAndrew.php';
         <div class="container-fluid">
           <div class="row">
             <h2 class="text-heading text-black">
-              Nayaka Ivana Putra (Mahasiswa)
+              <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)
             </h2>
           </div><br>
           <div class="row align-items-center mb-3">
