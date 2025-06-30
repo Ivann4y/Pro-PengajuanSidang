@@ -1,4 +1,8 @@
 <?php
+error_log("=== TEST LOG === PHP logging aktif.");
+?>
+
+<?php
 session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
@@ -10,7 +14,9 @@ if (isset($_POST['approve'])) {
     header('Content-Type: application/json');
 
     $id_sidang = $_POST['id_sidang'] ?? 0;
-    $nomor_dosen = $_SESSION['user_data']['nomor_dosen'] ?? null;
+    $nomor_dosen = isset($_SESSION['user_data']['nomor_dosen'])
+        ? (string)$_SESSION['user_data']['nomor_dosen']
+        : null;
 
     // Validasi input
     if (!$nomor_dosen || !$id_sidang) {
@@ -18,43 +24,72 @@ if (isset($_POST['approve'])) {
         exit;
     }
 
+    error_log("=== DEBUG SIDANG ===");
+    error_log("ID SIDANG: " . var_export($id_sidang, true));
+    error_log("NOMOR DOSEN dari SESSION: " . var_export($_SESSION['user_data']['nomor_dosen'] ?? 'TIDAK ADA', true));
+
+
     // Cek dulu apakah baris yang akan diupdate memang ada untuk dosen ini
-    $check_sql = "SELECT id_detail_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
+    $check_sql = "SELECT id_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
     $params_check = [(int)$id_sidang, $nomor_dosen];
     $stmt_check = sqlsrv_query($conn, $check_sql, $params_check);
-    
+
     // Jika query check gagal atau tidak mengembalikan baris
-    if ($stmt_check === false || !sqlsrv_fetch($stmt_check)) {
+    if ($stmt_check === false) {
+        error_log("❌ QUERY CHECK GAGAL:");
+        error_log(print_r(sqlsrv_errors(), true));
         echo json_encode([
-            'status' => 'error', 
+            'status' => 'error',
+            'message' => "Query gagal dijalankan. Silakan cek log."
+        ]);
+        exit;
+    }
+
+    $fetched = sqlsrv_fetch($stmt_check);
+    if (!$fetched) {
+        error_log("⚠️ QUERY BERHASIL, tapi tidak ditemukan baris cocok.");
+        error_log("Diperiksa: id_sidang = " . var_export($id_sidang, true));
+        error_log("Diperiksa: nomor_dosen = " . var_export($nomor_dosen, true));
+
+        echo json_encode([
+            'status' => 'error',
             'message' => "Gagal menyetujui. Tidak ditemukan data revisi yang terhubung dengan akun Anda untuk sidang ini."
         ]);
         exit;
     }
 
+
+    error_log("DEBUG: id_sidang = $id_sidang");
+    error_log("DEBUG: nomor_dosen = " . var_export($nomor_dosen, true));
+
     // Jika baris ada, lakukan update
     $sql_update = "UPDATE Detail_Sidang SET status_revisi = 0x01 WHERE id_sidang = ? AND nomor_dosen = ?";
-    $params_update = [(int)$id_sidang, $nomor_dosen];
+    $params_update = [$id_sidang, $nomor_dosen];
     $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
 
-    if ($stmt_update) {
-        // Jika update berhasil, kirim status sukses dan URL untuk redirect
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Dokumen revisi berhasil disetujui!',
-            'redirectUrl' => "dNilaiAkhir.php?id=" . $id_sidang
-        ]);
-    } else {
-        // Jika update gagal karena alasan lain (misal: error database)
-        echo json_encode([
-            'status' => 'error', 
-            'message' => 'Terjadi kesalahan pada database saat mencoba memperbarui status revisi.'
-        ]);
-    }
-    
-    // Pastikan tidak ada output lain setelah ini
+  $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
+
+if ($stmt_update === false) {
+    error_log("❌ UPDATE GAGAL:");
+    error_log(print_r(sqlsrv_errors(), true));
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Terjadi kesalahan saat memperbarui status revisi.'
+    ]);
     exit;
+} else {
+    error_log("✅ UPDATE SUKSES: status_revisi harusnya jadi 0x01");
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Dokumen revisi berhasil disetujui!',
+        'redirectUrl' => "dNilaiAkhir.php?id=" . $id_sidang
+    ]);
+    exit;
+
 }
+}
+
+
 
 // ===================================================================================
 // BAGIAN 1: INISIALISASI HALAMAN (GET REQUEST)
@@ -333,7 +368,10 @@ $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
                 await new Promise(resolve => setTimeout(resolve, 300));
 
                 if (action === 'Ditolak') {
-                    const { value: catatan, isConfirmed } = await Swal.fire({
+                    const {
+                        value: catatan,
+                        isConfirmed
+                    } = await Swal.fire({
                         title: 'Alasan Penolakan',
                         input: 'textarea',
                         inputLabel: 'Catatan:',
@@ -356,7 +394,7 @@ $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
                     if (isConfirmed && catatan) {
                         // Di sini Anda bisa menambahkan logika fetch untuk mengirim data penolakan ke server
                         console.log('Catatan Penolakan:', catatan); // Untuk saat ini kita log saja
-                        
+
                         await Swal.fire({
                             title: 'Berhasil!',
                             text: 'Dokumen revisi telah ditolak dan catatan telah disimpan.',
@@ -381,7 +419,7 @@ $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
                             },
                             body: postData
                         });
-                        
+
                         // Periksa apakah respons adalah JSON yang valid
                         const contentType = response.headers.get("content-type");
                         if (!response.ok || !contentType || !contentType.includes("application/json")) {
@@ -426,6 +464,3 @@ $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
 </body>
 
 </html>
-
-
-
