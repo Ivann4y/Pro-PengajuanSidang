@@ -98,10 +98,10 @@ $role = "mahasiswa";
 
                     <div class="mb-3">
                         <div class="password-wrap">
-                            <input type="password"
-                                class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                            <input type="text"
+                                class="form-control form-control-lg password-masked <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
                                 id="password" name="password" placeholder="Kata Sandi">
-                            <i class="bi bi-eye-fill" id="togglePassword"></i>
+                            <i class="bi bi-eye-slash-fill" id="togglePassword"></i>
                         </div>
                         <a href="#" class="float-end mt-1" onclick="toLupaPassword()"> Lupa kata sandi?</a>
                     </div>
@@ -135,12 +135,12 @@ $role = "mahasiswa";
         const password = document.querySelector('#password');
 
         togglePassword.addEventListener('click', function (e) {
-            // Toggle tipe input
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
+            // HANYA TOGGLE KELAS CSS, BUKAN ATRIBUT TYPE
+            password.classList.toggle('password-masked');
 
-            // Toggle ikon mata
+            // Logika untuk menukar ikon mata tetap sama
             this.classList.toggle('bi-eye-slash-fill');
+            this.classList.toggle('bi-eye-fill');
         });
         // --- BATAS KODE TAMBAHAN ---
 
