@@ -1,35 +1,21 @@
 <?php
-// 1. Mulai session jika belum aktif
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+session_start();
+
+// 1. Get the ID from session
+$id_sidang = $_SESSION['id_sidang_aktif'] ?? null;
+if (!$id_sidang) {
+    die("Session ID sidang tidak ditemukan");
 }
 
-// 2. Path ke root project
-$path_to_root = '../../';
-
-// 3. Cek login
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
-    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php");
+// 2. Handle GET parameter if present
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    header("Location: aDetailSidang.php");
     exit();
 }
 
-// 4. Cek role: hanya admin yang boleh
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php");
-    exit();
-}
-
-// 5. Koneksi ke database
+// 3. Database connection
 require "../../koneksi/koneksiAndrew.php";
-
-if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    header("Location: aDaftarSidang.php");
-    exit();
-}
-
-$id_sidang = $_SESSION['selected_sidang_id'];
 
 // ======================= 1. DATA MAHASISWA & SIDANG =======================
 $dataSidang = [
@@ -39,16 +25,19 @@ $dataSidang = [
 ];
 
 $sqlSidangInfo = "
-    SELECT 
-        s.judul,
-        m.nim,
-        m.nama_mhs,
-        d.nama_dosen as nama_pembimbing
-    FROM Sidang s
-    JOIN Mahasiswa2 m ON s.nim = m.nim
-    LEFT JOIN Bimbingan b ON b.MahasiswaNIM = m.nim
-    LEFT JOIN Dosen2 d ON b.Dosennomor_dosen = d.nomor_dosen
-    WHERE s.id_sidang = ?;
+SELECT DISTINCT
+    s.judul,
+    m.nim,
+    m.nama_mhs,
+    (SELECT TOP 1 d.nama_dosen 
+     FROM Bimbingan b 
+     JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+     WHERE b.id_kelompok = k.id_kelompok) AS nama_pembimbing
+FROM Sidang s
+JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+JOIN Kelompok_Mahasiswa km ON k.id_kelompok = km.id_kelompok
+JOIN Mahasiswa m ON km.nim = m.nim
+WHERE s.id_sidang = ?;
 ";
 
 $stmtSidangInfo = sqlsrv_query($conn, $sqlSidangInfo, array($id_sidang));
@@ -66,30 +55,31 @@ while ($row = sqlsrv_fetch_array($stmtSidangInfo, SQLSRV_FETCH_ASSOC)) {
         'nama' => $row['nama_mhs']
     ];
 }
+
+// Remove duplicate mahasiswa (if any)
 $dataSidang['mahasiswa'] = array_unique($dataSidang['mahasiswa'], SORT_REGULAR);
 
 // ======================= 2. NILAI AKHIR MAHASISWA =======================
 $nilaiAkhir = '-';
 
 $sqlAkhir = "
-    SELECT
-        p.nim,
-        AVG(
-            (p.n_dokumen * 0.25) +
-            (p.n_presentasi * 0.25) +
-            (p.n_tanyajawab * 0.30) +
-            (p.n_proyek * 0.20)
-        ) AS nilai_akhir_calculated
-    FROM Penilaian p
-    WHERE p.id_sidang = ?
-    GROUP BY p.nim
+SELECT
+    p.nim,
+    AVG(
+        (p.n_dokumen * 0.25) +
+        (p.n_presentasi * 0.25) +
+        (p.n_tanyajawab * 0.30) +
+        (p.n_proyek * 0.20)
+    ) AS nilai_akhir_calculated
+FROM Penilaian p
+WHERE p.id_sidang = ?
+GROUP BY p.nim
 ";
 
-$stmtAkhir = sqlsrv_query($conn, [$sqlAkhir, array($id_sidang)]);
+$stmtAkhir = sqlsrv_query($conn, $sqlAkhir, array($id_sidang));
 if ($stmtAkhir === false) {
     die("Error query nilai akhir: " . print_r(sqlsrv_errors(), true));
 }
-
 if ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC)) {
     if (!is_null($rowAkhir['nilai_akhir_calculated'])) {
         $nilaiAkhir = number_format($rowAkhir['nilai_akhir_calculated'], 2);
@@ -112,7 +102,8 @@ $sqlDetail = "
         p.n_proyek,
         p.catatan_sidang
     FROM Detail_Sidang p
-    JOIN Dosen2 d ON d.nomor_dosen = p.nomor_dosen
+    JOIN Penilaian
+    JOIN Dosen d ON d.nomor_dosen = p.nomor_dosen
     JOIN Mahasiswa2 m ON p.nim = m.nim
     WHERE p.id_sidang = ?
     ORDER BY d.nama_dosen, m.nama_mhs;
@@ -200,7 +191,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
     </div>
 
     
-  <!-- <div id="NavSide">
+  <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
         <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
@@ -226,7 +217,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
                     <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
                 </li>
       </ul>
-    </div> -->
+    </div>
 
 
     <div class="NavSide__topbar">

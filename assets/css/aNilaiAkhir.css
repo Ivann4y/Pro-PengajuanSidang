@@ -1,0 +1,169 @@
+:root {
+  --brand-blue: #4b68fb;
+  --light-bg: #ebeeff;
+  --text-dark: #464869;
+  --sidebar-width: 280px;
+}
+
+/* Base Styles */
+body {
+  font-family: "Poppins", sans-serif;
+  color: var(--text-dark);
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* Sidebar Navigation */
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--brand-blue);
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-brand {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand img {
+  max-width: 180px;
+  filter: brightness(0) invert(1);
+}
+
+.sidebar-nav {
+  padding: 20px 0;
+  list-style: none;
+}
+
+.sidebar-item {
+  margin: 5px 15px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.sidebar-item a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sidebar-item.active {
+  background: white;
+}
+
+.sidebar-item.active a {
+  color: var(--brand-blue);
+}
+
+/* Main Content Area */
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: 30px;
+  min-height: 100vh;
+}
+
+/* Cards (Read-only) */
+.info-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.info-card .card-title {
+  font-weight: 600;
+  color: var(--brand-blue);
+  margin-bottom: 20px;
+}
+
+/* Data Display */
+.data-row {
+  display: flex;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.data-label {
+  font-weight: 600;
+  min-width: 200px;
+  color: #666;
+}
+
+.data-value {
+  font-weight: 500;
+}
+
+/* Score Display */
+.score-display {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--brand-blue);
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* Review Sections */
+.review-section {
+  background: var(--light-bg);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.reviewer-name {
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-open .admin-sidebar {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .data-row {
+    flex-direction: column;
+  }
+
+  .data-label {
+    margin-bottom: 5px;
+  }
+}
+
+/* Read-only State Enhancements */
+.form-control[readonly] {
+  background-color: #f9f9f9;
+  border-color: #eaeaea;
+  cursor: not-allowed;
+}
+
+/* Disabled Buttons */
+.btn-disabled {
+  background-color: #ddd !important;
+  color: #999 !important;
+  cursor: not-allowed;
+  pointer-events: none;
+}
