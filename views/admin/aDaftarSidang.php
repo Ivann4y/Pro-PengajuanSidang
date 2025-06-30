@@ -65,7 +65,7 @@ if ($prodiFilter !== 'all') {
 }
 
 // Query untuk menghitung total data
-$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s {$prodiJoin}";
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang {$prodiJoin}";
 if (!empty($whereClause)) {
     // Buat klausa WHERE untuk count query
     $countWhereClause = $whereClause;
@@ -117,6 +117,7 @@ $query = "SELECT DISTINCT
         END AS nama_dosen_terkait
     
     FROM Sidang s
+    JOIN Jadwal j ON s.id_sidang = j.id_sidang
     {$prodiJoin}
 ";
 
