@@ -155,14 +155,26 @@ if ($jenis_sidang === 0) {
         if ($data_matkul) {
             $id_matkul = $data_matkul['id_matkul'];
 
-            $sql_pengampu = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
-            $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
-            if ($stmt_pengampu) {
-                while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
-                    $dosen_pengampu[] = $row['nama_dosen'];
+            // Ambil id_kelas mahasiswa login
+            $user_session = $_SESSION['user_data'];
+            $nim_login = $user_session['nim'];
+            $id_kelas = null;
+            $sql_kelas = "SELECT TOP 1 id_kelas FROM Kelas_Mahasiswa WHERE nim = ?";
+            $stmt_kelas = sqlsrv_query($conn, $sql_kelas, array($nim_login));
+            if ($stmt_kelas && $row_kelas = sqlsrv_fetch_array($stmt_kelas, SQLSRV_FETCH_ASSOC)) {
+                $id_kelas = $row_kelas['id_kelas'];
+            }
+            $dosen_pengampu = [];
+            if ($id_kelas && $id_matkul) {
+                $sql_pengampu = "SELECT DISTINCT d.nama_dosen, k.id_kelas FROM Dosen d, Kelas_Mahasiswa k, Mahasiswa m, Pengampu_Kelas pk WHERE m.nim = k.nim AND d.nomor_dosen = pk.nomor_dosen AND pk.id_kelas = k.id_kelas AND k.id_kelas = ? AND pk.id_matkul = ?";
+                $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_kelas, $id_matkul));
+                if ($stmt_pengampu) {
+                    while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
+                        $dosen_pengampu[] = $row['nama_dosen'];
+                    }
+                } else {
+                    error_log("Error fetching pengampu: " . print_r(sqlsrv_errors(), true));
                 }
-            } else {
-                error_log("Error fetching pengampu: " . print_r(sqlsrv_errors(), true));
             }
         }
     } else {
