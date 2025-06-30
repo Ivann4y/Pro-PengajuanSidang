@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         if (!sqlsrv_execute($stmt_update_detail)) throw new Exception("Gagal mengupdate Detail Sidang.");
 
         sqlsrv_commit($conn);
-        $success_message = ($status_ajuan == 0x01) ? 'Pengajuan Berhasil Diperbarui dan Dikirim!' : 'Perubahan Berhasil Disimpan!';
+        $success_message = ($status_ajuan == 0x00) ? 'Pengajuan Berhasil Diperbarui dan Dikirim!' : 'Perubahan Berhasil Disimpan!';
     } catch (Exception $e) {
         sqlsrv_rollback($conn);
         $error_message = $e->getMessage();

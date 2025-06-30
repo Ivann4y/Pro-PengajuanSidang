@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
         $aksi = $_POST['aksi'];
-        $status_ajuan = ($aksi == 'Kirim') ? 0x01 : 0x00; // Gunakan format biner 0x01 / 0x00
+        $status_ajuan = ($aksi == 'Kirim') ? 0x00 : NULL; // Gunakan format biner 0x01 / 0x00
 
         if (empty($judul)) {
             throw new Exception("Judul tidak boleh kosong.");
