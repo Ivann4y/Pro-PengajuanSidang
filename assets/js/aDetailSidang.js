@@ -248,3 +248,61 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+function confirmDelete(idSidang) {
+    Swal.fire({
+        title: 'Anda Yakin?',
+        text: "Data sidang ini dan semua jadwal terkait akan dihapus permanen. Aksi ini tidak dapat dibatalkan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Jika pengguna menekan "Ya, Hapus!", panggil fungsi untuk proses penghapusan
+            processDelete(idSidang);
+        }
+    });
+}
+
+/**
+ * Mengirim permintaan penghapusan ke server.
+ * @param {number} idSidang - ID sidang yang akan dihapus.
+ */
+function processDelete(idSidang) {
+    // Buat objek FormData untuk mengirim ID
+    const formData = new FormData();
+    formData.append('id_sidang', idSidang);
+
+    // Kirim permintaan menggunakan Fetch API
+    fetch('proses_hapus_sidang.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            Swal.fire({
+                title: 'Dihapus!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Arahkan pengguna kembali ke halaman daftar sidang
+                window.location.href = 'aDaftarSidang.php';
+            });
+        } else {
+            Swal.fire({
+                title: 'Gagal!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'Coba Lagi'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error Jaringan', 'Tidak dapat terhubung ke server.', 'error');
+    });
+}
