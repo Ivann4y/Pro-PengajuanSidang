@@ -24,10 +24,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // 5. Koneksi ke database
 require "../../koneksi/koneksiAndrew.php";
 
-if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    header("Location: aDaftarSidang.php");
-    exit();
+if (isset($_GET['id_sidang'])) {
+    $_SESSION['selected_sidang_id'] = $_GET['id_sidang'];
 }
+
 
 $id_sidang = $_SESSION['selected_sidang_id'];
 
@@ -45,9 +45,9 @@ $sqlSidangInfo = "
         m.nama_mhs,
         d.nama_dosen as nama_pembimbing
     FROM Sidang s
-    JOIN Mahasiswa2 m ON s.nim = m.nim
-    LEFT JOIN Bimbingan b ON b.MahasiswaNIM = m.nim
-    LEFT JOIN Dosen2 d ON b.Dosennomor_dosen = d.nomor_dosen
+    JOIN Mahasiswa m ON s.nim = m.nim
+    LEFT JOIN Bimbingan b ON b.nim= m.nim
+    LEFT JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
     WHERE s.id_sidang = ?;
 ";
 
@@ -112,8 +112,8 @@ $sqlDetail = "
         p.n_proyek,
         p.catatan_sidang
     FROM Detail_Sidang p
-    JOIN Dosen2 d ON d.nomor_dosen = p.nomor_dosen
-    JOIN Mahasiswa2 m ON p.nim = m.nim
+    JOIN Dosen d ON d.nomor_dosen = p.nomor_dosen
+    JOIN Mahasiswa m ON p.nim = m.nim
     WHERE p.id_sidang = ?
     ORDER BY d.nama_dosen, m.nama_mhs;
 ";
@@ -200,33 +200,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
     </div>
 
     
-  <div id="NavSide">
-    <div id="main-sidebar" class="NavSide__sidebar">
-      <div class="NavSide__sidebar-brand">
-        <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
-      </div>
-            <ul class="NavSide__sidebar-nav">
-        <li class="NavSide__sidebar-item">
-          <a href="aDetailSidang.php">
-            <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
-          </a>
-        </li>
-        <li class="NavSide__sidebar-item">
-          <a href="aEvaluasi.php">
-            <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
-          </a>
-        </li>
-        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-          <a href="aNilaiAkhir.php">
-            <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-          </a>
-        </li>
-          <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
-                </li>
-      </ul>
-    </div>
+  
 
 
     <div class="NavSide__topbar">
@@ -247,13 +221,13 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
               <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="mahasiswa1-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa1-tab-pane" role="tab" aria-controls="mahasiswa1-tab-pane" aria-selected="true" href="#">mahasiswa1</a>
+                <a class="nav-link active" id="mahasiswa-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa-tab-pane" role="tab" aria-controls="mahasiswa-tab-pane" aria-selected="true" href="#">mahasiswa</a>
               </li>
               <li class="nav-item" role="presentation">
-                <a class="nav-link" id="mahasiswa2-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa2-tab-pane" role="tab" aria-controls="mahasiswa2-tab-pane" aria-selected="false" href="#">mahasiswa2</a>
+                <a class="nav-link" id="mahasiswa-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa-tab-pane" role="tab" aria-controls="mahasiswa-tab-pane" aria-selected="false" href="#">mahasiswa</a>
               </li>
               <li class="nav-item" role="presentation">
-                <a class="nav-link" id="mahasiswa3-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa3-tab-pane" role="tab" aria-controls="mahasiswa3-tab-pane" aria-selected="false" href="#">mahasiswa3</a>
+                <a class="nav-link" id="mahasiswa-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa-tab-pane" role="tab" aria-controls="mahasiswa-tab-pane" aria-selected="false" href="#">mahasiswa</a>
               </li>
             </ul>
         </div>

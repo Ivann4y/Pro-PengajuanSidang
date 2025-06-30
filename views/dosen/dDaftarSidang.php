@@ -89,6 +89,7 @@ if ($result === false) { die("Error pada query utama: " . print_r(sqlsrv_errors(
 
 $nomor = $offset + 1;
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <!-- Sisa kode HTML tidak perlu diubah sama sekali -->
