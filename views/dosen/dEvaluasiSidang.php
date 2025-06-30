@@ -13,6 +13,8 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 
 
+
+
 // Simulasi Dosen yang Login (nantinya ganti dengan session asli)
 $nomor_dosen_login = '1001';
 
@@ -105,26 +107,47 @@ $result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
 if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
     $judul = $data_sidang['Judul'];
     $id_kelompok = $data_sidang['id_kelompok'];
+    // ==============================================================================
+    // PERBAIKAN: AMBIL DATA DOSEN DARI TABEL PENJADWALAN BERDASARKAN PERAN
+    // ==============================================================================
 
-    // Ambil dosen pembimbing
-    if ($id_kelompok) {
-        $sql_pembimbing = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
-        $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, [$id_kelompok]);
-        if ($stmt_pembimbing) {
-            while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
+      // ==============================================================================
+    // [PERBAIKAN] PENGAMBILAN DATA DOSEN DENGAN LOGIKA FALLBACK
+    // ==============================================================================
+    // ==============================================================================
+    // [PERBAIKAN] AMBIL DATA DOSEN HANYA DARI TABEL PENJADWALAN
+    // ==============================================================================
+
+    // Inisialisasi variabel array
+    $dosenPembimbing = [];
+    $dosenPenguji = [];
+
+    // Satu query untuk mengambil semua dosen yang terlibat dari tabel Penjadwalan
+    $sql_dosen_terjadwal = "SELECT d.nama_dosen, p.peran_dosen 
+                           FROM [dbo].[Penjadwalan] p 
+                           JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen 
+                           WHERE p.id_sidang = ?";
+    $stmt_dosen_terjadwal = sqlsrv_query($conn, $sql_dosen_terjadwal, [$id_sidang]);
+
+    if ($stmt_dosen_terjadwal) {
+        // Loop untuk memilah hasil berdasarkan peran
+        while ($row = sqlsrv_fetch_array($stmt_dosen_terjadwal, SQLSRV_FETCH_ASSOC)) {
+            
+            // ======================================================================
+            // INI BAGIAN YANG DIUBAH: Membandingkan dengan data biner
+            // Kita akan membandingkan dengan nilai biner '\x01' dan '\x00'
+            // ======================================================================
+
+            if ($row['peran_dosen'] === "\x01") { // "\x01" adalah representasi biner untuk 0x01
                 $dosenPembimbing[] = $row['nama_dosen'];
+            } elseif ($row['peran_dosen'] === "\x00") { // "\x00" adalah representasi biner untuk 0x00
+                $dosenPenguji[] = $row['nama_dosen'];
             }
         }
     }
+    // ... sisa kode Anda untuk mengambil jadwal, catatan, dan nilai tetap sama ...
 
-    // Ambil dosen penguji
-    $sql_penguji = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
-    $stmt_penguji = sqlsrv_query($conn, $sql_penguji, [$id_sidang]);
-    if ($stmt_penguji) {
-        while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
-            $dosenPenguji[] = $row['nama_dosen'];
-        }
-    }
+
 
     // Ambil jadwal
     $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang FROM Jadwal WHERE id_sidang = ?";
@@ -323,7 +346,8 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                         </div>
                         <div class="form-group-custom">
                             <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-                            <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."></textarea>
+                            <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
+                
                         </div>
                         <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                     </div>
@@ -462,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
     </script>
-<script src="/Projek/Pro-PengajuanSidang/assets/js/dDaftarSidang.js"></script>
+ 
 </body>
 
 </html>
