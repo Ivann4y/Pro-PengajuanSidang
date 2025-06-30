@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
 $path_to_root = '../../';
 
 // 1. Cek jika pengguna BELUM login.
@@ -25,7 +24,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 require "../../koneksi/koneksiAndrew.php";
 
-// --- PERSIAPAN AWAL (Tidak berubah) ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all';
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
