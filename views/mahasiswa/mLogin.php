@@ -144,6 +144,22 @@ $role = "mahasiswa";
         });
         // --- BATAS KODE TAMBAHAN ---
 
+        // hide pw
+        // const input = document.getElementById('password');
+        // let realValue = '';
+
+        // input.addEventListener('input', (e) => {
+        //     const typedValue = e.target.value;
+
+        //     if (typedValue.length < realValue.length) {
+        //         realValue = realValue.slice(0, typedValue.length);
+        //     } else {
+        //         const newChar = typedValue.charAt(typedValue.length - 1);
+        //         realValue += newChar;
+        //     }
+
+        //     e.target.value = '•'.repeat(realValue.length);
+        // });
     </script>
 </body>
 

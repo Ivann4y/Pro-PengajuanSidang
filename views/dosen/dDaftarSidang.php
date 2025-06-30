@@ -18,7 +18,9 @@ $nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
 
 // --- KONEKSI DAN LOGIKA LAINNYA ---
 include "../../koneksi/koneksiAndrew.php";
-if ($conn === false) { die("Koneksi gagal: " . print_r(sqlsrv_errors(), true)); }
+if ($conn === false) {
+    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
+}
 
 
 // --- LOGIKA FILTER & PAGINASI ---
@@ -54,7 +56,7 @@ array_push($params, $nomor_dosen_login);
 // Filter jenis sidang tetap sama
 if ($filter === 'ta') {
     $whereConditions[] = "jenis_sidang = ?";
-    array_push($params, 0x00); 
+    array_push($params, 0x00);
 } elseif ($filter === 'semester') {
     $whereConditions[] = "jenis_sidang = ?";
     array_push($params, 0x01);
@@ -72,7 +74,9 @@ $whereClause = " WHERE " . implode(' AND ', $whereConditions);
 // --- QUERY PENGHITUNGAN TOTAL DATA ---
 $countQuery = $baseQuery . "SELECT COUNT(id_sidang) as total FROM FullSidangData" . $whereClause;
 $countStmt = sqlsrv_query($conn, $countQuery, $params);
-if ($countStmt === false) { die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true)); }
+if ($countStmt === false) {
+    die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true));
+}
 $totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
 $totalPages = $totalRecords > 0 ? ceil($totalRecords / $rowsPerPage) : 1;
 
@@ -85,13 +89,16 @@ if ($currentPage > $totalPages) {
 $mainQuery = $baseQuery . "SELECT id_sidang, id_kelompok, display_title, pembimbing FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 $mainParams = array_merge($params, [$offset, $rowsPerPage]);
 $result = sqlsrv_query($conn, $mainQuery, $mainParams);
-if ($result === false) { die("Error pada query utama: " . print_r(sqlsrv_errors(), true)); }
+if ($result === false) {
+    die("Error pada query utama: " . print_r(sqlsrv_errors(), true));
+}
 
 $nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <!-- Sisa kode HTML tidak perlu diubah sama sekali -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -105,6 +112,7 @@ $nomor = $offset + 1;
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDaftarSidang.css">
 </head>
+
 <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -118,12 +126,16 @@ $nomor = $offset + 1;
         </div>
         <div class="NavSide__topbar">
             <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
-            <div class="header-icons d-flex d-md-none"><a href="mNotifikasi.php" title="Notifikasi" style="text-decoration:none;color:inherit"><i class="bi bi-bell-fill"></i></a><div class="profile-icon"><a href="mProfil.php" title="Profil" style="text-decoration:none;color:inherit"><i class="bi bi-person-fill fs-5"></i></a></div></div>
+            <div class="header-icons d-flex d-md-none"><a href="dNotifikasi.php" title="Notifikasi" style="text-decoration:none;color:inherit"><i class="bi bi-bell-fill"></i></a>
+                <div class="profile-icon"><a href="dProfil.php" title="Profil" style="text-decoration:none;color:inherit"><i class="bi bi-person-fill fs-5"></i></a></div>
+            </div>
         </div>
         <main class="NavSide__main-content">
             <div class="dashboard-header">
                 <h2 class="bodyHeading">Daftar Sidang</h2>
-                <div class="header-icons d-none d-md-flex"><a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a><div class="profile-icon"><a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color:#fff"></i></a></div></div>
+                <div class="header-icons d-none d-md-flex"><a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color:#fff"></i></a></div>
+                </div>
             </div>
             <div class="container-fluid">
                 <div class="row">
@@ -131,7 +143,9 @@ $nomor = $offset + 1;
                         <label class="fw-semibold mb-0">Filter:</label>
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                <?php if ($filter === 'ta') echo 'Sidang TA'; elseif ($filter === 'semester') echo 'Sidang Semester'; else echo 'Semua'; ?>
+                                <?php if ($filter === 'ta') echo 'Sidang TA';
+                                elseif ($filter === 'semester') echo 'Sidang Semester';
+                                else echo 'Semua'; ?>
                             </button>
                             <ul class="dropdown-menu rounded shadow">
                                 <li><a class="dropdown-item" href="?filter=all&search=<?= urlencode($search) ?>">Semua</a></li>
@@ -178,7 +192,9 @@ $nomor = $offset + 1;
                                         </tr>
                                     <?php endwhile; ?>
                                 <?php else: ?>
-                                    <tr><td colspan="5" class="text-center" style="padding: 20px;">Tidak ada data yang sesuai dengan filter atau pencarian Anda.</td></tr>
+                                    <tr>
+                                        <td colspan="5" class="text-center" style="padding: 20px;">Tidak ada data yang sesuai dengan filter atau pencarian Anda.</td>
+                                    </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
@@ -207,8 +223,19 @@ $nomor = $offset + 1;
         </main>
     </div>
     <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div style="background-color: rgb(67, 54, 240);"><div class="modal-header"><h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1></div></div><div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div><div class="modal-footer justify-content-center border-0"><button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button></div></div></div>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color: rgb(67, 54, 240);">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
+                </div>
+                <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
+                <div class="modal-footer justify-content-center border-0"><button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button></div>
+            </div>
+        </div>
     </div>
     <script src="/Projek/Pro-PengajuanSidang/assets/js/dDaftarSidang.js"></script>
 </body>
+
 </html>
