@@ -266,22 +266,26 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                                             <td><?php echo htmlspecialchars($sidang['matkul']); ?></td>
                                             <td><?php echo htmlspecialchars($sidang['dosen']); ?></td>
                                             <td class="text-center">
-                                                <form method="post" style="display:inline;">
+                                            <!-- The form now wraps the container for proper submission -->
+                                            <form method="post" class="d-inline-block">
+                                                <!-- Hidden inputs stay inside the form -->
                                                 <input type="hidden" name="id_sidang" value="<?php echo $sidang['id_sidang']; ?>">
-                                                <!-- This input will be used by our JavaScript for the delete action -->
-                                                <input type="hidden" name="delete_sidang" value=""> 
+                                                <input type="hidden" name="delete_sidang" value="">
 
-                                                <!-- EDIT BUTTON: type="submit" and formaction tells it where to go -->
-                                                <button type="submit" formaction="mEditPengajuan.php" class="btn btn-link p-0 m-0" title="Edit Pengajuan">
-                                                    <i class="fa-solid fa-file-signature"></i>
-                                                </button>
+                                                <!-- Flex container for the buttons -->
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <!-- EDIT BUTTON -->
+                                                    <button type="submit" formaction="mEditPengajuan.php" class="btn btn-link p-0" title="Edit Pengajuan">
+                                                        <i class="fa-solid fa-file-signature fs-5"></i>
+                                                    </button>
 
-                                                <!-- DELETE BUTTON: type="button" to let JavaScript handle it -->
-                                                <button type="button" class="btn btn-link p-0 m-0 delete-btn" title="Hapus Pengajuan">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
+                                                    <!-- DELETE BUTTON - with a margin-start class (ms-3) for spacing -->
+                                                    <button type="button" class="btn btn-link p-0 ms-3 delete-btn" title="Hapus Pengajuan">
+                                                        <i class="fa-solid fa-trash fs-5"></i>
+                                                    </button>
+                                                </div>
                                             </form>
-                                            </td>
+                                        </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>

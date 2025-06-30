@@ -486,10 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
     </script>
-<<<<<<< HEAD
-=======
  
->>>>>>> d49508a38a0db1478739883c8010b31144302539
 </body>
 
 </html>

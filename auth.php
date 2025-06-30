@@ -28,7 +28,7 @@ switch ($role) {
         break;
     case 'dosen':
         $tableNama = 'Dosen';
-        $usernameKolom = 'username';
+        $usernameKolom = 'nomor_dosen';
         $redirectPath = 'views/dosen/dBeranda.php';
         break;
     case 'admin':
