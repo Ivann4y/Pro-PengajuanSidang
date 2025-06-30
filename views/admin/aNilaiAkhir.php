@@ -25,12 +25,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 require "../../koneksi/koneksiAndrew.php";
 
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    // If the session ID is missing, ALWAYS redirect and stop. No exceptions.
-    // klo id session nya itu msh blom ada bakalan dipentalin
     header("Location: aDaftarSidang.php");
     exit();
 }
-
 
 $id_sidang = $_SESSION['selected_sidang_id'];
 
@@ -38,7 +35,6 @@ $id_sidang = $_SESSION['selected_sidang_id'];
 $dataSidang = [
     'judul' => '-', 
     'mahasiswa' => [], 
-    'matkul' => '-', 
     'pembimbing' => '-'
 ];
 
@@ -47,15 +43,11 @@ $sqlSidangInfo = "
         s.judul,
         m.nim,
         m.nama_mhs,
-        d_pembimbing.nama_dosen as nama_pembimbing,
-        mk.nama_matkul
+        d.nama_dosen as nama_pembimbing
     FROM Sidang s
-    LEFT JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-    LEFT JOIN Mahasiswa m ON km.nim = m.nim
-    LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-    LEFT JOIN Dosen d_pembimbing ON b.nomor_dosen = d_pembimbing.nomor_dosen
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+    JOIN Mahasiswa2 m ON s.nim = m.nim
+    LEFT JOIN Bimbingan b ON b.MahasiswaNIM = m.nim
+    LEFT JOIN Dosen2 d ON b.Dosennomor_dosen = d.nomor_dosen
     WHERE s.id_sidang = ?;
 ";
 
@@ -68,7 +60,6 @@ while ($row = sqlsrv_fetch_array($stmtSidangInfo, SQLSRV_FETCH_ASSOC)) {
     if (empty($dataSidang['judul']) || $dataSidang['judul'] === '-') {
         $dataSidang['judul'] = $row['judul'];
         $dataSidang['pembimbing'] = $row['nama_pembimbing'];
-        $dataSidang['matkul'] = $row['nama_matkul'];
     }
     $dataSidang['mahasiswa'][] = [
         'nim' => $row['nim'],
@@ -94,16 +85,18 @@ $sqlAkhir = "
     GROUP BY p.nim
 ";
 
-$stmtAkhir = sqlsrv_query($conn, $sqlAkhir, array($id_sidang));
+$stmtAkhir = sqlsrv_query($conn, [$sqlAkhir, array($id_sidang)]);
 if ($stmtAkhir === false) {
     die("Error query nilai akhir: " . print_r(sqlsrv_errors(), true));
 }
 
-if ($stmtAkhir && ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC))) {
+if ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC)) {
     if (!is_null($rowAkhir['nilai_akhir_calculated'])) {
         $nilaiAkhir = number_format($rowAkhir['nilai_akhir_calculated'], 2);
     }
 }
+
+
 
 // ======================= 3. NILAI & CATATAN SETIAP PENGUJI =======================
 $dataPenguji = [];
@@ -117,11 +110,10 @@ $sqlDetail = "
         p.n_presentasi, 
         p.n_tanyajawab, 
         p.n_proyek,
-        ds.catatan_sidang
-    FROM Penilaian p
-    JOIN Dosen d ON d.nomor_dosen = p.nomor_dosen
-    JOIN Mahasiswa m ON p.nim = m.nim
-    LEFT JOIN Detail_Sidang ds ON p.id_sidang = ds.id_sidang AND p.nomor_dosen = ds.nomor_dosen
+        p.catatan_sidang
+    FROM Detail_Sidang p
+    JOIN Dosen2 d ON d.nomor_dosen = p.nomor_dosen
+    JOIN Mahasiswa2 m ON p.nim = m.nim
     WHERE p.id_sidang = ?
     ORDER BY d.nama_dosen, m.nama_mhs;
 ";
@@ -144,6 +136,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
     ];
 }
 ?>
+
 
 
 
@@ -304,9 +297,11 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
                         <i class="fa-solid fa-id-card"></i>
                         <span class="fw-bold">NIM</span>  
                       </div>
-                      <div class="value-row text-secondary fw-bold">0920240033</div>
+                    <div class="value-row text-secondary fw-bold">
+                      <?= $dataSidang['mahasiswa'][0]['nim'] ?? '-' ?>
                     </div>
-
+                    </div>
+                
 
                     <!-- Nama -->
                     <div class="info-group mb-3  section-bawah" style="margin-top:45px;">
@@ -314,7 +309,9 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
                         <i class="fa-solid fa-user"></i>
                         <span class="fw-bold">Nama</span>
                       </div>
-                      <div class="value-row text-secondary fw-bold ">Nayakan Ivanna</div>
+                    <div class="value-row text-secondary fw-bold">
+                      <?= $dataSidang['mahasiswa'][0]['nama'] ?? '-' ?>
+                    </div>
                     </div>
                   </div>
 
@@ -347,14 +344,14 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
               <div class="card-body card-soft px-3 py-3 text-center">
                 <h3 class="card-title mb-3 text-black" style="padding:10px;">Nilai Mahasiswa</h3>
                 <div>
-                  <input
-                    type="text"
-                    class="form-control form-control-lg text-center mx-auto"
-                    id="nilaiMahasiswa"
-                    placeholder="A"
-                    maxlength="1"
-                    readonly/>
-                </div>
+                <input
+                  type="text"
+                  class="form-control form-control-lg text-center mx-auto"
+                  id="nilaiMahasiswa"
+                  value="<?php echo $nilaiAkhir; ?>"
+                  maxlength="5"
+                  readonly
+                />
               </div>
             </div>
           </div>
@@ -373,14 +370,11 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
                   <div class="col d-flex align-items-center">
                     <label for="nilaiLaporan" class="text-black me-2 mb-2">Nilai laporan</label>
                     <label class="colon1 me-2 mb-2">:</label>
-                    <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
                     <input
                       type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="nilaiLaporan"
-                      id="detailpenilaian"
-                      placeholder=" 85"
-                      maxlength="3"
+                      placeholder="<?= $dataPenguji[0]['n_dokumen'] ?? '-' ?>"
                       readonly/>
                   </div>
                   <div class="col d-flex align-items-center">
@@ -391,9 +385,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
                       type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="MateriPresentasi"
-                      id="detailpenilaian"
-                      placeholder="87"
-                      maxlength="3"
+                      placeholder="<?= $dataPenguji[0]['n_presentasi'] ?? '-' ?>"
                       readonly/>
                   </div>
                   <div class="col d-flex align-items-center">
@@ -404,23 +396,19 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
                       type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="Penyampaian"
-                      id="detailpenilaian"
-                      placeholder="90"
-                      maxlength="3"
+                      placeholder="<?= $dataPenguji[0]['n_tanyajawab'] ?? '-' ?>"
                       readonly/>
                   </div>
                   <div class="col d-flex align-items-center">
                     <label for="NilaiProyek" class="text-black me-2 mb-2">Nilai Proyek</label>
                     <label class="colon4 me-2 mb-2">:</label>
                     <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
-                    <input
-                      type="text"
-                      class="form-control form-control-lg text-center input-nilai mb-2"
-                      name="NilaiProyek"
-                      id="detailpenilaian"
-                      placeholder="95"
-                      maxlength="3"
-                      readonly/>
+                  <input
+                    type="text"
+                    class="form-control form-control-lg text-center input-nilai mb-2"
+                    name="NilaiProyek"
+                    placeholder="<?= $dataPenguji[0]['n_proyek'] ?? '-' ?>"
+                    readonly/>
                   </div>
                 </div>
               </div>
@@ -437,10 +425,10 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
                 <textarea
                   class="form-control flex-grow-1"
                   id="catatan"
-                  placeholder="semangatt terus pertahankan semangat belajarnya yaa"
+                  placeholder="<?= $dataPenguji[0]['catatan'] ?? 'Tidak ada catatan.' ?>"
                   rows="4"
-                  readonly
-                ></textarea>
+                  readonly></textarea>
+
               </div>
             </div>
         </div>

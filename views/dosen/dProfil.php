@@ -8,14 +8,14 @@ $path_to_root = '../../';
 
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php"); 
-    exit(); 
+    header("Location: " . $path_to_root . "index.php");
+    exit();
 }
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     header("Location: " . $path_to_root . "index.php");
-    exit(); 
+    exit();
 }
 
 require $path_to_root . "koneksi/koneksiAndrew.php";
@@ -23,9 +23,21 @@ require $path_to_root . "koneksi/koneksiAndrew.php";
 $user = $_SESSION['user_data'];
 $nim = $user['nomor_dosen'];
 $nama = $user['nama_dosen'];
-$prodi = $user['prodi']; 
-$email = $user['email']; 
-$no_telepon = $user['no_telepon']; 
+
+if ($user['prodi'] === 'TRPL') {
+    $prodi = 'Teknologi Rekayasa Perangkat Lunak (TRPL)';
+} elseif ($user['prodi'] === 'MI') {
+    $prodi = 'Manajemen Informatika (MI)';
+} elseif ($user['prodi'] === 'TRL') {
+    $prodi = 'Teknologi Rekayasa Logistik (TRL)';
+} elseif ($user['prodi'] === 'MO') {
+    $prodi = 'Mesin Otomotif (MO)';
+} else {
+    $prodi = 'Program Studi Tidak Diketahui';
+}
+
+$email = $user['email'];
+$no_telepon = $user['no_telepon'];
 
 if ($user['jenis_kelamin'] === 'L') {
     $jk = 'Laki-laki';
@@ -44,85 +56,7 @@ if ($user['jenis_kelamin'] === 'L') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
-    <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            background-color: #ffffff;
-        }
-
-        .data-mahasiswa {
-            background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            margin-top: 20px;
-        }
-
-        .data-mahasiswa h2 {
-            margin-bottom: 1.5rem;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .mData {
-            margin-bottom: 1rem;
-        }
-
-        .mData p:first-child {
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .mData .value {
-            background-color: #f8f9fa;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-            font-size: 0.95rem;
-            color: #494949;
-            font-weight: 600;
-        }
-
-        .profil-img {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .profil-img img {
-            width: 80%;
-            height: auto;
-            border-radius: 30px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .data-mahasiswa {
-                padding: 1.5rem;
-                margin-top: 1rem;
-            }
-
-            .profil-img {
-                margin-bottom: 2rem;
-            }
-
-            .profil-img img {
-                width: 60%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="../../assets/css/profil.css">
 </head>
 
 <body>
@@ -148,7 +82,7 @@ if ($user['jenis_kelamin'] === 'L') {
                     <b></b><b></b>
                     <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
-            
+
             </ul>
         </div>
 
@@ -174,39 +108,39 @@ if ($user['jenis_kelamin'] === 'L') {
                     <div class="col-md-6 profil-img">
                         <img src="../../assets/img/img3-nobg.png" alt="">
                     </div>
-                    <div class="col-md-6 data-mahasiswa">
+                    <div class="col-md-6 data-all">
                         <h2>Data Dosen</h2>
-                        <div class="row mData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>NIP</p>
                                 <p class="value"><?= $nim ?></p>
                             </div>
                         </div>
-                        <div class="row mData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>Nama</p>
                                 <p class="value"><?= $nama ?></p>
                             </div>
                         </div>
-                        <div class="row mData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>Program Studi</p>
                                 <p class="value"><?= $prodi ?></p>
                             </div>
                         </div>
-                        <div class="row mData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>Email</p>
                                 <p class="value"><?= $email ?></p>
                             </div>
                         </div>
-                        <div class="row mData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>No. Telepon</p>
                                 <p class="value"><?= $no_telepon ?></p>
                             </div>
                         </div>
-                        <div class="row mData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>Jenis Kelamin</p>
                                 <p class="value"><?= $jk ?></p>
@@ -219,23 +153,23 @@ if ($user['jenis_kelamin'] === 'L') {
     </div>
 
     <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div style="background-color: rgb(67, 54, 240);">
-                                <div class="modal-header">
-                                    <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                                </div>
-                            </div>
-                            <div class="modal-body mx-auto">
-                                Apakah anda yakin ingin keluar?
-                            </div>
-                            <div class="modal-footer justify-content-center border-0">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-                            </div>
-                        </div>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color: rgb(67, 54, 240);">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
                     </div>
                 </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
