@@ -11,15 +11,13 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
    
 }
 
-<<<<<<< HEAD
+
 
 
 // Simulasi Dosen yang Login (nantinya ganti dengan session asli)
 $nomor_dosen_login = '1001';
 
 
-=======
->>>>>>> 507e20032a574e179fb187c2d71f9e3d95a3b89b
 if (!isset($_SESSION['id_sidang_aktif'])) {
     die("ID sidang tidak tersedia.");
 }
@@ -30,11 +28,7 @@ $id_sidang = $_SESSION['id_sidang_aktif'];
 // ===================================================================================
 $nomor_dosen_login = '1001';
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 507e20032a574e179fb187c2d71f9e3d95a3b89b
 // if (!isset($_SESSION['user']['nomor_dosen'])) { die("Akses ditolak."); }
 // $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
 
@@ -198,7 +192,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 
                 <!-- PERBAIKAN: Nama kelas diperbaiki dan dipisah dengan spasi -->
                 <!-- Item ini akan menjadi aktif karena memiliki DUA kelas -->
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
                     <b></b><b></b>
                     <a href="dEvaluasiSidang.php?id=<?= $id_sidang ?>">
                         <!-- PERBAIKAN: Nama kelas span juga diperbaiki -->
