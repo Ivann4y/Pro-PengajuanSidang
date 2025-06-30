@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         // Ambil data dari form
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
-        $status_ajuan = ($_POST['aksi'] == 'Kirim') ? 0x01 : 0x00;
+        $status_ajuan = ($_POST['aksi'] == 'Kirim') ? 0x00 : 0x00;
         if (empty($judul) || empty($id_matkul_terpilih)) throw new Exception("Judul dan Mata Kuliah wajib diisi.");
 
         // Tentukan jenis sidang berdasarkan nama matkul
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         if (!sqlsrv_execute($stmt_update_detail)) throw new Exception("Gagal mengupdate Detail Sidang.");
 
         sqlsrv_commit($conn);
-        $success_message = ($status_ajuan == 0x01) ? 'Pengajuan Berhasil Diperbarui dan Dikirim!' : 'Perubahan Berhasil Disimpan!';
+        $success_message = ($status_ajuan == 0x00) ? 'Pengajuan Berhasil Diperbarui dan Dikirim!' : 'Perubahan Berhasil Disimpan!';
     } catch (Exception $e) {
         sqlsrv_rollback($conn);
         $error_message = $e->getMessage();

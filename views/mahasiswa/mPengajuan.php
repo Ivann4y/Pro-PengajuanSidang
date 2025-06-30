@@ -32,10 +32,10 @@ $error_message = '';
 $rowsPerPage = 10;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $rowsPerPage;
-
 // Filter settings
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $filterClause = '';
+
 if ($filter === 'TA') {
     // 0 adalah untuk Tugas Akhir
     $filterClause = " AND s.jenis_sidang = 0";
@@ -50,7 +50,7 @@ $countQuery = "
     FROM dbo.Sidang s
     WHERE
         s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
-        AND s.status_ajuan = 0x00 -- Hanya DRAF
+        AND s.status_ajuan IS NULL -- Hanya DRAF
         $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
 ";
 $countResult = sqlsrv_query($conn, $countQuery);
@@ -79,7 +79,7 @@ $query = "
         dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
     WHERE
         s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
-        AND s.status_ajuan = 0x00 -- Filter utama untuk menampilkan HANYA DRAF
+        AND s.status_ajuan IS NULL -- Filter utama untuk menampilkan HANYA DRAF
         $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
     ORDER BY
         s.id_sidang DESC
