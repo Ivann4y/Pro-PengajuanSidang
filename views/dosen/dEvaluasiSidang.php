@@ -13,6 +13,8 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 
 
+
+
 // Simulasi Dosen yang Login (nantinya ganti dengan session asli)
 $nomor_dosen_login = '1001';
 
@@ -192,7 +194,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 
                 <!-- PERBAIKAN: Nama kelas diperbaiki dan dipisah dengan spasi -->
                 <!-- Item ini akan menjadi aktif karena memiliki DUA kelas -->
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
                     <b></b><b></b>
                     <a href="dEvaluasiSidang.php?id=<?= $id_sidang ?>">
                         <!-- PERBAIKAN: Nama kelas span juga diperbaiki -->
