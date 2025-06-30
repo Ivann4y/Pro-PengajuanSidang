@@ -12,8 +12,8 @@ $path_to_root = '../../';
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
     // Arahkan ke halaman login utama di root
-    header("Location: " . $path_to_root . "index.php"); 
-    exit(); 
+    header("Location: " . $path_to_root . "index.php");
+    exit();
 }
 
 // 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
@@ -21,7 +21,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     // Arahkan ke halaman login utama di root
     header("Location: " . $path_to_root . "index.php");
-    exit(); 
+    exit();
 }
 
 require "../../koneksi/koneksiAndrew.php";
@@ -30,7 +30,7 @@ require "../../koneksi/koneksiAndrew.php";
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     // Simpan ID yang valid dari URL ke dalam session
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
-    
+
     // Redirect ke halaman yang sama TAPI TANPA parameter GET
     header("Location: aDetailSidang.php");
     exit();
@@ -72,9 +72,13 @@ $sql_utama = "SELECT
               WHERE s.id_sidang = ?";
 $params_utama = array($id_sidang);
 $stmt_utama = sqlsrv_query($conn, $sql_utama, $params_utama);
-if ($stmt_utama === false) { die("Error pada query utama: " . print_r(sqlsrv_errors(), true)); }
+if ($stmt_utama === false) {
+    die("Error pada query utama: " . print_r(sqlsrv_errors(), true));
+}
 $data_sidang = sqlsrv_fetch_array($stmt_utama, SQLSRV_FETCH_ASSOC);
-if (!$data_sidang) { die("Error: Data Sidang dengan ID $id_sidang tidak ditemukan."); }
+if (!$data_sidang) {
+    die("Error: Data Sidang dengan ID $id_sidang tidak ditemukan.");
+}
 
 // --- Query Jadwal
 $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang, jam_selesai FROM Jadwal WHERE id_sidang = ?";
@@ -103,14 +107,14 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
         JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen
         WHERE p.id_sidang = ?
     ";
-    
+
     $stmt_dosen_terlibat = sqlsrv_query($conn, $sql_dosen_terlibat, array($id_sidang));
-    
+
     if ($stmt_dosen_terlibat) {
         $dosen_penguji_data = []; // Buat array sementara untuk penguji & bobot
         while ($row = sqlsrv_fetch_array($stmt_dosen_terlibat, SQLSRV_FETCH_ASSOC)) {
             if ($row['peran_dosen'] == 1) { // 1 adalah Pembimbing
-                $dosen_pembimbing = $row; 
+                $dosen_pembimbing = $row;
             } elseif ($row['peran_dosen'] == 0) { // 0 adalah Penguji
                 // Simpan nama dan bobotnya
                 $dosen_penguji_data[] = [
@@ -122,15 +126,15 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
             }
         }
     }
-} elseif ($data_sidang['jenis_sidang'] == 1) { 
+} elseif ($data_sidang['jenis_sidang'] == 1) {
     // [LANGKAH 1] Ambil id_matkul dari detail sidang.
     $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul 
                    FROM MataKuliah mk 
                    JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul 
                    WHERE ds.id_sidang = ?";
     $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
-    if ($stmt_matkul) { 
-        $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); 
+    if ($stmt_matkul) {
+        $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC);
     }
 
     // [LANGKAH 2] Jika mata kuliah ditemukan, cari dosen pengampunya dengan benar.
@@ -163,7 +167,7 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
         if ($stmt_pengampu === false) {
             die("Error pada query pengampu: " . print_r(sqlsrv_errors(), true));
         }
-        
+
         // Ambil semua nama dosen dan masukkan ke array
         while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
             $dosen_pengampu[] = $row['nama_dosen'];
@@ -178,7 +182,7 @@ $sql_all_dosen = "SELECT nama_dosen FROM Dosen WHERE isPenguji = 1 ORDER BY nama
 $stmt_all_dosen = sqlsrv_query($conn, $sql_all_dosen);
 if ($stmt_all_dosen) {
     while ($row = sqlsrv_fetch_array($stmt_all_dosen, SQLSRV_FETCH_ASSOC)) {
-        $dosen_list_penguji[] = ['nama' => $row['nama_dosen']]; 
+        $dosen_list_penguji[] = ['nama' => $row['nama_dosen']];
     }
 }
 $dosen_list_json = json_encode($dosen_list_penguji);
@@ -200,9 +204,9 @@ $dosen_list_json = json_encode($dosen_list_penguji);
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/aDetailSidang.css">
-    
 
-    
+
+
 </head>
 
 <body>
@@ -219,8 +223,8 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
-                    <!-- <a href="aEvaluasi.php?id=<?= $row['id'] ?>"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a> -->
                 </li>
+
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
@@ -313,7 +317,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                 <h5 class="mt-4">Aksi</h5>
                 <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
                 <br><br>
-                
+
 
 
                 <div class="modal fade" id="penjadwalanSidangModal" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
@@ -351,32 +355,32 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                             </div>
                                             <hr>
                                             <div id="penguji-wrapper">
-    <?php
-    $penguji_list_dengan_bobot = !empty($dosen_penguji_data) ? $dosen_penguji_data : [['nama' => '', 'bobot' => '']];
-    
-    foreach ($penguji_list_dengan_bobot as $index => $penguji):
-    ?>
-        <div class="form-group" id="penguji-form-<?php echo $index + 1; ?>">
-            <label for="modal_penguji<?php echo $index + 1; ?>">Penguji <?php echo $index + 1; ?></label>
-            <div class="input-with-buttons">
-                 <div class="autocomplete-container">
-                   <input type="text"
-                    id="modal_penguji<?php echo $index + 1; ?>"
-                    name="penguji_nama[]"
-                    placeholder="Ketik nama dosen penguji"
-                    oninput="searchDosen(this, <?php echo $index + 1; ?>)"
-                    value="<?php echo htmlspecialchars($penguji['nama']); ?>"
-                    autocomplete="off">
-                    <div class="autocomplete-dropdown" id="autocomplete_penguji_<?php echo $index + 1; ?>" style="display: none;"></div>
-                </div>
-                <div class="input-with-percent">
-                    <input type="number" name="penguji_bobot[]" class="form-control-bobot" min="0" placeholder="Bobot" value="<?php echo htmlspecialchars($penguji['bobot']); ?>">
-                    <span class="percent-sign">%</span>
-                </div>
-            </div>
-        </div>
-    <?php endforeach; ?>
-</div>
+                                                <?php
+                                                $penguji_list_dengan_bobot = !empty($dosen_penguji_data) ? $dosen_penguji_data : [['nama' => '', 'bobot' => '']];
+
+                                                foreach ($penguji_list_dengan_bobot as $index => $penguji):
+                                                ?>
+                                                    <div class="form-group" id="penguji-form-<?php echo $index + 1; ?>">
+                                                        <label for="modal_penguji<?php echo $index + 1; ?>">Penguji <?php echo $index + 1; ?></label>
+                                                        <div class="input-with-buttons">
+                                                            <div class="autocomplete-container">
+                                                                <input type="text"
+                                                                    id="modal_penguji<?php echo $index + 1; ?>"
+                                                                    name="penguji_nama[]"
+                                                                    placeholder="Ketik nama dosen penguji"
+                                                                    oninput="searchDosen(this, <?php echo $index + 1; ?>)"
+                                                                    value="<?php echo htmlspecialchars($penguji['nama']); ?>"
+                                                                    autocomplete="off">
+                                                                <div class="autocomplete-dropdown" id="autocomplete_penguji_<?php echo $index + 1; ?>" style="display: none;"></div>
+                                                            </div>
+                                                            <div class="input-with-percent">
+                                                                <input type="number" name="penguji_bobot[]" class="form-control-bobot" min="0" placeholder="Bobot" value="<?php echo htmlspecialchars($penguji['bobot']); ?>">
+                                                                <span class="percent-sign">%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
                                             <div class="form-toggle-buttons">
                                                 <button type="button" class="btn-tambah-penguji" onclick="addPenguji()"><i class="fa-solid fa-plus"></i> Tambah Penguji</button>
                                                 <button type="button" class="btn-hapus-penguji" onclick="removePenguji()"><i class="fa-solid fa-minus"></i> Hapus Penguji</button>
@@ -444,12 +448,12 @@ $dosen_list_json = json_encode($dosen_list_penguji);
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-   <script type="text/javascript">
+    <script type="text/javascript">
         // Variabel-variabel ini akan menjadi global dan bisa diakses oleh aDetailSidang.js
         const dosenData = <?php echo $dosen_list_json; ?>;
         const isSidangTA = <?php echo ($data_sidang['jenis_sidang'] == 0) ? 'true' : 'false'; ?>;
     </script>
-    
+
     <!-- Langkah 2: Panggil file JavaScript eksternal Anda -->
     <script src="../../assets/js/aDetailSidang.js"></script>
 </body>
