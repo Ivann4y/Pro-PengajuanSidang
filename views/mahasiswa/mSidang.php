@@ -1,8 +1,9 @@
 <?php
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
+
+$user_session = $_SESSION['user_data'];
+$nim_login = $user_session['nim'];
 
 $path_to_root = '../../';
 
@@ -54,17 +55,19 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $rowsPerPage = 10;
 $countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total 
                 FROM Sidang s
+                JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
                 JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang 
                 JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
-                JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen";
+                JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+                WHERE km.nim = ?";
 
 if ($filter === 'ta') {
-    $countQuery .= " WHERE s.jenis_sidang = 0";
+    $countQuery .= " AND s.jenis_sidang = 0";
 } elseif ($filter === 'semester') {
-    $countQuery .= " WHERE s.jenis_sidang = 1";
+    $countQuery .= " AND s.jenis_sidang = 1";
 }
 
-$countResult = sqlsrv_query($conn, $countQuery);
+$countResult = sqlsrv_query($conn, $countQuery, array($nim_login));
 
 if ($countResult === false) {
     echo "Terjadi kesalahan saat mengeksekusi countQuery:<br>";
@@ -83,21 +86,23 @@ $totalPages = ceil($totalRecords / $rowsPerPage);
 
 $query = "SELECT s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul, MIN(d.nama_dosen) AS dosen 
           FROM Sidang s
+          JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
           JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang 
           JOIN MataKuliah m ON ds.id_matkul = m.id_matkul 
-          JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen";
+          JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+          WHERE km.nim = ?";
 
 if ($filter === 'ta') {
-    $query .= " WHERE s.jenis_sidang = 0";
+    $query .= " AND s.jenis_sidang = 0";
 } elseif ($filter === 'semester') {
-    $query .= " WHERE s.jenis_sidang = 1";
+    $query .= " AND s.jenis_sidang = 1";
 }
 
 $query .= " GROUP BY s.id_sidang, s.judul, s.jenis_sidang, m.nama_matkul ORDER BY s.id_sidang";
 
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
 
-$result = sqlsrv_query($conn, $query);
+$result = sqlsrv_query($conn, $query, array($nim_login));
 
 if ($result === false) {
     echo "Terjadi kesalahan saat mengeksekusi main query:<br>";
