@@ -312,6 +312,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
 
                 <h5 class="mt-4">Aksi</h5>
                 <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
+                <button class="btn-hapus" onclick="confirmDelete(<?php echo htmlspecialchars($id_sidang); ?>)">Hapus Sidang</button>
                 <br><br>
                 
 

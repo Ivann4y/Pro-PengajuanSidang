@@ -1,0 +1,179 @@
+#NavSide {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+.label-row i {
+  font-size: 1.5rem;
+}
+body,
+.card,
+.form-control,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Poppins", sans-serif !important;
+  color: #464869;
+}
+.btn-kembali {
+  background-color: #4b68fb;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+}
+.btn-kembali:hover {
+  background-color: white;
+  transform: translateY(-2px);
+  color: #4b68fb;
+}
+.btn-kembali .icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+.btn-kembali:hover .icon-circle {
+  background-color: #4b68fb;
+}
+.btn-kembali .icon-circle i {
+  color: #4b68fb;
+}
+.btn-kembali:hover .icon-circle i {
+  color: white;
+}
+#cardNilai {
+  background-color: rgb(235, 238, 245);
+  border-radius: 50px;
+  border: none !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin-left: 0;
+}
+#carddataMahasiswa {
+  border: none !important;
+  background-color: rgb(235, 238, 245);
+  border-radius: 50px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin-left: 1vh;
+}
+.nilai-mahasiswa-display {
+  /* Menggunakan class agar tidak bentrok ID */
+  font-size: 9.5rem !important;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 50px;
+  width: 100%;
+  margin-left: 23px;
+  height: 40px;
+  background-color: rgb(235, 238, 245) !important;
+  border-color: rgb(235, 238, 245) !important;
+  cursor: default;
+}
+label {
+  margin-top: 20px;
+  margin-right: 15px;
+  font-weight: 550;
+}
+.detail-penilaian-input {
+  /* Menggunakan class agar tidak bentrok ID */
+  width: 75px;
+  font-size: 1rem;
+  margin-top: 20px;
+  border-color: transparent;
+}
+#carddetailPenilaian {
+  border: none !important;
+  width: 100%;
+  margin-left: 0;
+  background-color: rgb(235, 238, 245);
+  border-radius: 50px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+#cardcatatan {
+  border: none !important;
+  background-color: rgb(235, 238, 245);
+  border-radius: 50px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin-left: 1vh;
+}
+.form-control {
+  background-color: rgb(235, 238, 245);
+}
+.catatan-textarea {
+  /* Menggunakan class agar tidak bentrok ID */
+  width: 100%;
+  height: 150px;
+  border-radius: 50px;
+  font-size: 1rem;
+  margin-top: 20px;
+  pointer-events: none;
+  resize: none;
+  border: none;
+}
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: #4b68fb;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 16px;
+}
+@media (max-width: 750px) {
+  #carddetailPenilaian,
+  #cardcatatan {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  #cardNilai {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-bottom: 40px;
+  }
+  .nilai-mahasiswa-display {
+    font-size: 5rem !important;
+  }
+  .detail-penilaian-input {
+    width: 15% !important;
+  }
+}
+@media (max-width: 1000px) {
+  .NavSide__main-content #carddetailPenilaian,
+  .NavSide__main-content #cardcatatan {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .NavSide__main-content #cardNilai {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-bottom: 40px;
+  }
+  .nilai-mahasiswa-display {
+    font-size: 5rem !important;
+  }
+  .detail-penilaian-input {
+    width: 15% !important;
+  }
+}

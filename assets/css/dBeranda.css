@@ -263,6 +263,8 @@
     max-height: 57vh; 
     overflow-y: auto; 
     padding-bottom: 1.25rem; 
+    padding: 0 1.25rem 1.25rem 1.25rem !important; 
+    border-radius: 22px !important;
 }
 
 .sidang-mendatang-card .section-title { 
@@ -272,7 +274,7 @@
     z-index: 10;
     padding-top: 1.25rem; 
     padding-bottom: 1rem; 
-    margin: -1.25rem -1.25rem 0 -1.25rem; 
+    margin: 0 !important; 
     padding-left: 1.25rem; 
     padding-right: 1.25rem; 
     font-size: 1.1rem;
@@ -285,8 +287,8 @@
     justify-content: space-between;
     background-color: #FFFFFF; 
     padding: 0.75rem 1rem;
-    border-radius: 8px; 
-    margin-bottom: 0.75rem;
+    border-radius: 12px !important; 
+    margin-bottom: 0.75rem !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.03);
 }
 .sidang-mendatang-card .item:last-child {
