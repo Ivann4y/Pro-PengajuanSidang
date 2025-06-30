@@ -59,8 +59,16 @@ if (!$data_info) {
 }
 $nama_mahasiswa = $data_info['nama_mhs'];
 $status_revisi = $data_info['status_revisi'];
-if (empty(trim($status_revisi))) {
+
+// Perbaikan: Konversi nilai binary ke string yang sesuai
+if ($status_revisi === null || $status_revisi === '') {
     $status_revisi = 'Belum Ada Revisi';
+} elseif ($status_revisi === 0x00 || $status_revisi === 0) {
+    $status_revisi = 'Menunggu Persetujuan';
+} elseif ($status_revisi === 0x01 || $status_revisi === 1) {
+    $status_revisi = 'Disetujui';
+} else {
+    $status_revisi = 'Status Tidak Diketahui';
 }
 
 // Query untuk mengambil catatan perbaikan
@@ -83,36 +91,49 @@ while ($row = sqlsrv_fetch_array($stmt_catatan, SQLSRV_FETCH_ASSOC)) {
 // === LOGIKA FILE UPLOAD ===
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
-        $folder_target = "uploads/";
-        if (!file_exists($folder_target)) {
-            mkdir($folder_target, 0755, true);
-        }
-
         $file_asli = basename($_FILES["fileInput"]["name"]);
         $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
         $file_unik = 'revisi_' . $id_sidang . '_' . time() . '.' . $ekstensi_file;
+        
+        // Perbaikan: Gunakan path absolut yang benar
+        $folder_target = __DIR__ . "/uploads/";
+        if (!file_exists($folder_target)) {
+            mkdir($folder_target, 0755, true);
+        }
+        
         $path_target = $folder_target . $file_unik;
+        // Simpan path relatif ke database untuk konsistensi
+        $path_relatif = "views/mahasiswa/uploads/" . $file_unik;
         $ekstensi_diizinkan = array("pdf", "docx", "pptx", "zip");
 
         if (!in_array($ekstensi_file, $ekstensi_diizinkan) || $_FILES["fileInput"]["size"] > 5242880) { // Max 5MB
             $_SESSION['pesan'] = "Error: Format atau ukuran file tidak sesuai.";
         } else {
             if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
-                $query_update_dokumen = "
-                    UPDATE Detail_Sidang 
-                    SET dok_revisi = ?, status_revisi = 'Menunggu Persetujuan' 
-                    WHERE id_sidang = ?
-                ";
-                $params_update = array($path_target, $id_sidang);
+                // Debug: Log informasi file
+                error_log("File uploaded successfully: " . $path_target);
+                error_log("File size: " . filesize($path_target));
+                
+                $file_content = file_get_contents($path_target);
+                $params_update = array($file_content, $id_sidang);
+                
+                // Debug: Log query dan parameter
+                error_log("Update query: " . $query_update_dokumen);
+                error_log("Parameters: " . print_r($params_update, true));
+                
                 $stmt_update = sqlsrv_query($conn, $query_update_dokumen, $params_update);
 
                 if ($stmt_update) {
                     $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
+                    error_log("Database update successful");
                 } else {
                     unlink($path_target);
-                    $_SESSION['pesan'] = "Error: Gagal menyimpan informasi file ke database.";
+                    $errors = sqlsrv_errors();
+                    error_log("Database update error: " . print_r($errors, true));
+                    $_SESSION['pesan'] = "Error: Gagal menyimpan informasi file ke database. Error: " . ($errors ? $errors[0]['message'] : 'Unknown error');
                 }
             } else {
+                error_log("Failed to move uploaded file from " . $_FILES["fileInput"]["tmp_name"] . " to " . $path_target);
                 $_SESSION['pesan'] = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
             }
         }

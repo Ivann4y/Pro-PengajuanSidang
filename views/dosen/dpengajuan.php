@@ -231,61 +231,64 @@ $nomor = $offset + 1;
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
-<tbody>
-    <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
-        <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
-            <?php
-                // --- LOGIKA KONVERSI DITARUH DI DALAM LOOP INI ---
-                // Mengubah nilai binary 0 atau 1 menjadi string 'TA' atau 'Semester'
-                // Ini akan digunakan baik untuk tampilan maupun untuk link
-                $tipe_untuk_url = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
-            ?>
+                        <tbody>
+                            <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
+                               <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+                        <?php
+                            $jenisSidangTampilan = ''; 
 
-                <tr class="isiTabel jadiBiru">
-                <td><?= $nomor++; ?></td>
-                <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
-                <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
-
-                <td><?= $tipe_untuk_url; ?></td>
-
-                <td style="text-align: center;">
-                    <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $tipe_untuk_url; ?>')">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </td>
-            </tr>
-
-        <?php endwhile; ?>
-    <?php else: ?>
-        <tr><td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>
-    <?php endif; ?>
-</tbody>
-                    </table>
-                    <div class="pagination-container">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center">
-                                <?php if ($totalPages > 1): ?>
-                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-                                        <a class="page-link" href="?page=<?= $currentPage - 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">«</a>
-                                    </li>
-                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                    <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
-                                        <a class="page-link" href="?page=<?= $i ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>"><?= $i ?></a>
-                                    </li>
-                                    <?php endfor; ?>
-                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-                                        <a class="page-link" href="?page=<?= $currentPage + 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">»</a>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-                        </nav>
+                            // Cek apakah mata kuliahnya adalah 'Tugas Akhir'
+                            if (isset($row['nama_matkul']) && $row['nama_matkul'] === 'Tugas Akhir') {
+                                $jenisSidangTampilan = 'TA';
+                            } else {
+                                $jenisSidangTampilan = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
+                            }
+                        ?>
+                        <tr class="isiTabel jadiBiru">
+                            <td><?= $nomor++; ?></td>
+                            <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
+                            <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                            <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
+                            <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                            
+                            <td><?= $jenisSidangTampilan; ?></td>
+                            
+                            <td style="text-align: center;">
+                                <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $jenisSidangTampilan; ?>')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                       <?php endwhile; ?>
+                        <?php else: ?>
+                                <tr><td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>
+                        <?php endif; ?>
+                        
+                        </tbody>
+                        </table>
+                        <div class="pagination-container">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <?php if ($totalPages > 1): ?>
+                                        <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $currentPage - 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">«</a>
+                                        </li>
+                                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $i ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>"><?= $i ?></a>
+                                        </li>
+                                        <?php endfor; ?>
+                                        <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $currentPage + 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">»</a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- MODALS AND OTHER HTML (Unchanged) -->
+            <!-- MODAL LOGOUT-->
             <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">

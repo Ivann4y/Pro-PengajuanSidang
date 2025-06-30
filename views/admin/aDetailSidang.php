@@ -1,53 +1,47 @@
 <?php
-// Letakkan ini di baris paling atas file
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
 $path_to_root = '../../';
 
-// 1. Cek jika pengguna BELUM login.
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    // Arahkan ke halaman login utama di root
+ 
     header("Location: " . $path_to_root . "index.php"); 
     exit(); 
 }
 
-// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
-    // Arahkan ke halaman login utama di root
+ 
     header("Location: " . $path_to_root . "index.php");
     exit(); 
 }
 
 require "../../koneksi/koneksiAndrew.php";
 
-// Langkah 1: Jika ada 'id' di URL, simpan ke session dan redirect.
+
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    // Simpan ID yang valid dari URL ke dalam session
+
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
     
-    // Redirect ke halaman yang sama TAPI TANPA parameter GET
     header("Location: aDetailSidang.php");
     exit();
 }
 
-// Langkah 2: Jika TIDAK ada 'id' di URL, ambil dari session.
 if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif'])) {
     $id_sidang = (int)$_SESSION['id_sidang_aktif'];
 } else {
-    // Jika tidak ada di URL dan tidak ada di session, maka akses tidak valid.
-    // Arahkan kembali ke halaman daftar sidang.
+
     $_SESSION['error_message'] = "ID Sidang tidak valid atau tidak ditemukan. Silakan pilih sidang dari daftar.";
     header("Location: aDaftarSidang.php");
     exit();
 }
 
-// Variabel penampung
+
 $data_nim = [];
 $nama_prodi = 'N/A';
 $data_sidang = [];
@@ -58,7 +52,7 @@ $dosen_pengampu = [];
 $data_matkul = null;
 $data_bobotPenilaian = [];
 
-// 2. Query utama
+
 $sql_utama = "SELECT 
                 s.id_sidang, s.judul, 
                 CASE 
@@ -76,12 +70,12 @@ if ($stmt_utama === false) { die("Error pada query utama: " . print_r(sqlsrv_err
 $data_sidang = sqlsrv_fetch_array($stmt_utama, SQLSRV_FETCH_ASSOC);
 if (!$data_sidang) { die("Error: Data Sidang dengan ID $id_sidang tidak ditemukan."); }
 
-// --- Query Jadwal
+
 $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang, jam_selesai FROM Jadwal WHERE id_sidang = ?";
 $stmt_jadwal = sqlsrv_query($conn, $sql_jadwal, array($id_sidang));
 $data_jadwal = sqlsrv_fetch_array($stmt_jadwal, SQLSRV_FETCH_ASSOC) ?: [];
 
-// --- Query Mahasiswa
+
 $id_kelompok = $data_sidang['id_kelompok'];
 $sql_mahasiswa = "SELECT m.prodi FROM Mahasiswa m JOIN Kelompok_Mahasiswa km ON m.nim = km.nim WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
 $stmt_mahasiswa = sqlsrv_query($conn, $sql_mahasiswa, array($id_kelompok));
@@ -89,10 +83,10 @@ if ($row = sqlsrv_fetch_array($stmt_mahasiswa, SQLSRV_FETCH_ASSOC)) {
     $nama_prodi = $row['prodi'];
 }
 
-// 4. Logika kondisional
-if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
 
-    // Query untuk mengambil dosen yang terlibat DAN bobot penilaian mereka
+if ($data_sidang['jenis_sidang'] == 0) { 
+
+    
     $sql_dosen_terlibat = "SELECT 
             d.nama_dosen, 
             CAST(p.peran_dosen AS INT) AS peran_dosen,
@@ -107,23 +101,23 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
     $stmt_dosen_terlibat = sqlsrv_query($conn, $sql_dosen_terlibat, array($id_sidang));
     
     if ($stmt_dosen_terlibat) {
-        $dosen_penguji_data = []; // Buat array sementara untuk penguji & bobot
+        $dosen_penguji_data = []; 
         while ($row = sqlsrv_fetch_array($stmt_dosen_terlibat, SQLSRV_FETCH_ASSOC)) {
-            if ($row['peran_dosen'] == 1) { // 1 adalah Pembimbing
+            if ($row['peran_dosen'] == 1) { 
                 $dosen_pembimbing = $row; 
-            } elseif ($row['peran_dosen'] == 0) { // 0 adalah Penguji
-                // Simpan nama dan bobotnya
+            } elseif ($row['peran_dosen'] == 0) { 
+                
                 $dosen_penguji_data[] = [
                     'nama' => $row['nama_dosen'],
                     'bobot' => $row['bobot']
                 ];
-                // Simpan namanya saja untuk tampilan utama
+              
                 $dosen_penguji[] = $row['nama_dosen'];
             }
         }
     }
 } elseif ($data_sidang['jenis_sidang'] == 1) { 
-    // [LANGKAH 1] Ambil id_matkul dari detail sidang.
+   
     $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul 
                    FROM MataKuliah mk 
                    JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul 
@@ -133,21 +127,20 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
         $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); 
     }
 
-    // [LANGKAH 2] Jika mata kuliah ditemukan, cari dosen pengampunya dengan benar.
+    
     if ($data_matkul) {
-        // Ambil variabel yang dibutuhkan dari data yang sudah ada
+       
         $id_matkul = $data_matkul['id_matkul'];
-        $id_kelompok = $data_sidang['id_kelompok']; // Kita sudah punya id_kelompok
+        $id_kelompok = $data_sidang['id_kelompok']; 
 
-        // [PERBAIKAN UTAMA] Query yang benar untuk mengambil dosen pengampu
+        
         $sql_pengampu = "SELECT d.nama_dosen 
             FROM Dosen d 
             JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen 
             WHERE 
-                -- Filter 1: Mencocokkan mata kuliah dengan placeholder
+                
                 pk.id_matkul = ?
                 
-                -- Filter 2: Mencocokkan kelas mahasiswa dengan subquery dan placeholder
                 AND pk.id_kelas = (
                     SELECT TOP 1 km.id_kelas
                     FROM Kelompok_Mahasiswa kpm
@@ -156,7 +149,6 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
                 )
         ";
 
-        // [PERBAIKAN PARAMETER] Berikan DUA parameter yang dibutuhkan: id_matkul dan id_kelompok
         $params_pengampu = array($id_matkul, $id_kelompok);
         $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, $params_pengampu);
 
@@ -164,7 +156,6 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
             die("Error pada query pengampu: " . print_r(sqlsrv_errors(), true));
         }
         
-        // Ambil semua nama dosen dan masukkan ke array
         while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
             $dosen_pengampu[] = $row['nama_dosen'];
         }
@@ -172,7 +163,7 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
 }
 
 
-// Ambil daftar semua dosen untuk autocomplete
+
 $dosen_list_penguji = [];
 $sql_all_dosen = "SELECT nama_dosen FROM Dosen WHERE isPenguji = 1 ORDER BY nama_dosen ASC";
 $stmt_all_dosen = sqlsrv_query($conn, $sql_all_dosen);
@@ -312,6 +303,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
 
                 <h5 class="mt-4">Aksi</h5>
                 <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
+                <button class="btn-hapus" onclick="confirmDelete(<?php echo htmlspecialchars($id_sidang); ?>)">Hapus Sidang</button>
                 <br><br>
                 
 
@@ -325,9 +317,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                     <form id="formDalamModal" novalidate>
                                         <input type="hidden" name="id_sidang" value="<?php echo htmlspecialchars($id_sidang); ?>">
 
-                                        <!-- ====================================== -->
-                                        <!--      FIELD UMUM UNTUK SEMUA JENIS      -->
-                                        <!-- ====================================== -->
+                                        
                                         <div class="form-group">
                                             <label>ID Kelompok</label>
                                             <p><?php echo htmlspecialchars($data_sidang['id_kelompok']); ?></p>
@@ -341,9 +331,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                             <p><?php echo htmlspecialchars(($data_sidang['jenis_sidang'] == 0) ? $data_sidang['judul'] : ($data_matkul['nama_matkul'] ?? 'N/A')); ?></p>
                                         </div>
 
-                                        <!-- ====================================== -->
-                                        <!--        KONTEN KHUSUS SIDANG TA         -->
-                                        <!-- ====================================== -->
+                                       
                                         <?php if ($data_sidang['jenis_sidang'] == 0): ?>
                                             <div class="form-group">
                                                 <label>Pembimbing</label>
@@ -383,9 +371,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                             </div>
                                         <?php endif; ?>
 
-                                        <!-- ====================================== -->
-                                        <!--      KONTEN KHUSUS SIDANG SEMESTER     -->
-                                        <!-- ====================================== -->
+                                    
                                         <?php if ($data_sidang['jenis_sidang'] == 1): ?>
                                             <hr>
                                             <div id="pengampu-wrapper">
@@ -402,9 +388,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                             </div>
                                         <?php endif; ?>
 
-                                        <!-- ====================================== -->
-                                        <!--      FIELD JADWAL (UNTUK SEMUA)        -->
-                                        <!-- ====================================== -->
+                                      
                                         <hr>
                                         <div class="form-group">
                                             <label for="modal_ruangan">Ruangan</label>
@@ -445,12 +429,12 @@ $dosen_list_json = json_encode($dosen_list_penguji);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
    <script type="text/javascript">
-        // Variabel-variabel ini akan menjadi global dan bisa diakses oleh aDetailSidang.js
+       
         const dosenData = <?php echo $dosen_list_json; ?>;
         const isSidangTA = <?php echo ($data_sidang['jenis_sidang'] == 0) ? 'true' : 'false'; ?>;
     </script>
     
-    <!-- Langkah 2: Panggil file JavaScript eksternal Anda -->
+   
     <script src="../../assets/js/aDetailSidang.js"></script>
 </body>
 

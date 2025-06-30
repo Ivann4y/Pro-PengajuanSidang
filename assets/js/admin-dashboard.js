@@ -12,20 +12,35 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // =========================
-  // Kalender Interaktif
+  // Load All Dashboard Data
   // =========================
 
-  // Fetch data sidang mendatang dari PHP
+  // Initialize data variables
   let sidangData = [];
   let sidangDates = [];
-  fetch("../../control/admin/aBeranda_queries.php?action=sidang_mendatang")
+
+  // Load all dashboard data from single endpoint
+  fetch("../../control/aBeranda_data.php")
     .then((response) => response.json())
     .then((data) => {
-      sidangData = data;
-      sidangDates = data.map((item) => item.tanggal_sidang);
+      // Set sidang data for calendar
+      sidangData = data.sidang_mendatang || [];
+      sidangDates = sidangData.map((item) => item.tanggal_sidang);
+
+      // Update UI with all data
       renderCalendar();
-      renderSidangMendatang(data);
+      renderSidangMendatang(sidangData);
+      renderAngkaJumlahPengajuan(data.jumlah_pengajuan || 0);
+      renderAngkaJumlahPenjadwalan(data.jumlah_penjadwalan || 0);
+      renderTugas(data.tugas_penjadwalan || []);
+    })
+    .catch((error) => {
+      console.error("Error loading dashboard data:", error);
     });
+
+  // =========================
+  // Kalender Interaktif
+  // =========================
 
   // Ambil elemen kalender
   const calendarTableBody = document.querySelector("#calendarTable tbody");
@@ -162,12 +177,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-  fetch("../../control/admin/aBeranda_queries.php?action=pengajuan")
-    .then((response) => response.json())
-    .then((result) => {
-      // result.data adalah array judul sidang yang perlu aksi pengajuannya
-      renderAngkaJumlahPengajuan(result.jumlah_pengajuan_perlu_aksi);
-    });
 
   // Render angka jumlah pengajuan
   function renderAngkaJumlahPengajuan(jumlah) {
@@ -184,14 +193,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     numberDiv.textContent = jumlah;
   }
-
-  fetch("../../control/admin/aBeranda_queries.php?action=penjadwalan")
-    .then((response) => response.json())
-    .then((result) => {
-      // result.data adalah array judul sidang yang belum terjadwal
-      renderTugas(result.data);
-      renderAngkaJumlahPenjadwalan(result.jumlah);
-    });
 
   function renderAngkaJumlahPenjadwalan(jumlah) {
     const card = document.querySelector(".penjadwalan-status-card");
@@ -232,15 +233,6 @@ document.addEventListener("DOMContentLoaded", function () {
       tugasContainer.appendChild(div);
     });
   }
-
-  // // Navigasi bulan tanpa reload
-  // document.getElementById("prevMonth").onclick = function() {
-  //     renderCalendar();
-  // };
-
-  // document.getElementById("nextMonth").onclick = function() {
-  //     renderCalendar();
-  // };
 
   // Navigasi bulan sebelumnya
   prevMonthBtn.addEventListener("click", () => {

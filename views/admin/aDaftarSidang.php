@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
 $path_to_root = '../../';
 
 // 1. Cek jika pengguna BELUM login.
@@ -25,7 +24,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 require "../../koneksi/koneksiAndrew.php";
 
-// --- PERSIAPAN AWAL (Tidak berubah) ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all';
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
@@ -65,7 +63,7 @@ if ($prodiFilter !== 'all') {
 }
 
 // Query untuk menghitung total data
-$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s {$prodiJoin}";
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang {$prodiJoin}";
 if (!empty($whereClause)) {
     // Buat klausa WHERE untuk count query
     $countWhereClause = $whereClause;
@@ -117,6 +115,7 @@ $query = "SELECT DISTINCT
         END AS nama_dosen_terkait
     
     FROM Sidang s
+    JOIN Jadwal j ON s.id_sidang = j.id_sidang
     {$prodiJoin}
 ";
 
@@ -136,6 +135,8 @@ if ($result === false) {
     die("Error di main query: " . print_r(sqlsrv_errors(), true));
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -259,13 +260,14 @@ if ($result === false) {
         <?php
         $counter = ($currentPage - 1) * $rowsPerPage + 1;
         while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
+             $jenis_sidang_int = ord($row['jenis_sidang']);
         ?>
             <tr class="isiTabel">
                 <td data-label="Nomor"><?= $counter ?></td>
                 <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                 <td data-label="Judul/MK">
                     <?php 
-                    echo htmlspecialchars(($row['jenis_sidang'] == 1) ? $row['nama_matkul'] : $row['judul']); 
+                    echo htmlspecialchars(($jenis_sidang_int == 1) ? $row['nama_matkul'] : $row['judul']); 
                     ?>
                 </td>
                 <td data-label="Pembimbing/Pengampu">
@@ -274,10 +276,11 @@ if ($result === false) {
                     ?>
                 </td>
                 <td data-label="Aksi">
-                    <button type="button" class="btn detail-btn"
-                        onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
-                        <i class="fa-solid fa-file-signature"></i>
-                    </button>
+                       <div class="action-wrapper">  
+                         <button type="button" class="btn detail-btn"  onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
+                          <i class="fa-solid fa-file-signature"></i>
+                         </button>
+                      </div>
                 </td>
             </tr>
             <?php
