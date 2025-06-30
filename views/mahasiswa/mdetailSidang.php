@@ -1,5 +1,5 @@
 <?php
-include '../../control/dosen/mdetailSidang_logic.php';
+include '../../control/mahasiswa/mdetailSidang_logic.php';
 ?>
 
 <!DOCTYPE html>
