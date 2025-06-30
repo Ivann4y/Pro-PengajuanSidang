@@ -188,7 +188,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
           <b></b><b></b>
           <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
         </li>
-        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+        <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
           <b></b><b></b>
           <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
         </li>
@@ -200,7 +200,33 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
     </div>
 
     
-  
+  <!-- <div id="NavSide">
+    <div id="main-sidebar" class="NavSide__sidebar">
+      <div class="NavSide__sidebar-brand">
+        <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
+      </div>
+            <ul class="NavSide__sidebar-nav">
+        <li class="NavSide__sidebar-item">
+          <a href="aDetailSidang.php">
+            <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
+          </a>
+        </li>
+        <li class="NavSide__sidebar-item">
+          <a href="aEvaluasi.php">
+            <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
+          </a>
+        </li>
+        <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
+          <a href="aNilaiAkhir.php">
+            <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+          </a>
+        </li>
+          <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
+                </li>
+      </ul>
+    </div> -->
 
 
     <div class="NavSide__topbar">
@@ -483,4 +509,3 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
 </script>
 </body>
 </html>
-

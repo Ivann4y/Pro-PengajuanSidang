@@ -197,10 +197,7 @@ if (!empty($mahasiswa)) {
     $allStudentsGradesComplete = false;
 }
 
-
-// ===========================================================================
 // PROSES INSERT/UPDATE PENILAIAN JIKA FORM DISUBMIT (POST request)
-// ===========================================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
     $nim = $_POST['nim'];
     $n_dokumen = $_POST['nilaiLaporan'] ?? null;
@@ -208,37 +205,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
     $n_tanyajawab = $_POST['TanyaJawab'] ?? null;
     $n_proyek = $_POST['NilaiProyek'] ?? null;
 
-    $sql_check_penilaian_exists = "SELECT COUNT(*) AS count FROM Penilaian WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
-    $stmt_check_penilaian_exists = sqlsrv_query($conn, $sql_check_penilaian_exists, array($id_sidang, $nim, $loggedInNomorDosen));
-    
-    if ($stmt_check_penilaian_exists === false) {
-        $error_message = "Error saat memeriksa data penilaian: " . print_r(sqlsrv_errors(), true);
+    // Validasi input
+    if (empty($nim) || $n_dokumen === null || $n_presentasi === null || 
+        $n_tanyajawab === null || $n_proyek === null) {
+        $error_message = "Semua field nilai harus diisi!";
     } else {
-        $check_result = sqlsrv_fetch_array($stmt_check_penilaian_exists, SQLSRV_FETCH_ASSOC);
-
-        if ($check_result['count'] > 0) {
-            // Jika ada, lakukan UPDATE
-            $sql_upsert_penilaian = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ?
-                                   WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
-            $params_upsert_penilaian = array($n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek, $id_sidang, $nim, $loggedInNomorDosen);
-            $stmt_upsert_penilaian = sqlsrv_query($conn, $sql_upsert_penilaian, $params_upsert_penilaian);
-
-            if ($stmt_upsert_penilaian === false) {
-                $error_message = "Gagal memperbarui penilaian: " . print_r(sqlsrv_errors(), true);
-            } else {
-                $success = "Penilaian berhasil diperbarui untuk NIM " . htmlspecialchars($nim ?? ''); // Perbaikan: handle null
-            }
+        // Validasi range nilai (0-100)
+        if ($n_dokumen < 0 || $n_dokumen > 100 || $n_presentasi < 0 || $n_presentasi > 100 || 
+            $n_tanyajawab < 0 || $n_tanyajawab > 100 || $n_proyek < 0 || $n_proyek > 100) {
+            $error_message = "Nilai harus antara 0-100!";
         } else {
-            // Jika belum ada, lakukan INSERT
-            $sql_upsert_penilaian = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, n_dokumen, n_presentasi, n_tanyajawab, n_proyek, bobot_penilaian)
-                                   VALUES (?, ?, ?, ?, ?, ?, ?, NULL)";
-            $params_upsert_penilaian = array($id_sidang, $nim, $loggedInNomorDosen, $n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek);
-            $stmt_upsert_penilaian = sqlsrv_query($conn, $sql_upsert_penilaian, $params_upsert_penilaian);
-
-            if ($stmt_upsert_penilaian === false) {
-                $error_message = "Gagal menyimpan penilaian: " . print_r(sqlsrv_errors(), true);
+            $sql_check_penilaian_exists = "SELECT COUNT(*) AS count FROM Penilaian WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
+            $stmt_check_penilaian_exists = sqlsrv_query($conn, $sql_check_penilaian_exists, array($id_sidang, $nim, $loggedInNomorDosen));
+            
+            if ($stmt_check_penilaian_exists === false) {
+                $error_message = "Error saat memeriksa data penilaian: " . print_r(sqlsrv_errors(), true);
             } else {
-                $success = "Penilaian berhasil disimpan untuk NIM " . htmlspecialchars($nim ?? ''); // Perbaikan: handle null
+                $check_result = sqlsrv_fetch_array($stmt_check_penilaian_exists, SQLSRV_FETCH_ASSOC);
+
+                if ($check_result['count'] > 0) {
+                    // Jika ada, lakukan UPDATE
+                    $sql_upsert_penilaian = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ?
+                                           WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
+                    $params_upsert_penilaian = array($n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek, $id_sidang, $nim, $loggedInNomorDosen);
+                    $stmt_upsert_penilaian = sqlsrv_query($conn, $sql_upsert_penilaian, $params_upsert_penilaian);
+
+                    if ($stmt_upsert_penilaian === false) {
+                        $error_message = "Gagal memperbarui penilaian: " . print_r(sqlsrv_errors(), true);
+                    } else {
+                        $success = "Penilaian berhasil diperbarui untuk NIM " . htmlspecialchars($nim);
+                    }
+                } else {
+                    // Jika belum ada, lakukan INSERT
+                    $sql_upsert_penilaian = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, n_dokumen, n_presentasi, n_tanyajawab, n_proyek, bobot_penilaian)
+                                           VALUES (?, ?, ?, ?, ?, ?, ?, NULL)";
+                    $params_upsert_penilaian = array($id_sidang, $nim, $loggedInNomorDosen, $n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek);
+                    $stmt_upsert_penilaian = sqlsrv_query($conn, $sql_upsert_penilaian, $params_upsert_penilaian);
+
+                    if ($stmt_upsert_penilaian === false) {
+                        $error_message = "Gagal menyimpan penilaian: " . print_r(sqlsrv_errors(), true);
+                    } else {
+                        $success = "Penilaian berhasil disimpan untuk NIM " . htmlspecialchars($nim);
+                    }
+                }
             }
         }
     }
@@ -461,12 +470,12 @@ if (!empty($current_nim) && $id_sidang) {
                  <?php echo htmlspecialchars($dosen_terkait_sidang ?? ''); ?>
              </div>
              <!-- Debug Info -->
-             <div style="font-size: 12px; color: #666; margin-top: 5px;">
+             <!-- <div style="font-size: 12px; color: #666; margin-top: 5px;">
                  Debug: jenis_sidang=<?php echo $jenis_sidang; ?>, 
                  id_kelompok=<?php echo $id_kelompok; ?>, 
                  id_matkul=<?php echo $id_matkul; ?>, 
                  dosen_terkait_sidang=<?php echo $dosen_terkait_sidang; ?>
-             </div>
+             </div> -->
            </div>
          </div>
        </div>
