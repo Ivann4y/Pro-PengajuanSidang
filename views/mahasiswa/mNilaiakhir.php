@@ -90,29 +90,37 @@ if ($stmtMhs && $row = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC)) {
 
 // === 4. Ambil Catatan Sidang ===
 $sqlCatatan = "
-    SELECT d.nama_dosen, ds.catatan_sidang
+    SELECT
+        d.nama_dosen,
+        ds.catatan_sidang
     FROM Detail_Sidang ds
     JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
     WHERE ds.id_sidang = ?
+    ORDER BY d.nama_dosen;
 ";
-$stmtCat = sqlsrv_query($conn, $sqlCatatan, [$id_sidang]);
-$catatanList = [];
 
-if ($stmtCat) {
-    while ($row = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC)) {
-        if (!empty($row['catatan_sidang'])) {
-            $catatanList[] = $row['nama_dosen'] . ": " . $row['catatan_sidang'];
-        }
+$paramsCatatan = array($id_sidang);
+$stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
+
+if ($stmtCatatan === false) {
+    die("Error query catatan: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+
+$catatanArray = [];
+while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
+    $catatan = trim($rowCatatan['catatan_sidang']);
+    if (!empty($catatan) && $catatan !== '-') {
+        // Format catatan agar lebih rapi saat ditampilkan di textarea
+        $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
     }
 }
-$catatanText = !empty($catatanList) ? implode(" | ", $catatanList) : "Tidak ada catatan.";
 
-sqlsrv_close($conn);
+if (!empty($catatanArray)) {
+    // Gabungkan catatan dengan 2x baris baru untuk spasi antar catatan
+    $semuaCatatan = implode("\n\n", $catatanArray);
+}
 ?>
-
-
-
-
+2
 
 
 
@@ -162,35 +170,32 @@ sqlsrv_close($conn);
     <title>Mahasiswa - Nilai Akhir</title> <!-- Judul yang akan muncul di tab browser -->
   </head>
   <body>
-    <!-- Container utama untuk layout sidebar tdan konten -->
-    <div id="NavSide">
+
+  <div id="NavSide">
         <!-- === SIDEBAR NAVIGASI KIRI === -->
+        <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
-            <!-- Logo di bagian atas sidebar -->
-             <div class="NavSide__sidebar-brand img ">
+            <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
-            <!-- Daftar menu navigasi -->
             <ul class="NavSide__sidebar-nav">
-                <!-- Item menu "Detail Pengajuan" -->
-                <li class="NavSide__sidebar-item ">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
+                    <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
                 </li>
-                <!-- Item menu "Perbaikan" -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
-                </li>
-                <!-- Item menu "Nilai Akhir" (aktif) -->
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"> <!-- Kelas '...--active' menandakan halaman ini yang sedang dibuka -->
-                    <b></b><b></b>
-                    <a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                    <a href="m.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+                    <!-- <a href="aEvaluasi.php?id=<?= $row['id'] ?>"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a> -->
                 </li>
 
-                <li class="NavSide__sidebar-item"> <!-- Kelas '...--active' menandakan halaman ini yang sedang dibuka -->
+                <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
+                    <a href="mNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
                 </li>
             </ul>
         </div>
@@ -293,18 +298,16 @@ sqlsrv_close($conn);
         </div>
 
         <!-- Baris untuk kartu catatan yang read catatan -->
-        <div class="row mt-5 ">
+        <div class="row">
             <div class="col-12">
-                <div class="card" id="cardcatatan">
-                    <div class="card-body">
-                        <h3 class="card-title text-dark" >Catatan :</h3>
-                        <div class="text-dark" id="catatan-content">
-                            <?= htmlspecialchars($catatanText) ?>
-                        </div>
-                    </div>
+              <div class="card h-100 mt-5" id="cardcatatan">
+                <div class="card-body px-4 py-4 d-flex flex-column">
+                  <h3 class="card-title text-black mb-3">Catatan dari Dosen Penguji</h3>
+                  <textarea id="catatan" class="form-control flex-grow-1" rows="8" readonly><?= htmlspecialchars($semuaCatatan) ?></textarea>
                 </div>
+              </div>
             </div>
-        </div>
+          </div>
         
 
     </div>

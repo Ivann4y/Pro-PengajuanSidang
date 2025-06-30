@@ -138,6 +138,8 @@ if (!empty($catatanArray)) {
     $semuaCatatan = implode("\n\n", $catatanArray);
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -186,8 +188,9 @@ if (!empty($catatanArray)) {
       cursor: default;
     }
     #catatan {
-      background-color: white; /* Dibuat putih agar lebih terbaca */
-      border-radius: 15px;
+      background-color: rgb(235, 238, 245);
+      border: none;
+      
       padding: 15px;
       font-size: 1rem;
       resize: vertical;
@@ -201,12 +204,26 @@ if (!empty($catatanArray)) {
 
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
-      <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /></div>
+      <div class="NavSide__sidebar-brand">
+        <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+      </div>
       <ul class="NavSide__sidebar-nav">
-        <li class="NavSide__sidebar-item"><a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a></li>
-        <li class="NavSide__sidebar-item"><a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a></li>
-        <li class="NavSide_sidebar-item NavSide_sidebar-item--active"><a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a></li>
-        <li class="NavSide__sidebar-item"><a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a></li>
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+        </li>
+        <li class="NavSide__sidebar-item ">
+          <b></b><b></b>
+          <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+        </li>
+        <li class="NavSide__sidebar-item NavSide__sidebar-item--active ">
+          <b></b><b></b>
+          <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+        </li>
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Kembali</span></a>
+        </li>
       </ul>
     </div>
 
@@ -264,24 +281,25 @@ if (!empty($catatanArray)) {
             <div class="col-12">
               <div class="card h-100" id="carddetailPenilaian">
                 <div class="card-body px-4 py-4">
-                  <h3 class="card-title text-black mb-3">Detail Penilaian (Rata-rata)</h3>
+                  <h3 class="card-title text-black mb-3">Detail Penilaian</h3>
                   <div class="row text-center">
-                    <div class="col-md-3 col-6"><label class="d-block mb-1">Nilai Laporan</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['dokumen']) ?>" readonly/></div>
-                    <div class="col-md-3 col-6"><label class="d-block mb-1">Presentasi</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['presentasi']) ?>" readonly/></div>
-                    <div class="col-md-3 col-6"><label class="d-block mb-1">Tanya Jawab</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['tanyajawab']) ?>" readonly/></div>
-                    <div class="col-md-3 col-6"><label class="d-block mb-1">Nilai Proyek</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['proyek']) ?>" readonly/></div>
+                    <div class="col-md-3 col-6"><label class="d-block mb-1">Nilai Laporan:</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['dokumen']) ?>" readonly/></div>
+                    <div class="col-md-3 col-6"><label class="d-block mb-1">Presentasi:</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['presentasi']) ?>" readonly/></div>
+                    <div class="col-md-3 col-6"><label class="d-block mb-1">Tanya Jawab:</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['tanyajawab']) ?>" readonly/></div>
+                    <div class="col-md-3 col-6"><label class="d-block mb-1">Nilai Proyek:</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['proyek']) ?>" readonly/></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
           <!-- Kartu Catatan -->
           <div class="row">
             <div class="col-12">
               <div class="card h-100" id="cardcatatan">
                 <div class="card-body px-4 py-4 d-flex flex-column">
                   <h3 class="card-title text-black mb-3">Catatan dari Dosen Penguji</h3>
-                  <textarea id="catatan" class="form-control flex-grow-1" rows="8" readonly><?= htmlspecialchars($semuaCatatan) ?></textarea>
+                  <div id="catatan" class="form-control flex-grow-1" rows="8" ><?= htmlspecialchars($semuaCatatan) ?></div>
                 </div>
               </div>
             </div>
