@@ -20,7 +20,7 @@ $sql = "
     LEFT JOIN
         Mahasiswa M ON KM.nim = M.nim
     ORDER BY
-        K.id_kelompok, M.nim
+        K.id_kelompok DESC, M.nim ASC
 ";
 
 $stmt = sqlsrv_query($conn, $sql);

@@ -108,7 +108,7 @@ require "../../koneksi/koneksiAndrew.php";
         <div>
           <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
 
-          <!-- <ul class="nav nav-tabs">
+          <ul class="nav nav-tabs">
             <li class="nav-item">
               <a class="nav-link active" href="#">mahasiswa1</a>
             </li>
@@ -118,7 +118,7 @@ require "../../koneksi/koneksiAndrew.php";
             <li class="nav-item">
               <a class="nav-link" href="#">mahasiswa3</a>
             </li>
-          </ul> -->
+          </ul>
 
           <script>
             document.addEventListener("DOMContentLoaded", function() {
