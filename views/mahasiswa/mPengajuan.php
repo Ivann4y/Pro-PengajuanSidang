@@ -2,11 +2,10 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-if (!isset($_SESSION['user_nim'])) {
-    $nim_mahasiswa_logged_in = '1000000001'; 
-} else {
-    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
+if (!isset($_SESSION['nim'])) {
+    die("KESALAHAN FATAL: NIM pengguna tidak ditemukan di sesi. Silakan login kembali.");
 }
+$nim_mahasiswa_logged_in = $_SESSION['nim'];
 
 $path_to_root = '../../';
 
@@ -28,6 +27,49 @@ include '../../koneksi/koneksiAndrew.php';
 $success_message = '';
 $error_message = '';
 
+// Handle Delete Request
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && $_POST['delete_sidang'] === '1') {
+    $id_sidang_to_delete = $_POST['id_sidang'];
+
+    // Security check: Ensure the student is trying to delete their own draft
+    $checkQuery = "
+        SELECT COUNT(s.id_sidang) as total 
+        FROM dbo.Sidang s
+        WHERE s.id_sidang = ? 
+          AND s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
+          AND s.status_ajuan = 0x00 -- Only drafts can be deleted
+    ";
+    $checkParams = [$id_sidang_to_delete, $nim_mahasiswa_logged_in];
+    $checkStmt = sqlsrv_query($conn, $checkQuery, $checkParams);
+    $can_delete = sqlsrv_fetch_array($checkStmt, SQLSRV_FETCH_ASSOC)['total'] > 0;
+
+    if ($can_delete) {
+        sqlsrv_begin_transaction($conn);
+        try {
+            // Delete from child table first
+            $sql_delete_detail = "DELETE FROM dbo.Detail_Sidang WHERE id_sidang = ?";
+            sqlsrv_query($conn, $sql_delete_detail, [$id_sidang_to_delete]);
+
+            // Then delete from parent table
+            $sql_delete_sidang = "DELETE FROM dbo.Sidang WHERE id_sidang = ?";
+            sqlsrv_query($conn, $sql_delete_sidang, [$id_sidang_to_delete]);
+            
+            sqlsrv_commit($conn);
+            $_SESSION['success_message'] = "Pengajuan draft berhasil dihapus.";
+
+        } catch (Exception $e) {
+            sqlsrv_rollback($conn);
+            $_SESSION['error_message'] = "Error saat menghapus data.";
+        }
+    } else {
+        $_SESSION['error_message'] = "Gagal menghapus: Anda tidak memiliki izin atau pengajuan bukan draft.";
+    }
+    
+    // Redirect to prevent form resubmission
+    header("Location: mPengajuan.php?filter=" . urlencode($_GET['filter'] ?? 'Semua') . "&page=" . urlencode($_GET['page'] ?? 1));
+    exit();
+}
+
 // Pagination settings
 $rowsPerPage = 10;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
@@ -44,24 +86,19 @@ if ($filter === 'TA') {
     $filterClause = " AND s.jenis_sidang = 1";
 }
 
-// Count total rows for pagination - DENGAN FILTER
 $countQuery = "
     SELECT COUNT(s.id_sidang) as total
     FROM dbo.Sidang s
     WHERE
-        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
+        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
         AND s.status_ajuan = 0x00 -- Hanya DRAF
-        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
+        $filterClause
 ";
-$countResult = sqlsrv_query($conn, $countQuery);
-if ($countResult === false) {
-    die(print_r(sqlsrv_errors(), true));
-}
+$params_count = [$nim_mahasiswa_logged_in];
+$countResult = sqlsrv_query($conn, $countQuery, $params_count);
 $totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRows / $rowsPerPage);
 
-
-// Kueri utama untuk menampilkan DRAF milik mahasiswa yang login - DENGAN FILTER
 $query = "
     SELECT
         s.id_sidang,
@@ -72,21 +109,21 @@ $query = "
     FROM
         dbo.Sidang AS s
     LEFT JOIN 
-        dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang
+        dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
     LEFT JOIN 
         dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
     LEFT JOIN 
         dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
     WHERE
-        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
-        AND s.status_ajuan = 0x00 -- Filter utama untuk menampilkan HANYA DRAF
-        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
+        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
+        AND s.status_ajuan = 0x00 -- Filter for DRAFTS only
+        $filterClause
     ORDER BY
         s.id_sidang DESC
-    OFFSET $offset ROWS FETCH NEXT $rowsPerPage ROWS ONLY
+    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
 ";
-$result = sqlsrv_query($conn, $query);
-
+$params_main = [$nim_mahasiswa_logged_in, $offset, $rowsPerPage];
+$result = sqlsrv_query($conn, $query, $params_main);
 if ($result === false) {
     die(print_r(sqlsrv_errors(), true));
 }
@@ -119,6 +156,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
@@ -227,8 +265,22 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                                             <td><?php echo htmlspecialchars($sidang['judul']); ?></td>
                                             <td><?php echo htmlspecialchars($sidang['matkul']); ?></td>
                                             <td><?php echo htmlspecialchars($sidang['dosen']); ?></td>
-                                            <td>
-                                                <i class="fa-solid fa-file-signature" style="cursor: pointer;" onclick="editData(<?php echo $sidang['id_sidang']; ?>, '<?php echo htmlspecialchars($sidang['matkul']); ?>', '<?php echo htmlspecialchars($sidang['judul']); ?>')"></i>
+                                            <td class="text-center">
+                                                <form method="post" style="display:inline;">
+                                                <input type="hidden" name="id_sidang" value="<?php echo $sidang['id_sidang']; ?>">
+                                                <!-- This input will be used by our JavaScript for the delete action -->
+                                                <input type="hidden" name="delete_sidang" value=""> 
+
+                                                <!-- EDIT BUTTON: type="submit" and formaction tells it where to go -->
+                                                <button type="submit" formaction="mEditPengajuan.php" class="btn btn-link p-0 m-0" title="Edit Pengajuan">
+                                                    <i class="fa-solid fa-file-signature"></i>
+                                                </button>
+
+                                                <!-- DELETE BUTTON: type="button" to let JavaScript handle it -->
+                                                <button type="button" class="btn btn-link p-0 m-0 delete-btn" title="Hapus Pengajuan">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -328,14 +380,55 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                 };
             }
 
-            // Edit and Add functions
-            window.editData = function (idSidang, matkul, judul) {
-                window.location.href = `mEditPengajuan.php?id_sidang=${idSidang}&matkul=${encodeURIComponent(matkul)}&judul=${encodeURIComponent(judul)}`;
-            };
-
             window.tambahData = function () {
                 window.location.href = 'mTambahPengajuan.php';
             };
+            <?php if (isset($_SESSION['success_message'])): ?>
+            Swal.fire({
+                title: 'Berhasil!',
+                text: '<?php echo addslashes($_SESSION['success_message']); ?>',
+                icon: 'success',
+                confirmButtonColor: '#4B68FB'
+            });
+            <?php unset($_SESSION['success_message']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error_message'])): ?>
+            Swal.fire({
+                title: 'Gagal!',
+                text: '<?php echo addslashes($_SESSION['error_message']); ?>',
+                icon: 'error',
+                confirmButtonColor: '#4B68FB'
+            });
+            <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
+
+            // Handle delete button clicks
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault(); 
+                    const form = this.closest('form'); 
+                    
+                    Swal.fire({
+                        title: 'Anda yakin?',
+                        text: "Pengajuan draft ini akan dihapus secara permanen!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Dynamically set the form for deletion
+                            form.action = ''; // Set action to submit to the current page
+                            form.querySelector('input[name="delete_sidang"]').value = '1'; // Activate the delete flag
+                            form.submit(); // Now submit the correctly configured form
+                        }
+                    });
+                });
+            });
         });
     </script>
 </body>

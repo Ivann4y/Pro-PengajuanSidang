@@ -1,50 +1,104 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 $path_to_root = '../../';
 
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+// 1. Cek login dan role
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || $_SESSION['role'] !== 'mahasiswa') {
     header("Location: " . $path_to_root . "index.php");
     exit();
 }
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
-    header("Location: " . $path_to_root . "index.php");
-    exit();
+if (!isset($_SESSION['user_data']['nim'])) {
+    die("NIM mahasiswa tidak ditemukan di session.");
 }
+
+$nim = $_SESSION['user_data']['nim'];
 
 require "../../koneksi/koneksiAndrew.php";
 
-if (!isset($_SESSION['selected_sidang_id'])) {
-    die("ID Sidang tidak ditemukan.");
+// === 1. Ambil ID Kelompok dan ID Sidang mahasiswa login ===
+$sql = "
+    SELECT k.id_kelompok, s.id_sidang
+    FROM Kelompok_Mahasiswa km
+    JOIN Kelompok k ON km.id_kelompok = k.id_kelompok
+    JOIN Sidang s ON k.id_kelompok = s.id_kelompok
+    WHERE km.nim = ?
+";
+$stmt = sqlsrv_query($conn, $sql, [$nim]);
+if (!$stmt || !($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))) {
+    die("Data sidang mahasiswa tidak ditemukan.");
 }
+$id_kelompok = $row['id_kelompok'];
+$id_sidang = $row['id_sidang'];
 
-$id_sidang = $_SESSION['selected_sidang_id'];
-
-$nilaiAkhir = 'N/A';
-$catatanText = 'Tidak ada catatan.';
-$dataMahasiswa = [];
-
-// =================== 1. Ambil Nilai Akhir ===================
-$sqlNilai = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
-$stmtNilai = sqlsrv_query($conn, $sqlNilai, array($id_sidang));
-if ($stmtNilai && $row = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC)) {
-    $nilaiAkhir = $row['nilai_akhir'] ?? 'N/A';
-}
-
-// =================== 2. Ambil Catatan Sidang ===================
-$sqlCatatan = "
-    SELECT d.nama_dosen, ds.catatan_sidang 
+// === 2. Hitung nilai akhir berdasarkan komponen-komponen di Detail_Sidang ===
+$sqlNilai = "
+    SELECT 
+        AVG(CAST(ds.n_dokumen AS FLOAT)) AS avg_dokumen,
+        AVG(CAST(ds.n_presentasi AS FLOAT)) AS avg_presentasi,
+        AVG(CAST(ds.n_tanyajawab AS FLOAT)) AS avg_tanya,
+        AVG(CAST(ds.n_proyek AS FLOAT)) AS avg_proyek
     FROM Detail_Sidang ds
-    JOIN Dosen2 d ON ds.nomor_dosen = d.nomor_dosen
     WHERE ds.id_sidang = ?
 ";
-$stmtCat = sqlsrv_query($conn, $sqlCatatan, array($id_sidang));
+$stmtNilai = sqlsrv_query($conn, $sqlNilai, [$id_sidang]);
+$nilaiAkhir = 'N/A';
+
+if ($stmtNilai && $row = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC)) {
+    $avg_dok = $row['avg_dokumen'];
+    $avg_pres = $row['avg_presentasi'];
+    $avg_tanya = $row['avg_tanya'];
+    $avg_proyek = $row['avg_proyek'];
+
+    if ($avg_dok !== null && $avg_pres !== null && $avg_tanya !== null && $avg_proyek !== null) {
+        $total = ($avg_dok * 0.2) + ($avg_pres * 0.2) + ($avg_tanya * 0.3) + ($avg_proyek * 0.3);
+
+        // Konversi ke nilai huruf
+        if ($total >= 85) $nilaiAkhir = 'A';
+        elseif ($total >= 75) $nilaiAkhir = 'B';
+        elseif ($total >= 65) $nilaiAkhir = 'C';
+        elseif ($total >= 50) $nilaiAkhir = 'D';
+        else $nilaiAkhir = 'E';
+    }
+}
+
+// === 3. Ambil Data Mahasiswa + Matkul + Pembimbing ===
+$sqlMhs = "
+    SELECT 
+        m.nim, m.nama_mhs, mk.nama_matkul, d.nama_dosen AS dosen_pembimbing
+    FROM Mahasiswa m
+    LEFT JOIN Kelompok_Mahasiswa km ON m.nim = km.nim
+    LEFT JOIN Bimbingan b ON km.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
+    LEFT JOIN Dosen d ON d.nomor_dosen = b.nomor_dosen
+    LEFT JOIN Sidang s ON km.id_kelompok = s.id_kelompok
+    LEFT JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang
+    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+    WHERE m.nim = ?
+";
+$stmtMhs = sqlsrv_query($conn, $sqlMhs, [$nim]);
+$dataMahasiswa = [];
+
+if ($stmtMhs && $row = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC)) {
+    $dataMahasiswa = [
+        'nim' => $row['nim'],
+        'nama' => $row['nama_mhs'],
+        'matkul' => $row['nama_matkul'] ?? 'Belum diisi',
+        'pembimbing' => $row['dosen_pembimbing'] ?? 'Belum ditentukan'
+    ];
+}
+
+// === 4. Ambil Catatan Sidang ===
+$sqlCatatan = "
+    SELECT d.nama_dosen, ds.catatan_sidang
+    FROM Detail_Sidang ds
+    JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE ds.id_sidang = ?
+";
+$stmtCat = sqlsrv_query($conn, $sqlCatatan, [$id_sidang]);
 $catatanList = [];
 
-if ($stmtCat !== false) {
+if ($stmtCat) {
     while ($row = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC)) {
         if (!empty($row['catatan_sidang'])) {
             $catatanList[] = $row['nama_dosen'] . ": " . $row['catatan_sidang'];
@@ -53,46 +107,13 @@ if ($stmtCat !== false) {
 }
 $catatanText = !empty($catatanList) ? implode(" | ", $catatanList) : "Tidak ada catatan.";
 
-// =================== 3. Ambil Data Mahasiswa ===================
-$sqlMhs = "
-    SELECT 
-        m.nim, 
-        m.nama_mhs,
-        mk.nama_matkul,
-        d.nama_dosen AS dosen_pembimbing
-    FROM Sidang s
-    JOIN Mahasiswa2 m ON s.nim = m.nim
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
-    LEFT JOIN Bimbingan b ON m.nim = b.MahasiswaNIM
-    LEFT JOIN Dosen2 d ON b.Dosennomor_dosen = d.nomor_dosen
-    WHERE s.id_sidang = ?
-";
-
-$stmtMhs = sqlsrv_query($conn, $sqlMhs, array($id_sidang));
-if ($stmtMhs !== false) {
-    while ($row = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC)) {
-        $dataMahasiswa = [
-            'nim' => $row['nim'],
-            'nama' => $row['nama_mhs'],
-            'matkul' => $row['nama_matkul'],
-            'pembimbing' => $row['dosen_pembimbing']
-        ];
-    }
-}
-
-// =================== DEBUG OUTPUT (sementara) ===================
-echo "<h3>Data Mahasiswa:</h3>";
-echo "NIM: " . $dataMahasiswa['nim'] . "<br>";
-echo "Nama: " . $dataMahasiswa['nama'] . "<br>";
-echo "Mata Kuliah: " . $dataMahasiswa['matkul'] . "<br>";
-echo "Pembimbing: " . $dataMahasiswa['pembimbing'] . "<br><br>";
-
-echo "<h3>Nilai Akhir:</h3> $nilaiAkhir<br><br>";
-echo "<h3>Catatan:</h3> $catatanText<br>";
-
 sqlsrv_close($conn);
 ?>
+
+
+
+
+
 
 
 
