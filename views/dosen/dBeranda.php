@@ -43,29 +43,26 @@ include "../../koneksi/koneksiAndrew.php";
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
-                <a href="#" class="notification-icon" title="Notifikasi">
-                    <i class="bi bi-bell-fill fs-5"></i>
-                </a>
+                <i class="bi bi-bell-fill"></i>
                 <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
             </div>
         </div>
 
         <div class="NavSide__main-content" id="mainContent">
-            <div class="header-icons-desktop d-none d-lg-flex">
-                <a href="#" class="notification-icon" title="Notifikasi">
+            <div class="dashboard-header">
+                <div class="page-title">Beranda Dosen</div>
+                <div class="header-icons">
                     <i class="bi bi-bell-fill"></i>
-                </a>
-                <div class="profile-icon-desktop">
                     <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
-                    <!-- <i class="bi bi-person-fill"></i> -->
                 </div>
             </div>
-            <div class="dashboardTitle">Beranda Dosen</div>
-            <h2 class="welcomeText">Selamat Datang, <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?>!</h2>
+
+            <h2 class="welcome-text">Selamat Datang, <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?>!</h2>
+            
             <div class="row gy-4">
                 <div class="col-lg-3">
                     <div class="mb-4">
-                        <a href="dpengajuan.php" style="text-decoration: none; color: inherit;">
+                        <a href="dPengajuan.php" style="text-decoration: none; color: inherit;">
                             <div class="dashboard-card card-pengajuan status-card-common hover-effect-card">
                                 <div class="number">0</div>
                                 <div class="text-content">
@@ -102,7 +99,7 @@ include "../../koneksi/koneksiAndrew.php";
                 <div class="col-lg-4">
                     <div class="dashboard-card sidang-mendatang-card">
                         <h3 class="section-title">Sidang Mendatang</h3>
-                    </div>
+                        </div>
                 </div>
 
                 <div class="col-lg-5">
@@ -127,8 +124,7 @@ include "../../koneksi/koneksiAndrew.php";
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Calendar will be rendered by JavaScript -->
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -139,10 +135,8 @@ include "../../koneksi/koneksiAndrew.php";
     <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div style="background-color:#4B68FB;">
-                    <div class="modal-header">
-                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                    </div>
+                <div class="modal-header modal-heading-color">
+                    <h1 class="modal-title mx-auto fs-5" id="exampleModalLabel">Perhatian!</h1>
                 </div>
                 <div class="modal-body mx-auto">
                     Apakah anda yakin ingin keluar?
@@ -157,6 +151,16 @@ include "../../koneksi/koneksiAndrew.php";
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/dosen-dashboard-ajax.js"></script>
+    <script>
+        // Contoh sederhana untuk fungsionalitas toggle sidebar mobile
+        const sidebarToggleMobile = document.getElementById('sidebarToggleMobile');
+        const mainSidebar = document.getElementById('main-sidebar');
+
+        sidebarToggleMobile.addEventListener('click', () => {
+            mainSidebar.classList.toggle('NavSide__sidebar--active-mobile');
+            sidebarToggleMobile.classList.toggle('NavSide__toggle--active');
+        });
+    </script>
 </body>
 
 </html>

@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
         $aksi = $_POST['aksi'];
-        $status_ajuan = ($aksi == 'Kirim') ? 0x01 : 0x00; // Gunakan format biner 0x01 / 0x00
+        $status_ajuan = ($aksi == 'Kirim') ? 0 : null; // Karena aksi 'Kirim' berarti mengajukan, sedangkan 'Simpan' hanya menyimpan sebagai draf 
 
         if (empty($judul)) {
             throw new Exception("Judul tidak boleh kosong.");
@@ -152,7 +152,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
         // Commit transaksi jika semua berhasil
         sqlsrv_commit($conn);
-        $success_message = ($status_ajuan == 0x01) ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan!';
+        if (is_null($status_ajuan)) {
+            $success_message = 'Pengajuan Berhasil Disimpan!';
+        } elseif ($status_ajuan === 0) {
+            $success_message = 'Pengajuan Berhasil Dikirim!';
+        }
 
     } catch (Exception $e) {
         // Rollback transaksi jika ada error
