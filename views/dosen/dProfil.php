@@ -5,13 +5,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $path_to_root = '../../';
 
+
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
     header("Location: " . $path_to_root . "index.php"); 
     exit(); 
 }
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     header("Location: " . $path_to_root . "index.php");
     exit(); 
@@ -20,9 +21,17 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 require $path_to_root . "koneksi/koneksiAndrew.php";
 
 $user = $_SESSION['user_data'];
-$nama = $user['nama_admin'];
+$nim = $user['nomor_dosen'];
+$nama = $user['nama_dosen'];
+$prodi = $user['prodi']; 
 $email = $user['email']; 
 $no_telepon = $user['no_telepon']; 
+
+if ($user['jenis_kelamin'] === 'L') {
+    $jk = 'Laki-laki';
+} elseif ($user['jenis_kelamin'] === 'P') {
+    $jk = 'Perempuan';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,8 +39,7 @@ $no_telepon = $user['no_telepon'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta author="JaisyuNurM-AliansiSidang_Kelompok5"/>
-    <title>Admin - Profil</title>
+    <title>Mahasiswa - Profil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
@@ -51,7 +59,7 @@ $no_telepon = $user['no_telepon'];
             background-color: #ffffff;
         }
 
-        .data-admin {
+        .data-mahasiswa {
             background-color: #ffffff;
             padding: 2rem;
             border-radius: 15px;
@@ -59,24 +67,24 @@ $no_telepon = $user['no_telepon'];
             margin-top: 20px;
         }
 
-        .data-admin h2 {
+        .data-mahasiswa h2 {
             margin-bottom: 1.5rem;
             color: #333;
             font-weight: 600;
         }
 
-        .aData {
+        .mData {
             margin-bottom: 1rem;
         }
 
-        .aData p:first-child {
+        .mData p:first-child {
             font-weight: 600;
             color: #666;
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
         }
 
-        .aData .value {
+        .mData .value {
             background-color: #f8f9fa;
             padding: 0.75rem 1rem;
             border-radius: 8px;
@@ -101,15 +109,15 @@ $no_telepon = $user['no_telepon'];
         }
 
         @media (max-width: 768px) {
-            .data-admin {
+            .data-mahasiswa {
                 padding: 1.5rem;
                 margin-top: 1rem;
             }
-            
+
             .profil-img {
                 margin-bottom: 2rem;
             }
-            
+
             .profil-img img {
                 width: 60%;
             }
@@ -123,35 +131,37 @@ $no_telepon = $user['no_telepon'];
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
-           <ul class="NavSide__sidebar-nav">
+            <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="aBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="aPenjadwalan.php"><span class="NavSide__sidebar-title fw-semibold">Penjadwalan</span></a>
+                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Daftar Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logABeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
+            
             </ul>
         </div>
-        
+
         <div class="NavSide__topbar">
             <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
-               <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
-                    <i class="bi bi-bell-fill"></i>
-                </a>
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
             </div>
         </div>
 
@@ -164,50 +174,68 @@ $no_telepon = $user['no_telepon'];
                     <div class="col-md-6 profil-img">
                         <img src="../../assets/img/img3-nobg.png" alt="">
                     </div>
-                    <div class="col-md-6 data-admin">
-                        <h2>Data admin</h2>
-                        <div class="row aData">
+                    <div class="col-md-6 data-mahasiswa">
+                        <h2>Data Dosen</h2>
+                        <div class="row mData">
+                            <div class="col-12">
+                                <p>NIP</p>
+                                <p class="value"><?= $nim ?></p>
+                            </div>
+                        </div>
+                        <div class="row mData">
                             <div class="col-12">
                                 <p>Nama</p>
                                 <p class="value"><?= $nama ?></p>
                             </div>
                         </div>
-                        <div class="row aData">
+                        <div class="row mData">
+                            <div class="col-12">
+                                <p>Program Studi</p>
+                                <p class="value"><?= $prodi ?></p>
+                            </div>
+                        </div>
+                        <div class="row mData">
                             <div class="col-12">
                                 <p>Email</p>
                                 <p class="value"><?= $email ?></p>
                             </div>
                         </div>
-                        <div class="row aData">
+                        <div class="row mData">
                             <div class="col-12">
                                 <p>No. Telepon</p>
                                 <p class="value"><?= $no_telepon ?></p>
+                            </div>
+                        </div>
+                        <div class="row mData">
+                            <div class="col-12">
+                                <p>Jenis Kelamin</p>
+                                <p class="value"><?= $jk ?></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
+    </div>
 
-           <!-- Modal keluar-->
-  <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                 <div class="modal-heading-color">
-                    <div class="modal-header">
-                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div style="background-color: rgb(67, 54, 240);">
+                                <div class="modal-header">
+                                    <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                                </div>
+                            </div>
+                            <div class="modal-body mx-auto">
+                                Apakah anda yakin ingin keluar?
+                            </div>
+                            <div class="modal-footer justify-content-center border-0">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-body mx-auto">
-                    Apakah anda yakin ingin keluar?
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -223,20 +251,19 @@ $no_telepon = $user['no_telepon'];
         }
 
         // Sidebar Active Item Logic 
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function(event) {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
-
-        
+        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        // for (let i = 0; i < listItems.length; i++) {
+        //     listItems[i].onclick = function(event) {
+        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+        //             for (let j = 0; j < listItems.length; j++) {
+        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+        //             }
+        //             this.classList.add("NavSide__sidebar-item--active");
+        //         }
+        //     };
+        // }
     </script>
     <script src="../../assets/js/main.js"></script>
 </body>
+
 </html>

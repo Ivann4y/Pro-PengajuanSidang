@@ -70,15 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $sql_dosen = "SELECT nomor_dosen FROM dbo.Bimbingan WHERE id_kelompok = ? AND isPembimbing = 0x01";
         $params_dosen = [$id_kelompok];
         $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
-        if ($stmt_dosen === false) {
-            throw new Exception("Gagal mengambil nomor_dosen: " . print_r(sqlsrv_errors(), true));
-        }
-        if ($row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
-            $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
-        }
-        sqlsrv_free_stmt($stmt_dosen);
-        if (!$nomor_dosen_pembimbing) {
-            throw new Exception("Dosen pembimbing tidak ditemukan untuk id_kelompok: $id_kelompok");
+        if ($stmt_dosen) {
+            if ($row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
+                $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
+            }
+            sqlsrv_free_stmt($stmt_dosen);
         }
 
         // LANGKAH 4: Baca isi file (konten biner) ke dalam variabel dengan validasi
@@ -235,7 +231,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         <main class="NavSide__main-content" id="mPengajuan">
             <div class="container-fluid">
                 <div class="dashboard-header">
-                    <h2 class="text-heading">Nayaka Ivana Putra (Mahasiswa)</h2>
+                    <h2 class="text-heading"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
+                    <div class="header-icons d-none d-md-flex">
+                        <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                        <div class="profile-icon">
+                            <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-12">

@@ -2,6 +2,11 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['user_nim'])) {
+    $nim_mahasiswa_logged_in = '1000000001'; 
+} else {
+    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
+}
 
 $path_to_root = '../../';
 
@@ -22,7 +27,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 include '../../koneksi/koneksiAndrew.php';
 $success_message = '';
 $error_message = '';
-$nim_mahasiswa_logged_in = $_SESSION['user_data']['nim'];
 
 // Pagination settings
 $rowsPerPage = 10;
@@ -33,22 +37,21 @@ $offset = ($page - 1) * $rowsPerPage;
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $filterClause = '';
 if ($filter === 'TA') {
+    // 0 adalah untuk Tugas Akhir
     $filterClause = " AND s.jenis_sidang = 0";
 } elseif ($filter === 'Semester') {
+    // 1 adalah untuk Sidang Mata Kuliah lain
     $filterClause = " AND s.jenis_sidang = 1";
 }
 
-$subQueryIdKelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in'";
-
-
-// Count total rows for pagination 
+// Count total rows for pagination - DENGAN FILTER
 $countQuery = "
-    SELECT COUNT(DISTINCT s.id_sidang) as total
-    FROM Sidang s
-    JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-    WHERE b.isPembimbing = 0x01
-    $filterClause
+    SELECT COUNT(s.id_sidang) as total
+    FROM dbo.Sidang s
+    WHERE
+        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
+        AND s.status_ajuan = 0x00 -- Hanya DRAF
+        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
 ";
 $countResult = sqlsrv_query($conn, $countQuery);
 if ($countResult === false) {
@@ -57,26 +60,31 @@ if ($countResult === false) {
 $totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRows / $rowsPerPage);
 
-// Main query with pagination and filter
+
+// Kueri utama untuk menampilkan DRAF milik mahasiswa yang login - DENGAN FILTER
 $query = "
-    SELECT DISTINCT
-        s.id_sidang, 
-        s.judul, 
-        s.jenis_sidang, 
-        s.id_kelompok, 
-        d.nama_dosen, 
-        m.nama_matkul
-    FROM Sidang s
-    JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-    LEFT JOIN MataKuliah m ON ds.id_matkul = m.id_matkul
-    WHERE b.isPembimbing = 0x01
-    $filterClause
-    ORDER BY s.id_sidang
+    SELECT
+        s.id_sidang,
+        s.judul,
+        s.jenis_sidang,
+        ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
+        ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
+    FROM
+        dbo.Sidang AS s
+    LEFT JOIN 
+        dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang
+    LEFT JOIN 
+        dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
+    LEFT JOIN 
+        dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE
+        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
+        AND s.status_ajuan = 0x00 -- Filter utama untuk menampilkan HANYA DRAF
+        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
+    ORDER BY
+        s.id_sidang DESC
     OFFSET $offset ROWS FETCH NEXT $rowsPerPage ROWS ONLY
 ";
-
 $result = sqlsrv_query($conn, $query);
 
 if ($result === false) {
@@ -85,10 +93,17 @@ if ($result === false) {
 
 $dataSidang = [];
 while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+    // Logika untuk menampilkan nama matkul yang benar berdasarkan jenis sidang
+    if ($row['jenis_sidang'] == 0) {
+        $nama_matkul_display = 'Tugas Akhir';
+    } else {
+        $nama_matkul_display = $row['nama_matkul'];
+    }
+
     $dataSidang[] = [
         "id_sidang" => $row['id_sidang'],
         "judul" => $row['judul'],
-        "matkul" => $row['nama_matkul'] ?? 'N/A',
+        "matkul" => $nama_matkul_display, // Gunakan variabel yang sudah diproses
         "dosen" => $row['nama_dosen'] ?? 'N/A'
     ];
 }
@@ -152,7 +167,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
             <div class="container-fluid">
                 <div class="row">
                     <div class="dashboard-header">
-                        <h2 class="text-heading" style="color:black;">Nayaka Ivana Putra (Mahasiswa)</h2>
+                        <h2 class="text-heading" style="color:black;"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
                         <div class="header-icons d-none d-md-flex">
                             <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
                             <div class="profile-icon">
@@ -224,7 +239,6 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                             <nav aria-label="Page navigation">
                                 <ul class="pagination justify-content-center">
                                     <?php if ($totalPages > 1): ?>
-                                        <!-- Previous Button -->
                                         <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
                                             <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page - 1; ?>" aria-label="Previous">
                                                 <span aria-hidden="true">«</span>
@@ -266,7 +280,6 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                                         }
                                         ?>
 
-                                        <!-- Next Button -->
                                         <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
                                             <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page + 1; ?>" aria-label="Next">
                                                 <span aria-hidden="true">»</span>

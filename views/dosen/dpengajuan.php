@@ -229,27 +229,37 @@ $nomor = $offset + 1;
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
-                                <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
-                                <tr class="isiTabel jadiBiru">
-                                    <td><?= $nomor++; ?></td>
-                                    <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                    <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
-                                    <td><?= $row['jenis_sidang'] == 0 ? 'TA' : 'Semester'; ?></td>
-                                    <td style="text-align: center;">
-                                        <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $row['jenis_sidang']; ?>')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr><td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>
-                            <?php endif; ?>
-                        </tbody>
+<tbody>
+    <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
+        <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+            <?php
+                // --- LOGIKA KONVERSI DITARUH DI DALAM LOOP INI ---
+                // Mengubah nilai binary 0 atau 1 menjadi string 'TA' atau 'Semester'
+                // Ini akan digunakan baik untuk tampilan maupun untuk link
+                $tipe_untuk_url = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
+            ?>
+
+                <tr class="isiTabel jadiBiru">
+                <td><?= $nomor++; ?></td>
+                <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
+                <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
+                <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+
+                <td><?= $tipe_untuk_url; ?></td>
+
+                <td style="text-align: center;">
+                    <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $tipe_untuk_url; ?>')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </td>
+            </tr>
+
+        <?php endwhile; ?>
+    <?php else: ?>
+        <tr><td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>
+    <?php endif; ?>
+</tbody>
                     </table>
                     <div class="pagination-container">
                         <nav aria-label="Page navigation">

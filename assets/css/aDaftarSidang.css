@@ -311,31 +311,33 @@ body {
 
 .table-admin-custom thead th {
   padding: 12px 15px;
-  text-align: left;
-  border-bottom: 2px solid #dee2e6;
 }
 
 /* Baris isi tabel */
 .table-admin-custom tbody tr.isiTabel {
-  background-color: #f5f5f5;
+  background-color:  rgb(234, 238, 247);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .table-admin-custom .isiTabel td {
   padding: 15px 18px;
-  vertical-align: middle;
+  vertical-align: middle; /* Sudut melengkung pada sel */
 }
-
-/* Membuat sudut melengkung pada sel pertama dan terakhir setiap baris */
 .table-admin-custom .isiTabel td:first-child {
-  border-radius: 10px 0 0 10px;
+  border-top-left-radius: 20px; /* Sudut kiri atas melengkung */
+  border-bottom-left-radius: 20px; /* Sudut kiri bawah melengkung */
 }
-
-.table-admin-custom .isiTabel td:last-child {
-  border-radius: 0 10px 10px 0;
+.action-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;  /* Pastikan div mengisi seluruh lebar sel */
+  height: 100%; /* Pastikan div mengisi seluruh tinggi sel */
+}
+.table-admin-custom .isiTabel td:last-child {
+  border-top-right-radius: 20px; /* Sudut kanan atas melengkung */
+  border-bottom-right-radius: 20px; /* Sudut kanan bawah melengkung */
+  
 }
 
 /* Efek hover pada baris tabel */
@@ -495,7 +497,7 @@ body {
   /* Nonaktifkan efek hover pada mode mobile untuk UX yang lebih baik */
   .table-admin-custom tr.isiTabel:hover,
   .table-admin-custom tr.isiTabel:hover .detail-btn {
-    background-color: #f5f5f5;
+    background-color: rgb(234, 238, 247);
     color: #000;
   }
 

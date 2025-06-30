@@ -25,60 +25,52 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 require "../../koneksi/koneksiAndrew.php";
 
 if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    // Pastikan kita tidak mengalihkan ke halaman yang sama
-    if (basename($_SERVER['PHP_SELF']) != 'aNilaiAkhir.php') {
-        header("Location: aNilaiAkhir.php");
-        exit();
-    }
+    header("Location: aDaftarSidang.php");
+    exit();
 }
-// ======================= 1. DATA MAHASISWA & SIDANG (PERBAIKAN) =======================
+
+$id_sidang = $_SESSION['selected_sidang_id'];
+
+// ======================= 1. DATA MAHASISWA & SIDANG =======================
 $dataSidang = [
-    'judul' => '-', 'mahasiswa' => [], 'matkul' => '-', 'pembimbing' => '-'
+    'judul' => '-', 
+    'mahasiswa' => [], 
+    'pembimbing' => '-'
 ];
 
-// PERBAIKAN: Query untuk mendapatkan data sidang, mahasiswa dalam kelompok, dan pembimbing.
 $sqlSidangInfo = "
     SELECT 
         s.judul,
         m.nim,
         m.nama_mhs,
-        d_pembimbing.nama_dosen as nama_pembimbing,
-        mk.nama_matkul
+        d.nama_dosen as nama_pembimbing
     FROM Sidang s
-    LEFT JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-    LEFT JOIN Mahasiswa m ON km.nim = m.nim
-    LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-    LEFT JOIN Dosen d_pembimbing ON b.nomor_dosen = d_pembimbing.nomor_dosen
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+    JOIN Mahasiswa2 m ON s.nim = m.nim
+    LEFT JOIN Bimbingan b ON b.MahasiswaNIM = m.nim
+    LEFT JOIN Dosen2 d ON b.Dosennomor_dosen = d.nomor_dosen
     WHERE s.id_sidang = ?;
 ";
+
 $stmtSidangInfo = sqlsrv_query($conn, $sqlSidangInfo, array($id_sidang));
 if ($stmtSidangInfo === false) {
-    die(print_r(sqlsrv_errors(), true)); // Debug error SQL
+    die("Error query data sidang: " . print_r(sqlsrv_errors(), true));
 }
 
-if ($stmtSidangInfo) {
-    while ($row = sqlsrv_fetch_array($stmtSidangInfo, SQLSRV_FETCH_ASSOC)) {
-        if (empty($dataSidang['judul']) || $dataSidang['judul'] === '-') {
-            $dataSidang['judul'] = $row['judul'];
-            $dataSidang['pembimbing'] = $row['nama_pembimbing'];
-            $dataSidang['matkul'] = $row['nama_matkul'];
-        }
-        $dataSidang['mahasiswa'][] = [
-            'nim' => $row['nim'],
-            'nama' => $row['nama_mhs']
-        ];
+while ($row = sqlsrv_fetch_array($stmtSidangInfo, SQLSRV_FETCH_ASSOC)) {
+    if (empty($dataSidang['judul']) || $dataSidang['judul'] === '-') {
+        $dataSidang['judul'] = $row['judul'];
+        $dataSidang['pembimbing'] = $row['nama_pembimbing'];
     }
-    // Menghapus duplikasi mahasiswa jika query menghasilkan multiple rows
-    $dataSidang['mahasiswa'] = array_unique($dataSidang['mahasiswa'], SORT_REGULAR);
+    $dataSidang['mahasiswa'][] = [
+        'nim' => $row['nim'],
+        'nama' => $row['nama_mhs']
+    ];
 }
+$dataSidang['mahasiswa'] = array_unique($dataSidang['mahasiswa'], SORT_REGULAR);
 
-
-// ======================= 2. NILAI AKHIR MAHASISWA (PERBAIKAN) =======================
+// ======================= 2. NILAI AKHIR MAHASISWA =======================
 $nilaiAkhir = '-';
 
-// PERBAIKAN: Menghitung nilai akhir dari tabel Penilaian
 $sqlAkhir = "
     SELECT
         p.nim,
@@ -92,19 +84,23 @@ $sqlAkhir = "
     WHERE p.id_sidang = ?
     GROUP BY p.nim
 ";
-$stmtAkhir = sqlsrv_query($conn, $sqlAkhir, array($id_sidang));
-if ($stmtAkhir && ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC))) {
+
+$stmtAkhir = sqlsrv_query($conn, [$sqlAkhir, array($id_sidang)]);
+if ($stmtAkhir === false) {
+    die("Error query nilai akhir: " . print_r(sqlsrv_errors(), true));
+}
+
+if ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC)) {
     if (!is_null($rowAkhir['nilai_akhir_calculated'])) {
-        // Format nilai menjadi 2 angka desimal
         $nilaiAkhir = number_format($rowAkhir['nilai_akhir_calculated'], 2);
     }
 }
 
 
-// ======================= 3. NILAI & CATATAN SETIAP PENGUJI (PERBAIKAN) =======================
+
+// ======================= 3. NILAI & CATATAN SETIAP PENGUJI =======================
 $dataPenguji = [];
 
-// PERBAIKAN: Menggabungkan tabel Penilaian dan Detail_Sidang
 $sqlDetail = "
     SELECT 
         d.nama_dosen,
@@ -114,30 +110,31 @@ $sqlDetail = "
         p.n_presentasi, 
         p.n_tanyajawab, 
         p.n_proyek,
-        ds.catatan_sidang
-    FROM Penilaian p
-    JOIN Dosen d ON d.nomor_dosen = p.nomor_dosen
-    JOIN Mahasiswa m ON p.nim = m.nim
-    LEFT JOIN Detail_Sidang ds ON p.id_sidang = ds.id_sidang AND p.nomor_dosen = ds.nomor_dosen
+        p.catatan_sidang
+    FROM Detail_Sidang p
+    JOIN Dosen2 d ON d.nomor_dosen = p.nomor_dosen
+    JOIN Mahasiswa2 m ON p.nim = m.nim
     WHERE p.id_sidang = ?
     ORDER BY d.nama_dosen, m.nama_mhs;
 ";
+
 $stmtDetail = sqlsrv_query($conn, $sqlDetail, array($id_sidang));
-if ($stmtDetail) {
-    while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
-        $dataPenguji[] = [
-            'dosen' => $rowDetail['nama_dosen'],
-            'nim_dinilai' => $rowDetail['nim'],
-            'mahasiswa_dinilai' => $rowDetail['nama_mhs'],
-            'n_dokumen' => $rowDetail['n_dokumen'] ?? '-',
-            'n_presentasi' => $rowDetail['n_presentasi'] ?? '-',
-            'n_tanyajawab' => $rowDetail['n_tanyajawab'] ?? '-',
-            'n_proyek' => $rowDetail['n_proyek'] ?? '-',
-            'catatan' => $rowDetail['catatan_sidang'] ?? 'Tidak ada catatan.'
-        ];
-    }
+if ($stmtDetail === false) {
+    die("Error query data penguji: " . print_r(sqlsrv_errors(), true));
 }
 
+while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
+    $dataPenguji[] = [
+        'dosen' => $rowDetail['nama_dosen'],
+        'nim_dinilai' => $rowDetail['nim'],
+        'mahasiswa_dinilai' => $rowDetail['nama_mhs'],
+        'n_dokumen' => $rowDetail['n_dokumen'] ?? '-',
+        'n_presentasi' => $rowDetail['n_presentasi'] ?? '-',
+        'n_tanyajawab' => $rowDetail['n_tanyajawab'] ?? '-',
+        'n_proyek' => $rowDetail['n_proyek'] ?? '-',
+        'catatan' => $rowDetail['catatan_sidang'] ?? 'Tidak ada catatan.'
+    ];
+}
 ?>
 
 
@@ -167,6 +164,7 @@ if ($stmtDetail) {
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet"
   />
+  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="../../css/style.css" />
   <link rel="stylesheet" href="../../css/button-styles.css" />
@@ -176,227 +174,32 @@ if ($stmtDetail) {
   <title>Admin - Nilai Akhir</title>
   
   <style>
-    /* ... CSS seperti semula, tanpa perubahan untuk carddetailPenilaian dan cardcatatan (pastikan width dan margin-left di-set ke 100% / 0) ... */
-    #NavSide {
-      display: flex;
-      min-height: 100vh;
-      position: relative;
-    }
-
-    /* (semua CSS NavSide dan styling lain dipertahankan) */
-     .label-row i {
-      font-size: 1.5rem;    /* Perbesar icon */
-    }
-
-    body,
-    .card,
-    .form-control,
-    h1, h2, h3, h4, h5, h6 {
-      font-family: "Poppins", sans-serif !important;
-      color: #464869;
-    }
-
-    .btn-kembali {
-      background-color: #4B68FB;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 0 25px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 500;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 45px;
-    }
-
-    .btn-kembali:hover {
-      background-color: white;
-      transform: translateY(-2px);
-      color:#4B68FB;
-    }
-
-    .btn-kembali .icon-circle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      background-color: white;
-      border-radius: 50%;
-      margin-right: 10px;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-kembali:hover .icon-circle {
-      background-color: #4B68FB;
-    }
-
-    .btn-kembali .icon-circle i {
-      color: #4B68FB;
-    }
-
-    .btn-kembali:hover .icon-circle i {
-      color: white;
-    }
-
-    #cardNilai {
-      background-color: rgb(235, 238, 245);
-      border-radius: 50px;
-      border: none !important;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      margin-left: 0;
-    }
-
-    #carddataMahasiswa {
-      border: none !important;
-      background-color: rgb(235, 238, 245);
-      border-radius: 50px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 100%;
-    }
-
-    #nilaiMahasiswa {
-      font-size: 9.5rem !important;
-      font-weight: bold;
-      text-align: center;
-      border-radius: 30px;
-      width: 100%;
-      margin-left: 23px;
-      height: 40px;
-      background-color: rgb(235, 238, 245) !important;
-      border-color: rgb(235, 238, 245) !important;
-      cursor: default;
-    }
-
-    label {
-      margin-top: 20px;
-      margin-right: 15px;
-      font-weight: 550;
-    }
-
-    #detailpenilaian {
-      width: 75px;
-      font-size: 1rem;
-      margin-top: 20px;
-      border-color: transparent; /* Ini mungkin belum cukup kuat */
-    }
-
-
-    #carddetailPenilaian {
-      border: none !important;
-      width: 100%;
-      margin-left: 0;
-      background-color: rgb(235, 238, 245);
-      border-radius: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    #cardcatatan {
-      border: none !important;
-      background-color: rgb(235, 238, 245);
-      border-radius: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      margin-left: 0;
-    }
-
-
-    .form-control {
-      background-color: rgb(235, 238, 245);
-    }
-
-    #catatan {
-      width: 100%;
-      height: 150px;
-      border-radius: 30px;
-      font-size: 1rem;
-      margin-top: 20px;
-      pointer-events: none; /* Membuat elemen tidak bisa di-klik atau di-fokus */
-      resize: none;         /* Menghilangkan handle untuk resize */
-      border: none;
-    }
-
-    .icon-circle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: white;
-      color: #4B68FB;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      font-size: 16px;
-    }
-
-    /* Responsif dan media queries seperti semula, kecuali bagian modal atau kirim */
-    @media (max-width: 750px) {
-      /* ... */
-      #carddetailPenilaian,
-      #cardcatatan {
-        width: 100% !important;
-        margin-left: 0 !important;
-      }
-      #cardNilai {
-        width: 100% !important;
-        margin-left: 0 !important;
-        margin-bottom: 40px;
-      }
-      #nilaiMahasiswa {
-        font-size: 5rem !important;
-      }
-      #detailpenilaian {
-        width: 15% !important;
-      }
-    }
-    @media (max-width: 1000px) {
-      /* ... */
-      .NavSide__main-content #carddetailPenilaian,
-      .NavSide__main-content #cardcatatan {
-        width: 100% !important;
-        margin-left: 0 !important;
-      }
-      .NavSide__main-content #cardNilai {
-        width: 100% !important;
-        margin-left: 0 !important;
-        margin-bottom: 40px;
-      }
-      .NavSide__main-content #nilaiMahasiswa {
-        font-size: 5rem !important;
-      }
-      .NavSide__main-content #detailpenilaian {
-        width: 15% !important;
-      }
-    }
-    .page-nama {
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin-top: -35px;
-      margin-bottom: 20px;
-    }
-    .tooltip .tooltip-inner {
-      background-color: rgb(235, 238, 245) !important;
-      color:black !important;
-      border: 1px solid black;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .tooltip.bs-tooltip-top .tooltip-arrow::before,
-    .tooltip.bs-tooltip-bottom .tooltip-arrow::before,
-    .tooltip.bs-tooltip-start .tooltip-arrow::before,
-    .tooltip.bs-tooltip-end .tooltip-arrow::before {
-      border-top-color: rgb(235, 238, 245) !important;
-      border-bottom-color: rgb(235, 238, 245) !important;
-      border-left-color: rgb(235, 238, 245) !important;
-      border-right-color: rgb(235, 238, 245) !important;
-    }
   </style>
 </head>
 <body>
 
+      <div id="NavSide">
+    <div id="main-sidebar" class="NavSide__sidebar">
+      <div class="NavSide__sidebar-brand">
+        <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+      </div>
+      <ul class="NavSide__sidebar-nav">
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+        </li>
+        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+          <b></b><b></b>
+          <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
+        </li>
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
+        </li>
+      </ul>
+    </div>
+
+    
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
@@ -432,18 +235,16 @@ if ($stmtDetail) {
         <i class="bi bi-x-lg close"></i>
       </div>
     </div>
+    
 
     <main class="NavSide__main-content">
 
     <!-- Top bar desktop -->
       
             <div class="dashboard-header p-3">
-        <!-- GROUP 1: Title and Tabs (aligned to the left) -->
         <div>
-          <!-- The class causing the large gap has been removed and replaced with mb-3 -->
           <h2 class="text-heading text-black mb-3" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
 
-          <!-- STEP 1: Update the Navigation Tabs -->
             <ul class="nav nav-tabs" id="myTab" role="tablist">
               <li class="nav-item" role="presentation">
                 <a class="nav-link active" id="mahasiswa1-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa1-tab-pane" role="tab" aria-controls="mahasiswa1-tab-pane" aria-selected="true" href="#">mahasiswa1</a>
@@ -458,7 +259,6 @@ if ($stmtDetail) {
         </div>
 
         
-        <!-- GROUP 2: Icons (aligned to the right) -->
         <div class="header-icons d-none d-md-flex">
             <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
             <div class="profile-icon">
@@ -497,9 +297,11 @@ if ($stmtDetail) {
                         <i class="fa-solid fa-id-card"></i>
                         <span class="fw-bold">NIM</span>  
                       </div>
-                      <div class="value-row text-secondary fw-bold">0920240033</div>
+                    <div class="value-row text-secondary fw-bold">
+                      <?= $dataSidang['mahasiswa'][0]['nim'] ?? '-' ?>
                     </div>
-
+                    </div>
+                
 
                     <!-- Nama -->
                     <div class="info-group mb-3  section-bawah" style="margin-top:45px;">
@@ -507,7 +309,9 @@ if ($stmtDetail) {
                         <i class="fa-solid fa-user"></i>
                         <span class="fw-bold">Nama</span>
                       </div>
-                      <div class="value-row text-secondary fw-bold ">Nayakan Ivanna</div>
+                    <div class="value-row text-secondary fw-bold">
+                      <?= $dataSidang['mahasiswa'][0]['nama'] ?? '-' ?>
+                    </div>
                     </div>
                   </div>
 
@@ -540,14 +344,14 @@ if ($stmtDetail) {
               <div class="card-body card-soft px-3 py-3 text-center">
                 <h3 class="card-title mb-3 text-black" style="padding:10px;">Nilai Mahasiswa</h3>
                 <div>
-                  <input
-                    type="text"
-                    class="form-control form-control-lg text-center mx-auto"
-                    id="nilaiMahasiswa"
-                    placeholder="A"
-                    maxlength="1"
-                    readonly/>
-                </div>
+                <input
+                  type="text"
+                  class="form-control form-control-lg text-center mx-auto"
+                  id="nilaiMahasiswa"
+                  value="<?php echo $nilaiAkhir; ?>"
+                  maxlength="5"
+                  readonly
+                />
               </div>
             </div>
           </div>
@@ -566,14 +370,11 @@ if ($stmtDetail) {
                   <div class="col d-flex align-items-center">
                     <label for="nilaiLaporan" class="text-black me-2 mb-2">Nilai laporan</label>
                     <label class="colon1 me-2 mb-2">:</label>
-                    <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
                     <input
                       type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="nilaiLaporan"
-                      id="detailpenilaian"
-                      placeholder=" 85"
-                      maxlength="3"
+                      placeholder="<?= $dataPenguji[0]['n_dokumen'] ?? '-' ?>"
                       readonly/>
                   </div>
                   <div class="col d-flex align-items-center">
@@ -584,9 +385,7 @@ if ($stmtDetail) {
                       type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="MateriPresentasi"
-                      id="detailpenilaian"
-                      placeholder="87"
-                      maxlength="3"
+                      placeholder="<?= $dataPenguji[0]['n_presentasi'] ?? '-' ?>"
                       readonly/>
                   </div>
                   <div class="col d-flex align-items-center">
@@ -597,23 +396,19 @@ if ($stmtDetail) {
                       type="text"
                       class="form-control form-control-lg text-center input-nilai mb-2"
                       name="Penyampaian"
-                      id="detailpenilaian"
-                      placeholder="90"
-                      maxlength="3"
+                      placeholder="<?= $dataPenguji[0]['n_tanyajawab'] ?? '-' ?>"
                       readonly/>
                   </div>
                   <div class="col d-flex align-items-center">
                     <label for="NilaiProyek" class="text-black me-2 mb-2">Nilai Proyek</label>
                     <label class="colon4 me-2 mb-2">:</label>
                     <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
-                    <input
-                      type="text"
-                      class="form-control form-control-lg text-center input-nilai mb-2"
-                      name="NilaiProyek"
-                      id="detailpenilaian"
-                      placeholder="95"
-                      maxlength="3"
-                      readonly/>
+                  <input
+                    type="text"
+                    class="form-control form-control-lg text-center input-nilai mb-2"
+                    name="NilaiProyek"
+                    placeholder="<?= $dataPenguji[0]['n_proyek'] ?? '-' ?>"
+                    readonly/>
                   </div>
                 </div>
               </div>
@@ -630,10 +425,10 @@ if ($stmtDetail) {
                 <textarea
                   class="form-control flex-grow-1"
                   id="catatan"
-                  placeholder="semangatt terus pertahankan semangat belajarnya yaa"
+                  placeholder="<?= $dataPenguji[0]['catatan'] ?? 'Tidak ada catatan.' ?>"
                   rows="4"
-                  readonly
-                ></textarea>
+                  readonly></textarea>
+
               </div>
             </div>
         </div>
@@ -714,3 +509,4 @@ if ($stmtDetail) {
 </script>
 </body>
 </html>
+

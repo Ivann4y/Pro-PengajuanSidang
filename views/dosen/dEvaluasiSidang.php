@@ -14,6 +14,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 
 
+
 // Simulasi Dosen yang Login (nantinya ganti dengan session asli)
 $nomor_dosen_login = '1001';
 
@@ -27,6 +28,7 @@ $id_sidang = $_SESSION['id_sidang_aktif'];
 // SIMULASI DOSEN LOGIN (GANTI DENGAN SESSION ASLI NANTI)
 // ===================================================================================
 $nomor_dosen_login = '1001';
+
 
 
 // if (!isset($_SESSION['user']['nomor_dosen'])) { die("Akses ditolak."); }
@@ -211,7 +213,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                 <!-- PERBAIKAN: Nama kelas diperbaiki -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dNilaiAkhir.php?id=<?= $id_sidang ?>">
+                    <a href="dNilaiAkhir.php?id_sidang=<?= $id_sidang ?>">
                         <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                     </a>
                 </li>

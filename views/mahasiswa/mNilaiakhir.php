@@ -1,126 +1,105 @@
 <?php
-// Memulai sesi PHP jika belum aktif.
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 $path_to_root = '../../';
 
-// 1. Cek jika pengguna BELUM login.
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
-    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php"); 
-    exit(); 
-}
-
-// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
-    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     header("Location: " . $path_to_root . "index.php");
-    exit(); 
+    exit();
 }
 
-include '../../koneksi/koneksiAndrew.php';
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    header("Location: " . $path_to_root . "index.php");
+    exit();
+}
+
+require "../../koneksi/koneksiAndrew.php";
+
+if (!isset($_SESSION['selected_sidang_id'])) {
+    die("ID Sidang tidak ditemukan.");
+}
 
 $id_sidang = $_SESSION['selected_sidang_id'];
-$nilaiAkhir = null;
-$catatan = 'Tidak ada catatan.';
-$dataMahasiswa = [
-    'nim' => '-',
-    'nama' => '-',
-    'matkul' => '-',
-    'dosen' => '-'
-];
 
-//Cek kolom nilai_akhir ada di tabel Sidang
-$sqlCheck = "SELECT TOP 1 * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Sidang' AND COLUMN_NAME='nilai_akhir'";
-$stmtCol = sqlsrv_query($conn, $sqlCheck);
-$kolomAda = false;
-if ($stmtCol !== false && ($colRow = sqlsrv_fetch_array($stmtCol, SQLSRV_FETCH_ASSOC))) {
-    $kolomAda = true;
+$nilaiAkhir = 'N/A';
+$catatanText = 'Tidak ada catatan.';
+$dataMahasiswa = [];
+
+// =================== 1. Ambil Nilai Akhir ===================
+$sqlNilai = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
+$stmtNilai = sqlsrv_query($conn, $sqlNilai, array($id_sidang));
+if ($stmtNilai && $row = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC)) {
+    $nilaiAkhir = $row['nilai_akhir'] ?? 'N/A';
 }
 
-//Ambil nilai akhir
-if ($kolomAda) {
-    $sqlVal = "SELECT nilai_akhir FROM Sidang WHERE id_sidang = ?";
-    $stmtVal = sqlsrv_query($conn, $sqlVal, array($id_sidang));
-    if ($stmtVal && ($rowVal = sqlsrv_fetch_array($stmtVal, SQLSRV_FETCH_ASSOC))) {
-        if (isset($rowVal['nilai_akhir']) && $rowVal['nilai_akhir'] !== null) {
-            $nilaiAkhir = $rowVal['nilai_akhir'];
-        }
-    }
-}
-
-//Hitung manual jika nilai_akhir belum ada
-if ($nilaiAkhir === null) {
-    $sqlCalc = "
-        SELECT 
-            SUM(
-                (
-                    ISNULL(n_dokumen,0) 
-                    + ISNULL(n_presentasi,0) 
-                    + ISNULL(n_tanyajawab,0) 
-                    + ISNULL(n_proyek,0)
-                ) / 4.0 
-                * ISNULL(bobot_penilaian,0)
-            ) AS tot_score,
-            SUM(ISNULL(bobot_penilaian,0)) AS tot_bobot
-        FROM Penilaian
-        WHERE id_sidang = ?
-    ";
-    $stmtCalc = sqlsrv_query($conn, $sqlCalc, array($id_sidang));
-    if ($stmtCalc && ($rowCalc = sqlsrv_fetch_array($stmtCalc, SQLSRV_FETCH_ASSOC))) {
-        if (isset($rowCalc['tot_bobot']) && $rowCalc['tot_bobot'] > 0) {
-            $nilaiHitung = floatval($rowCalc['tot_score']) / floatval($rowCalc['tot_bobot']);
-            $nilaiAkhir = number_format($nilaiHitung, 2);
-        } else {
-            $nilaiAkhir = '';
-        }
-    }
-}
-
-//Ambil catatan dari Detail_Sidang
-$sqlCatatan = "SELECT catatan FROM Detail_Sidang WHERE id_sidang = ?";
+// =================== 2. Ambil Catatan Sidang ===================
+$sqlCatatan = "
+    SELECT d.nama_dosen, ds.catatan_sidang 
+    FROM Detail_Sidang ds
+    JOIN Dosen2 d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE ds.id_sidang = ?
+";
 $stmtCat = sqlsrv_query($conn, $sqlCatatan, array($id_sidang));
-if ($stmtCat && ($rowCat = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC))) {
-    if (!empty($rowCat['catatan'])) {
-        $catatan = $rowCat['catatan'];
+$catatanList = [];
+
+if ($stmtCat !== false) {
+    while ($row = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC)) {
+        if (!empty($row['catatan_sidang'])) {
+            $catatanList[] = $row['nama_dosen'] . ": " . $row['catatan_sidang'];
+        }
     }
 }
+$catatanText = !empty($catatanList) ? implode(" | ", $catatanList) : "Tidak ada catatan.";
 
-// Ambil data mahasiswa dari relasi Sidang, Mahasiswa, MataKuliah, Dosen
+// =================== 3. Ambil Data Mahasiswa ===================
 $sqlMhs = "
     SELECT 
-        m.nim, m.nama_mhs, mk.nama_matkul, d.nama_dosen
+        m.nim, 
+        m.nama_mhs,
+        mk.nama_matkul,
+        d.nama_dosen AS dosen_pembimbing
     FROM Sidang s
-    JOIN Mahasiswa m ON s.nim = m.nim
-    JOIN PenanggungJawab pj ON pj.id_sidang = s.id_sidang
-    JOIN MataKuliah mk ON mk.id_matkul = pj.id_matkul
-    JOIN Dosen d ON d.nomor_dosen = pj.nomor_dosen
+    JOIN Mahasiswa2 m ON s.nim = m.nim
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+    LEFT JOIN Bimbingan b ON m.nim = b.MahasiswaNIM
+    LEFT JOIN Dosen2 d ON b.Dosennomor_dosen = d.nomor_dosen
     WHERE s.id_sidang = ?
 ";
+
 $stmtMhs = sqlsrv_query($conn, $sqlMhs, array($id_sidang));
-if ($stmtMhs && ($rowMhs = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
-    $dataMahasiswa = [
-        'nim' => $rowMhs['nim'],
-        'nama' => $rowMhs['nama_mhs'],
-        'matkul' => $rowMhs['nama_matkul'],
-        'dosen' => $rowMhs['nama_dosen']
-    ];
+if ($stmtMhs !== false) {
+    while ($row = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC)) {
+        $dataMahasiswa = [
+            'nim' => $row['nim'],
+            'nama' => $row['nama_mhs'],
+            'matkul' => $row['nama_matkul'],
+            'pembimbing' => $row['dosen_pembimbing']
+        ];
+    }
 }
+
+// =================== DEBUG OUTPUT (sementara) ===================
+echo "<h3>Data Mahasiswa:</h3>";
+echo "NIM: " . $dataMahasiswa['nim'] . "<br>";
+echo "Nama: " . $dataMahasiswa['nama'] . "<br>";
+echo "Mata Kuliah: " . $dataMahasiswa['matkul'] . "<br>";
+echo "Pembimbing: " . $dataMahasiswa['pembimbing'] . "<br><br>";
+
+echo "<h3>Nilai Akhir:</h3> $nilaiAkhir<br><br>";
+echo "<h3>Catatan:</h3> $catatanText<br>";
+
+sqlsrv_close($conn);
 ?>
+
 
 
 
 <!DOCTYPE html> <!-- Mendeklarasikan bahwa dokumen ini adalah HTML5 -->
 <html lang="en"> <!-- Elemen root dari halaman HTML, dengan atribut bahasa "English" -->
   <head>
-            <?php
-    echo "Nilai akhir: " . $nilaiAkhir . "<br>";
-    echo "Catatan: " . $catatan . "<br>";
-    echo "Nama: " . $dataMahasiswa['nama'] . "<br>";
-    ?>
-
 
     <!-- Bagian <head> berisi metadata dan link ke resource eksternal, tidak terlihat di halaman -->
     <meta charset="UTF-8" /> <!-- Menentukan set karakter yang digunakan adalah UTF-8 (standar universal) -->
@@ -284,9 +263,8 @@ if ($stmtMhs && ($rowMhs = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
                         <h3 class="card-title text-dark text-center">Nilai Mahasiswa:</h3>
                         <!-- Container untuk menengahkan nilai -->
                         <div class="d-flex justify-content-center align-items-center flex-grow-1">
-                            <!-- Input field untuk menampilkan nilai. 'readonly' agar tidak bisa diubah oleh pengguna. -->
                             <input type="text" class="form-control text-dark"
-                                id="nilaiMahasiswa" value="A" readonly />
+                                id="nilaiMahasiswa" value="<?= htmlspecialchars($nilaiAkhir) ?>" readonly />
                         </div>
                     </div>
                 </div>
@@ -300,7 +278,7 @@ if ($stmtMhs && ($rowMhs = sqlsrv_fetch_array($stmtMhs, SQLSRV_FETCH_ASSOC))) {
                     <div class="card-body">
                         <h3 class="card-title text-dark" >Catatan :</h3>
                         <div class="text-dark" id="catatan-content">
-                            Tidak ada catatan. <!-- Teks catatan dari Database yang dibuat oleh dosen   -->
+                            <?= htmlspecialchars($catatanText) ?>
                         </div>
                     </div>
                 </div>

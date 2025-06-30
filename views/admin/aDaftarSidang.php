@@ -83,7 +83,7 @@ $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
 // Query utama untuk mengambil data
-$query = "SELECT 
+$query = "SELECT DISTINCT
         s.id_sidang,
         s.judul,
         s.id_kelompok,
@@ -146,7 +146,9 @@ if ($result === false) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/aDaftarSidang.css">
+
 </head>
 
 <body>
@@ -160,7 +162,7 @@ if ($result === false) {
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="aPenjadwalan.php"><span
                             class="fw-semibold">Penjadwalan</span></a></li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span
-                            class="fw-semibold">Daftar Sidang</span></a></li>
+                            class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal"
                         data-bs-target="#logABeranda"><span class="fw-semibold">Keluar</span></a></li>
             </ul>
@@ -257,13 +259,14 @@ if ($result === false) {
         <?php
         $counter = ($currentPage - 1) * $rowsPerPage + 1;
         while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
+             $jenis_sidang_int = ord($row['jenis_sidang']);
         ?>
             <tr class="isiTabel">
                 <td data-label="Nomor"><?= $counter ?></td>
                 <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                 <td data-label="Judul/MK">
                     <?php 
-                    echo htmlspecialchars(($row['jenis_sidang'] == 1) ? $row['nama_matkul'] : $row['judul']); 
+                    echo htmlspecialchars(($jenis_sidang_int == 1) ? $row['nama_matkul'] : $row['judul']); 
                     ?>
                 </td>
                 <td data-label="Pembimbing/Pengampu">
@@ -272,10 +275,11 @@ if ($result === false) {
                     ?>
                 </td>
                 <td data-label="Aksi">
-                    <button type="button" class="btn detail-btn"
-                        onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
-                        <i class="fa-solid fa-file-signature"></i>
-                    </button>
+                       <div class="action-wrapper">  
+                         <button type="button" class="btn detail-btn"  onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>'">
+                          <i class="fa-solid fa-file-signature"></i>
+                         </button>
+                      </div>
                 </td>
             </tr>
             <?php
@@ -331,34 +335,9 @@ if ($result === false) {
             </div>
         </div>
     </div>
-
+    <script src="../../assets/js/aDaftarSidang.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // JS untuk sidebar toggle
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuToggle = document.querySelector(".NavSide__toggle");
-            const sidebar = document.getElementById("main-sidebar");
-            const desktopIconsContainer = document.getElementById('desktop-icons-container');
-            const mobileIconsContainer = document.getElementById('mobile-icons-container');
-            if (desktopIconsContainer) {
-                const headerIcons = desktopIconsContainer.querySelector('.header-icons');
-                function handleIconPlacement() {
-                    if (window.innerWidth <= 992) {
-                        if (mobileIconsContainer && !mobileIconsContainer.contains(headerIcons)) mobileIconsContainer.appendChild(headerIcons);
-                    } else { if (!desktopIconsContainer.contains(headerIcons)) desktopIconsContainer.appendChild(headerIcons); }
-                }
-                if (menuToggle && sidebar) {
-                    menuToggle.onclick = () => {
-                        menuToggle.classList.toggle("NavSide__toggle--active");
-                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                    };
-                }
-                handleIconPlacement();
-                window.addEventListener('resize', handleIconPlacement);
-            }
-        });
 
-    </script>
 </body>
 
 </html>
