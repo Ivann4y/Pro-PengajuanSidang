@@ -66,7 +66,6 @@ if (!$existing_data) {
 // Now populate variables for the form
 $existing_judul = $existing_data['judul'];
 $existing_id_matkul = $existing_data['id_matkul'];
-$existing_id_kelompok = $existing_data['id_kelompok']; 
 $file_exists = !empty($existing_data['dok_laporan']);
 
 // --- REPLACE WITH THIS (AFTER) ---
@@ -89,10 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
-        $id_kelompok_terpilih = $_POST['kelompok'];
         $status_ajuan = ($_POST['aksi'] == 'Kirim') ? 0x01 : 0x00;
 
-        if (empty($judul) || empty($id_matkul_terpilih) || empty($id_kelompok_terpilih)) throw new Exception("Judul, Mata Kuliah, dan Kelompok wajib diisi.");
+        if (empty($judul) || empty($id_matkul_terpilih)) throw new Exception("Judul, Mata Kuliah, dan Kelompok wajib diisi.");
 
         $sql_matkul_name = "SELECT nama_matkul FROM dbo.MataKuliah WHERE id_matkul = ?";
         $stmt_matkul_name = sqlsrv_query($conn, $sql_matkul_name, [$id_matkul_terpilih]);
@@ -102,12 +100,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         
         $nomor_dosen_pembimbing = null;
         $sql_dosen = "SELECT nomor_dosen FROM dbo.Bimbingan WHERE id_kelompok = ? AND isPembimbing = 0x01";
-        $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$id_kelompok_terpilih]);
+        $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$existing_id_kelompok]);
         if ($stmt_dosen && $row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
             $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
         }
 
-        $sql_update_sidang = "UPDATE dbo.Sidang SET judul = ?, id_kelompok = ?, status_ajuan = ?, jenis_sidang = ?, waktu_pengumpulan = GETDATE()";
+        $sql_update_sidang = "UPDATE dbo.Sidang SET judul = ?, status_ajuan = ?, jenis_sidang = ?, waktu_pengumpulan = GETDATE()";
         $params_update_sidang = [$judul, $id_kelompok_terpilih, $status_ajuan, $jenis_sidang_bit];
         
         if ($updateFile) {
@@ -231,25 +229,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
                     }
                     ?>
                 </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="kelompok" class="form-label">Kelompok<span class="text-danger">*</span></label>
-              <select class="form-select" id="kelompok" name="kelompok" required>
-                  <option value="" disabled>Pilih Kelompok</option>
-                  <?php
-                  $nim_for_groups = $_SESSION['nim'];
-                  $sql_kelompok_list = "SELECT DISTINCT k.id_kelompok, k.nama_kelompok FROM dbo.Kelompok_Mahasiswa km JOIN dbo.Kelompok k ON km.id_kelompok = k.id_kelompok WHERE km.nim = ?";
-                  $stmt_kelompok_list = sqlsrv_query($conn, $sql_kelompok_list, [$nim_for_groups]);
-                  if ($stmt_kelompok_list) {
-                      while ($kelompok_row = sqlsrv_fetch_array($stmt_kelompok_list, SQLSRV_FETCH_ASSOC)) {
-                          $display_text = 'Kelompok ' . $kelompok_row['id_kelompok'];
-                          $selected = ($kelompok_row['id_kelompok'] == $existing_id_kelompok) ? 'selected' : '';
-                          echo '<option value="' . htmlspecialchars($kelompok_row['id_kelompok']) . '" ' . $selected . '>Kelompok ' . htmlspecialchars($kelompok_row['id_kelompok']) . '</option>';
-                      }
-                  }
-                  ?>
-              </select>
             </div>
 
             <div class="row">
@@ -413,13 +392,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
     });
 
     // Form validation function
-// --- REPLACE WITH THIS (AFTER) ---
     function validateForm() {
         const judul = document.getElementById('judul').value;
         const matkul = document.getElementById('matkul').value;
         const laporan = document.getElementById('DokumenSidang').files.length;
         const fileExists = <?php echo $file_exists ? 'true' : 'false'; ?>;
-        const kelompok = document.getElementById('kelompok').value;
         if (kelompok === "" || !kelompok) {
             Swal.fire({ title: 'Pilih kelompok!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
             return false;
@@ -432,11 +409,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
         if (matkul === "" || !matkul) {
             Swal.fire({ title: 'Pilih mata kuliah!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
-            return false;
-        }
-
-        if (kelompok === "" || !kelompok) {
-            Swal.fire({ title: 'Pilih kelompok!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
             return false;
         }
         
