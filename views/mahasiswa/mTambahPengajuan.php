@@ -23,13 +23,16 @@ include '../../koneksi/koneksiAndrew.php';
 $success_message = '';
 $error_message = '';
 
-// Asumsikan NIM mahasiswa yang login disimpan di dalam sesi.
-if (!isset($_SESSION['user_nim'])) {
-    $nim_mahasiswa_logged_in = '1000000001'; // Default untuk pengujian
-    error_log("Sesi user_nim tidak ada, menggunakan default: $nim_mahasiswa_logged_in");
-} else {
-    $nim_mahasiswa_logged_in = $_SESSION['user_nim'];
+
+// Ambil NIM dari sesi yang sudah login
+if (!isset($_SESSION['nim'])) {
+    // This should ideally never happen because of the checks above,
+    // but it's a good safeguard.
+    die("KESALAHAN FATAL: NIM pengguna tidak ditemukan di sesi. Silakan login kembali.");
 }
+
+// Gunakan variabel nim dari sesi yang sudah ada
+$nim_mahasiswa_logged_in = $_SESSION['nim'];
 
 // Menangani pengiriman form
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
@@ -50,20 +53,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         sqlsrv_free_stmt($stmt_id);
 
         // LANGKAH 2: Cari ID Kelompok mahasiswa
-        $id_kelompok = null;
-        $sql_kelompok = "SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?";
-        $params_kelompok = [$nim_mahasiswa_logged_in];
-        $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
-        if ($stmt_kelompok === false) {
-            throw new Exception("Gagal mengambil id_kelompok: " . print_r(sqlsrv_errors(), true));
+        $id_kelompok = $_POST['kelompok']; // Get selected group from form
+        // Validate student belongs to selected group
+        $sql_validate = "SELECT 1 FROM dbo.Kelompok_Mahasiswa 
+                         WHERE nim = ? AND id_kelompok = ?";
+        $params_validate = [$nim_mahasiswa_logged_in, $id_kelompok];
+        $stmt_validate = sqlsrv_query($conn, $sql_validate, $params_validate);
+
+        if (!$stmt_validate || !sqlsrv_has_rows($stmt_validate)) {
+            throw new Exception("Anda tidak terdaftar dalam kelompok yang dipilih");
         }
-        if ($row_kel = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
-            $id_kelompok = $row_kel['id_kelompok'];
-        }
-        sqlsrv_free_stmt($stmt_kelompok);
-        if (!$id_kelompok) {
-            throw new Exception("ID Kelompok tidak ditemukan untuk NIM: $nim_mahasiswa_logged_in");
-        }
+        sqlsrv_free_stmt($stmt_validate);   
 
         // LANGKAH 3: Cari Dosen Pembimbing untuk relasi ke Detail_Sidang
         $nomor_dosen_pembimbing = null;
@@ -274,7 +274,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
                                 ?>
                             </select>
                         </div>
-                    
+                        <div class="mb-3">
+                            <label for="kelompok" class="form-label">Kelompok 
+                                <span class="text-danger">* </span>
+                            </label>
+                            <select class="form-select" id="kelompok" name="kelompok" required>
+                                <option value="" selected disabled>Pilih Kelompok</option>
+                                <?php
+                                $sql_kelompok = "SELECT DISTINCT k.id_kelompok 
+                                                 FROM dbo.Kelompok_Mahasiswa km
+                                                 JOIN dbo.Kelompok k ON km.id_kelompok = k.id_kelompok
+                                                 WHERE km.nim = ?";
+                                $params_kelompok = [$nim_mahasiswa_logged_in];
+                                $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
+                                
+                                if ($stmt_kelompok) {
+                                    while ($kelompok_row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
+                                        echo '<option value="' . htmlspecialchars($kelompok_row['id_kelompok']) . '">';
+                                        echo 'Kelompok ' . htmlspecialchars($kelompok_row['id_kelompok']);
+                                        echo '</option>';
+                                    }
+                                    sqlsrv_free_stmt($stmt_kelompok);
+                                } else {
+                                    echo '<option disabled>Error memuat kelompok</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
                         <div class="row">
                             <div class="mb-4">
                                 <div class="p-4 rounded bg-light border text-start">
@@ -434,6 +460,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
                 Swal.fire({ title: 'Dokumen tidak boleh kosong!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
                 return false;
             }
+            if (kelompok === "" || !kelompok) {
+            Swal.fire({ title: 'Pilih kelompok!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
+            return false;
+            }
+            return true;
+        
             return true;
         }
 
