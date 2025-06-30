@@ -36,85 +36,7 @@ $no_telepon = $user['no_telepon'];
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
-    <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            background-color: #ffffff;
-        }
-
-        .data-admin {
-            background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            margin-top: 20px;
-        }
-
-        .data-admin h2 {
-            margin-bottom: 1.5rem;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .aData {
-            margin-bottom: 1rem;
-        }
-
-        .aData p:first-child {
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .aData .value {
-            background-color: #f8f9fa;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-            font-size: 0.95rem;
-            color: #494949;
-            font-weight: 600;
-        }
-
-        .profil-img {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .profil-img img {
-            width: 80%;
-            height: auto;
-            border-radius: 30px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .data-admin {
-                padding: 1.5rem;
-                margin-top: 1rem;
-            }
-            
-            .profil-img {
-                margin-bottom: 2rem;
-            }
-            
-            .profil-img img {
-                width: 60%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="../../assets/css/profil.css">
 </head>
 
 <body>
@@ -164,21 +86,21 @@ $no_telepon = $user['no_telepon'];
                     <div class="col-md-6 profil-img">
                         <img src="../../assets/img/img3-nobg.png" alt="">
                     </div>
-                    <div class="col-md-6 data-admin">
+                    <div class="col-md-6 data-all">
                         <h2>Data admin</h2>
-                        <div class="row aData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>Nama</p>
                                 <p class="value"><?= $nama ?></p>
                             </div>
                         </div>
-                        <div class="row aData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>Email</p>
                                 <p class="value"><?= $email ?></p>
                             </div>
                         </div>
-                        <div class="row aData">
+                        <div class="row allData">
                             <div class="col-12">
                                 <p>No. Telepon</p>
                                 <p class="value"><?= $no_telepon ?></p>
@@ -223,19 +145,17 @@ $no_telepon = $user['no_telepon'];
         }
 
         // Sidebar Active Item Logic 
-        let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        for (let i = 0; i < listItems.length; i++) {
-            listItems[i].onclick = function(event) {
-                if (!this.classList.contains("NavSide__sidebar-item--active")) {
-                    for (let j = 0; j < listItems.length; j++) {
-                        listItems[j].classList.remove("NavSide__sidebar-item--active");
-                    }
-                    this.classList.add("NavSide__sidebar-item--active");
-                }
-            };
-        }
-
-        
+        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        // for (let i = 0; i < listItems.length; i++) {
+        //     listItems[i].onclick = function(event) {
+        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+        //             for (let j = 0; j < listItems.length; j++) {
+        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+        //             }
+        //             this.classList.add("NavSide__sidebar-item--active");
+        //         }
+        //     };
+        // }
     </script>
     <script src="../../assets/js/main.js"></script>
 </body>

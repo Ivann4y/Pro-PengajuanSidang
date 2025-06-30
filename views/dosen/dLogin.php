@@ -12,6 +12,7 @@ $role = "dosen";
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +24,7 @@ $role = "dosen";
     <link rel="stylesheet" href="../../css/button-styles.css">
     <link rel="stylesheet" href="../../assets/css/login.css">
 </head>
+
 <body>
     <div class="fullscreen d-flex">
         <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
@@ -65,7 +67,7 @@ $role = "dosen";
             ?>
             <div class="col-md-7 d-flex justify-content-center align-items-center mt-5">
 
-                <form action="../../auth.php" method="POST" novalidate>
+                <form action="../../auth.php" method="POST" novalidate onsubmit="salinSandiAsli()">
                     <div class="text-center pt-5 mb-4">
                         <h2><strong>Masuk Akun</strong></h2>
                         <h2><strong>Dosen</strong></h2>
@@ -89,15 +91,16 @@ $role = "dosen";
 
                     <div class="mb-3">
                         <div class="password-wrap">
-                            <input type="password"
-                                class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                            <input type="text"
+                                class="form-control form-control-lg password-masked <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
                                 id="password" name="password" placeholder="Kata Sandi">
-                            <i class="bi bi-eye-fill" id="togglePassword"></i>
+                            <i class="bi bi-eye-slash-fill" id="togglePassword"></i>
                         </div>
                         <a href="#" class="float-end mt-1" onclick="toLupaPassword()"> Lupa kata sandi?</a>
                     </div>
                     <button type="submit" class="btnMasuk btn w-100 mt-5">Masuk</button>
                 </form>
+
             </div>
             <div class="back-button-container bottom-50">
                 <button type="submit" class="btn btn-kembali" onclick="kembaliKePilihRole()">
@@ -112,24 +115,43 @@ $role = "dosen";
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script>
         function toLupaPassword() {
-            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';    
+            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';
         }
 
         function kembaliKePilihRole() {
             window.location.href = '../../index.php';
         }
 
+        // hide pw
+        // let sandiAsli = '';
+
+        // document.getElementById('passwordTampil').addEventListener('input', function(e) {
+        //     const tampilan = e.target.value;
+        //     if (tampilan.length < sandiAsli.length) {
+        //         sandiAsli = sandiAsli.slice(0, tampilan.length);
+        //     } else {
+        //         const hurufBaru = tampilan.charAt(tampilan.length - 1);
+        //         sandiAsli += hurufBaru;
+        //     }
+        //     e.target.value = '•'.repeat(sandiAsli.length);
+        // });
+
+        // function salinSandiAsli() {
+        //     document.getElementById('passwordAsli').value = sandiAsli;
+        // }
+
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#password');
 
         togglePassword.addEventListener('click', function (e) {
-            // Toggle tipe input
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
+            // HANYA TOGGLE KELAS CSS, BUKAN ATRIBUT TYPE
+            password.classList.toggle('password-masked');
 
-            // Toggle ikon mata
+            // Logika untuk menukar ikon mata tetap sama
             this.classList.toggle('bi-eye-slash-fill');
+            this.classList.toggle('bi-eye-fill');
         });
     </script>
 </body>
+
 </html>

@@ -1,143 +1,143 @@
 <?php
-// 1. Mulai session jika belum aktif
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// 2. Path ke root project
-$path_to_root = '../../';
-
-// 3. Cek login
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
-    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php");
-    exit();
-}
-
-// 4. Cek role: hanya admin yang boleh
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php");
-    exit();
-}
-
-// 5. Koneksi ke database
+session_start();
+// Ganti dengan path file koneksi Anda yang benar
 require "../../koneksi/koneksiAndrew.php";
 
-if (!isset($_SESSION['selected_sidang_id']) || empty($_SESSION['selected_sidang_id'])) {
-    header("Location: aDaftarSidang.php");
-    exit();
-}
+// ======================= STATIC DATA FOR TESTING =======================
+$id_sidang = 4001;
+$nim = '1000000001'; // Pastikan nim adalah string jika di database tipenya char/varchar
 
-$id_sidang = $_SESSION['selected_sidang_id'];
-
-// ======================= 1. DATA MAHASISWA & SIDANG =======================
-$dataSidang = [
-    'judul' => '-', 
-    'mahasiswa' => [], 
-    'pembimbing' => '-'
+// ======================= INITIALIZE VARIABLES =======================
+$dataMahasiswa = [
+    'nim' => $nim,
+    'nama_mhs' => 'Data tidak ditemukan',
+    'nama_matkul' => 'Data tidak ditemukan',
+    'nama_pembimbing' => 'Data tidak ditemukan' // Akan diisi dengan salah satu nama penguji
 ];
+$nilaiDetail = [
+    'dokumen' => '-',
+    'presentasi' => '-',
+    'tanyajawab' => '-',
+    'proyek' => '-'
+];
+$nilaiAkhirAngka = '-';
+$nilaiAkhirHuruf = '';
+$semuaCatatan = 'Tidak ada catatan.';
 
-$sqlSidangInfo = "
-    SELECT 
-        s.judul,
-        m.nim,
+
+// ======================= 1. GET MAHASISWA & SIDANG INFO =======================
+// FIX: Query ini diubah untuk menggunakan tabel Penilaian sebagai "jembatan"
+// untuk menghubungkan Mahasiswa dengan Detail_Sidang, karena Detail_Sidang tidak punya kolom 'nim'.
+$sqlInfo = "
+    SELECT TOP 1
         m.nama_mhs,
-        d.nama_dosen as nama_pembimbing
-    FROM Sidang s
-    JOIN Mahasiswa2 m ON s.nim = m.nim
-    LEFT JOIN Bimbingan b ON b.MahasiswaNIM = m.nim
-    LEFT JOIN Dosen2 d ON b.Dosennomor_dosen = d.nomor_dosen
-    WHERE s.id_sidang = ?;
+        mk.nama_matkul,
+        d.nama_dosen
+    FROM Mahasiswa m
+    JOIN Penilaian p ON m.nim = p.nim
+    JOIN Detail_Sidang ds ON p.id_sidang = ds.id_sidang AND p.nomor_dosen = ds.nomor_dosen
+    JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+    JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE m.nim = ? AND p.id_sidang = ?;
 ";
 
-$stmtSidangInfo = sqlsrv_query($conn, $sqlSidangInfo, array($id_sidang));
-if ($stmtSidangInfo === false) {
-    die("Error query data sidang: " . print_r(sqlsrv_errors(), true));
+$paramsInfo = array($nim, $id_sidang);
+$stmtInfo = sqlsrv_query($conn, $sqlInfo, $paramsInfo);
+
+if ($stmtInfo === false) {
+    die("Error query data mahasiswa & sidang: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-while ($row = sqlsrv_fetch_array($stmtSidangInfo, SQLSRV_FETCH_ASSOC)) {
-    if (empty($dataSidang['judul']) || $dataSidang['judul'] === '-') {
-        $dataSidang['judul'] = $row['judul'];
-        $dataSidang['pembimbing'] = $row['nama_pembimbing'];
-    }
-    $dataSidang['mahasiswa'][] = [
-        'nim' => $row['nim'],
-        'nama' => $row['nama_mhs']
-    ];
+if ($row = sqlsrv_fetch_array($stmtInfo, SQLSRV_FETCH_ASSOC)) {
+    $dataMahasiswa['nama_mhs'] = $row['nama_mhs'];
+    $dataMahasiswa['nama_matkul'] = $row['nama_matkul'];
+    $dataMahasiswa['nama_pembimbing'] = $row['nama_dosen']; // Diasumsikan dosen pertama yang ditemukan adalah pembimbing
 }
-$dataSidang['mahasiswa'] = array_unique($dataSidang['mahasiswa'], SORT_REGULAR);
 
-// ======================= 2. NILAI AKHIR MAHASISWA =======================
-$nilaiAkhir = '-';
 
-$sqlAkhir = "
+// Fungsi untuk konversi nilai angka ke huruf. Didefinisikan di luar agar rapi.
+function getGrade($nilai) {
+    if ($nilai >= 85) return 'A';
+    if ($nilai >= 80) return 'B+';
+    if ($nilai >= 75) return 'B';
+    if ($nilai >= 70) return 'C+';
+    if ($nilai >= 65) return 'C';
+    if ($nilai >= 55) return 'D';
+    return 'E';
+}
+
+// ======================= 2. CALCULATE SCORES =======================
+// Query untuk mengambil rata-rata setiap komponen nilai dari semua dosen penguji
+$sqlNilai = "
     SELECT
-        p.nim,
-        AVG(
-            (p.n_dokumen * 0.25) +
-            (p.n_presentasi * 0.25) +
-            (p.n_tanyajawab * 0.30) +
-            (p.n_proyek * 0.20)
-        ) AS nilai_akhir_calculated
-    FROM Penilaian p
-    WHERE p.id_sidang = ?
-    GROUP BY p.nim
+        AVG(CAST(n_dokumen AS FLOAT)) AS avg_dokumen,
+        AVG(CAST(n_presentasi AS FLOAT)) AS avg_presentasi,
+        AVG(CAST(n_tanyajawab AS FLOAT)) AS avg_tanyajawab,
+        AVG(CAST(n_proyek AS FLOAT)) AS avg_proyek
+    FROM Penilaian
+    WHERE id_sidang = ? AND nim = ?;
 ";
 
-$stmtAkhir = sqlsrv_query($conn, [$sqlAkhir, array($id_sidang)]);
-if ($stmtAkhir === false) {
-    die("Error query nilai akhir: " . print_r(sqlsrv_errors(), true));
+$paramsNilai = array($id_sidang, $nim);
+$stmtNilai = sqlsrv_query($conn, $sqlNilai, $paramsNilai);
+
+if ($stmtNilai === false) {
+    die("Error query penilaian: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-if ($rowAkhir = sqlsrv_fetch_array($stmtAkhir, SQLSRV_FETCH_ASSOC)) {
-    if (!is_null($rowAkhir['nilai_akhir_calculated'])) {
-        $nilaiAkhir = number_format($rowAkhir['nilai_akhir_calculated'], 2);
+if ($rowNilai = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC)) {
+    // Tampilkan nilai rata-rata per komponen
+    $nilaiDetail['dokumen'] = !is_null($rowNilai['avg_dokumen']) ? number_format($rowNilai['avg_dokumen'], 2) : '-';
+    $nilaiDetail['presentasi'] = !is_null($rowNilai['avg_presentasi']) ? number_format($rowNilai['avg_presentasi'], 2) : '-';
+    $nilaiDetail['tanyajawab'] = !is_null($rowNilai['avg_tanyajawab']) ? number_format($rowNilai['avg_tanyajawab'], 2) : '-';
+    $nilaiDetail['proyek'] = !is_null($rowNilai['avg_proyek']) ? number_format($rowNilai['avg_proyek'], 2) : '-';
+
+    // Hitung nilai akhir berdasarkan bobot hanya jika ada nilai
+    if (!is_null($rowNilai['avg_dokumen'])) {
+        $nilaiAkhirAngka =
+            ($rowNilai['avg_dokumen'] * 0.25) +
+            ($rowNilai['avg_presentasi'] * 0.25) +
+            ($rowNilai['avg_tanyajawab'] * 0.30) +
+            ($rowNilai['avg_proyek'] * 0.20);
+        
+        $nilaiAkhirHuruf = getGrade($nilaiAkhirAngka);
+        $nilaiAkhirAngka = number_format($nilaiAkhirAngka, 2);
     }
 }
 
-
-
-// ======================= 3. NILAI & CATATAN SETIAP PENGUJI =======================
-$dataPenguji = [];
-
-$sqlDetail = "
-    SELECT 
+// ======================= 3. GET ALL NOTES =======================
+// Query untuk mengambil semua catatan dari setiap dosen penguji
+$sqlCatatan = "
+    SELECT
         d.nama_dosen,
-        p.nim,
-        m.nama_mhs,
-        p.n_dokumen, 
-        p.n_presentasi, 
-        p.n_tanyajawab, 
-        p.n_proyek,
-        p.catatan_sidang
-    FROM Detail_Sidang p
-    JOIN Dosen2 d ON d.nomor_dosen = p.nomor_dosen
-    JOIN Mahasiswa2 m ON p.nim = m.nim
-    WHERE p.id_sidang = ?
-    ORDER BY d.nama_dosen, m.nama_mhs;
+        ds.catatan_sidang
+    FROM Detail_Sidang ds
+    JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE ds.id_sidang = ?
+    ORDER BY d.nama_dosen;
 ";
 
-$stmtDetail = sqlsrv_query($conn, $sqlDetail, array($id_sidang));
-if ($stmtDetail === false) {
-    die("Error query data penguji: " . print_r(sqlsrv_errors(), true));
+$paramsCatatan = array($id_sidang);
+$stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
+
+if ($stmtCatatan === false) {
+    die("Error query catatan: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
-    $dataPenguji[] = [
-        'dosen' => $rowDetail['nama_dosen'],
-        'nim_dinilai' => $rowDetail['nim'],
-        'mahasiswa_dinilai' => $rowDetail['nama_mhs'],
-        'n_dokumen' => $rowDetail['n_dokumen'] ?? '-',
-        'n_presentasi' => $rowDetail['n_presentasi'] ?? '-',
-        'n_tanyajawab' => $rowDetail['n_tanyajawab'] ?? '-',
-        'n_proyek' => $rowDetail['n_proyek'] ?? '-',
-        'catatan' => $rowDetail['catatan_sidang'] ?? 'Tidak ada catatan.'
-    ];
+$catatanArray = [];
+while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
+    $catatan = trim($rowCatatan['catatan_sidang']);
+    if (!empty($catatan) && $catatan !== '-') {
+        // Format catatan agar lebih rapi saat ditampilkan di textarea
+        $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
+    }
+}
+
+if (!empty($catatanArray)) {
+    // Gabungkan catatan dengan 2x baris baru untuk spasi antar catatan
+    $semuaCatatan = implode("\n\n", $catatanArray);
 }
 ?>
-
-
 
 
 <!DOCTYPE html>
@@ -145,40 +145,64 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-    rel="stylesheet"
-  />
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  
-  <!-- FONT POPPINS GANDA DIHAPUS, CUKUP SATU INI YANG LENGKAP -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-    rel="stylesheet"
-  />
-  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="../../css/style.css" />
   <link rel="stylesheet" href="../../css/button-styles.css" />
   <link rel="stylesheet" href="../../extra/style.css" />
-
-  
   <title>Admin - Nilai Akhir</title>
-  
   <style>
+    /* CSS ANDA TIDAK DIUBAH, HANYA DIRAPIKAN */
+    #NavSide { display: flex; min-height: 100vh; position: relative; }
+    .label-row i { font-size: 1.5rem; }
+    body, .card, .form-control, h1, h2, h3, h4, h5, h6 { font-family: "Poppins", sans-serif !important; color: #464869; }
+    #cardNilai, #carddataMahasiswa, #carddetailPenilaian, #cardcatatan {
+      background-color: rgb(235, 238, 245);
+      border-radius: 50px;
+      border: none !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+    .nilai-mahasiswa-display {
+      font-size: 5rem !important; /* Disesuaikan agar lebih proporsional */
+      font-weight: bold;
+      text-align: center;
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0;
+      cursor: default;
+    }
+    #carddetailPenilaian label { font-weight: 550; }
+    .detail-penilaian-input {
+      font-size: 1.2rem; /* Sedikit diperbesar */
+      font-weight: 600;
+      text-align: center;
+      border: none;
+      background-color: transparent;
+      padding: 5px;
+      cursor: default;
+    }
+    #catatan {
+      background-color: rgb(235, 238, 245);
+      border: none;
+      
+      padding: 15px;
+      font-size: 1rem;
+      resize: vertical;
+      cursor: default;
+      white-space: pre-wrap; /* Agar format newline dari PHP tampil benar */
+    }
+    textarea[readonly], input[readonly] { background-color: #e9ecef; }
   </style>
 </head>
 <body>
 
-      <div id="NavSide">
+  <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
         <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
@@ -188,297 +212,102 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
           <b></b><b></b>
           <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
         </li>
-        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+        <li class="NavSide__sidebar-item ">
           <b></b><b></b>
           <a href="aEvaluasi.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
         </li>
-        <li class="NavSide__sidebar-item">
+        <li class="NavSide__sidebar-item NavSide__sidebar-item--active ">
           <b></b><b></b>
           <a href="aNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
         </li>
+        <li class="NavSide__sidebar-item">
+          <b></b><b></b>
+          <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Kembali</span></a>
+        </li>
       </ul>
     </div>
-
-    
-  <div id="NavSide">
-    <div id="main-sidebar" class="NavSide__sidebar">
-      <div class="NavSide__sidebar-brand">
-        <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
-      </div>
-            <ul class="NavSide__sidebar-nav">
-        <li class="NavSide__sidebar-item">
-          <a href="aDetailSidang.php">
-            <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
-          </a>
-        </li>
-        <li class="NavSide__sidebar-item">
-          <a href="aEvaluasi.php">
-            <span class="NavSide__sidebar-title fw-semibold">Evaluasi</span>
-          </a>
-        </li>
-        <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-          <a href="aNilaiAkhir.php">
-            <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
-          </a>
-        </li>
-          <li class="NavSide__sidebar-item">
-                    <b></b><b></b>
-                    <a href="aDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
-                </li>
-      </ul>
-    </div>
-
 
     <div class="NavSide__topbar">
-      <div class="NavSide__toggle">
-        <i class="bi bi-list open"></i>
-        <i class="bi bi-x-lg close"></i>
-      </div>
+      <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
     </div>
-    
 
     <main class="NavSide__main-content">
-
-    <!-- Top bar desktop -->
-      
-            <div class="dashboard-header p-3">
+      <div class="dashboard-header p-3">
         <div>
-          <h2 class="text-heading text-black mb-3" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-              <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="mahasiswa1-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa1-tab-pane" role="tab" aria-controls="mahasiswa1-tab-pane" aria-selected="true" href="#">mahasiswa1</a>
-              </li>
-              <li class="nav-item" role="presentation">
-                <a class="nav-link" id="mahasiswa2-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa2-tab-pane" role="tab" aria-controls="mahasiswa2-tab-pane" aria-selected="false" href="#">mahasiswa2</a>
-              </li>
-              <li class="nav-item" role="presentation">
-                <a class="nav-link" id="mahasiswa3-tab" data-bs-toggle="tab" data-bs-target="#mahasiswa3-tab-pane" role="tab" aria-controls="mahasiswa3-tab-pane" aria-selected="false" href="#">mahasiswa3</a>
-              </li>
-            </ul>
+          <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+          <!-- Navigasi Tab disederhanakan untuk menampilkan satu mahasiswa yang sedang dilihat -->
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" id="mahasiswa-tab" href="#"><?= htmlspecialchars($dataMahasiswa['nama_mhs']) ?></a>
+            </li>
+          </ul>
         </div>
-
-        
         <div class="header-icons d-none d-md-flex">
-            <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
-            <div class="profile-icon">
-              <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+            <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+            <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
+        </div>
+      </div>
+
+      <!-- KONTEN UTAMA -->
+      <div class="p-3">
+          <div class="row align-items-stretch mb-4">
+            <!-- Kartu Data Mahasiswa -->
+            <div class="col-lg-6 mb-4 d-flex">
+              <div class="card flex-fill" id="carddataMahasiswa">
+                <div class="card-body px-4 py-3">
+                  <h3 class="card-title text-black mb-4 text-center py-2">Data Mahasiswa</h3>
+                  <div class="d-flex flex-column gap-4 px-4 py-2">
+                    <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nim']) ?></div></div>
+                    <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_mhs']) ?></div></div>
+                    <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_matkul']) ?></div></div>
+                    <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_pembimbing']) ?></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Kartu Nilai Mahasiswa -->
+            <div class="col-lg-6 mb-4 d-flex">
+              <div class="card flex-fill" id="cardNilai">
+                <div class="card-body px-3 py-3 text-center d-flex flex-column justify-content-center">
+                  <h3 class="card-title mb-4 text-black py-2">Nilai Akhir Mahasiswa</h3>
+                  <input type="text" class="form-control nilai-mahasiswa-display" value="<?= $nilaiAkhirAngka !== '-' ? htmlspecialchars($nilaiAkhirHuruf) : '-' ?>" readonly/>
+                  <p class="mt-3 fs-5 text-secondary fw-bold"><?= $nilaiAkhirAngka !== '-' ? '(Skor: ' . htmlspecialchars($nilaiAkhirAngka) . ')' : 'Belum dinilai' ?></p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-  <script>
-      document.addEventListener("DOMContentLoaded", function () {
-                const navLinks = document.querySelectorAll(".nav-link");
-
-                navLinks.forEach(function (link) {
-                  link.addEventListener("click", function (e) {
-                    e.preventDefault(); // biar gak reload
-                    navLinks.forEach(l => l.classList.remove("active")); // hapus semua active
-                    this.classList.add("active"); // tambahkan ke yang diklik
-                  });
-                });
-              });
-</script>
-
-
-        <!-- Baris Nilai & Data Mahasiswa -->
-        <div class="row align-items-stretch mb-4 p-2">
-          <div class="col-lg-6 mb-3 d-flex">
-            <div class="card flex-fill" id="carddataMahasiswa">
-              <div class="card-body card-soft px-4 py-3">
-                <h3 class="card-title text-black mb-4 text-center" style="padding:10px;">Data Mahasiswa</h3>
-                <div class="d-flex flex-wrap gap-1 px-4 py-3">
-                  <!-- Section 1 -->
-                  <div class="section" style="flex: 1 1 200px; margin-left:30px; margin-top:25px; color: #333;">
-                    <!-- NIM -->
-                    <div class="info-group mb-3">
-                      <div class="label-row d-flex align-items-center gap-2 mb-1">
-                        <i class="fa-solid fa-id-card"></i>
-                        <span class="fw-bold">NIM</span>  
-                      </div>
-                    <div class="value-row text-secondary fw-bold">
-                      <?= $dataSidang['mahasiswa'][0]['nim'] ?? '-' ?>
-                    </div>
-                    </div>
-                
-
-                    <!-- Nama -->
-                    <div class="info-group mb-3  section-bawah" style="margin-top:45px;">
-                      <div class="label-row d-flex align-items-center gap-2 mb-1">
-                        <i class="fa-solid fa-user"></i>
-                        <span class="fw-bold">Nama</span>
-                      </div>
-                    <div class="value-row text-secondary fw-bold">
-                      <?= $dataSidang['mahasiswa'][0]['nama'] ?? '-' ?>
-                    </div>
-                    </div>
-                  </div>
-
-
-                  <!-- Section 2 -->
-                  <div class="section2" style="flex: 1 1 200px; margin-top:25px; color: #333;">
-                    <!-- Mata Kuliah -->
-                    <div class="info-group mb-3">
-                      <div class="label-row d-flex align-items-center gap-2 mb-1">
-                        <i class="fa-solid fa-book"></i>
-                        <span class="fw-bold">Mata Kuliah</span>
-                      </div>
-                      <div class="value-row text-secondary fw-bold"> instalasi otomatis</div>
-                    </div>
-                    <!-- Dosen Pembimbing -->
-                    <div class="info-group mb-3 section-bawah" style="margin-top:45px;" >
-                      <div class="label-row d-flex align-items-center gap-2 mb-1">
-                        <i class="fa-solid fa-user-tie"></i>
-                        <span class="fw-bold">Dosen Pembimbing</span>
-                      </div>
-                      <div class="value-row text-secondary fw-bold">Dr. Ridah Indah F.</div>
-                    </div>
+          <!-- Kartu Detail Penilaian -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="card h-100" id="carddetailPenilaian">
+                <div class="card-body px-4 py-4">
+                  <h3 class="card-title text-black mb-3">Detail Penilaian</h3>
+                  <div class="row text-center">
+                    <div class="col-md-3 col-6"><label class="d-block mb-1">Nilai Laporan:</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['dokumen']) ?>" readonly/></div>
+                    <div class="col-md-3 col-6"><label class="d-block mb-1">Presentasi:</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['presentasi']) ?>" readonly/></div>
+                    <div class="col-md-3 col-6"><label class="d-block mb-1">Tanya Jawab:</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['tanyajawab']) ?>" readonly/></div>
+                    <div class="col-md-3 col-6"><label class="d-block mb-1">Nilai Proyek:</label><input type="text" class="form-control detail-penilaian-input" value="<?= htmlspecialchars($nilaiDetail['proyek']) ?>" readonly/></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-lg-6 mb-3 d-flex">
-            <div class="card flex-fill" id="cardNilai">
-              <div class="card-body card-soft px-3 py-3 text-center">
-                <h3 class="card-title mb-3 text-black" style="padding:10px;">Nilai Mahasiswa</h3>
-                <div>
-                <input
-                  type="text"
-                  class="form-control form-control-lg text-center mx-auto"
-                  id="nilaiMahasiswa"
-                  value="<?php echo $nilaiAkhir; ?>"
-                  maxlength="5"
-                  readonly
-                />
+
+          <!-- Kartu Catatan -->
+          <div class="row">
+            <div class="col-12">
+              <div class="card h-100" id="cardcatatan">
+                <div class="card-body px-4 py-4 d-flex flex-column">
+                  <h3 class="card-title text-black mb-3">Catatan dari Dosen Penguji</h3>
+                  <div id="catatan" class="form-control flex-grow-1" rows="8" ><?= htmlspecialchars($semuaCatatan) ?></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-
-
-        <!-- Baris Detail Penilaian tanpa modal -->
-        <div class="row mt-3 p-3">
-            <div class="card flex-fill h-100" id="carddetailPenilaian">
-              <div class="card-body px-4 py-4">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
-                </div>
-                <div class="row justify-content-center align-items-center">
-                  <div class="col d-flex align-items-center">
-                    <label for="nilaiLaporan" class="text-black me-2 mb-2">Nilai laporan</label>
-                    <label class="colon1 me-2 mb-2">:</label>
-                    <input
-                      type="text"
-                      class="form-control form-control-lg text-center input-nilai mb-2"
-                      name="nilaiLaporan"
-                      placeholder="<?= $dataPenguji[0]['n_dokumen'] ?? '-' ?>"
-                      readonly/>
-                  </div>
-                  <div class="col d-flex align-items-center">
-                    <label for="MateriPresentasi" class="text-black me-2 mb-2">Materi Presentasi</label>
-                    <label class="colon2 me-2 mb-2">:</label>
-                    <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
-                    <input
-                      type="text"
-                      class="form-control form-control-lg text-center input-nilai mb-2"
-                      name="MateriPresentasi"
-                      placeholder="<?= $dataPenguji[0]['n_presentasi'] ?? '-' ?>"
-                      readonly/>
-                  </div>
-                  <div class="col d-flex align-items-center">
-                    <label for="Penyampaian" class="text-black me-2 mb-2">Penyampaian</label>
-                    <label class="colon3 me-2 mb-2">:</label>
-                    <!-- Typo diperbaiki: dari type="tyep" jadi type="text" -->
-                    <input
-                      type="text"
-                      class="form-control form-control-lg text-center input-nilai mb-2"
-                      name="Penyampaian"
-                      placeholder="<?= $dataPenguji[0]['n_tanyajawab'] ?? '-' ?>"
-                      readonly/>
-                  </div>
-                  <div class="col d-flex align-items-center">
-                    <label for="NilaiProyek" class="text-black me-2 mb-2">Nilai Proyek</label>
-                    <label class="colon4 me-2 mb-2">:</label>
-                    <!-- Typo diperbaiki: dari type="type" jadi type="text" -->
-                  <input
-                    type="text"
-                    class="form-control form-control-lg text-center input-nilai mb-2"
-                    name="NilaiProyek"
-                    placeholder="<?= $dataPenguji[0]['n_proyek'] ?? '-' ?>"
-                    readonly/>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </div>
-
-
-
-        <!-- Baris Catatan -->
-        <div class="row mt-3 p-3">
-            <div class="card flex-fill h-100" id="cardcatatan">
-              <div class="card-body px-4 py-3 d-flex flex-column">
-                <h3 class="card-title text-black mb-4">Catatan:</h3>
-                <textarea
-                  class="form-control flex-grow-1"
-                  id="catatan"
-                  placeholder="<?= $dataPenguji[0]['catatan'] ?? 'Tidak ada catatan.' ?>"
-                  rows="4"
-                  readonly></textarea>
-
-              </div>
-            </div>
-        </div>
-
-    </main>
-  </div>
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Inisialisasi tooltip Bootstrap (jika ada)
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-        new bootstrap.Tooltip(tooltipTriggerEl);
-      });
-
-
-      // Fungsi untuk membuat elemen menjadi statis (tidak bisa diklik/fokus)
-      const makeElementStatic = (element) => {
-        if (element) {
-          // 1. Pindahkan teks dari atribut 'placeholder' ke 'value' agar terlihat
-          const placeholderText = element.getAttribute('placeholder');
-          if (placeholderText) {
-            element.value = placeholderText.trim(); // .trim() untuk hapus spasi berlebih
-            element.removeAttribute('placeholder');
-          }
-
-          // 2. Buat elemen tidak bisa diinteraksi
-          element.style.pointerEvents = 'none'; // Menonaktifkan semua event mouse (klik, hover)
-          element.style.userSelect = 'none';   // Mencegah teks di dalamnya bisa di-select
-          element.tabIndex = -1;               // Menghapus dari urutan navigasi keyboard (Tab)
-        }
-      };
-
-
-
-      // Terapkan fungsi ke semua input nilai di dalam 'carddetailPenilaian'
-      const scoreInputs = document.querySelectorAll('#carddetailPenilaian input.form-control');
-      scoreInputs.forEach(makeElementStatic);
-
-      // Terapkan fungsi ke textarea 'catatan'
-      const notesTextarea = document.getElementById('catatan');
-      makeElementStatic(notesTextarea);
-
-      // --- AKHIR SOLUSI ---
-    });
-
-
-
-    // Kode untuk toggle sidebar (tetap dipertahankan)
+    // Kode untuk toggle sidebar (tidak diubah)
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
     menuToggle.onclick = function() {
@@ -486,9 +315,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
       sidebar.classList.toggle("NavSide__sidebar--active-mobile");
     };
 
-
-
-    // Kode untuk active item di sidebar (tetap dipertahankan)
+    // Kode untuk active item di sidebar (tidak diubah)
     let listItems = document.querySelectorAll(".NavSide__sidebar-item");
     for (let i = 0; i < listItems.length; i++) {
       listItems[i].onclick = function() {
@@ -500,13 +327,6 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
         }
       };
     }
-
-
-    // Fungsi untuk tombol kembali (tetap dipertahankan)
-    function pindahKeHalamanDaftarSidang() {
-      window.location.href = "aDaftarSidang.php"; // Ganti dengan halaman tujuan yang benar
-    }
 </script>
 </body>
 </html>
-

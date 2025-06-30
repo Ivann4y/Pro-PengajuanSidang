@@ -137,6 +137,8 @@ if ($result === false) {
     die("Error di main query: " . print_r(sqlsrv_errors(), true));
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="id">
 

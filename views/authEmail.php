@@ -30,20 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         date_default_timezone_set('Asia/Jakarta');
         $expires = date('Y-m-d H:i:s', strtotime('+15 minutes'));
         sqlsrv_query($conn, "INSERT INTO password_resets (email, role, token, expires_at) VALUES (?, ?, ?, ?)", [$email, $role, $token, $expires]);
-        
-        // Tentukan nama berdasarkan role
-        $nama = '';
-        if ($role == 'mahasiswa') {
-            $nama = $user['nama_mhs'];
-        } elseif ($role == 'dosen') {
-            $nama = $user['nama_dosen'];
-        } elseif ($role == 'admin') {
-            $nama = $user['nama'];
-        } else {
-            $nama = $user['username']; // fallback
-        }
-        
-        $result = sendResetPasswordEmail($email, $nama, $token);
+        //$resetLink = "http://localhost/PRG2/Pro-PengajuanSidang/views/inputPasswordBaru.php?token=$token";
+        $result = sendResetPasswordEmail($email, $user['username'], $token);
+
 
         if ($result['success']) {
             $_SESSION['reset_email'] = $email;
