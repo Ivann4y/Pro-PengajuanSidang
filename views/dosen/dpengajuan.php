@@ -44,6 +44,8 @@ $baseQuery = "
             Detail_Sidang ds ON s.id_sidang = ds.id_sidang
         LEFT JOIN
             MataKuliah mk ON ds.id_matkul = mk.id_matkul
+        WHERE
+            s.status_ajuan = 0
     )
 ";
 

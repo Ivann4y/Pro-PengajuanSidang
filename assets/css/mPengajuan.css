@@ -55,7 +55,7 @@
 
         /* Add jadiBiru class styling */
         .jadiBiru {
-            background-color: rgb(235, 238, 245);
+            background-color: #eaeef7;
             transition: all 0.3s ease;
         }
 
@@ -162,7 +162,7 @@
         }
 
         .fa-file-signature, .fa-trash {
-            color: rgb(67, 54, 240);
+            color: #4b68fb;
             transition: color 0.3s ease;
         }
 
