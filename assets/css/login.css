@@ -341,3 +341,7 @@ form {
     color: #6c757d; /* Warna ikon abu-abu */
 }
 
+.password-masked {
+        -webkit-text-security: disc;
+        font-family: 'Verdana', sans-serif;
+    }
