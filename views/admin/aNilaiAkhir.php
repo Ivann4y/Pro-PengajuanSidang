@@ -93,21 +93,28 @@ $dataPenguji = [];
 
 $sqlDetail = "
     SELECT 
-        d.nama_dosen,
-        p.nim,
+        s.judul,
+        m.nim,
         m.nama_mhs,
-        p.n_dokumen, 
-        p.n_presentasi, 
-        p.n_tanyajawab, 
+        (SELECT TOP 1 d.nama_dosen 
+        FROM Bimbingan b 
+        JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+        WHERE b.id_kelompok = k.id_kelompok) AS nama_pembimbing,
+        penguji.nama_dosen AS nama_penguji,
+        p.n_dokumen,
+        p.n_presentasi,
+        p.n_tanyajawab,
         p.n_proyek,
-        p.catatan_sidang
-    FROM Detail_Sidang p
-    JOIN Penilaian
-    JOIN Dosen d ON d.nomor_dosen = p.nomor_dosen
-    JOIN Mahasiswa2 m ON p.nim = m.nim
-    WHERE p.id_sidang = ?
-    ORDER BY d.nama_dosen, m.nama_mhs;
-";
+        ds.catatan_sidang
+    FROM Sidang s
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    JOIN Kelompok_Mahasiswa km ON k.id_kelompok = km.id_kelompok
+    JOIN Mahasiswa m ON km.nim = m.nim
+    LEFT JOIN Penilaian p ON s.id_sidang = p.id_sidang AND m.nim = p.nim
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang AND p.nomor_dosen = ds.nomor_dosen
+    LEFT JOIN Dosen penguji ON p.nomor_dosen = penguji.nomor_dosen
+    WHERE s.id_sidang = ?;
+    ";
 
 $stmtDetail = sqlsrv_query($conn, $sqlDetail, array($id_sidang));
 if ($stmtDetail === false) {
@@ -116,7 +123,6 @@ if ($stmtDetail === false) {
 
 while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
     $dataPenguji[] = [
-        'dosen' => $rowDetail['nama_dosen'],
         'nim_dinilai' => $rowDetail['nim'],
         'mahasiswa_dinilai' => $rowDetail['nama_mhs'],
         'n_dokumen' => $rowDetail['n_dokumen'] ?? '-',
@@ -155,9 +161,7 @@ while ($rowDetail = sqlsrv_fetch_array($stmtDetail, SQLSRV_FETCH_ASSOC)) {
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet"
   />
-  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="../../css/style.css" />
   <link rel="stylesheet" href="../../css/button-styles.css" />
   <link rel="stylesheet" href="../../extra/style.css" />
 
