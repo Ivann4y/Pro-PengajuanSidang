@@ -95,6 +95,7 @@ if ($result === false) {
 
 $nomor = $offset + 1;
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <!-- Sisa kode HTML tidak perlu diubah sama sekali -->
