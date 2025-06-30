@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
         $id_kelompok_terpilih = $_POST['kelompok'];
-        $status_ajuan = ($_POST['aksi'] == 'Kirim') ? 0x01 : 0x00;
+        $status_ajuan = ($_POST['aksi'] == 'Kirim') ? 0x00 : NULL;
 
         if (empty($judul) || empty($id_matkul_terpilih) || empty($id_kelompok_terpilih)) throw new Exception("Judul, Mata Kuliah, dan Kelompok wajib diisi.");
 

@@ -5,12 +5,17 @@ session_start();
 include '../koneksi/koneksiAndrew.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get nomor_dosen from session
-    if (isset($_SESSION['user_data']['nomor_dosen'])) {
-        $nomor_dosen = $_SESSION['user_data']['nomor_dosen'];
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Session dosen tidak ditemukan. Silakan login ulang.']);
-        exit();
+    // Get nomor_dosen from form (autocomplete) or session
+    $dosen_nomor_array = isset($_POST['dosen_nomor_hidden']) ? $_POST['dosen_nomor_hidden'] : [];
+    $nomor_dosen = isset($_SESSION['user_data']['nomor_dosen']) ? $_SESSION['user_data']['nomor_dosen'] : null;
+    
+    // If no dosen selected from form, use session dosen
+    if (empty($dosen_nomor_array) || (count($dosen_nomor_array) === 1 && empty($dosen_nomor_array[0]))) {
+        if (!$nomor_dosen) {
+            echo json_encode(['success' => false, 'message' => 'Dosen pembimbing tidak ditemukan. Silakan pilih dosen.']);
+            exit();
+        }
+        $dosen_nomor_array = [$nomor_dosen];
     }
 
     $prodi = $_POST['kelompok_prodi'];
@@ -39,17 +44,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 3. Insert into Bimbingan
-    $sql_bimbingan = "INSERT INTO Bimbingan (nomor_dosen, id_kelompok, isPembimbing) VALUES (?, ?, ?)";
-    sqlsrv_query($conn, $sql_bimbingan, [$nomor_dosen, $id_kelompok, 1]);
+    // 3. Insert into Bimbingan for each dosen
+    foreach ($dosen_nomor_array as $dosen_nomor) {
+        if (trim($dosen_nomor) !== '') {
+            $sql_bimbingan = "INSERT INTO Bimbingan (nomor_dosen, id_kelompok, isPembimbing) VALUES (?, ?, ?)";
+            $stmt_bimbingan = sqlsrv_query($conn, $sql_bimbingan, [$dosen_nomor, $id_kelompok, 1]);
+            
+            if ($stmt_bimbingan === false) {
+                echo json_encode(['success' => false, 'message' => 'Gagal menambahkan dosen pembimbing']);
+                exit();
+            }
 
-    // 4. Update Dosen's isPembimbing status to 1
-    $sql_update_dosen = "UPDATE Dosen SET isPembimbing = 1 WHERE nomor_dosen = ?";
-    $stmt_update_dosen = sqlsrv_query($conn, $sql_update_dosen, [$nomor_dosen]);
-    
-    if ($stmt_update_dosen === false) {
-        echo json_encode(['success' => false, 'message' => 'Gagal mengupdate status pembimbing dosen']);
-        exit();
+            // 4. Update each Dosen's isPembimbing status to 1
+            $sql_update_dosen = "UPDATE Dosen SET isPembimbing = 1 WHERE nomor_dosen = ?";
+            $stmt_update_dosen = sqlsrv_query($conn, $sql_update_dosen, [$dosen_nomor]);
+            
+            if ($stmt_update_dosen === false) {
+                echo json_encode(['success' => false, 'message' => 'Gagal mengupdate status pembimbing dosen']);
+                exit();
+            }
+        }
     }
 
     echo json_encode(['success' => true, 'message' => 'Kelompok berhasil dibuat!']);
