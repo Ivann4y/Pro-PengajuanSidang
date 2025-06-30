@@ -99,50 +99,54 @@ $countResult = sqlsrv_query($conn, $countQuery, $params_count);
 $totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRows / $rowsPerPage);
 
-$query = "
-    SELECT
-        s.id_sidang,
-        s.judul,
-        s.jenis_sidang,
-        ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
-        ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
-    FROM
-        dbo.Sidang AS s
-    LEFT JOIN 
-        dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
-    LEFT JOIN 
-        dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
-    LEFT JOIN 
-        dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
-    WHERE
-        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
-        AND s.status_ajuan IS NULL -- Filter utama untuk menampilkan HANYA DRAF
-        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
-    ORDER BY
-        s.id_sidang DESC
-    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-";
-$params_main = [$nim_mahasiswa_logged_in, $offset, $rowsPerPage];
-$result = sqlsrv_query($conn, $query, $params_main);
-if ($result === false) {
-    die(print_r(sqlsrv_errors(), true));
-}
-
-$dataSidang = [];
-while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-    // Logika untuk menampilkan nama matkul yang benar berdasarkan jenis sidang
-    if ($row['jenis_sidang'] == 0) {
-        $nama_matkul_display = 'Tugas Akhir';
-    } else {
-        $nama_matkul_display = $row['nama_matkul'];
+if ($totalRows == 0) {
+    $dataSidang = [];
+} else {
+    $query = "
+        SELECT
+            s.id_sidang,
+            s.judul,
+            s.jenis_sidang,
+            ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
+            ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
+        FROM
+            dbo.Sidang AS s
+        LEFT JOIN 
+            dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
+        LEFT JOIN 
+            dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
+        LEFT JOIN 
+            dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
+        WHERE
+            s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
+            AND s.status_ajuan IS NULL
+            $filterClause
+        ORDER BY
+            s.id_sidang DESC
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    ";
+    $params_main = [$offset, $rowsPerPage];
+    $result = sqlsrv_query($conn, $query, $params_main);
+    if ($result === false) {
+        die(print_r(sqlsrv_errors(), true));
     }
 
-    $dataSidang[] = [
-        "id_sidang" => $row['id_sidang'],
-        "judul" => $row['judul'],
-        "matkul" => $nama_matkul_display, // Gunakan variabel yang sudah diproses
-        "dosen" => $row['nama_dosen'] ?? 'N/A'
-    ];
+    $dataSidang = [];
+    while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+        // Logika untuk menampilkan nama matkul yang benar berdasarkan jenis sidang
+        if ($row['jenis_sidang'] == 0) {
+            $nama_matkul_display = 'Tugas Akhir';
+        } else {
+            $nama_matkul_display = $row['nama_matkul'];
+        }
+
+        $dataSidang[] = [
+            "id_sidang" => $row['id_sidang'],
+            "judul" => $row['judul'],
+            "matkul" => $nama_matkul_display, // Gunakan variabel yang sudah diproses
+            "dosen" => $row['nama_dosen'] ?? 'N/A'
+        ];
+    }
 }
 ?>
 

@@ -85,19 +85,20 @@ $sql_main = "
     )
     SELECT * FROM SidangInfo WHERE id_sidang = ?";
 $stmt_main = sqlsrv_query($conn, $sql_main, [$id_sidang]);
-if ($stmt_main === false) die("Error saat mengambil data sidang: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
-$data_sidang = sqlsrv_fetch_array($stmt_main, SQLSRV_FETCH_ASSOC);
-if (!$data_sidang) die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan.");
 
-
-// =================================================================
-// PERUBAHAN 2: Mendefinisikan variabel $jenis_sidang_label
-// =================================================================
-if (isset($data_sidang['jenis_sidang'])) {
-    $jenis_sidang_label = ($data_sidang['jenis_sidang'] == 0) ? 'Tugas Akhir' : 'Proyek Semester';
-} else {
-    $jenis_sidang_label = 'N/A';
+if ($stmt_main === false) {
+    die("Error saat mengambil data sidang: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
+$data_sidang = sqlsrv_fetch_array($stmt_main, SQLSRV_FETCH_ASSOC);
+if (!$data_sidang) {
+    die("Data sidang tidak ditemukan.");
+}
+
+// Tentukan label jenis sidang
+$jenis_sidang_label = (isset($data_sidang['nama_matkul']) && strcasecmp($data_sidang['nama_matkul'], 'Tugas Akhir') == 0)
+    ? 'Sidang Tugas Akhir'
+    : 'Sidang Semester';
+
 
 
 // --- Sisa dari logika PHP Anda tetap sama ---
@@ -132,6 +133,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $_SESSION['success'] = "Sidang berhasil disetujui";
+        header("Location: dPengajuan.php");
+        exit();
     }
 
     // --- LOGIKA UNTUK REJECT ---
@@ -153,6 +156,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $_SESSION['success'] = "Sidang berhasil ditolak";
+            header("Location: dPengajuan.php");
+            exit();
         }
     }
     
@@ -365,6 +370,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     approveForm.appendChild(approveInput);
                 }
                 approveForm.submit();
+                window.location.href = 'dPengajuan.php'; // Redirect ke halaman pengajuan
             }
         });
     });
@@ -391,6 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.submit(); // submit form setelah konfirmasi
+                    window.location.href = 'dPengajuan.php'; // Redirect ke halaman pengajuan
                 }
             });
         }
