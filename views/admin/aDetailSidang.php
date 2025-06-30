@@ -1,11 +1,51 @@
 <?php
+// Letakkan ini di baris paling atas file
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
+// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    // Arahkan ke halaman login utama di root
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    // Arahkan ke halaman login utama di root
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
 require "../../koneksi/koneksiAndrew.php";
 
-session_start();
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid.");
-} 
-$id_sidang = (int)$_GET['id'];
+// Langkah 1: Jika ada 'id' di URL, simpan ke session dan redirect.
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    // Simpan ID yang valid dari URL ke dalam session
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    
+    // Redirect ke halaman yang sama TAPI TANPA parameter GET
+    header("Location: aDetailSidang.php");
+    exit();
+}
+
+// Langkah 2: Jika TIDAK ada 'id' di URL, ambil dari session.
+if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif'])) {
+    $id_sidang = (int)$_SESSION['id_sidang_aktif'];
+} else {
+    // Jika tidak ada di URL dan tidak ada di session, maka akses tidak valid.
+    // Arahkan kembali ke halaman daftar sidang.
+    $_SESSION['error_message'] = "ID Sidang tidak valid atau tidak ditemukan. Silakan pilih sidang dari daftar.";
+    header("Location: aDaftarSidang.php");
+    exit();
+}
 
 // Variabel penampung
 $data_nim = [];
@@ -82,23 +122,55 @@ if ($data_sidang['jenis_sidang'] == 0) { // Sidang TA
             }
         }
     }
-} elseif ($data_sidang['jenis_sidang'] == 1) { // Sidang Semester
-    // ... (Logika untuk sidang semester tidak perlu diubah) ...
-    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul WHERE ds.id_sidang = ?";
+} elseif ($data_sidang['jenis_sidang'] == 1) { 
+    // [LANGKAH 1] Ambil id_matkul dari detail sidang.
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul 
+                   FROM MataKuliah mk 
+                   JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul 
+                   WHERE ds.id_sidang = ?";
     $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
-    if ($stmt_matkul) { $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); }
+    if ($stmt_matkul) { 
+        $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC); 
+    }
 
+    // [LANGKAH 2] Jika mata kuliah ditemukan, cari dosen pengampunya dengan benar.
     if ($data_matkul) {
+        // Ambil variabel yang dibutuhkan dari data yang sudah ada
         $id_matkul = $data_matkul['id_matkul'];
-        $sql_pengampu = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
-        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
-        if ($stmt_pengampu) {
-            while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
-                $dosen_pengampu[] = $row['nama_dosen'];
-            }
+        $id_kelompok = $data_sidang['id_kelompok']; // Kita sudah punya id_kelompok
+
+        // [PERBAIKAN UTAMA] Query yang benar untuk mengambil dosen pengampu
+        $sql_pengampu = "SELECT d.nama_dosen 
+            FROM Dosen d 
+            JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen 
+            WHERE 
+                -- Filter 1: Mencocokkan mata kuliah dengan placeholder
+                pk.id_matkul = ?
+                
+                -- Filter 2: Mencocokkan kelas mahasiswa dengan subquery dan placeholder
+                AND pk.id_kelas = (
+                    SELECT TOP 1 km.id_kelas
+                    FROM Kelompok_Mahasiswa kpm
+                    JOIN Kelas_Mahasiswa km ON kpm.nim = km.nim
+                    WHERE kpm.id_kelompok = ?
+                )
+        ";
+
+        // [PERBAIKAN PARAMETER] Berikan DUA parameter yang dibutuhkan: id_matkul dan id_kelompok
+        $params_pengampu = array($id_matkul, $id_kelompok);
+        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, $params_pengampu);
+
+        if ($stmt_pengampu === false) {
+            die("Error pada query pengampu: " . print_r(sqlsrv_errors(), true));
+        }
+        
+        // Ambil semua nama dosen dan masukkan ke array
+        while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
+            $dosen_pengampu[] = $row['nama_dosen'];
         }
     }
 }
+
 
 // Ambil daftar semua dosen untuk autocomplete
 $dosen_list_penguji = [];
@@ -128,6 +200,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/aDetailSidang.css">
+    
 
     
 </head>
@@ -371,258 +444,14 @@ $dosen_list_json = json_encode($dosen_list_penguji);
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script type="text/javascript">
-    // =================================================================
-    // BAGIAN 1: DEKLARASI DATA & FUNGSI UTAMA
-    // =================================================================
-
-    // Data Dosen dari PHP, pastikan ini ada di paling atas
-    const dosenData = <?php echo $dosen_list_json; ?>;
-
-    // Fungsi untuk membuka modal
-    function openModal() {
-        document.getElementById('formDalamModal').reset();
-        document.getElementById('form-error').textContent = '';
-        var myModal = new bootstrap.Modal(document.getElementById('penjadwalanSidangModal'), {
-            keyboard: false
-        });
-        myModal.show();
-    }
-
-    // Fungsi untuk mencari dosen
-    function searchDosen(inputElement, index) {
-        const query = inputElement.value.toLowerCase().trim();
-        const dropdown = document.getElementById(`autocomplete_penguji_${index}`);
-
-        if (query.length < 1) {
-            dropdown.style.display = 'none';
-            return;
-        }
-
-        const filteredDosen = dosenData.filter(dosen =>
-            dosen.nama.toLowerCase().includes(query)
-        );
-
-        dropdown.innerHTML = ''; // Wajib dikosongkan setiap kali mencari
-
-        if (filteredDosen.length > 0) {
-            filteredDosen.forEach(dosen => {
-                const item = document.createElement('div');
-                item.className = 'autocomplete-item';
-                item.textContent = dosen.nama;
-                
-                // Ini adalah cara paling andal untuk menambahkan event 'click'
-                item.addEventListener('click', () => {
-                    selectDosen(dosen.nama, index);
-                });
-                
-                dropdown.appendChild(item);
-            });
-            dropdown.style.display = 'block';
-        } else {
-            dropdown.innerHTML = '<div class="autocomplete-item">Dosen tidak ditemukan</div>';
-        }
-    }
-
-    // Fungsi untuk memilih dosen dari dropdown
-    function selectDosen(namaDosen, index) {
-        const inputElement = document.getElementById(`modal_penguji${index}`);
-        const dropdown = document.getElementById(`autocomplete_penguji_${index}`);
-        
-        inputElement.value = namaDosen; // Mengisi input
-        dropdown.style.display = 'none'; // Menyembunyikan dropdown
-    }
-
-    // Fungsi untuk menambah baris penguji
-    function addPenguji() {
-        const wrapper = document.getElementById('penguji-wrapper');
-        const newPengujiDiv = document.createElement('div');
-        newPengujiDiv.className = 'form-group';
-        
-        const newIndex = wrapper.children.length + 1;
-        newPengujiDiv.id = `penguji-form-${newIndex}`;
-
-        newPengujiDiv.innerHTML = `
-            <label for="modal_penguji${newIndex}">Penguji ${newIndex}</label>
-            <div class="input-with-buttons">
-                <div class="autocomplete-container">
-                    <input type="text"
-                           id="modal_penguji${newIndex}"
-                           name="penguji_nama[]"
-                           placeholder="Ketik nama dosen penguji"
-                           oninput="searchDosen(this, ${newIndex})"
-                           autocomplete="off">
-                    <div class="autocomplete-dropdown" id="autocomplete_penguji_${newIndex}" style="display: none;"></div>
-                </div>
-                <div class="input-with-percent">
-                    <input type="number" name="penguji_bobot[]" class="form-control-bobot" min="0" placeholder="Bobot">
-                    <span class="percent-sign">%</span>
-                </div>
-            </div>
-        `;
-        wrapper.appendChild(newPengujiDiv);
-    }
-
-    // Fungsi untuk menghapus baris penguji terakhir
-    function removePenguji() {
-        const wrapper = document.getElementById('penguji-wrapper');
-        if (wrapper.children.length > 1) {
-            wrapper.lastElementChild.remove();
-        } else {
-            const lastForm = wrapper.firstElementChild;
-            if (lastForm) {
-                const inputNama = lastForm.querySelector('input[name="penguji_nama[]"]');
-                const inputBobot = lastForm.querySelector('input[name="penguji_bobot[]"]');
-                if (inputNama) inputNama.value = '';
-                if (inputBobot) inputBobot.value = '';
-            }
-        }
-    }
-
-    // =================================================================
-    // BAGIAN 2: EVENT LISTENERS (Dijalankan setelah semua fungsi didefinisikan)
-    // =================================================================
-
-    // Event listener untuk toggle sidebar
-    let menuToggle = document.querySelector(".NavSide__toggle");
-    let sidebar = document.getElementById("main-sidebar");
-
-    if (menuToggle && sidebar) {
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-    }
-    
-    // Event listener untuk menutup dropdown saat klik di luar
-    document.addEventListener('click', function(event) {
-    setTimeout(() => {
-        const allDropdowns = document.querySelectorAll('.autocomplete-dropdown');
-        allDropdowns.forEach(dropdown => {
-            const container = dropdown.closest('.autocomplete-container');
-            if (container && !container.contains(document.activeElement)) {
-                dropdown.style.display = 'none';
-            }
-        });
-    }, 150); // kasih delay 150ms agar item bisa diklik
-});
-
-    // Event listener untuk submit form (dengan validasi)
-    document.getElementById('formDalamModal').addEventListener('submit', function(event) {
-        event.preventDefault(); 
-
-        const errorBox = document.getElementById("form-error");
-        errorBox.textContent = ""; 
-        
-        let isValid = true;
-        let errorMessage = "";
-
-        const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
+   <script type="text/javascript">
+        // Variabel-variabel ini akan menjadi global dan bisa diakses oleh aDetailSidang.js
+        const dosenData = <?php echo $dosen_list_json; ?>;
         const isSidangTA = <?php echo ($data_sidang['jenis_sidang'] == 0) ? 'true' : 'false'; ?>;
-
-        if (isSidangTA) {
-              const namaDosenList = [];
-        pengujiInputs.forEach(input => {
-            const nama = input.value.trim();
-            if (nama !== "") {
-                namaDosenList.push(nama);
-            }
-        });
-
-        // Gunakan Set untuk mendapatkan nama unik, lalu bandingkan ukurannya
-        const uniqueNamaDosen = new Set(namaDosenList);
-        if (uniqueNamaDosen.size < namaDosenList.length) {
-            errorMessage = "Tidak boleh ada nama dosen penguji yang sama.";
-            isValid = false;
-        }
-            pengujiInputs.forEach((input, index) => {
-                const namaDosenValid = dosenData.some(dosen => dosen.nama === input.value.trim());
-                if (isValid && input.value.trim() === "") {
-                    errorMessage = `Nama penguji ${index + 1} tidak boleh kosong!`;
-                    isValid = false;
-                } else if (isValid && !namaDosenValid && input.value.trim() !== '') {
-                    errorMessage = `Nama dosen '${input.value}' tidak valid. Harap pilih dari daftar.`;
-                    isValid = false;
-                }
-            });
-        }
-        
-        const ruangan = document.getElementById("modal_ruangan").value.trim();
-        const tanggal = document.getElementById("modal_tanggal").value;
-        const jamAwal = document.getElementById("modal_jam_awal").value;
-        const jamAkhir = document.getElementById("modal_jam_akhir").value;
-
-        if (isValid && ruangan === "") {
-            errorMessage = "Ruangan harus diisi!";
-            isValid = false;
-        } else if (isValid && tanggal === "") {
-            errorMessage = "Tanggal harus dipilih!";
-            isValid = false;
-        } else if (isValid && (jamAwal === "" || jamAkhir === "")) {
-            errorMessage = "Jam awal dan jam akhir harus diisi!";
-            isValid = false;
-        } else if (isValid && jamAkhir <= jamAwal) {
-            errorMessage = "Jam akhir harus setelah jam awal!";
-            isValid = false;
-        }
-
-        if (!isValid) {
-            errorBox.textContent = errorMessage;
-            return;
-        }
-        
-        const formData = new FormData(this);
-        const submitButton = this.querySelector('button[type="submit"]');
-        
-        submitButton.disabled = true;
-        submitButton.textContent = 'Menyimpan...';
-
-        fetch('proses_ubah_jadwal.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            var myModalEl = document.getElementById('penjadwalanSidangModal');
-            var modal = bootstrap.Modal.getInstance(myModalEl);
-            if (modal) { modal.hide(); }
-
-            if (data.status === 'success') {
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: data.message,
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        location.reload(); 
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: 'Gagal!',
-                    text: data.message,
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#ff5f5f'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                title: 'Oops!',
-                text: 'Terjadi kesalahan saat menghubungi server.',
-                icon: 'error'
-            });
-        })
-        .finally(() => {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Ubah Penjadwalan';
-        });
-    });
-</script>
+    </script>
+    
+    <!-- Langkah 2: Panggil file JavaScript eksternal Anda -->
+    <script src="../../assets/js/aDetailSidang.js"></script>
 </body>
 
 </html>

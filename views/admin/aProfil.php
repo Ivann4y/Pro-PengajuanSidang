@@ -1,3 +1,29 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+require $path_to_root . "koneksi/koneksiAndrew.php";
+
+$user = $_SESSION['user_data'];
+$nama = $user['nama_admin'];
+$email = $user['email']; 
+$no_telepon = $user['no_telepon']; 
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -143,19 +169,19 @@
                         <div class="row aData">
                             <div class="col-12">
                                 <p>Nama</p>
-                                <p class="value">John Doe</p>
+                                <p class="value"><?= $nama ?></p>
                             </div>
                         </div>
                         <div class="row aData">
                             <div class="col-12">
                                 <p>Email</p>
-                                <p class="value">123456789@polytechnic.astra.ac.id</p>
+                                <p class="value"><?= $email ?></p>
                             </div>
                         </div>
                         <div class="row aData">
                             <div class="col-12">
                                 <p>No. Telepon</p>
-                                <p class="value">08123456789</p>
+                                <p class="value"><?= $no_telepon ?></p>
                             </div>
                         </div>
                     </div>

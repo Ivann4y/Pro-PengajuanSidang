@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Fetch data sidang mendatang dari PHP
   let sidangData = [];
   let sidangDates = [];
-  fetch("../../control/sidangMendatang.php")
+  fetch("../../control/admin/aBeranda_queries.php?action=sidang_mendatang")
     .then((response) => response.json())
     .then((data) => {
       sidangData = data;
@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-  fetch("../../control/jumlahPengajuan.php")
+  fetch("../../control/admin/aBeranda_queries.php?action=pengajuan")
     .then((response) => response.json())
     .then((result) => {
       // result.data adalah array judul sidang yang perlu aksi pengajuannya
@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
     numberDiv.textContent = jumlah;
   }
 
-  fetch("../../control/perluJumlahPenjadwalan.php")
+  fetch("../../control/admin/aBeranda_queries.php?action=penjadwalan")
     .then((response) => response.json())
     .then((result) => {
       // result.data adalah array judul sidang yang belum terjadwal

@@ -23,7 +23,7 @@ $redirectPath = '';
 switch ($role) {
     case 'mahasiswa':
         $tableNama = 'Mahasiswa';
-        $usernameKolom = 'nim';
+        $usernameKolom = 'username';
         $redirectPath = 'views/mahasiswa/mBeranda.php';
         break;
     case 'dosen':
@@ -71,6 +71,9 @@ try {
             $_SESSION['user_data'] = $user;
             $_SESSION['role'] = $role;
             $_SESSION['is_logged_in'] = true;
+            if ($role === 'mahasiswa' && isset($user['nim'])) {
+                $_SESSION['nim'] = $user['nim'];
+            }
 
             // Redirect ke dashboard yang sesuai
             header("Location: " . $redirectPath);

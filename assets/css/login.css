@@ -228,6 +228,8 @@ form {
   .icon-circle {
     margin-right: 5% !important;
   }
+
+  
 }
 
 @media (max-width: 768px) {
@@ -320,4 +322,22 @@ form {
   .icon-circle {
     margin-right: 5% !important;
   }
+
+ 
+
 }
+
+.password-wrap {
+    position: relative;
+}
+
+/* Styling untuk ikon mata agar masuk ke dalam kotak input */
+.password-wrap i {
+    position: absolute;
+    top: 50%;
+    right: 15px; /* Jarak dari sisi kanan */
+    transform: translateY(-50%);
+    cursor: pointer; /* Mengubah kursor menjadi tangan saat di atas ikon */
+    color: #6c757d; /* Warna ikon abu-abu */
+}
+

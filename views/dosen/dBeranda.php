@@ -4,7 +4,7 @@ if ($_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit();
 }
-
+include "../../koneksi/koneksiAndrew.php";
 ?>
 
 <!DOCTYPE html>
@@ -18,355 +18,10 @@ if ($_SESSION['role'] !== 'dosen') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../../assets/css/style.css"/>
-    <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/dBeranda.css">
 
-    <style>
-
-        /* Ikon Header untuk Desktop (Notifikasi & Profil) */
-        .NavSide__main-content .header-icons-desktop {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            z-index: 10;
-        }
-
-        .NavSide__main-content .header-icons-desktop .notification-icon {
-            font-size: 1.5rem;
-            color: #1F2937;
-            cursor: pointer;
-        }
-
-        .NavSide__main-content .header-icons-desktop .profile-icon-desktop {
-            width: 40px; 
-            height: 40px;
-            background-color: #1F2937; 
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white; 
-            font-size: 1.5rem; 
-        }
-
-        .NavSide__topbar .header-icons {
-            display: flex;
-            align-items: center;
-            gap: 0px; 
-        }
-        .NavSide__topbar .header-icons .notification-icon i {
-             color: #1F2937; 
-        }
-
-        /* "Beranda" */
-        .dashboardTitle { 
-            color: #1F2937; 
-            font-size: 1.25rem; 
-            font-weight: 600; 
-            margin-bottom: 0.5rem;
-        }
-        /* "Selamat Datang, Evan Wahyu!" */
-        .welcomeText { 
-            color: #1F2937;
-            font-size: 2.5rem; 
-            font-weight: 700; 
-            margin-bottom: 2rem; /   
-        }
-
-        .hover-effect-card { /* Kelas baru untuk card yang bisa dihover */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .hover-effect-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
-
-        /* Gaya umum untuk card status (pengajuan, perbaikan, penilaian) */
-        .status-card-common {
-            display: flex;
-            align-items: center;
-            padding: 1.25rem; 
-        }
-
-        .status-card-common .number {
-            font-size: 4.8rem;
-            font-weight: 700;
-            line-height: 1;
-            margin-right: 1.2rem;
-            min-width: 50px; 
-            text-align: center;
-        }
-
-        .status-card-common .text-content { 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            flex: 1;
-            overflow-wrap: break-word;
-            min-width: 0;
-        }
-
-        .status-card-common .text-content .title {
-            font-size: 0.95rem;
-            font-weight: 500;
-            display: block;
-            margin-bottom: 0.1rem;
-        }
-
-        .status-card-common .text-content .description {
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-
-        /* Card Pengajuan (biru) */
-        .card-pengajuan.status-card-common {
-            background-color: #4B68FB;
-            color: white;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-        }
-
-        .card-pengajuan.status-card-common .number {
-            color: white; 
-        }
-
-        /* Card Perbaikan & Penilaian (abu-abu) */
-        .card-perbaikan.status-card-common,
-        .card-penilaian.status-card-common {
-            background-color: #F3F4F6;
-            color: #1F2937;
-            border: 1px solid #E5E7EB;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); 
-        }
-
-        .card-perbaikan.status-card-common .number,
-        .card-penilaian.status-card-common .number {
-            color: rgb(37, 44, 54); 
-        }
-
-        .card-perbaikan.status-card-common .text-content .title,
-        .card-penilaian.status-card-common .text-content .title {
-            color: #4B5563; 
-        }
-
-        .card-perbaikan.status-card-common .text-content .description,
-        .card-penilaian.status-card-common .text-content .description {
-            color: #1F2937; 
-        }
-
-        .dashboard-card { /* Tambahan untuk styling dasar kartu dashboard */
-            background-color: #FFFFFF;
-            padding: 1.25rem;
-            border-radius: 22px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .calendar-card {
-            background-color: #4B68FB;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 1rem;
-            border-radius: 5vh;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            min-height: 300px;
-            height: fit-content;
-        }
-        .calendar-card .section-title-container {
-            display: flex;
-            align-items: center;
-            padding-bottom: 0.5rem;
-            flex-shrink: 0;
-        }
-        .calendar-card .calendar-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-        .calendar-card .section-title {
-            color: white;
-            margin-bottom: 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        .calendar-card .calendar-nav i {
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0 0.5rem;
-            color: #C7D2FE;
-        }
-        .calendar-card .calendar-nav i:hover {
-            color: white;
-        }
-        .calendar-card .calendar {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 0.5rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .calendar-card .calendar thead,
-        .calendar-card .calendar tbody {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-        .calendar-card .calendar tbody {
-            flex-grow: 1;
-        }
-        .calendar-card .calendar tr {
-            display: flex;
-            flex-grow: 1;
-            width: 100%;
-        }
-        .calendar-card .calendar th,
-        .calendar-card .calendar td {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.1rem;
-            text-align: center;
-        }
-        .calendar-card .calendar th {
-            font-weight: 500;
-            font-size: 0.75rem;
-            color: #C7D2FE;
-            text-transform: uppercase;
-            padding: 0.3rem 0.25rem;
-        }
-        .calendar-card .calendar-day {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            line-height: 32px;
-            border-radius: 50%;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin: 0 auto;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .calendar-card .calendar-day.current-day {
-            background-color: white;
-            color: #4B68FB;
-            font-weight: 700;
-        }
-        .calendar-card .calendar-day:hover:not(.current-day) {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .calendar-card .calendar-day.other-month { 
-            color: #A5B4FC;
-            cursor: default;
-        }
-        .calendar-card .calendar-day.other-month:hover {
-            background-color: transparent;
-        }
-        
-        .calendar-card .calendar-day.has-sidang {
-            background-color: rgba(255, 255, 255, 0.25);
-            font-weight: 600;
-        }
-
-        .calendar-card .calendar-day.has-sidang:hover {
-            background-color: rgba(255, 255, 255, 0.4);
-            transform: scale(1.1);
-        }
-
-        .sidang-mendatang-card {
-            background-color: #F3F4F6;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            max-height: 57vh; 
-            overflow-y: auto; 
-            padding-bottom: 1.25rem; 
-        }
-        
-        .sidang-mendatang-card .section-title { 
-            position: sticky;
-            top: -1.25rem; 
-            background-color: #F3F4F6;
-            z-index: 10;
-            padding-top: 1.25rem; 
-            padding-bottom: 1rem; 
-            margin: -1.25rem -1.25rem 0 -1.25rem; 
-            padding-left: 1.25rem; 
-            padding-right: 1.25rem; 
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1F2937; 
-        }
-        .sidang-mendatang-card .item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #FFFFFF; 
-            padding: 0.75rem 1rem;
-            border-radius: 8px; 
-            margin-bottom: 0.75rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-        }
-        .sidang-mendatang-card .item:last-child {
-            margin-bottom: 0;
-        }
-        .sidang-mendatang-card .date-bubble {
-            background-color: #EEF2FF;
-            border-radius: 8px;
-            padding: 0.4rem 0rem;
-            text-align: center;
-            margin-right: 1rem;
-            min-width: 48px;
-            height: 48px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .sidang-mendatang-card .date-bubble .day {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #4338CA; 
-            line-height: 1.1;
-        }
-        .sidang-mendatang-card .date-bubble .month {
-            font-size: 0.7rem;
-            color: #64748B;
-            line-height: 1;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-        .sidang-mendatang-card .info {
-            flex-grow: 1;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #374151;
-            
-        }
-        .sidang-mendatang-card .arrow i {
-            font-size: 1.2rem;
-            color: #4F46E5;
-        }
-
-        .modal-footer .btn-danger {
-            background-color: #FD7D7D;
-            border-color: #FD7D7D;
-        }
-
-        .modal-footer .btn-success {
-            background-color: #4FD382;
-            border-color: #4FD382;
-        }
-
-    </style>
 </head>
+
 <body>
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
@@ -401,17 +56,18 @@ if ($_SESSION['role'] !== 'dosen') {
                     <i class="bi bi-bell-fill"></i>
                 </a>
                 <div class="profile-icon-desktop">
-                    <i class="bi bi-person-fill"></i>
+                    <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
+                    <!-- <i class="bi bi-person-fill"></i> -->
                 </div>
             </div>
             <div class="dashboardTitle">Beranda Dosen</div>
-            <h2 class="welcomeText">Selamat Datang, Evan Wahyu!</h2>
-
+               <h2 class="welcomeText">Selamat Datang, <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?>!</h2>
             <div class="row gy-4">
             <div class="col-lg-3">
                 <div class="mb-4">
                     <a href="dpengajuan.php" style="text-decoration: none; color: inherit;">
-                        <div class="dashboard-card card-pengajuan status-card-common hover-effect-card"> <div class="number">3</div>
+                        <div class="dashboard-card card-pengajuan status-card-common hover-effect-card"> 
+                            <div class="number">0</div>
                             <div class="text-content">
                                 <span class="title">Pengajuan</span>
                                 <span class="description">Menunggu Persetujuan</span>
@@ -421,7 +77,8 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
                 <div class="mb-4">
                     <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
-                        <div class="dashboard-card card-perbaikan status-card-common hover-effect-card"> <div class="number">2</div>
+                        <div class="dashboard-card card-perbaikan status-card-common hover-effect-card"> 
+                            <div class="number">0</div>
                             <div class="text-content">
                                 <span class="title">Perbaikan</span>
                                 <span class="description">Menunggu untuk Dinilai</span>
@@ -431,7 +88,8 @@ if ($_SESSION['role'] !== 'dosen') {
                 </div>
                 <div>
                     <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
-                        <div class="dashboard-card card-penilaian status-card-common hover-effect-card"> <div class="number">2</div>
+                        <div class="dashboard-card card-penilaian status-card-common hover-effect-card"> 
+                            <div class="number">0</div>
                             <div class="text-content">
                                 <span class="title">Penilaian</span>
                                 <span class="description">Menunggu untuk Dinilai</span>
@@ -498,24 +156,7 @@ if ($_SESSION['role'] !== 'dosen') {
     </div>
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/dashboard.js"></script>
-    <script>
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Logika untuk toggle sidebar pada halaman dibawah 700px
-            let menuToggle = document.querySelector(".NavSide__toggle");
-            let sidebar = document.getElementById("main-sidebar");
-
-            // Toggle sidebar untuk mobile
-            menuToggle.onclick = function() {
-                menuToggle.classList.toggle("NavSide__toggle--active");
-                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-            };
-
-            
-        });
-
-    </script>
+    <script src="../../assets/js/dosen-dashboard-ajax.js"></script>
 </body>
+
 </html>

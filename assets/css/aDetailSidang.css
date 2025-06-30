@@ -634,3 +634,39 @@ body {
     gap: 5px;
   }
 }
+.autocomplete-container {
+    position: relative; /* Ini adalah properti paling penting! */
+    width: 100%;       /* Pastikan container mengisi ruang yang tersedia */
+}
+
+/* 2. Atur posisi dropdown agar 'melayang' (absolute) di bawah container. */
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;          /* Letakkan tepat di bawah input field */
+    left: 0;
+    right: 0;           /* Membuat lebarnya sama dengan container/input field */
+    z-index: 1056;      /* Angka tinggi agar muncul di atas elemen lain, bahkan di atas modal Bootstrap */
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px; /* Sedikit lengkungan di sudut bawah */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 150px;  /* Batasi tinggi dropdown jika hasilnya sangat banyak */
+    overflow-y: auto;   /* Tambahkan scrollbar jika hasil melebihi tinggi maksimum */
+    display: none;      /* Sembunyikan secara default, akan ditampilkan oleh JavaScript */
+}
+
+/* 3. Styling untuk setiap item/baris di dalam dropdown. */
+.autocomplete-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+/* 4. Efek hover agar lebih interaktif saat mouse diarahkan ke item. */
+.autocomplete-item:hover {
+    background-color: #4b68fb;
+    color: white; /* Ubah warna teks saat hover */
+}
