@@ -98,7 +98,7 @@ $role = "mahasiswa";
 
                     <div class="mb-3">
                         <div class="password-wrap">
-                            <input type="password"
+                            <input type="text"
                                 class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
                                 id="password" name="password" placeholder="Kata Sandi">
                             <i class="bi bi-eye-fill" id="togglePassword"></i>

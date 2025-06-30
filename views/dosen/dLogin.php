@@ -91,7 +91,7 @@ $role = "dosen";
 
                     <div class="mb-3">
                         <div class="password-wrap">
-                            <input type="password" name="password"
+                            <input type="text" name="password"
                                 class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
                                 id="passwordTampil" placeholder="Kata Sandi">
                             <!-- <input type="hidden" name="password" id="passwordAsli"> -->
