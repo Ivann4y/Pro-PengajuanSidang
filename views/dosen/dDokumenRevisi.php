@@ -1,4 +1,5 @@
 <?php
+session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
 // ===================================================================================
@@ -9,27 +10,19 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 $id_sidang = (int)$_GET['id'];
 
-// Variabel default
-$judul = 'Belum ada judul';
-$ruangan = 'Belum Dijadwalkan';
-$tanggal_formatted = 'Belum Dijadwalkan';
-$jam = 'Belum Dijadwalkan';
-$dosenPembimbing = [];
-$dosenPenguji = [];
-
 // ===================================================================================
-// BAGIAN 2: PENGAMBILAN DATA
-// ### PERBAIKAN UTAMA: Logika disederhanakan, tidak lagi bergantung pada 'jenis_sidang' ###
+// CEK SESSION & AMBIL NOMOR DOSEN
 // ===================================================================================
+$nomor_dosen = $_SESSION['user_data']['nomor_dosen'];
 
-$sql_sidang = "SELECT judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
+// Ambil data sidang
+$sql_sidang = "SELECT Judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
 $result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
 if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
-    // 1. Selalu ambil Judul dan Dosen
-    $judul = $data_sidang['judul'];
+    $judul = $data_sidang['Judul'];
     $id_kelompok = $data_sidang['id_kelompok'];
 
-    // Ambil Dosen Pembimbing
+    // Ambil dosen pembimbing
     if ($id_kelompok) {
         $sql_pembimbing = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
         $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, [$id_kelompok]);
@@ -40,7 +33,6 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
         }
     }
 
-    // Ambil Dosen Penguji
     // Ambil dosen penguji
     $sql_penguji = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
     $stmt_penguji = sqlsrv_query($conn, $sql_penguji, [$id_sidang]);
@@ -63,30 +55,33 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
     }
 }
 
-$sql_revisi = "SELECT dok_revisi FROM Detail_Sidang WHERE id_sidang = ?";
-$stmt_revisi = sqlsrv_query($conn, $sql_revisi, [$id_sidang]);
-$data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
-
+// ===================================================================================
+// HANDLE POST APPROVE
+// ===================================================================================
 if (isset($_POST['approve'])) {
-    $id_sidang = $_POST['id_sidang']; // pastikan form mengirimkan id_sidang
-    $nomor_dosen = $_SESSION['nomor_dosen']; // ambil dari session login
+    header("Content-Type: application/json"); // agar fetch terima JSON
 
-    // Update status revisi hanya untuk dosen ini
-    $sql = "UPDATE Detail_Sidang SET status_revisi = 0x01 WHERE id_sidang = ? AND nomor_dosen = ?";
-    $stmt = sqlsrv_query($conn, $sql, [$id_sidang, $nomor_dosen]);
+    $id_sidang = $_POST['id_sidang'] ?? null;
+    echo "=== DEBUG POST ===\n";
+    echo "ID Sidang dari POST: $id_sidang\n";
+    echo "Nomor Dosen dari Session: $nomor_dosen\n";
 
-    if ($stmt) {
-        // Redirect ke halaman nilai akhir
-        header("Location: dNilaiAkhir.php?id=$id_sidang");
-        exit;
-    } else {
-        echo "Gagal menyimpan status revisi.";
+    // Tampilkan semua dosen penguji untuk sidang ini
+    echo "--- Semua dosen di Detail_Sidang untuk id_sidang=$id_sidang ---\n";
+    $stmt_all = sqlsrv_query($conn, "SELECT nomor_dosen, status_revisi FROM Detail_Sidang WHERE id_sidang = ?", [$id_sidang]);
+    while ($row = sqlsrv_fetch_array($stmt_all, SQLSRV_FETCH_ASSOC)) {
+        echo "- nomor_dosen: {$row['nomor_dosen']} | status_revisi: " . bin2hex($row['status_revisi']) . "\n";
     }
+
+    $check_sql = "SELECT * FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
+    $check_stmt = sqlsrv_query($conn, $check_sql, [$id_sidang, $nomor_dosen]);
+
+    // Lakukan update
+    $update_sql = "UPDATE Detail_Sidang SET status_revisi = 0x01 WHERE id_sidang = ? AND nomor_dosen = ?";
+    $stmt = sqlsrv_query($conn, $update_sql, [$id_sidang, $nomor_dosen]);
 }
-
-
-
 ?>
+
 
 
 <!DOCTYPE html>
@@ -151,8 +146,6 @@ if (isset($_POST['approve'])) {
 
         <main class="NavSide__main-content">
             <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-
-
             <div class="info-card">
                 <div class="section">
                     <?php if (!empty($dosenPembimbing)): ?>
@@ -248,8 +241,8 @@ if (isset($_POST['approve'])) {
 
             <div class="button-group-bottom" id="grup-aksi-dokumen">
                 <div class="button-group">
-                    <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
-                    <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
+                    <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak', <?php echo $id_sidang; ?>)">Tolak</button>
+                    <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui', <?php echo $id_sidang; ?>)">Setujui</button>
                 </div>
             </div>
         </main>
@@ -363,27 +356,44 @@ if (isset($_POST['approve'])) {
                             confirmButtonText: 'OK',
                             confirmButtonColor: '#4B68FB'
                         }).then(() => {
-                            // Kirim request ke server
+                            const postData = new URLSearchParams({
+                                approve: true,
+                                id_sidang: <?= $id_sidang ?>
+                            });
+
+                            console.log("🔄 Mengirim data ke server:");
+                            console.log(postData.toString());
+
                             fetch(window.location.href, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/x-www-form-urlencoded'
                                     },
-                                    body: new URLSearchParams({
-                                        approve: true,
-                                        id_sidang: <?= $id_sidang ?>
-                                    })
+                                    body: postData
                                 })
-                                .then(() => {
-                                    // Redirect setelah update berhasil
-                                    window.location.href = 'dNilaiAkhir.php?id=<?= $id_sidang ?>';
+                                .then(response => {
+                                    console.log("✅ Respons fetch diterima");
+                                    return response.text();
+                                })
+                                .then(result => {
+                                    console.log("📦 Isi respons dari server:");
+                                    console.log(result);
+
+                                    console.log("⏳ Menunggu 5 detik sebelum redirect...");
+                                    setTimeout(() => {
+                                        console.log("➡️ Redirect ke halaman nilai akhir...");
+                                        window.location.href = 'dNilaiAkhir.php?id=<?= $id_sidang ?>';
+                                    }, 5000); // 5000ms = 5 detik
+                                })
+                                .catch(error => {
+                                    console.error("❌ Error saat mengirim data ke server:", error);
                                 });
                         });
+
 
                     }
                 }, 500);
             });
-
             confirmationModal.show();
         }
     </script>

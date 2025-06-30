@@ -464,7 +464,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
     </script>
-<script src="/Projek/Pro-PengajuanSidang/assets/js/dDaftarSidang.js"></script>
 </body>
 
 </html>
