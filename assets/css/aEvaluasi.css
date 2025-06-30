@@ -6,20 +6,16 @@ body {
   font-family: "Segoe UI", sans-serif;
 }
 
-
-
 .sidebar {
   height: 100vh;
   width: 240px;
   position: fixed;
   top: 0;
   left: 0;
-  background-color: #4B68FB;
+  background-color: #4b68fb;
   color: white;
   padding-top: 2rem;
 }
-
-
 
 .sidebar h4 {
   text-align: center;
@@ -40,7 +36,7 @@ body {
 .sidebar a.active,
 .sidebar a:hover {
   background-color: white;
-  color: #4B68FB;
+  color: #4b68fb;
   font-weight: 600;
 }
 
@@ -97,7 +93,7 @@ body {
    ================================= */
 
 .badge-custom {
-  background-color: #4BFBAF;
+  background-color: #4bfbaf;
   color: white;
   font-weight: 600;
   padding: 8px 14px;
@@ -105,34 +101,30 @@ body {
 }
 
 .card-comment {
-  background-color: #f1f3f5!important;
+  background-color: #f1f3f5 !important;
   padding: 20px;
   border-radius: 15px;
   margin-bottom: 20px;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
   border: none;
- 
 }
-.card-h{
-   font-weight:bold;
+.card-h {
+  font-weight: bold;
 }
 
-    #NavSide {
+#NavSide {
   display: flex;
   min-height: 100vh;
- 
 }
 
 .NavSide__sidebar {
- 
   top: 0px;
   left: 0px;
   bottom: 0px;
   width: 280px;
-   flex-shrink: 0; 
-  min-height: 100vh; 
-  
+  flex-shrink: 0;
+  min-height: 100vh;
 }
 
 .NavSide__main-content {
@@ -144,10 +136,7 @@ body {
   padding-top: 3vh;
 }
 
-
-.card-comment:hover { 
-
-
+.card-comment:hover {
   background-color: #4b68fb !important;
 
   color: #fff;
@@ -161,13 +150,12 @@ body {
    Tombol Kirim
    ================================= */
 .btn-kirim {
-   text-decoration: none;  /* Hilangkan garis bawah */
+  text-decoration: none; /* Hilangkan garis bawah */
   background-color: #4b68fb;
   color: white;
   border-radius: 20px;
-  padding: 10px 30px; 
+  padding: 10px 30px;
   font-weight: bold;
-  
 }
 
 .btn-kirim:hover {
@@ -214,76 +202,64 @@ body {
 /* Tombol Kembali yang baru (di luar card) */
 /* Style Tombol Aksi Utama (dipakai untuk Kembali & Kirim) */
 .btn-custom-primary {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 45px;
-            text-decoration: none;
+  background-color: #4b68fb;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  text-decoration: none;
 }
 
 .btn-custom-primary:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
+  position: relative;
+  background-color: white;
+  color: #4b68fb;
 }
-@media (max-width: 769px){
-
+@media (max-width: 769px) {
   .button-group-bottom {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start; /* kiri */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start; /* kiri */
+  }
 }
 
-
+.button-group-bottom {
+  margin-top: 3px !important;
 }
 
- .button-group-bottom {
-  margin-top:3px !important;
- }
+.btn-custom-primary .icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
 
-        .btn-custom-primary .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-            
-        }
+.btn-custom-primary:hover .icon-circle {
+  background-color: #4b68fb;
+}
 
-        .btn-custom-primary:hover .icon-circle {
-            background-color: #4B68FB;
-        }
+.btn-custom-primary .icon-circle i {
+  color: #4b68fb;
+}
 
-        .btn-custom-primary .icon-circle i {
-            color: #4B68FB;
-        }
-
-        .btn-custom-primary:hover .icon-circle i {
-            color: white;
-        }
-
-
-
-    
-
-
-        
-
+.btn-custom-primary:hover .icon-circle i {
+  color: white;
+}
 
 /* Style khusus untuk saat tombol dinonaktifkan */
 /* .btn-custom-primary:disabled {
@@ -296,7 +272,7 @@ body {
 
 .approved-badge {
   color: #e6f4ec;
-  background-color: #4BFBAF;
+  background-color: #4bfbaf;
   font-size: 0.8rem;
   padding: 5px 10px;
   border-radius: 20px;
@@ -305,32 +281,28 @@ body {
   margin-top: 10px;
 }
 
+.btn-custom-primaryUnd {
+  background-color: #4b68fb;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 4px 15px rgba(75, 104, 251, 0.3);
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
 
-      .btn-custom-primaryUnd {
-            background-color: #4B68FB;
-            color: white;
-            font-weight: 600;
-            border: none;
-            border-radius: 50px;
-            padding: 0.75rem 1.5rem;
-            box-shadow: 0 4px 15px rgba(75, 104, 251, 0.3);
-            transition: all 0.2s ease-in-out;
-            text-decoration:none;
-            
-           
-        }
+.btn-custom-primaryUnd:hover {
+  background-color: #3a58db;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(75, 104, 251, 0.4);
+}
 
-        .btn-custom-primaryUnd:hover {
-            background-color: #3A58DB;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(75, 104, 251, 0.4);
-        }
-
-        .btn-custom-primaryUnd:disabled {
-            background-color: #e2e8f0;
-            color: #94a3b8;
-            box-shadow: none;
-            transform: none;
-            cursor: not-allowed;
-        }
-
+.btn-custom-primaryUnd:disabled {
+  background-color: #e2e8f0;
+  color: #94a3b8;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}

@@ -55,7 +55,7 @@
 
         /* Add jadiBiru class styling */
         .jadiBiru {
-            background-color: rgb(235, 238, 245);
+            background-color: #eaeef7;
             transition: all 0.3s ease;
         }
 
@@ -161,16 +161,12 @@
             font-family: "Poppins", sans-serif; 
         }
 
-        /* Edit icon styling */
-        /* Menggunakan Font Awesome sekarang */
         .fa-file-signature, .fa-trash {
-            color: rgb(67, 54, 240);
+            color: #4b68fb;
             transition: color 0.3s ease;
-            padding: 0 5px;
         }
 
-        tr.jadiBiru:hover .fa-file-signature,
-        tr.jadiBiru:hover .fa-trash{
+        tr.jadiBiru:hover .fa-file-signature, tr.jadiBiru:hover .fa-trash {
             color: white;
         }
 

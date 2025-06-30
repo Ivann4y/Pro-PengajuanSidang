@@ -16,7 +16,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 
 // Simulasi Dosen yang Login (nantinya ganti dengan session asli)
-$nomor_dosen_login = '1001';
 
 
 if (!isset($_SESSION['id_sidang_aktif'])) {
@@ -53,9 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sql_update_catatan = "UPDATE Detail_Sidang SET catatan_sidang = ? WHERE id_sidang = ? AND nomor_dosen = ?";
     $params_update_catatan = [$catatan_post, $id_sidang, $nomor_dosen_login];
     $stmt_update_catatan = sqlsrv_query($conn, $sql_update_catatan, $params_update_catatan);
-    if ($stmt_update_catatan === false) {
-        die("Gagal memperbarui catatan revisi: " . print_r(sqlsrv_errors(), true));
-    }
+    $error_message = '';
+if ($stmt_update_catatan === false) {
+    $_SESSION['error'] = "Gagal memperbarui catatan revisi: " . print_r(sqlsrv_errors(), true);
+    header("Location: dDaftarSidang.php?id=$id_sidang");
+    exit;
+}
+
+
 
     // 2. CEK & SIMPAN NILAI (UPSERT) KE TABEL Penilaian
     $sql_cek_nilai = "SELECT COUNT(*) as 'count' FROM Penilaian WHERE id_sidang = ? AND nomor_dosen = ?";
@@ -161,8 +165,7 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
         }
     }
 
-    // Ambil catatan & nilai yang sudah ada untuk ditampilkan di form
-    $sql_catatan = "SELECT catatan_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
+      $sql_catatan = "SELECT catatan_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
     $result_catatan = sqlsrv_query($conn, $sql_catatan, [$id_sidang, $nomor_dosen_login]);
     if ($result_catatan && $row_catatan = sqlsrv_fetch_array($result_catatan, SQLSRV_FETCH_ASSOC)) {
         $catatan_revisi = $row_catatan['catatan_sidang'];
@@ -175,12 +178,29 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
     }
 }
 
+// =========================================================================
+// ### LETAKKAN BLOK KODE YANG HILANG DI SINI ###
+// =========================================================================
+$nilai_sudah_dikirim_dan_lengkap = false; // Default-nya false
+if (
+    !empty($catatan_revisi) &&
+    isset($nilai_mahasiswa['n_dokumen']) && $nilai_mahasiswa['n_dokumen'] !== null &&
+    isset($nilai_mahasiswa['n_presentasi']) && $nilai_mahasiswa['n_presentasi'] !== null &&
+    isset($nilai_mahasiswa['n_tanyajawab']) && $nilai_mahasiswa['n_tanyajawab'] !== null &&
+    isset($nilai_mahasiswa['n_proyek']) && $nilai_mahasiswa['n_proyek'] !== null
+) {
+    $nilai_sudah_dikirim_dan_lengkap = true;
+}
+// =========================================================================
+// ### AKHIR DARI BLOK KODE YANG HARUS DITAMBAHKAN ###
+// =========================================================================
+
+
 $namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
 $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
 
 
 ?>
-
 
 
 <!DOCTYPE html>
@@ -196,6 +216,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
 
 
     <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
@@ -338,24 +359,37 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 
 
                    
+<?php if (!empty($_SESSION['error'])): ?>
+    <div style="color: red; font-weight: bold;">
+        <?= htmlspecialchars($_SESSION['error']) ?>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 
-                    <h3>Catatan Evaluasi Sidang</h3>
-                    <div class="form-card">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
-                        </div>
-                        <div class="form-group-custom">
-                            <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-                            <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.."><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
-                
-                        </div>
-                        <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
-                    </div>
-                    <div class="button-group-bottom">
 
-                        <button style="margin-left:90%" type="button" class="btn-kirim" id="btnKirim">Kirim</button>
-                    </div>
-                </form>
+  <h3>Catatan Evaluasi Sidang</h3>
+<div class="form-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
+    </div>
+    <div class="form-group-custom">
+        <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
+        
+        <!-- TAMBAHKAN LOGIKA 'readonly' DI SINI -->
+        <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.." <?= $nilai_sudah_dikirim_dan_lengkap ? 'readonly' : '' ?>><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
+    </div>
+    <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
+</div>
+
+<?php 
+// GUNAKAN BLOK 'if' UNTUK MENAMPILKAN TOMBOL SECARA KONDISIONAL
+if (!$nilai_sudah_dikirim_dan_lengkap): ?>
+<div class="button-group-bottom">
+    <button style="margin-left:auto;" type="button" class="btn-kirim" id="btnKirim">Kirim</button>
+</div>
+<?php endif; ?>
+
+</form>
             </main>
         </div>
     </div>
@@ -374,122 +408,9 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript">
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // --- FUNGSI UTILITAS UNTUK SINKRONISASI INPUT ---
-    function syncInputs(name1, name2) {
-        const input1 = document.getElementsByName(name1)[0];
-        const input2 = document.getElementsByName(name2)[0];
-        if (input1 && input2) {
-            input1.addEventListener('input', () => {
-                if (document.activeElement !== input2) input2.value = input1.value;
-            });
-            input2.addEventListener('input', () => {
-                if (document.activeElement !== input1) input1.value = input2.value;
-            });
-        }
-    }
-
-    // --- TERAPKAN VALIDASI 'HANYA ANGKA' ---
-    document.querySelectorAll('.input-nilai').forEach(function(input) {
-        input.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-            if (this.value.length > 3) this.value = this.value.slice(0, 3);
-            if (this.value.length > 1 && this.value.startsWith('0')) {
-                this.value = this.value.replace(/^0+/, '');
-            }
-            if (parseInt(this.value, 10) > 100) {
-                this.value = '100';
-            }
-        });
-    });
-
-    // --- PANGGIL FUNGSI SINKRONISASI ---
-    syncInputs('nilaiLaporan', 'nilaiLaporan_v');
-    syncInputs('materiPresentasi', 'materiPresentasi_v');
-    syncInputs('nilaiPenyampaian', 'nilaiPenyampaian_v');
-    syncInputs('nilaiProyek', 'nilaiProyek_v');
-
-    // --- LOGIKA UNTUK SIDEBAR ---
-    const menuToggle = document.querySelector(".NavSide__toggle");
-    const sidebar = document.getElementById("main-sidebar");
-    if (menuToggle && sidebar) {
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-    }
-
-    // --- LOGIKA UNTUK TOMBOL KIRIM FORM ---
-    const btnKirim = document.getElementById('btnKirim');
-    const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
-
-    if (btnKirim && confirmationKirimModalElement) {
-        btnKirim.addEventListener('click', function() {
-            
-            // --- VARIABEL DIAMBIL DI SINI (SAAT DIKLIK), BUKAN DI LUAR ---
-            const nilaiLaporan = document.getElementsByName('nilaiLaporan')[0].value;
-            const materiPresentasi = document.getElementsByName('materiPresentasi')[0].value;
-            const nilaiPenyampaian = document.getElementsByName('nilaiPenyampaian')[0].value;
-            const nilaiProyek = document.getElementsByName('nilaiProyek')[0].value;
-            const catatanEvaluasi = document.getElementById('catatanEvaluasi').value;
-
-            // Sembunyikan pesan error sebelumnya
-            document.getElementById('nilaiSidangErrorMessage').style.display = 'none';
-            document.getElementById('catatanEvaluasiErrorMessage').style.display = 'none';
-
-            let isValid = true;
-
-            // Lakukan validasi
-            if ([nilaiLaporan, materiPresentasi, nilaiPenyampaian, nilaiProyek].some(val => val.trim() === '')) {
-                document.getElementById('nilaiSidangErrorMessage').style.display = 'block';
-                isValid = false;
-            }
-            if (catatanEvaluasi.trim() === '') {
-                document.getElementById('catatanEvaluasiErrorMessage').style.display = 'block';
-                isValid = false;
-            }
-
-            // Tampilkan peringatan atau modal
-            if (!isValid) {
-                Swal.fire({
-                    title: 'Harap mengisi semua kolom nilai dan catatan!',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                });
-            } else {
-                const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
-                confirmationKirimModal.show();
-            }
-        });
-
-        // Event listener untuk tombol konfirmasi di dalam modal
-        const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
-        if (btnKonfirmasiKirim) {
-            btnKonfirmasiKirim.addEventListener('click', function() {
-                const modalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
-                if (modalInstance) {
-                    modalInstance.hide();
-                }
-                Swal.fire({
-                    title: 'Evaluasi Sidang Berhasil Dikirim!',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => {
-                    document.getElementById('evaluasiForm').submit();
-                });
-            });
-        }
-    }
-});
-    </script>
-<<<<<<< HEAD
-=======
+     <script src="../../assets/js/dEvaluasiSidang.js"></script> 
+   
  
->>>>>>> d49508a38a0db1478739883c8010b31144302539
 </body>
 
 </html>
