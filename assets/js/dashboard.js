@@ -233,15 +233,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // // Navigasi bulan tanpa reload
-  // document.getElementById("prevMonth").onclick = function() {
-  //     renderCalendar();
-  // };
-
-  // document.getElementById("nextMonth").onclick = function() {
-  //     renderCalendar();
-  // };
-
   // Navigasi bulan sebelumnya
   prevMonthBtn.addEventListener("click", () => {
     activeDate.setMonth(activeDate.getMonth() - 1);
