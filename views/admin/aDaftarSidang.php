@@ -1,10 +1,9 @@
 <?php
-// Letakkan ini di baris paling atas file
+// Mulai session jika belum ada
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
 $path_to_root = '../../';
 
 // 1. Cek jika pengguna BELUM login.
@@ -15,24 +14,24 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     exit(); 
 }
 
-// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
+//Cek jika role pengguna BUKAN 'admin'.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     // Arahkan ke halaman login utama di root
     header("Location: " . $path_to_root . "index.php");
     exit(); 
 }
-
+// Include file koneksi ke database
 require "../../koneksi/koneksiAndrew.php";
 
-// --- PERSIAPAN AWAL (Tidak berubah) ---
+// Ambil parameter filter, prodi, dan halaman dari URL
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all';
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// --- Ambil Daftar Prodi (Tidak berubah) ---
+// Ambil daftar prodi unik dari database
 $prodiList = [];
 $prodiQuery = "SELECT DISTINCT prodi FROM dbo.Mahasiswa WHERE prodi IS NOT NULL ORDER BY prodi ASC";
 $prodiResult = sqlsrv_query($conn, $prodiQuery);
@@ -42,21 +41,18 @@ if ($prodiResult) {
     }
 }
 
-// --- QUERY BARU YANG LEBIH CERDAS ---
 
-// Persiapan filter
-// --- QUERY BARU YANG LEBIH CERDAS (VERSI PERBAIKAN) ---
 
 // Persiapan filter
 $params = [];
 $whereClause = [];
-
+//filter jenis sidang
 if ($filter === 'ta') {
     $whereClause[] = "s.jenis_sidang = 0";
 } elseif ($filter === 'semester') {
     $whereClause[] = "s.jenis_sidang = 1";
 }
-
+//filter prodi
 $prodiJoin = "";
 if ($prodiFilter !== 'all') {
     $prodiJoin = "JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok JOIN Mahasiswa m_prodi ON km.nim = m_prodi.nim";
@@ -65,7 +61,7 @@ if ($prodiFilter !== 'all') {
 }
 
 // Query untuk menghitung total data
-$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s {$prodiJoin}";
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang {$prodiJoin}";
 if (!empty($whereClause)) {
     // Buat klausa WHERE untuk count query
     $countWhereClause = $whereClause;
@@ -82,7 +78,7 @@ if($countResult === false) { die(print_r(sqlsrv_errors(), true)); }
 $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
-// Query utama untuk mengambil data
+// Query utama untuk mengambil data sidang sesuai filter dan pagination
 $query = "SELECT DISTINCT
         s.id_sidang,
         s.judul,
@@ -93,8 +89,6 @@ $query = "SELECT DISTINCT
          FROM Detail_Sidang ds
          JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
          WHERE ds.id_sidang = s.id_sidang) AS nama_matkul,
-         
-        -- [PERBAIKAN UTAMA DI SINI]
         CASE 
             WHEN s.jenis_sidang = 0 THEN -- Jika Sidang TA, ambil HANYA Pembimbing (peran=1)
                 (SELECT d.nama_dosen
@@ -106,7 +100,7 @@ $query = "SELECT DISTINCT
                  FROM Pengampu_Kelas pk
                  JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
                  WHERE 
-                -- Filter 1: Mencocokkan mata kuliahnya (sama seperti sebelumnya)
+                -- Filter 1: Mencocokkan mata kuliahnya
                 pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang)
                 
                 -- Filter 2: Mencocokkan kelas mahasiswa
@@ -117,6 +111,7 @@ $query = "SELECT DISTINCT
         END AS nama_dosen_terkait
     
     FROM Sidang s
+    JOIN Jadwal j ON s.id_sidang = j.id_sidang
     {$prodiJoin}
 ";
 
@@ -130,7 +125,7 @@ $query .= " ORDER BY s.id_sidang OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 $params_final = $params;
 $params_final[] = $offset;
 $params_final[] = $rowsPerPage;
-
+// Eksekusi query utama
 $result = sqlsrv_query($conn, $query, $params_final);
 if ($result === false) {
     die("Error di main query: " . print_r(sqlsrv_errors(), true));

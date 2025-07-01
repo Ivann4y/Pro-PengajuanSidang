@@ -44,6 +44,8 @@ $baseQuery = "
             Detail_Sidang ds ON s.id_sidang = ds.id_sidang
         LEFT JOIN
             MataKuliah mk ON ds.id_matkul = mk.id_matkul
+        WHERE
+            s.status_ajuan = 0
     )
 ";
 
@@ -116,6 +118,7 @@ $nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -231,60 +234,62 @@ $nomor = $offset + 1;
                         </thead>
                         <tbody>
                             <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
-                               <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
-                        <?php
-                            $jenisSidangTampilan = ''; 
+                                <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+                                    <?php
+                                    $jenisSidangTampilan = '';
 
-                            // Cek apakah mata kuliahnya adalah 'Tugas Akhir'
-                            if (isset($row['nama_matkul']) && $row['nama_matkul'] === 'Tugas Akhir') {
-                                $jenisSidangTampilan = 'TA';
-                            } else {
-                                $jenisSidangTampilan = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
-                            }
-                        ?>
-                        <tr class="isiTabel jadiBiru">
-                            <td><?= $nomor++; ?></td>
-                            <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                            <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
-                            <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                            <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
-                            
-                            <td><?= $jenisSidangTampilan; ?></td>
-                            
-                            <td style="text-align: center;">
-                                <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $jenisSidangTampilan; ?>')">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                       <?php endwhile; ?>
-                        <?php else: ?>
-                                <tr><td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>
-                        <?php endif; ?>
-                        
+                                    // Cek apakah mata kuliahnya adalah 'Tugas Akhir'
+                                    if (isset($row['nama_matkul']) && $row['nama_matkul'] === 'Tugas Akhir') {
+                                        $jenisSidangTampilan = 'TA';
+                                    } else {
+                                        $jenisSidangTampilan = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
+                                    }
+                                    ?>
+                                    <tr class="isiTabel jadiBiru">
+                                        <td><?= $nomor++; ?></td>
+                                        <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
+                                        <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+
+                                        <td><?= $jenisSidangTampilan; ?></td>
+
+                                        <td style="text-align: center;">
+                                            <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $jenisSidangTampilan; ?>')">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
+                                </tr>
+                            <?php endif; ?>
+
                         </tbody>
-                        </table>
-                        <div class="pagination-container">
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-center">
-                                    <?php if ($totalPages > 1): ?>
-                                        <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="?page=<?= $currentPage - 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">«</a>
-                                        </li>
-                                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    </table>
+                    <div class="pagination-container">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <?php if ($totalPages > 1): ?>
+                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $currentPage - 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">«</a>
+                                    </li>
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                         <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
                                             <a class="page-link" href="?page=<?= $i ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>"><?= $i ?></a>
                                         </li>
-                                        <?php endfor; ?>
-                                        <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-                                            <a class="page-link" href="?page=<?= $currentPage + 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">»</a>
-                                        </li>
-                                    <?php endif; ?>
-                                </ul>
-                            </nav>
-                        </div>
+                                    <?php endfor; ?>
+                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $currentPage + 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">»</a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
+            </div>
 
             <!-- MODAL LOGOUT-->
             <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -332,18 +337,42 @@ $nomor = $offset + 1;
                                                 <option value="Manajemen Informatika">Manajemen Informatika</option>
                                             </select>
                                         </div>
-                                        <div class="anggota-wrapper" id="anggota-wrapper">
-                                            <div class="anggota-form-group" id="anggota-form-1">
-                                                <label for="anggota_nim_1">Anggota 1:</label>
-                                                <div class="anggota-input-group">
-                                                    <div class="input-container">
-                                                        <input type="text" id="anggota_nim_1" name="anggota_nim[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" />
-                                                        <div class="autocomplete-dropdown" id="autocomplete_1" style="display: none;"></div>
+                                        <!-- Dosen Pembimbing Input (Multiple) -->
+                                        <div class="form-section-card">
+                                            <div class="form-section-title">Dosen Pembimbing <span class="text-muted">(Opsional)</span></div>
+                                            <div class="dosen-wrapper" id="dosen-wrapper">
+                                                <div class="anggota-form-group" id="dosen-form-1">
+                                                    <label for="dosen_pembimbing_1">Dosen Pembimbing 1:</label>
+                                                    <div class="anggota-input-group">
+                                                        <div class="input-container">
+                                                            <input type="text" id="dosen_pembimbing_1" name="dosen_pembimbing[]" placeholder="Masukkan NIP atau nama dosen" autocomplete="off" oninput="searchDosen(this, 1)" />
+                                                            <div class="autocomplete-dropdown" id="autocomplete_dosen_1" style="display: none;"></div>
+                                                        </div>
+                                                        <div class="anggota-nama-display" id="dosen_nama_display_1">Nama akan muncul otomatis</div>
+                                                        <div class="form-toggle-buttons">
+                                                            <button type="button" onclick="addDosen()">+</button>
+                                                            <button type="button" onclick="removeDosen()" style="display: none;">-</button>
+                                                        </div>
                                                     </div>
-                                                    <div class="anggota-nama-display" id="anggota_nama_1">Nama akan muncul otomatis</div>
-                                                    <div class="form-toggle-buttons">
-                                                        <button type="button" onclick="addAnggota()">+</button>
-                                                        <button type="button" onclick="removeAnggota()" style="display: none;">-</button>
+                                                    <input type="hidden" id="dosen_nomor_hidden_1" name="dosen_nomor_hidden[]" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-section-card">
+                                            <div class="form-section-title">Anggota Mahasiswa</div>
+                                            <div class="anggota-wrapper" id="anggota-wrapper">
+                                                <div class="anggota-form-group" id="anggota-form-1">
+                                                    <label for="anggota_nim_1">Mahasiswa 1:</label>
+                                                    <div class="anggota-input-group">
+                                                        <div class="input-container">
+                                                            <input type="text" id="anggota_nim_1" name="anggota_nim[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" />
+                                                            <div class="autocomplete-dropdown" id="autocomplete_1" style="display: none;"></div>
+                                                        </div>
+                                                        <div class="anggota-nama-display" id="anggota_nama_1">Nama akan muncul otomatis</div>
+                                                        <div class="form-toggle-buttons">
+                                                            <button type="button" onclick="addAnggota()">+</button>
+                                                            <button type="button" onclick="removeAnggota()" style="display: none;">-</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -378,314 +407,9 @@ $nomor = $offset + 1;
             menuToggle.classList.toggle("NavSide__toggle--active");
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
-
-        // --- All Kelompok Modal Javascript (Unchanged) ---
-        let kelompokModalInstance;
-        let anggotaCount = 1;
-        let currentProdi = '';
-        let mahasiswaData = [];
-        let kelompokData = [];
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const kelompokModalEl = document.getElementById('kelompokModal');
-            if (kelompokModalEl) {
-                if (typeof bootstrap !== 'undefined') {
-                    kelompokModalInstance = new bootstrap.Modal(kelompokModalEl);
-                } else {
-                    console.error('Bootstrap is not loaded');
-                }
-                kelompokModalEl.addEventListener('hidden.bs.modal', resetKelompokForm);
-            }
-
-            const kelompokForm = document.getElementById('kelompokForm');
-            if (kelompokForm) {
-                kelompokForm.addEventListener('submit', handleKelompokFormSubmit);
-            }
-            fetchMahasiswaData();
-        });
-
-        async function fetchMahasiswaData() {
-            try {
-                const response = await fetch('../../control/get_mahasiswa.php');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                mahasiswaData = await response.json();
-            } catch (error) {
-                console.error('Error fetching mahasiswa data:', error);
-                alert('Gagal memuat data mahasiswa untuk autocomplete.');
-            }
-        }
-
-        function openKelompokModal() {
-            if (!kelompokModalInstance) {
-                console.error('Modal instance not initialized');
-                alert('Modal tidak dapat dibuka. Silakan refresh halaman.');
-                return;
-            }
-            resetKelompokForm();
-            setNextKelompokId();
-            switchTab('tambah');
-            loadKelompokList();
-            kelompokModalInstance.show();
-        }
-
-        async function setNextKelompokId() {
-            try {
-                const response = await fetch('../../control/get_next_kelompok_id.php');
-                if (!response.ok) throw new Error('Failed to fetch next Kelompok ID');
-                const data = await response.json();
-                document.getElementById('kelompok_id').value = data.next_id;
-            } catch (e) {
-                document.getElementById('kelompok_id').value = '';
-            }
-        }
-
-        function switchTab(tabName) {
-            const tabs = document.querySelectorAll('.modal-tab');
-            const tabContents = document.querySelectorAll('.modal-tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-            if (tabName === 'tambah') {
-                tabs[0].classList.add('active');
-                document.getElementById('tambah-tab').classList.add('active');
-            } else {
-                tabs[1].classList.add('active');
-                document.getElementById('daftar-tab').classList.add('active');
-                loadKelompokList();
-            }
-        }
-        
-        function filterMahasiswaByProdi() {
-            const prodiSelect = document.getElementById('kelompok_prodi');
-            currentProdi = prodiSelect.value;
-            resetAnggotaInputs();
-        }
-
-        function searchMahasiswa(input, anggotaIndex) {
-            const query = input.value.toLowerCase().trim();
-            const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
-            const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
-
-            if (query.length === 0) {
-                dropdown.style.display = 'none';
-                namaDisplay.textContent = 'Nama mahasiswa';
-                return;
-            }
-            if (!currentProdi) {
-                dropdown.innerHTML = '<div class="autocomplete-item">Pilih Prodi terlebih dahulu</div>';
-                dropdown.style.display = 'block';
-                return;
-            }
-            const filteredMahasiswa = mahasiswaData.filter(mhs =>
-                mhs.prodi && currentProdi &&
-                mhs.prodi.trim().toLowerCase() === currentProdi.trim().toLowerCase() &&
-                (String(mhs.nim).toLowerCase().includes(query) || mhs.nama_mhs.toLowerCase().includes(query))
-            );
-            const selectedNIMs = Array.from(document.querySelectorAll('input[name="anggota_nim[]"]'))
-                .map(inp => inp.value.trim())
-                .filter(nim => nim !== '' && nim !== input.value.trim());
-
-            const finalFilteredMahasiswa = filteredMahasiswa.filter(mhs => !selectedNIMs.includes(String(mhs.nim)));
-
-            if (finalFilteredMahasiswa.length > 0) {
-                dropdown.innerHTML = '';
-                finalFilteredMahasiswa.forEach((mhs, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'autocomplete-item';
-                    item.dataset.nim = mhs.nim;
-                    item.dataset.nama = mhs.nama_mhs;
-                    item.dataset.index = index;
-                    item.innerHTML = `<div class="nim">${mhs.nim}</div><div class="nama">${mhs.nama_mhs}</div>`;
-                    item.onclick = () => selectMahasiswa(mhs, anggotaIndex);
-                    dropdown.appendChild(item);
-                });
-                dropdown.style.display = 'block';
-            } else {
-                dropdown.innerHTML = '<div class="autocomplete-item">Tidak ada hasil</div>';
-                dropdown.style.display = 'block';
-            }
-        }
-
-        function selectMahasiswa(mahasiswa, anggotaIndex) {
-            document.getElementById(`anggota_nim_${anggotaIndex}`).value = mahasiswa.nim;
-            document.getElementById(`anggota_nama_${anggotaIndex}`).textContent = mahasiswa.nama_mhs;
-            document.getElementById(`autocomplete_${anggotaIndex}`).style.display = 'none';
-        }
-
-        function addAnggota() {
-            anggotaCount++;
-            const wrapper = document.getElementById('anggota-wrapper');
-            const div = document.createElement('div');
-            div.className = 'anggota-form-group';
-            div.id = 'anggota-form-' + anggotaCount;
-            div.innerHTML = `
-                <label for="anggota_nim_${anggotaCount}">Anggota ${anggotaCount}:</label>
-                <div class="anggota-input-group">
-                    <div class="input-container">
-                        <input type="text" id="anggota_nim_${anggotaCount}" name="anggota_nim[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, ${anggotaCount})" />
-                        <div class="autocomplete-dropdown" id="autocomplete_${anggotaCount}" style="display: none;"></div>
-                    </div>
-                    <div class="anggota-nama-display" id="anggota_nama_${anggotaCount}">Nama akan muncul otomatis</div>
-                    <div class="form-toggle-buttons">
-                        <button type="button" onclick="addAnggota()">+</button>
-                        <button type="button" onclick="removeAnggota()">-</button>
-                    </div>
-                </div>`;
-            wrapper.appendChild(div);
-            updateToggleButtonsVisibility();
-        }
-
-        function removeAnggota() {
-            if (anggotaCount > 1) {
-                document.getElementById('anggota-form-' + anggotaCount).remove();
-                anggotaCount--;
-            }
-            updateToggleButtonsVisibility();
-        }
-
-        function updateToggleButtonsVisibility() {
-            const toggleButtons = document.querySelectorAll('.form-toggle-buttons');
-            toggleButtons.forEach((btnGroup, index) => {
-                if (index === toggleButtons.length - 1) {
-                    btnGroup.style.display = 'inline-flex';
-                    const removeBtn = btnGroup.querySelector('button[onclick="removeAnggota()"]');
-                    if (removeBtn) {
-                        removeBtn.style.display = (anggotaCount <= 1) ? 'none' : 'block';
-                    }
-                } else {
-                    btnGroup.style.display = 'none';
-                }
-            });
-        }
-        
-        function resetAnggotaInputs() {
-            document.getElementById('anggota-wrapper').innerHTML = `
-                <div class="anggota-form-group" id="anggota-form-1">
-                    <label for="anggota_nim_1">Anggota 1:</label>
-                    <div class="anggota-input-group">
-                        <div class="input-container">
-                            <input type="text" id="anggota_nim_1" name="anggota_nim[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" />
-                            <div class="autocomplete-dropdown" id="autocomplete_1" style="display: none;"></div>
-                        </div>
-                        <div class="anggota-nama-display" id="anggota_nama_1">Nama akan muncul otomatis</div>
-                        <div class="form-toggle-buttons">
-                            <button type="button" onclick="addAnggota()">+</button>
-                            <button type="button" onclick="removeAnggota()" style="display: none;">-</button>
-                        </div>
-                    </div>
-                </div>`;
-            anggotaCount = 1;
-            updateToggleButtonsVisibility();
-        }
-
-        function resetKelompokForm() {
-            document.getElementById('kelompokForm').reset();
-            document.getElementById('kelompok_prodi').value = '';
-            resetAnggotaInputs();
-            updateToggleButtonsVisibility();
-        }
-
-        async function loadKelompokList() {
-            const container = document.getElementById('kelompok-list-container');
-            container.innerHTML = '<p class="text-center text-muted">Memuat daftar kelompok...</p>';
-            try {
-                const response = await fetch('../../control/get_kelompok_list.php');
-                if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
-                kelompokData = await response.json();
-                if (kelompokData.length === 0) {
-                    container.innerHTML = '<p class="text-center text-muted">Belum ada kelompok yang dibuat.</p>';
-                    return;
-                }
-                container.innerHTML = '';
-                kelompokData.forEach(kelompok => {
-                    const anggotaList = kelompok.anggota.map(angg => `${angg.nim} - ${angg.nama_mhs}`).join('<br>');
-                    const kelompokItem = document.createElement('div');
-                    kelompokItem.className = 'kelompok-list-item';
-                    kelompokItem.innerHTML = `
-                        <div class="kelompok-list-header">
-                            <div>
-                                <div class="kelompok-list-title">${kelompok.id_kelompok}</div>
-                                <div class="kelompok-list-prodi">${kelompok.prodi || 'Tidak ada prodi'}</div>
-                            </div>
-                        </div>
-                        <div class="kelompok-list-anggota">
-                            <strong>Anggota:</strong><br>${anggotaList}
-                        </div>`;
-                    container.appendChild(kelompokItem);
-                });
-            } catch (error) {
-                console.error('Error fetching kelompok data:', error);
-                container.innerHTML = '<p class="text-center text-danger">Gagal memuat daftar kelompok.</p>';
-            }
-        }
-
-        async function handleKelompokFormSubmit(event) {
-            event.preventDefault();
-            if (!validateKelompokForm()) return;
-            const formData = new FormData(document.getElementById('kelompokForm'));
-            try {
-                const response = await fetch('../../control/kelompok_create.php', {
-                    method: 'POST',
-                    body: formData
-                });
-                if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
-                const result = await response.json();
-                if (result.success) {
-                    alert(result.message);
-                    resetKelompokForm();
-                    kelompokModalInstance.hide();
-                    window.location.reload(); // Muat ulang halaman untuk menampilkan data baru
-                } else {
-                    alert('Error: ' + result.message);
-                }
-            } catch (error) {
-                console.error('Error creating kelompok:', error);
-                alert('Terjadi kesalahan saat membuat kelompok.');
-            }
-        }
-
-        function validateKelompokForm() {
-            const prodi = document.getElementById('kelompok_prodi').value;
-            if (!prodi) {
-                alert('Pilih Prodi terlebih dahulu!');
-                return false;
-            }
-            let hasAnggota = false;
-            const selectedNIMs = new Set();
-            const nimInputs = document.querySelectorAll('input[name="anggota_nim[]"]');
-            for(const nimInput of nimInputs) {
-                const nimValue = nimInput.value.trim();
-                if (nimValue !== '') {
-                    const foundMahasiswa = mahasiswaData.find(mhs => String(mhs.nim) === nimValue);
-                    if (!foundMahasiswa) {
-                        alert(`NIM ${nimValue} tidak ditemukan.`);
-                        return false;
-                    }
-                    if (selectedNIMs.has(nimValue)) {
-                        alert(`NIM ${nimValue} sudah ditambahkan.`);
-                        return false;
-                    }
-                    selectedNIMs.add(nimValue);
-                    hasAnggota = true;
-                }
-            }
-            if (!hasAnggota) {
-                alert('Minimal harus ada satu anggota!');
-                return false;
-            }
-            return true;
-        }
-
-        document.addEventListener('click', function(event) {
-            const dropdowns = document.querySelectorAll('.autocomplete-dropdown');
-            dropdowns.forEach(dropdown => {
-                if (!dropdown.contains(event.target) && !event.target.matches('input[name="anggota_nim[]"]')) {
-                    dropdown.style.display = 'none';
-                }
-            });
-        });
     </script>
     <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/kelompokModal.js"></script>
 </body>
+
 </html>

@@ -12,7 +12,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
+// Validate action card parameter
 switch($action) {
+    // Card Penjadwalan
     case 'penjadwalan':
         // Original code from perluJumlahPenjadwalan.php
         $query = "SELECT judul FROM View_aPerluPenjadwalan ORDER BY id_sidang ASC";
@@ -38,7 +40,7 @@ switch($action) {
         
         echo json_encode($response);
         break;
-
+ // Card Pengajuan
     case 'pengajuan':
         // Original code from jumlahPengajuan.php
         $query = "SELECT COUNT(*) AS jumlah_pengajuan_perlu_aksi FROM Sidang WHERE status_ajuan IS NULL";
@@ -52,7 +54,7 @@ switch($action) {
         $jumlah = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
         echo json_encode($jumlah);
         break;
-
+ // Card Sidang Mendatang
     case 'sidang_mendatang':
         // Original code from sidangMendatang.php - shows ALL sidang mendatang (admin only)
         $query = "SELECT tanggal_sidang, judul FROM View_SidangMendatang ORDER BY tanggal_sidang ASC";
