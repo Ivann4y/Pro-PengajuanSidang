@@ -291,7 +291,8 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
                 </div>
             </div>
 
-            <h5>Dokumen Revisi</h5>
+            <div>
+                <h4><b>Dokumen Revisi</b></h4>
             <div class="file-buttons-container d-flex flex-wrap">
                 <?php if (!empty($data_revisi['dok_revisi'])): ?>
                     <a href="../../uploadtesting/<?= $namaFileRevisi ?>" class="file-button" download>
