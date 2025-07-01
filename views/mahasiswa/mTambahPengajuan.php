@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
         $aksi = $_POST['aksi'];
-        $status_ajuan = ($aksi == 'Kirim') ? 0 : null; // Karena aksi 'Kirim' berarti mengajukan, sedangkan 'Simpan' hanya menyimpan sebagai draf 
+        $status_ajuan = ($aksi == 'Kirim') ? 'pending' : 'draft'; // Karena aksi 'Kirim' berarti mengajukan, sedangkan 'Simpan' hanya menyimpan sebagai draf 
 
         if (empty($judul)) {
             throw new Exception("Judul tidak boleh kosong.");
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $params_sidang = [
             $next_id_sidang,
             $judul,
-            array($dok_laporan_content, SQLSRV_PARAM_IN, SQLSRV_PHPTYPE_STREAM(SQLSRV_ENC_BINARY)),
+            $dok_laporan_content, // Cukup kirim variabelnya langsung
             $status_ajuan,
             $jenis_sidang_bit,
             $id_kelompok
@@ -155,11 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
         // Commit transaksi jika semua berhasil
         sqlsrv_commit($conn);
-        if (is_null($status_ajuan)) {
-            $success_message = 'Pengajuan Berhasil Disimpan!';
-        } elseif ($status_ajuan === 0) {
-            $success_message = 'Pengajuan Berhasil Dikirim!';
-        }
+        $success_message = ($status_ajuan == 'Pending') ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan sebagai Draft!';
 
         // Kirim notifikasi ke dosen pembimbing
         $nama_mahasiswa = $_SESSION['user_data']['nama_mhs'] ?? $nim_mahasiswa_logged_in;
@@ -170,7 +166,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
     } catch (Exception $e) {
         // Rollback transaksi jika ada error
         sqlsrv_rollback($conn);
-        $error_message = "Error: " . $e->getMessage();
+        //$error_message = "Error: " . $e->getMessage();
+        die("<pre>DEBUGGING: " . $e->getMessage() . "</pre>");
     }
 
     // Bebaskan sumber daya
