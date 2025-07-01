@@ -201,10 +201,10 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="dEvaluasiSidang.php?id=<?= $id_sidang ?>">
-                        <span class="fw-semibold">Evaluasi</span>
+                        <span class="fw-semibold NavSide__sidebar-title">Evaluasi</span>
                     </a>
                 </li>
-                <li class="NavSide_sidebar-item NavSide_sidebar-item--active">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="dDokumenRevisi.php?id=<?= $id_sidang ?>">
                         <span class="fw-semibold">Dokumen</span>
@@ -213,7 +213,7 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
                     <a href="dNilaiAkhir.php?id=<?= $id_sidang ?>">
-                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                        <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
