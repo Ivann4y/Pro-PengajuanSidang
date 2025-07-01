@@ -492,6 +492,419 @@ tr.jadiBiru:hover .detail-btn i {
 /* Responsive tweaks for modal */
 @media (max-width: 600px) {
   .form-section-card {
-    padding: 1rem 0.5rem;
+    padding: 0.75rem 0.5rem;
+  }
+  .anggota-input-group,
+  .dosen-wrapper .anggota-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .anggota-nama-display {
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+  .form-toggle-buttons {
+    margin-top: 0.5rem;
+    justify-content: center;
+    width: 100%;
+  }
+  .form-toggle-buttons button {
+    margin: 0 0.25rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  input[type="text"],
+  select {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+  .form-section-card {
+    padding: 0.75rem 0.5rem;
+  }
+  .kelompok-form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.form-section-title {
+  color: #4b68fb;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Responsive Modal Styles */
+@media (max-width: 768px) {
+  .modal-dialog.modal-lg {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-tab-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-tab {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .kelompok-form-container {
+    padding: 0;
+  }
+
+  .kelompok-form-group {
+    margin-bottom: 1rem;
+  }
+
+  .kelompok-form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .kelompok-form-group input,
+  .kelompok-form-group select {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+
+  .form-section-card {
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+
+  .form-section-title {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .anggota-input-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .input-container {
+    width: 100%;
+  }
+
+  .anggota-nama-display {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .form-toggle-buttons {
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .form-toggle-buttons button {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .autocomplete-dropdown {
+    max-height: 200px;
+    font-size: 0.85rem;
+  }
+
+  .autocomplete-item {
+    padding: 0.5rem;
+  }
+
+  .autocomplete-item .nim {
+    font-size: 0.8rem;
+  }
+
+  .autocomplete-item .nama {
+    font-size: 0.85rem;
+  }
+
+  .kelompok-form-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .kelompok-form-actions .btn {
+    width: 100%;
+    padding: 0.75rem;
+  }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .modal-dialog.modal-lg {
+    max-width: 90%;
+  }
+
+  .anggota-input-group {
+    gap: 0.75rem;
+  }
+
+  .input-container {
+    flex: 1;
+  }
+
+  .anggota-nama-display {
+    flex: 0 0 200px;
+  }
+
+  .form-toggle-buttons {
+    flex: 0 0 auto;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .modal-dialog.modal-lg {
+    margin: 0.25rem;
+    max-width: calc(100% - 0.5rem);
+  }
+
+  .modal-header {
+    padding: 0.75rem;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+  }
+
+  .modal-body {
+    padding: 0.75rem;
+  }
+
+  .kelompok-form-group input,
+  .kelompok-form-group select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .form-section-card {
+    padding: 0.75rem;
+  }
+
+  .anggota-form-group {
+    margin-bottom: 0.75rem;
+  }
+
+  .autocomplete-dropdown {
+    max-height: 150px;
+  }
+
+  .kelompok-list-item {
+    padding: 0.75rem;
+  }
+
+  .kelompok-list-title {
+    font-size: 1rem;
+  }
+
+  .kelompok-list-prodi {
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .modal-dialog.modal-lg {
+    max-height: 90vh;
+    margin: 0.5rem;
+  }
+
+  .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .autocomplete-dropdown {
+    max-height: 120px;
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .form-toggle-buttons button {
+    border-width: 1px;
+  }
+
+  .autocomplete-item {
+    border-bottom-width: 1px;
+  }
+}
+
+/* Main Page Responsive Styles */
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .container-fluid {
+    padding: 0 0.5rem;
+  }
+
+  /* Search and Filter Section */
+  .d-flex.align-items-center.gap-2.mb-4 {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+
+  .search-input-group {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .search-input-group .form-control {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Table Responsive */
+  table {
+    font-size: 0.85rem;
+  }
+
+  table th,
+  table td {
+    padding: 0.5rem 0.25rem;
+  }
+
+  /* Hide less important columns on mobile */
+  table th:nth-child(4), /* Mata Kuliah */
+  table td:nth-child(4) {
+    display: none;
+  }
+
+  /* Make action button larger for touch */
+  .detail-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    margin-top: 1rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pagination .page-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  /* Kelompok Button */
+  .kelompok-btn {
+    width: 100%;
+    max-width: none !important;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+/* Tablet Styles for Main Page */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container-fluid {
+    padding: 0 1rem;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  .search-input-group {
+    max-width: 300px;
+  }
+
+  .kelompok-btn {
+    max-width: 250px !important;
+  }
+}
+
+/* Small Mobile Styles for Main Page */
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 0.75rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .container-fluid {
+    padding: 0 0.25rem;
+  }
+
+  /* Further hide columns on very small screens */
+  table th:nth-child(3), /* Judul */
+  table td:nth-child(3) {
+    display: none;
+  }
+
+  table th:nth-child(5), /* Dosen Pembimbing */
+  table td:nth-child(5) {
+    display: none;
+  }
+
+  /* Show only essential columns */
+  table th:nth-child(1), /* No */
+  table th:nth-child(2), /* Kelompok */
+  table th:nth-child(6), /* Jenis Sidang */
+  table th:nth-child(7) {
+    /* Aksi */
+    display: table-cell;
+  }
+
+  table td:nth-child(1),
+  table td:nth-child(2),
+  table td:nth-child(6),
+  table td:nth-child(7) {
+    display: table-cell;
+  }
+
+  .pagination .page-link {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape Mobile for Main Page */
+@media (max-width: 768px) and (orientation: landscape) {
+  .dashboard-header {
+    padding: 0.5rem 1rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .container-fluid {
+    padding: 0 0.5rem;
+  }
+
+  /* Show more columns in landscape */
+  table th:nth-child(4),
+  table td:nth-child(4) {
+    display: table-cell;
   }
 }

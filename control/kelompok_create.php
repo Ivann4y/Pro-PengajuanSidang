@@ -9,13 +9,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dosen_nomor_array = isset($_POST['dosen_nomor_hidden']) ? $_POST['dosen_nomor_hidden'] : [];
     $nomor_dosen = isset($_SESSION['user_data']['nomor_dosen']) ? $_SESSION['user_data']['nomor_dosen'] : null;
     
-    // If no dosen selected from form, use session dosen
-    if (empty($dosen_nomor_array) || (count($dosen_nomor_array) === 1 && empty($dosen_nomor_array[0]))) {
-        if (!$nomor_dosen) {
-            echo json_encode(['success' => false, 'message' => 'Dosen pembimbing tidak ditemukan. Silakan pilih dosen.']);
-            exit();
+    // Ensure the creator dosen is always included
+    if ($nomor_dosen) {
+        // Remove empty values and add creator if not already present
+        $dosen_nomor_array = array_filter($dosen_nomor_array, function($value) {
+            return trim($value) !== '';
+        });
+        
+        // Add creator if not already in the array
+        if (!in_array($nomor_dosen, $dosen_nomor_array)) {
+            $dosen_nomor_array[] = $nomor_dosen;
         }
-        $dosen_nomor_array = [$nomor_dosen];
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Dosen pembimbing tidak ditemukan. Silakan login kembali.']);
+        exit();
     }
 
     $prodi = $_POST['kelompok_prodi'];
@@ -44,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 3. Insert into Bimbingan for each dosen
+    // 3. Insert into Bimbingan for each dosen (including creator)
     foreach ($dosen_nomor_array as $dosen_nomor) {
         if (trim($dosen_nomor) !== '') {
             $sql_bimbingan = "INSERT INTO Bimbingan (nomor_dosen, id_kelompok, isPembimbing) VALUES (?, ?, ?)";
