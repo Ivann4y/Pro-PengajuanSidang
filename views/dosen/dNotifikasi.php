@@ -21,11 +21,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
 
 include '../../koneksi/koneksiAndrew.php';
 
-$username_dosen = $_SESSION['user_data']['username'];
+// Ambil nomor_dosen dari session user_data
+$nomor_dosen = $_SESSION['user_data']['nomor_dosen'];
 
 // Ambil notifikasi yang belum dibaca
 $query_unread = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL) ORDER BY waktu DESC";
-$stmt_unread = sqlsrv_query($conn, $query_unread, array($username_dosen));
+$stmt_unread = sqlsrv_query($conn, $query_unread, array($nomor_dosen));
 if (!$stmt_unread) {
     die(print_r(sqlsrv_errors(), true));
 }
@@ -36,7 +37,7 @@ while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
 
 // Ambil notifikasi yang sudah dibaca
 $query_read = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND status_baca = 1 ORDER BY waktu DESC";
-$stmt_read = sqlsrv_query($conn, $query_read, array($username_dosen));
+$stmt_read = sqlsrv_query($conn, $query_read, array($nomor_dosen));
 if (!$stmt_read) {
     die(print_r(sqlsrv_errors(), true));
 }
