@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
          
         $sql_action = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
         // Mengirim nilai sebagai 1 untuk status disetujui
-        $params_action = [1, $id_sidang]; 
+        $params_action = ['Approve', $id_sidang]; 
         
         $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
 
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $sql_action = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
             // Mengirim nilai sebagai 2 untuk status ditolak
-            $params_action = [2, $id_sidang];
+            $params_action = ['Reject', $id_sidang];
 
             $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
 
