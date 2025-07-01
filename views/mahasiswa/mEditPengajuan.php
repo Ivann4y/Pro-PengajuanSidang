@@ -19,6 +19,9 @@ include '../../koneksi/koneksiAndrew.php';
 $success_message = '';
 $error_message = '';
 
+// Tambahkan require_once ke file external notifikasi
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
+
 // Get logged in student name
 $nama_mahasiswa = 'Mahasiswa';
 if (isset($_SESSION['user_data']['nama_mhs'])) {
@@ -158,6 +161,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
             $success_message = 'Pengajuan Berhasil Disimpan!';
         } elseif ($status_ajuan === 0) {
             $success_message = 'Pengajuan Berhasil Dikirim!';
+        }
+
+        // Kirim notifikasi ke dosen pembimbing
+        // Ambil nomor_dosen dari Detail_Sidang
+        $sql_get_dosen = "SELECT nomor_dosen FROM dbo.Detail_Sidang WHERE id_sidang = ?";
+        $stmt_get_dosen = sqlsrv_query($conn, $sql_get_dosen, [$id_sidang]);
+        $nomor_dosen_pembimbing = null;
+        if ($stmt_get_dosen && $row_dosen = sqlsrv_fetch_array($stmt_get_dosen, SQLSRV_FETCH_ASSOC)) {
+            $nomor_dosen_pembimbing = $row_dosen['nomor_dosen'];
+        }
+        if ($nomor_dosen_pembimbing) {
+            $nim_mahasiswa = $_SESSION['user_data']['username'] ?? $_SESSION['nim'];
+            $pesan_notif = "Mahasiswa $nama_mahasiswa ($nim_mahasiswa) telah mengajukan sidang baru. Silakan cek pengajuan di sistem.";
+            kirimNotifikasi($nomor_dosen_pembimbing, $pesan_notif, $nim_mahasiswa, $conn);
         }
 
     } catch (Exception $e) {
