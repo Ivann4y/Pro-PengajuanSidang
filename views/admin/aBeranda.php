@@ -47,102 +47,10 @@ require "../../koneksi/koneksiAndrew.php";
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../../assets/css/style.css" />
-
+    <link rel="stylesheet" href="../../assets/css/aBeranda.css" />
+    
     <style>
       
-      /* Penjadwalan Style Card */
-        .penjadwalan-status-card {
-            background-color: #4B68FB;
-            color: white;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .penjadwalan-status-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-        }
-
-        .penjadwalan-status-card .number {
-            font-size: 4.8rem;
-            font-weight: 700;
-            line-height: 1;
-            margin-right: 1.2rem;
-            min-width: 50px;
-            text-align: center;
-        }
-
-        .penjadwalan-status-card .text {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            flex:1;
-            overflow-wrap: break-word;
-            min-width: 0;
-        }
-
-        .penjadwalan-status-card .text .title {
-            font-size: 0.95rem;
-            font-weight: 500;
-            display: block;
-            margin-bottom: 0.1rem;
-        }
-
-        .penjadwalan-status-card .text .description {
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-
-        /* Pengajuan Style Card */
-
-        .pengajuan-status-card {
-            background-color: rgb(239, 239, 239);
-            display: flex;
-            align-items: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .pengajuan-status-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .pengajuan-status-card .number {
-            font-size: 4.8rem;
-            font-weight: 700;
-            line-height: 1;
-            margin-right: 1.2rem;
-            color: rgb(37, 44, 54);
-            min-width: 50px;
-            text-align: center;
-        }
-
-        .pengajuan-status-card .text {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            flex:1;
-            overflow-wrap: break-word;
-            min-width: 0;
-        }
-
-        .pengajuan-status-card .text .title {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #4B5563;
-            display: block;
-            margin-bottom: 0.1rem;
-        }
-
-        .pengajuan-status-card .text .description {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: #1F2937;
-        }
-
     </style>
 </head>
 
@@ -323,7 +231,7 @@ require "../../koneksi/koneksiAndrew.php";
     </div>
 
     <!-- Bootstrap JS Bundle (termasuk Popper) -->
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Dashboard.js -->
     <script src="../../assets/js/dashboard.js"></script>
