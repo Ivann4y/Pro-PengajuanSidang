@@ -46,6 +46,7 @@ JOIN Penjadwalan p ON ds.id_sidang = p.id_sidang AND ds.nomor_dosen = p.nomor_do
 WHERE ds.id_sidang = ?
 ";
 
+
 $params = [$id_sidang];
 $stmt = sqlsrv_query($conn, $sql, $params);
 

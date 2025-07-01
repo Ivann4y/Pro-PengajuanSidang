@@ -1,6 +1,6 @@
 <?php
 session_start();
-// Ganti dengan path file koneksi Anda yang benar
+
 require "../../koneksi/koneksiAndrew.php";
 
 // ======================= STATIC DATA FOR TESTING =======================
@@ -26,7 +26,6 @@ $semuaCatatan = 'Tidak ada catatan.';
 
 
 // ======================= 1. GET MAHASISWA & SIDANG INFO =======================
-// FIX: Query ini diubah untuk menggunakan tabel Penilaian sebagai "jembatan"
 // untuk menghubungkan Mahasiswa dengan Detail_Sidang, karena Detail_Sidang tidak punya kolom 'nim'.
 $sqlInfo = "
     SELECT TOP 1
@@ -156,7 +155,6 @@ if (!empty($catatanArray)) {
   <link rel="stylesheet" href="../../extra/style.css" />
   <title>Admin - Nilai Akhir</title>
   <style>
-    /* CSS ANDA TIDAK DIUBAH, HANYA DIRAPIKAN */
     #NavSide { display: flex; min-height: 100vh; position: relative; }
     .label-row i { font-size: 1.5rem; }
     body, .card, .form-control, h1, h2, h3, h4, h5, h6 { font-family: "Poppins", sans-serif !important; color: #464869; }
@@ -179,7 +177,7 @@ if (!empty($catatanArray)) {
     }
     #carddetailPenilaian label { font-weight: 550; }
     .detail-penilaian-input {
-      font-size: 1.2rem; /* Sedikit diperbesar */
+      font-size: 1.2rem; 
       font-weight: 600;
       text-align: center;
       border: none;
@@ -195,13 +193,12 @@ if (!empty($catatanArray)) {
       font-size: 1rem;
       resize: vertical;
       cursor: default;
-      white-space: pre-wrap; /* Agar format newline dari PHP tampil benar */
+      white-space: pre-wrap; 
     }
     textarea[readonly], input[readonly] { background-color: #e9ecef; }
   </style>
 </head>
 <body>
-
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
@@ -226,7 +223,6 @@ if (!empty($catatanArray)) {
         </li>
       </ul>
     </div>
-
     <div class="NavSide__topbar">
       <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
     </div>
@@ -304,8 +300,7 @@ if (!empty($catatanArray)) {
               </div>
             </div>
           </div>
-
-
+          
 <script>
     // Kode untuk toggle sidebar (tidak diubah)
     let menuToggle = document.querySelector(".NavSide__toggle");

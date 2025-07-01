@@ -17,7 +17,6 @@ $nim = $_SESSION['user_data']['nim'];
 
 require "../../koneksi/koneksiAndrew.php";
 
-// === 1. Ambil ID Kelompok dan ID Sidang mahasiswa login ===
 $sql = "
     SELECT k.id_kelompok, s.id_sidang
     FROM Kelompok_Mahasiswa km
@@ -152,12 +151,10 @@ if (!empty($catatanArray)) {
       href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
       rel="stylesheet"
     />
-    <!-- Link tambahan ke Google Fonts untuk berbagai ketebalan (weight) dari font "Poppins" -->
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
-    <!-- Link ke file JavaScript SweetAlert2 untuk membuat notifikasi pop-up yang menarik -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Link ke stylesheet kustom lokal (style.css) -->
     <link rel="stylesheet" href="../../css/style.css" />
@@ -167,49 +164,48 @@ if (!empty($catatanArray)) {
     <!-- Link ke stylesheet Font Awesome dari CDN untuk menggunakan library ikon yang lebih beragam -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
-    <title>Mahasiswa - Nilai Akhir</title> <!-- Judul yang akan muncul di tab browser -->
+    <title>Mahasiswa - Nilai Akhir</title> 
   </head>
   <body>
 
+  
   <div id="NavSide">
-        <!-- === SIDEBAR NAVIGASI KIRI === -->
         <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a>
+                    <a href="aDetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="m.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a>
-                    <!-- <a href="aEvaluasi.php?id=<?= $row['id'] ?>"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a> -->
+                    <a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a>
+                    <!-- <a href="aEvaluasi.php?id=<?= $row['id'] ?>
                 </li>
 
-                <li class="NavSide__sidebar-item">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="mNilaiAkhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
+                    <a href="mDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Kembali</span></a>
                 </li>
             </ul>
         </div>
 
-        <!-- === TOPBAR / HEADER === -->
         <div class="NavSide__topbar">
-            <!-- Ikon "hamburger" untuk membuka/menutup sidebar di tampilan mobile -->
              <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
             </div>
+
             <!-- Ikon-ikon di sisi kanan topbar -->
             <div class="header-icons">
-                <i class="bi bi-bell-fill"></i> <!-- Ikon notifikasi -->
+                <i class="bi bi-bell-fill"></i>
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i> <!-- Ikon profil pengguna -->
                 </div>
@@ -229,6 +225,7 @@ if (!empty($catatanArray)) {
                 </h2>
             </div>
         </div>
+
         
         <!-- Baris untuk kartu data dan nilai -->
         <div class="row mt-4 g-4">
