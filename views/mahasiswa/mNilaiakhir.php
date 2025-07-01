@@ -155,8 +155,8 @@ sqlsrv_close($conn);
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand img "><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"></div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item "><a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a></li>
-                <li class="NavSide__sidebar-item"><a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a></li>
+                <li class="NavSide__sidebar-item "><a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item"><a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a></li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a></li>
                 <li class="NavSide__sidebar-item"><a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a></li>
             </ul>
