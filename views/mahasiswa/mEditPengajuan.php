@@ -1,7 +1,4 @@
 <?php
-// =================================================================
-// BLOK PHP YANG DIPERBAIKI (Backend Logic)
-// =================================================================
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -15,7 +12,7 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || !
     exit();
 }
 
-include '../../koneksi/koneksiAndrew.php'; 
+include '../../koneksi/koneksiAndrew.php';
 $success_message = '';
 $error_message = '';
 
@@ -24,7 +21,6 @@ $nama_mahasiswa = 'Mahasiswa';
 if (isset($_SESSION['user_data']['nama_mhs'])) {
     $nama_mahasiswa = $_SESSION['user_data']['nama_mhs'];
 } elseif (isset($_SESSION['nim'])) {
-    // Fetch name from database if not in session
     $sql_nama = "SELECT nama_mhs FROM Mahasiswa WHERE nim = ?";
     $stmt_nama = sqlsrv_query($conn, $sql_nama, [$_SESSION['nim']]);
     if ($stmt_nama && $row_nama = sqlsrv_fetch_array($stmt_nama, SQLSRV_FETCH_ASSOC)) {
@@ -32,29 +28,20 @@ if (isset($_SESSION['user_data']['nama_mhs'])) {
     }
 }
 
-// STEP 1: Determine the id_sidang. Prioritize the form submission value.
+// STEP 1: Dapatkan id_sidang dari request. Ini wajib ada.
 $id_sidang = 0;
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // If it's a POST request, the ID must be in the form data.
-    $id_sidang = isset($_POST['id_sidang']) ? (int)$_POST['id_sidang'] : 0;
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['id_sidang'])) {
+    $id_sidang = (int)$_POST['id_sidang'];
+} else {
+    die("Error: ID Sidang tidak valid atau tidak ditemukan.");
 }
 
-// Security check: If no ID, redirect away.
-if ($id_sidang <= 0) {
-     die("
-        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-        <body onload=\"Swal.fire({title: 'Error!', text: 'ID Sidang tidak valid atau tidak ditemukan.', icon: 'error'}).then(() => window.location.href = 'mPengajuan.php');\"></body>
-    ");
-}
-
-// STEP 2: Fetch existing data for the form *unconditionally*.
-// This ensures the form is always populated, even if a submission fails.
+// STEP 2: Ambil data yang sudah ada untuk mengisi form
 $query_existing = "
     SELECT s.judul, s.id_kelompok, ds.id_matkul, s.dok_laporan
     FROM Sidang s
     LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-    WHERE s.id_sidang = ?
-";
+    WHERE s.id_sidang = ?";
 $stmt_existing = sqlsrv_query($conn, $query_existing, [$id_sidang]);
 if ($stmt_existing === false) die("Error saat mengambil data awal.");
 $existing_data = sqlsrv_fetch_array($stmt_existing, SQLSRV_FETCH_ASSOC);
@@ -63,109 +50,76 @@ if (!$existing_data) {
     die("Data sidang dengan ID $id_sidang tidak ditemukan.");
 }
 
-// Now populate variables for the form
 $existing_judul = $existing_data['judul'];
 $existing_id_matkul = $existing_data['id_matkul'];
-$existing_id_kelompok = $existing_data['id_kelompok'];    
+$existing_id_kelompok = $existing_data['id_kelompok'];
 $file_exists = !empty($existing_data['dok_laporan']);
 
-// --- REPLACE WITH THIS (AFTER) ---
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
-    // Start a transaction to ensure all database changes succeed or fail together.
+// STEP 3: Proses form jika ada aksi 'Simpan' atau 'Kirim'
+if (isset($_POST['aksi'])) {
     sqlsrv_begin_transaction($conn);
     try {
-        // 1. Initialize variables for file handling
+        // A. Proses upload file jika ada file baru
         $dok_laporan_content = null;
         $updateFile = false;
-
-        // 2. Process file upload if a new file is provided
         if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
             $file = $_FILES['DokumenSidang'];
-            // Validate file size (max 10MB)
-            if ($file['size'] > 10 * 1024 * 1024) {
-                throw new Exception("Ukuran file tidak boleh melebihi 10MB.");
-            }
-            // Validate file type
-            $allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/zip'];
-            if (!in_array(mime_content_type($file['tmp_name']), $allowedTypes)) {
-                throw new Exception("Tipe file tidak diizinkan. Hanya PDF, DOCX, PPTX, dan ZIP yang diperbolehkan.");
-            }
+            if ($file['size'] > 10 * 1024 * 1024) throw new Exception("Ukuran file melebihi 10MB.");
             
-            // Read file content as binary data for the database
+            $allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/zip'];
+            if (!in_array(mime_content_type($file['tmp_name']), $allowedTypes)) throw new Exception("Tipe file tidak diizinkan.");
+            
             $dok_laporan_content = file_get_contents($file['tmp_name']);
-            $updateFile = true; // Mark that the file needs to be updated in the DB
+            $updateFile = true;
         }
 
-        // 3. Get data from the form
+        // B. Ambil data dari form dan tentukan status
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
-        if ($_POST['aksi'] == 'Kirim') {
-            $status_ajuan = 0; // Sudah dikirim, menunggu dosen
-        } else {
-            $status_ajuan = NULL; // Simpan sebagai draft
-        }
-
+        $status_ajuan = ($_POST['aksi'] == 'Kirim') ? 'Pending' : 'Draft'; // PERBAIKAN: Gunakan string
         if (empty($judul) || empty($id_matkul_terpilih)) throw new Exception("Judul dan Mata Kuliah wajib diisi.");
 
-        // Basic validation for required fields
-        if (empty($judul) || empty($id_matkul_terpilih)) {
-            throw new Exception("Judul dan Mata Kuliah wajib diisi.");
-        }
-
-        // 4. Determine 'jenis_sidang' based on the selected Mata Kuliah
+        // C. Tentukan jenis sidang
         $sql_matkul_name = "SELECT nama_matkul FROM dbo.MataKuliah WHERE id_matkul = ?";
-        $stmt_matkul_name = sqlsrv_query($conn, $sql_matkul_name, [$id_matkul_terpilih]);
-        if ($stmt_matkul_name === false) {
-            throw new Exception("Gagal mengambil nama mata kuliah.");
-        }
-        $nama_matkul_row = sqlsrv_fetch_array($stmt_matkul_name, SQLSRV_FETCH_ASSOC);
-        $nama_matkul_terpilih = $nama_matkul_row['nama_matkul'];
-        
-        // Set jenis_sidang to 0x00 for 'Tugas Akhir' and 0x01 for others (case-insensitive)
+        $nama_matkul_terpilih = sqlsrv_fetch_array(sqlsrv_query($conn, $sql_matkul_name, [$id_matkul_terpilih]), SQLSRV_FETCH_ASSOC)['nama_matkul'];
         $jenis_sidang_bit = (strcasecmp($nama_matkul_terpilih, 'Tugas Akhir') == 0) ? 0x00 : 0x01;
         
-        // 5. Build and execute the query to update the 'Sidang' table
+        // D. Bangun query UPDATE untuk tabel 'Sidang'
         $sql_update_sidang = "UPDATE dbo.Sidang SET judul = ?, status_ajuan = ?, jenis_sidang = ?, waktu_pengumpulan = GETDATE()";
         $params_update_sidang = [$judul, $status_ajuan, $jenis_sidang_bit];
         
-        // If a new file was uploaded, add it to the SQL query and parameters
         if ($updateFile) {
             $sql_update_sidang .= ", dok_laporan = ?";
-            // SQL Server requires special handling for binary stream data
-            $params_update_sidang[] = ['Value' => $dok_laporan_content, 'Type' => SQLSRV_PARAM_IN, 'PhpType' => SQLSRV_PHPTYPE_STREAM(SQLSRV_ENC_BINARY)];
+            // PERBAIKAN: Cukup kirim variabelnya langsung
+            $params_update_sidang[] = $dok_laporan_content;
         }
         
         $sql_update_sidang .= " WHERE id_sidang = ?";
         $params_update_sidang[] = $id_sidang;
         
         $stmt_update_sidang = sqlsrv_prepare($conn, $sql_update_sidang, $params_update_sidang);
-        if (!sqlsrv_execute($stmt_update_sidang)) {
-            throw new Exception("Gagal mengupdate data Sidang. Error: " . print_r(sqlsrv_errors(), true));
+        if ($stmt_update_sidang === false || !sqlsrv_execute($stmt_update_sidang)) {
+            throw new Exception("Gagal mengupdate data Sidang: " . print_r(sqlsrv_errors(), true));
         }
 
-        // 6. Build and execute the query to update the 'Detail_Sidang' table (for Mata Kuliah)
+        // E. Update tabel 'Detail_Sidang'
         $sql_update_detail = "UPDATE dbo.Detail_Sidang SET id_matkul = ? WHERE id_sidang = ?";
-        $params_update_detail = [$id_matkul_terpilih, $id_sidang];
-        
-        $stmt_update_detail = sqlsrv_prepare($conn, $sql_update_detail, $params_update_detail);
-        if (!sqlsrv_execute($stmt_update_detail)) {
-            throw new Exception("Gagal mengupdate Detail Sidang. Error: " . print_r(sqlsrv_errors(), true));
+        $stmt_update_detail = sqlsrv_prepare($conn, $sql_update_detail, [$id_matkul_terpilih, $id_sidang]);
+        if ($stmt_update_detail === false || !sqlsrv_execute($stmt_update_detail)) {
+            throw new Exception("Gagal mengupdate Detail Sidang: " . print_r(sqlsrv_errors(), true));
         }
 
-        // 7. If all queries were successful, commit the changes to the database
+        // F. Commit jika semua berhasil
         sqlsrv_commit($conn);
-        if (is_null($status_ajuan)) {
-            $success_message = 'Pengajuan Berhasil Disimpan!';
-        } elseif ($status_ajuan === 0) {
-            $success_message = 'Pengajuan Berhasil Dikirim!';
-        }
-
+        $success_message = ($status_ajuan == 'Pending') ? 'Pengajuan Berhasil Dikirim!' : 'Perubahan Berhasil Disimpan!';
+        
     } catch (Exception $e) {
-        // If any error occurred, roll back all changes
         sqlsrv_rollback($conn);
         $error_message = $e->getMessage();
     }
-}?>
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

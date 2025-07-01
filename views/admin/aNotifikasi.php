@@ -24,6 +24,31 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 require "../../koneksi/koneksiAndrew.php";
+
+$admin_username = $_SESSION['user_data']['username'];
+
+// Fetch unread notifications
+$query_unread = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL) ORDER BY waktu DESC";
+$stmt_unread = sqlsrv_query($conn, $query_unread, array($admin_username));
+if (!$stmt_unread) {
+    die(print_r(sqlsrv_errors(), true));
+}
+$unread_notifications = [];
+while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+    $unread_notifications[] = $row;
+}
+
+// Fetch read notifications
+$query_read = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND status_baca = 1 ORDER BY waktu DESC";
+$stmt_read = sqlsrv_query($conn, $query_read, array($admin_username));
+if (!$stmt_read) {
+    die(print_r(sqlsrv_errors(), true));
+}
+$read_notifications = [];
+while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
+    $read_notifications[] = $row;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -237,29 +262,38 @@ require "../../koneksi/koneksiAndrew.php";
                 </tr>
               </thead>
               <tbody id="BelumDibaca">
-                <tr class="isiTabel jadiBiru ">
-                  <td>Rida Indah Fariani</td>
-                  <td>Pengajuan telah disetujui oleh dosen pembimbing</td>
-                  <td>20 April 2025, 10:00</td>
-                  <td>Belum Dibaca</td>
-                  <td><span onclick="bacaModal(this)">✔️</span></td>
-                </tr>
+                <?php if (empty($unread_notifications)): ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Tidak ada notifikasi belum dibaca.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($unread_notifications as $notif): ?>
+                        <tr class="isiTabel jadiBiru" data-id="<?php echo $notif['id_notifikasi']; ?>">
+                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
+                            <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
+                            <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
+                            <td>Belum Dibaca</td>
+                            <td><span onclick="bacaModal(this)">✔️</span></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
               <tbody id="SudahDibaca" style="display: none;">
-                <tr class="isiTabel ">
-                  <td>Timotius Victory</td>
-                  <td>Pengajuan telah ditolak oleh dosen pembimbing</td>
-                  <td>20 Januari 2025, 10:00</td>
-                  <td>Sudah Dibaca</td>
-                  <td></td>
-                </tr>
-                <tr class="isiTabel ">
-                  <td>Timotius Victory</td>
-                  <td>Pengajuan telah disetujui oleh dosen pembimbing</td>
-                  <td>21 Januari 2025, 10:00</td>
-                  <td>Sudah Dibaca</td>
-                  <td></td>
-                </tr>
+                <?php if (empty($read_notifications)): ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Tidak ada notifikasi yang sudah dibaca.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($read_notifications as $notif): ?>
+                        <tr class="isiTabel" data-id="<?php echo $notif['id_notifikasi']; ?>">
+                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
+                            <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
+                            <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
+                            <td>Sudah Dibaca</td>
+                            <td></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
@@ -342,26 +376,48 @@ require "../../koneksi/koneksiAndrew.php";
     }
 
     function lanjutkanAksi() {
-      // Cek apakah rowToUpdate sudah di-set
-
-      document.getElementById("bacabutton")
       if (rowToUpdate) {
-        // Ubah status pada kolom ke-4 dan hapus tombol span
-        rowToUpdate.cells[3].innerText = "Sudah Dibaca";
-        rowToUpdate.cells[4].innerHTML = ""; // Hapus span
-        // Hapus class jadiBiru
-        rowToUpdate.classList.remove("jadiBiru");
-        // Pindahkan row ke tbody SudahDibaca
-        document.getElementById("SudahDibaca").appendChild(rowToUpdate);
-        rowToUpdate = null;
+        const id_notifikasi = rowToUpdate.getAttribute('data-id');
+        
+        fetch('../../control/update_notifikasi_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id_notifikasi: id_notifikasi })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                rowToUpdate.cells[3].innerText = "Sudah Dibaca";
+                rowToUpdate.cells[4].innerHTML = "";
+                rowToUpdate.classList.remove("jadiBiru");
+                document.getElementById("SudahDibaca").appendChild(rowToUpdate);
+                rowToUpdate = null;
+            } else {
+                alert('Gagal memperbarui notifikasi: ' + data.message);
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikai"));
+            if (modal) {
+                modal.hide();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menghubungi server.');
+            const modal = bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikai"));
+            if (modal) {
+                modal.hide();
+            }
+        });
       }
-      // Tutup modal
-      bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikai")).hide();
     };
 
-    document.getElementById("tidakbacabutton").onclick = function() {
-      // Tutup modal tanpa mengubah apapun
-      bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikai")).hide();
+    document.querySelector('[data-bs-dismiss="modal"]').onclick = function() {
+      const modal = bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikai"));
+      if (modal) {
+        modal.hide();
+      }
     };
 
     function switchMNotifikasi() {
