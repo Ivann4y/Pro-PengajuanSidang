@@ -239,8 +239,9 @@ function decrementValue(inputId) {
 function handleFormSubmit(event) {
     event.preventDefault();
     const form = event.target;
-    const modalType = form.id.includes('-ta') ? 'TA' : 'Semester';
-    const errorBox = document.getElementById(`form-error-${modalType.toLowerCase()}`);
+    const modalSuffix = form.id.includes('-ta') ? 'ta' : 'sem';
+    const modalType = modalSuffix === 'ta' ? 'TA' : 'Semester';
+    const errorBox = document.getElementById(`form-error-${modalSuffix}`);
 
     if (!validateForm(modalType)) return;
 
