@@ -21,6 +21,7 @@ let menuToggle = document.querySelector(".NavSide__toggle");
     let rowToUpdate = null;
 
     function bacaModal(spanElem) {
+      console.log("bacaModal() dipanggil"); // Log awal
       // Simpan referensi baris (tr) yang akan diubah
       rowToUpdate = spanElem.closest('tr');
       const modal = new bootstrap.Modal(document.getElementById("konfirmasiModalnotifikasi"));
@@ -28,26 +29,58 @@ let menuToggle = document.querySelector(".NavSide__toggle");
     }
 
     function lanjutkanAksi() {
+      console.log("lanjutkanAksi() dipanggil"); // Log awal
       // Cek apakah rowToUpdate sudah di-set
-
-      document.getElementById("bacabutton")
       if (rowToUpdate) {
-        // Ubah status pada kolom ke-4 dan hapus tombol span
-        rowToUpdate.cells[3].innerText = "Sudah Dibaca";
-        rowToUpdate.cells[4].innerHTML = ""; // Hapus span
-        // Hapus class jadiBiru
-        rowToUpdate.classList.remove("jadiBiru");
-        // Pindahkan row ke tbody SudahDibaca
-        document.getElementById("SudahDibaca").appendChild(rowToUpdate);
-        rowToUpdate = null;
+        const id_notifikasi = rowToUpdate.getAttribute('data-id');
+        console.log("akan melakukan fetch POST", id_notifikasi); // Log sebelum fetch
+        fetch('../../control/update_notifikasi_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ id_notifikasi: id_notifikasi })
+        })
+        
+        .then(data => {
+            if (data.success) {
+                // Ubah status pada kolom ke-4 dan hapus tombol span
+                rowToUpdate.cells[3].innerText = "Sudah Dibaca";
+                rowToUpdate.cells[4].innerHTML = ""; // Hapus span
+                // Hapus class jadiBiru
+                rowToUpdate.classList.remove("jadiBiru");
+                // Pindahkan row ke tbody SudahDibaca
+                document.getElementById("SudahDibaca").appendChild(rowToUpdate);
+                rowToUpdate = null;
+            } else {
+                alert('Gagal memperbarui notifikasi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menghubungi server.');
+        });
       }
-      // Tutup modal
-      bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikasi")).hide();
+      // Tutup modal  
+      const modalElement = document.getElementById("konfirmasiModalnotifikasi");
+      if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+      }
     };
 
     document.getElementById("tidakmodal").onclick = function() {
       // Tutup modal tanpa mengubah apapun
-      bootstrap.Modal.getInstance(document.getElementById("konfirmasiModalnotifikasi")).hide();
+      const modalElement = document.getElementById("konfirmasiModalnotifikasi");
+      if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+      }
     };
 
     function switchMNotifikasi() {
@@ -72,3 +105,6 @@ let menuToggle = document.querySelector(".NavSide__toggle");
         }
       }
     }
+
+window.lanjutkanAksi = lanjutkanAksi;
+window.bacaModal = bacaModal;
