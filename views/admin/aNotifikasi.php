@@ -255,7 +255,6 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
               <thead>
                 <tr>
                   <th scope="col">Dari</th>
-                  <th scope="col">Pengirim</th>
                   <th scope="col">Pesan</th>
                   <th scope="col">Waktu</th>
                   <th scope="col">Status</th>
@@ -265,13 +264,12 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
               <tbody id="BelumDibaca">
                 <?php if (empty($unread_notifications)): ?>
                     <tr>
-                        <td colspan="6" style="text-align: center;">Tidak ada notifikasi belum dibaca.</td>
+                        <td colspan="5" style="text-align: center;">Tidak ada notifikasi belum dibaca.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($unread_notifications as $notif): ?>
                         <tr class="isiTabel jadiBiru" data-id="<?php echo $notif['id_notifikasi']; ?>">
-                            <td>Sistem</td>
-                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? '-'); ?></td>
+                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
                             <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
                             <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
                             <td>Belum Dibaca</td>
@@ -283,13 +281,12 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
               <tbody id="SudahDibaca" style="display: none;">
                 <?php if (empty($read_notifications)): ?>
                     <tr>
-                        <td colspan="6" style="text-align: center;">Tidak ada notifikasi yang sudah dibaca.</td>
+                        <td colspan="5" style="text-align: center;">Tidak ada notifikasi yang sudah dibaca.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($read_notifications as $notif): ?>
                         <tr class="isiTabel" data-id="<?php echo $notif['id_notifikasi']; ?>">
-                            <td>Sistem</td>
-                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? '-'); ?></td>
+                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
                             <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
                             <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
                             <td>Sudah Dibaca</td>
