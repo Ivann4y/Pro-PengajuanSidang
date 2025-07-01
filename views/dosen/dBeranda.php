@@ -43,7 +43,7 @@ include "../../koneksi/koneksiAndrew.php";
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
-                <i class="bi bi-bell-fill"></i>
+                <a href="dNotifikasi" title="Profil"><i class="bi bi-bell-fill"></i>
                 <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
             </div>
         </div>
@@ -51,7 +51,7 @@ include "../../koneksi/koneksiAndrew.php";
         <div class="NavSide__main-content" id="mainContent">
             <div class="dashboard-header">
                 <div class="page-title">Beranda Dosen</div>
-                <div class="header-icons">
+                <div class="header-icons d-none d-lg-flex">
                     <i class="bi bi-bell-fill"></i>
                     <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
                 </div>
@@ -151,16 +151,6 @@ include "../../koneksi/koneksiAndrew.php";
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/dosen-dashboard-ajax.js"></script>
-    <script>
-        // Contoh sederhana untuk fungsionalitas toggle sidebar mobile
-        const sidebarToggleMobile = document.getElementById('sidebarToggleMobile');
-        const mainSidebar = document.getElementById('main-sidebar');
-
-        sidebarToggleMobile.addEventListener('click', () => {
-            mainSidebar.classList.toggle('NavSide__sidebar--active-mobile');
-            sidebarToggleMobile.classList.toggle('NavSide__toggle--active');
-        });
-    </script>
 </body>
 
 </html>
