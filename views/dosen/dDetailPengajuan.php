@@ -85,19 +85,20 @@ $sql_main = "
     )
     SELECT * FROM SidangInfo WHERE id_sidang = ?";
 $stmt_main = sqlsrv_query($conn, $sql_main, [$id_sidang]);
-if ($stmt_main === false) die("Error saat mengambil data sidang: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
-$data_sidang = sqlsrv_fetch_array($stmt_main, SQLSRV_FETCH_ASSOC);
-if (!$data_sidang) die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan.");
 
-
-// =================================================================
-// PERUBAHAN 2: Mendefinisikan variabel $jenis_sidang_label
-// =================================================================
-if (isset($data_sidang['jenis_sidang'])) {
-    $jenis_sidang_label = ($data_sidang['jenis_sidang'] == 0) ? 'Tugas Akhir' : 'Proyek Semester';
-} else {
-    $jenis_sidang_label = 'N/A';
+if ($stmt_main === false) {
+    die("Error saat mengambil data sidang: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
+$data_sidang = sqlsrv_fetch_array($stmt_main, SQLSRV_FETCH_ASSOC);
+if (!$data_sidang) {
+    die("Data sidang tidak ditemukan.");
+}
+
+// Tentukan label jenis sidang
+$jenis_sidang_label = (isset($data_sidang['nama_matkul']) && strcasecmp($data_sidang['nama_matkul'], 'Tugas Akhir') == 0)
+    ? 'Sidang Tugas Akhir'
+    : 'Sidang Semester';
+
 
 
 // --- Sisa dari logika PHP Anda tetap sama ---
@@ -115,18 +116,15 @@ if ($stmt_anggota) {
     }
 }
 
-// ... (Sisa dari logika PHP untuk handle Approve/Reject Anda tidak perlu diubah) ...
-// 6. Handle aksi Approve / Reject
+// 3. Handle aksi Approve / Reject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // --- LOGIKA UNTUK APPROVE ---
     if (isset($_POST['approve'])) {
-        
-        // PERBAIKAN: Tambahkan CONVERT(binary(1), ?) untuk mencocokkan tipe data kolom
-        $sql_action = "UPDATE Sidang SET status_ajuan = CONVERT(binary(1), ?) WHERE id_sidang = ?";
-        
-        // Mengirim nilai sebagai string '1' lebih aman dan mudah dibaca
-        $params_action = ["1", $id_sidang]; 
+         
+        $sql_action = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
+        // Mengirim nilai sebagai 1 untuk status disetujui
+        $params_action = [1, $id_sidang]; 
         
         $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
 
@@ -135,6 +133,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $_SESSION['success'] = "Sidang berhasil disetujui";
+        header("Location: dPengajuan.php");
+        exit();
     }
 
     // --- LOGIKA UNTUK REJECT ---
@@ -144,11 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($catatan)) {
             $_SESSION['error'] = "Silakan isi catatan penolakan."; // Catatan tidak disimpan, tapi validasi tetap baik
         } else {
-            // PERBAIKAN: Tambahkan CONVERT(binary(1), ?) di sini juga
-            $sql_action = "UPDATE Sidang SET status_ajuan = CONVERT(binary(1), ?) WHERE id_sidang = ?";
-            
-            // Mengirim nilai sebagai string '0' untuk status ditolak
-            $params_action = ["0", $id_sidang];
+
+            $sql_action = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
+            // Mengirim nilai sebagai 2 untuk status ditolak
+            $params_action = [2, $id_sidang];
 
             $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
 
@@ -157,6 +156,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $_SESSION['success'] = "Sidang berhasil ditolak";
+            header("Location: dPengajuan.php");
+            exit();
         }
     }
     
@@ -175,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../css/button-style.css">
   <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css">
   <link rel="stylesheet" href="../../extra/style.css">
   <title>Detail Pengajuan</title>
@@ -293,7 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="modal-body">
                     <p class="mb-4 fw-semibold">Apakah Anda yakin ingin menyetujui pengajuan ini?</p>
                     <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+                        <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
                         <button type="button" class="btn btn-success px-4 py-2 fw-semibold" id="confirmSetujuiBtn">Lanjutkan</button>
                     </div>
                 </div>
@@ -309,11 +310,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="modal-body">
                         <p class="mb-3 fw-semibold">Harap masukkan alasan penolakan pengajuan ini.</p>
-                        <textarea name="catatan" class="form-control" rows="4" placeholder="Ketik alasan di sini..." required></textarea>
+                        <textarea name="catatan" class="form-control" rows="4" placeholder="Ketik alasan di sini..."></textarea>
                         <input type="hidden" name="reject" value="1">
                     </div>
                     <div class="modal-footer border-0 justify-content-center gap-3">
-                         <button type="button" class="btn btn-outline-secondary custom-batal px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+                         <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
                          <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold">Tolak Pengajuan</button>
                     </div>
                 </form>
@@ -340,25 +341,66 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalSetujui = new bootstrap.Modal(document.getElementById('modalKonfirmasiSetujui'));
     const modalTolak = new bootstrap.Modal(document.getElementById('modalKonfirmasiTolak'));
 
+    // Buka modal SETUJUI
     document.getElementById('btnSetujuiOpenModal').addEventListener('click', function () {
         modalSetujui.show();
     });
 
+    // Buka modal TOLAK
     document.getElementById('btnTolakOpenModal').addEventListener('click', function () {
         modalTolak.show();
     });
-    
+
+    // Konfirmasi SETUJUI
     document.getElementById('confirmSetujuiBtn').addEventListener('click', function () {
-        const approveForm = document.getElementById('approveForm');
-        let approveInput = approveForm.querySelector('input[name="approve"]');
-        if (!approveInput) {
-            approveInput = document.createElement('input');
-            approveInput.type = 'hidden';
-            approveInput.name = 'approve';
-            approveInput.value = '1';
-            approveForm.appendChild(approveInput);
+        Swal.fire({
+            title: 'Pengajuan Berhasil Disetujui!',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4B68FB'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const approveForm = document.getElementById('approveForm');
+                let approveInput = approveForm.querySelector('input[name="approve"]');
+                if (!approveInput) {
+                    approveInput = document.createElement('input');
+                    approveInput.type = 'hidden';
+                    approveInput.name = 'approve';
+                    approveInput.value = '1';
+                    approveForm.appendChild(approveInput);
+                }
+                approveForm.submit();
+                window.location.href = 'dPengajuan.php'; // Redirect ke halaman pengajuan
+            }
+        });
+    });
+
+    // Konfirmasi TOLAK
+    document.getElementById('rejectForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // Stop submit dulu, validasi alasan
+
+        const catatan = this.querySelector('textarea[name="catatan"]').value.trim();
+        if (catatan === "") {
+            Swal.fire({
+                title: 'Gagal',
+                text: 'Silakan isi alasan penolakan terlebih dahulu.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            });
+        } else {
+            Swal.fire({
+                title: 'Pengajuan Telah Ditolak!',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit(); // submit form setelah konfirmasi
+                    window.location.href = 'dPengajuan.php'; // Redirect ke halaman pengajuan
+                }
+            });
         }
-        approveForm.submit();
     });
 
     let menuToggle = document.querySelector(".NavSide__toggle");

@@ -102,7 +102,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // FUNGSI UNTUK DOSEN
 function goToDetail(id_sidang, jenis_sidang) {
-    window.location.href = `dDetailPengajuan.php?id_sidang=${encodeURIComponent(id_sidang)}&tipe=${encodeURIComponent(jenis_sidang)}`;
+  window.location.href = `dDetailPengajuan.php?id_sidang=${encodeURIComponent(
+    id_sidang
+  )}&tipe=${encodeURIComponent(jenis_sidang)}`;
 }
 
 function goToEvaluasi(nim, tipe) {
@@ -122,5 +124,7 @@ function showModal(status) {
 notifModalElement.addEventListener("hidden.bs.modal", (event) => {
   window.location.href = "dpengajuan.php";
 });
+
+
 
 // FUNGSI UNTUK MAHASISWA
