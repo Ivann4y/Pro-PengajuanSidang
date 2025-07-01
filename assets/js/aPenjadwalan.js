@@ -39,7 +39,7 @@ function openJadwalModal(rowElement) {
 function resetAndPopulateTAModal(el) {
     const formTA = document.getElementById('formDalamModal-ta');
     formTA.reset(); // Membersihkan semua input di form
-    formTA.dataset.sidangId = el.dataset.id || ''; // Menyimpan ID Sidang
+    document.getElementById('modal_id_sidang-ta').value = el.dataset.id || ''; // Menyimpan ID Sidang
 
     // Mengisi field yang readonly
     document.getElementById('modal_nim-ta').value = el.dataset.kelompok || '';
@@ -64,7 +64,7 @@ function resetAndPopulateTAModal(el) {
 function populateSemModal(el) {
     const formSem = document.getElementById('formDalamModal-sem');
     formSem.reset();
-    formSem.dataset.sidangId = el.dataset.id || '';
+    document.getElementById('modal_id_sidang-sem').value = el.dataset.id || ''; // Menyimpan ID Sidang
 
     // Mengisi field readonly
     document.getElementById('modal_nim-sem').value = el.dataset.kelompok || '';
@@ -240,21 +240,69 @@ function handleFormSubmit(event) {
     event.preventDefault();
     const form = event.target;
     const modalType = form.id.includes('-ta') ? 'TA' : 'Semester';
+    const errorBox = document.getElementById(`form-error-${modalType.toLowerCase()}`);
 
     if (!validateForm(modalType)) return;
 
-    // Di sini Anda akan menambahkan logika fetch ke file PHP (createPenjadwalan.php)
-    // Untuk saat ini, kita simulasikan keberhasilan.
-    console.log("Form valid dan siap dikirim.");
-    const modalToHide = modalType === 'TA' ? taModalInstance : semModalInstance;
-    if(modalToHide) modalToHide.hide();
-    
-    Swal.fire({
-        title: 'Berhasil!',
-        text: 'Penjadwalan berhasil dibuat.',
-        icon: 'success',
-        confirmButtonText: 'OK'
-    }).then(() => location.reload());
+    // Tampilkan loading spinner atau disable tombol submit
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengirim...';
+    errorBox.textContent = '';
+
+
+    // --- LOGIKA PENGIRIMAN DATA DENGAN FETCH ---
+    const formData = new FormData(form);
+
+    // Ganti 'createPenjadwalan.php' dengan path yang benar jika file PHP ada di direktori lain
+    fetch('createPenjadwalan.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            const modalToHide = modalType === 'TA' ? taModalInstance : semModalInstance;
+            if (modalToHide) modalToHide.hide();
+            
+            Swal.fire({
+                title: 'Berhasil!',
+                text: data.message, // Gunakan pesan dari server
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => location.reload());
+
+        } else {
+            // Tampilkan pesan error dari server di form
+            errorBox.textContent = data.message || 'Terjadi kesalahan yang tidak diketahui.';
+            Swal.fire({
+                title: 'Gagal!',
+                text: data.message, // Gunakan pesan dari server
+                icon: 'error',
+                confirmButtonText: 'Coba Lagi'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Fetch Error:', error);
+        errorBox.textContent = 'Tidak dapat terhubung ke server. Periksa koneksi Anda.';
+        Swal.fire({
+            title: 'Koneksi Gagal',
+            text: 'Tidak dapat mengirim data ke server. Silakan periksa koneksi internet Anda dan coba lagi.',
+            icon: 'error',
+            confirmButtonText: 'Tutup'
+        });
+    })
+    .finally(() => {
+        // Kembalikan tombol submit ke keadaan semula
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Buat Penjadwalan';
+    });
 }
 
 /**
