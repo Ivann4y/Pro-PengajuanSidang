@@ -123,6 +123,7 @@ if ($stmtCatatan === false) {
     die("Error query catatan: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
+
 $catatanArray = [];
 while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
     $catatan = trim($rowCatatan['catatan_sidang']);
@@ -154,6 +155,7 @@ if (!empty($catatanArray)) {
   <link rel="stylesheet" href="../../css/button-styles.css" />
   <link rel="stylesheet" href="../../extra/style.css" />
   <title>Admin - Nilai Akhir</title>
+
   <style>
     #NavSide { display: flex; min-height: 100vh; position: relative; }
     .label-row i { font-size: 1.5rem; }
@@ -166,7 +168,7 @@ if (!empty($catatanArray)) {
       width: 100%;
     }
     .nilai-mahasiswa-display {
-      font-size: 5rem !important; /* Disesuaikan agar lebih proporsional */
+      font-size: 5rem !important; 
       font-weight: bold;
       text-align: center;
       background-color: transparent !important;
@@ -246,11 +248,11 @@ if (!empty($catatanArray)) {
 
       <!-- KONTEN UTAMA -->
       <div class="p-3">
-          <div class="row align-items-stretch mb-4">
+          <div class="row align-items-stretch mb-2">
             <!-- Kartu Data Mahasiswa -->
             <div class="col-lg-6 mb-4 d-flex">
               <div class="card flex-fill" id="carddataMahasiswa">
-                <div class="card-body px-4 py-3">
+                <div class="card-body px-3 py-2">
                   <h3 class="card-title text-black mb-4 text-center py-2">Data Mahasiswa</h3>
                   <div class="d-flex flex-column gap-4 px-4 py-2">
                     <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nim']) ?></div></div>
@@ -294,13 +296,13 @@ if (!empty($catatanArray)) {
             <div class="col-12">
               <div class="card h-100" id="cardcatatan">
                 <div class="card-body px-4 py-4 d-flex flex-column">
-                  <h3 class="card-title text-black mb-3">Catatan dari Dosen Penguji</h3>
+                  <h3 class="card-title text-black mb-3">Catatan</h3>
                   <div id="catatan" class="form-control flex-grow-1" rows="8" ><?= htmlspecialchars($semuaCatatan) ?></div>
                 </div>
               </div>
             </div>
           </div>
-          
+
 <script>
     // Kode untuk toggle sidebar (tidak diubah)
     let menuToggle = document.querySelector(".NavSide__toggle");

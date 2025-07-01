@@ -155,8 +155,8 @@ sqlsrv_close($conn);
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand img "><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"></div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item "><a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a></li>
-                <li class="NavSide__sidebar-item"><a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a></li>
+                <li class="NavSide__sidebar-item "><a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span></a></li>
+                <li class="NavSide__sidebar-item"><a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Evaluasi</span></a></li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a></li>
                 <li class="NavSide__sidebar-item"><a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a></li>
             </ul>
@@ -169,11 +169,11 @@ sqlsrv_close($conn);
             <div class="container-fluid">
                 <div class="row mb-4 title-container"><div class="col-12"><h2 class="main-title">Detail Evaluasi - Sistem Pengajuan Sidang</h2></div></div>
                 
-                <div class="row mt-4 g-4">
+                <div class="row mt-5 g-5">
                     <div class="col-lg-6 d-flex">
                     <div class="card flex-fill" id="carddataMahasiswa">
                         <div class="card-body card-soft p-4">
-                        <h3 class="card-title text-dark mb-4 text-center">Data Mahasiswa</h3>
+                        <h3 class="card-title text-dark mb-4 text-center py-2">Data Mahasiswa</h3>
                         <div class="row">
                             <div class="col-sm-6 text-black">
                                 <div class="info-group mb-5">
@@ -203,7 +203,7 @@ sqlsrv_close($conn);
                     <div class="col-lg-6 d-flex">
                         <div class="card flex-fill" id="cardNilai">
                             <div class="card-body d-flex flex-column justify-content-center">
-                                <h3 class="card-title text-dark text-center">Nilai Mahasiswa:</h3>
+                                <h3 class="card-title text-dark text-center">Nilai Mahasiswa</h3>
                                 <div class="d-flex justify-content-center align-items-center flex-grow-1">
                                     <!-- PERBAIKAN: Menggunakan variabel $nilaiHuruf yang sudah dihitung -->
                                     <input type="text" class="form-control text-dark" id="nilaiMahasiswa" value="<?= htmlspecialchars($nilaiHuruf) ?>" readonly />
@@ -217,7 +217,7 @@ sqlsrv_close($conn);
                     <div class="col-12">
                         <div class="card" id="cardcatatan">
                             <div class="card-body">
-                                <h3 class="card-title text-dark" >Catatan dari Dosen Penguji:</h3>
+                                <h3 class="card-title text-dark" >Catatan</h3>
                                 <!-- PERBAIKAN: Menggunakan $catatanText dan membiarkan HTML (seperti <br>) dirender -->
                                 <div class="text-dark" id="catatan-content">
                                     <?= $catatanText ?>
