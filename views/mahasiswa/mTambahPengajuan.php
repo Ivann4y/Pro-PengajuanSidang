@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
         $aksi = $_POST['aksi'];
-        $status_ajuan = ($aksi == 'Kirim') ? 'pending' : 'draft'; // Karena aksi 'Kirim' berarti mengajukan, sedangkan 'Simpan' hanya menyimpan sebagai draf 
+        $status_ajuan = ($aksi == 'Kirim') ? 'pending' : 'Draft'; // Karena aksi 'Kirim' berarti mengajukan, sedangkan 'Simpan' hanya menyimpan sebagai draf 
 
         if (empty($judul)) {
             throw new Exception("Judul tidak boleh kosong.");
