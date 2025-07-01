@@ -170,6 +170,7 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
 $sql_revisi = "SELECT dok_revisi FROM Detail_Sidang WHERE id_sidang = ?";
 $stmt_revisi = sqlsrv_query($conn, $sql_revisi, [$id_sidang]);
 $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
+$namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ada revisi
 
 ?>
 <!DOCTYPE html>
@@ -293,9 +294,9 @@ $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
             <h5>Dokumen Revisi</h5>
             <div class="file-buttons-container d-flex flex-wrap">
                 <?php if (!empty($data_revisi['dok_revisi'])): ?>
-                    <a href="../../uploadtesting/<?= htmlspecialchars($data_revisi['dok_revisi']) ?>" class="file-button" download>
+                    <a href="../../uploadtesting/<?= $namaFileRevisi ?>" class="file-button" download>
                         <i class="fa-solid fa-file-zipper"></i>
-                        <?= htmlspecialchars(basename($data_revisi['dok_revisi'])) ?>
+                        <?= htmlspecialchars(basename($namaFileRevisi)) ?>
                     </a>
                 <?php else: ?>
                     <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>
