@@ -449,3 +449,49 @@ tr.jadiBiru:hover .detail-btn i {
 .autocomplete-item.selected .nama {
   color: inherit;
 }
+
+/* Error message styling */
+.error-message {
+  color: #dc3545;
+  font-size: 0.95em;
+  margin-top: 4px;
+  margin-bottom: 0;
+  padding-left: 2px;
+  font-weight: 500;
+  display: block;
+}
+
+/* Highlight invalid input */
+.is-invalid {
+  border-color: #dc3545 !important;
+  background-color: #fff0f3;
+}
+
+/* Card-like grouping for form sections */
+.form-section-card {
+  background: #fff;
+  border: 1px solid #e3e6f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem 1.2rem;
+}
+.form-section-card .form-section-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #4b68fb;
+}
+
+/* Add spacing between form groups */
+.kelompok-form-group,
+.anggota-form-group {
+  margin-bottom: 1.2rem;
+}
+
+/* Responsive tweaks for modal */
+@media (max-width: 600px) {
+  .form-section-card {
+    padding: 1rem 0.5rem;
+  }
+}

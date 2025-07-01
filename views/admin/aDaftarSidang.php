@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
 $path_to_root = '../../';
 
 // 1. Cek jika pengguna BELUM login.
@@ -25,7 +24,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 require "../../koneksi/koneksiAndrew.php";
 
-// --- PERSIAPAN AWAL (Tidak berubah) ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all';
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
@@ -65,7 +63,7 @@ if ($prodiFilter !== 'all') {
 }
 
 // Query untuk menghitung total data
-$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s {$prodiJoin}";
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang {$prodiJoin}";
 if (!empty($whereClause)) {
     // Buat klausa WHERE untuk count query
     $countWhereClause = $whereClause;
@@ -117,6 +115,7 @@ $query = "SELECT DISTINCT
         END AS nama_dosen_terkait
     
     FROM Sidang s
+    JOIN Jadwal j ON s.id_sidang = j.id_sidang
     {$prodiJoin}
 ";
 

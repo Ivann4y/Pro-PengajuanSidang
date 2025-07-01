@@ -5,6 +5,9 @@
   margin-bottom: 0.5rem;
   margin-left: 10px;
 }
+#body{
+  min-height:10vh;
+}
 
 /* Menghilangkan navigasi tab mahasiswa jika ada */
 .nav-tabs {

@@ -74,10 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && 
 $rowsPerPage = 10;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $rowsPerPage;
-
 // Filter settings
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $filterClause = '';
+
 if ($filter === 'TA') {
     // 0 adalah untuk Tugas Akhir
     $filterClause = " AND s.jenis_sidang = 0";
@@ -90,59 +90,63 @@ $countQuery = "
     SELECT COUNT(s.id_sidang) as total
     FROM dbo.Sidang s
     WHERE
-        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-        AND s.status_ajuan = 0x00 -- Hanya DRAF
-        $filterClause
+        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
+        AND s.status_ajuan IS NULL -- Hanya DRAF
+        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
 ";
 $params_count = [$nim_mahasiswa_logged_in];
 $countResult = sqlsrv_query($conn, $countQuery, $params_count);
 $totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRows / $rowsPerPage);
 
-$query = "
-    SELECT
-        s.id_sidang,
-        s.judul,
-        s.jenis_sidang,
-        ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
-        ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
-    FROM
-        dbo.Sidang AS s
-    LEFT JOIN 
-        dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
-    LEFT JOIN 
-        dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
-    LEFT JOIN 
-        dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
-    WHERE
-        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-        AND s.status_ajuan = 0x00 -- Filter for DRAFTS only
-        $filterClause
-    ORDER BY
-        s.id_sidang DESC
-    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-";
-$params_main = [$nim_mahasiswa_logged_in, $offset, $rowsPerPage];
-$result = sqlsrv_query($conn, $query, $params_main);
-if ($result === false) {
-    die(print_r(sqlsrv_errors(), true));
-}
-
-$dataSidang = [];
-while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-    // Logika untuk menampilkan nama matkul yang benar berdasarkan jenis sidang
-    if ($row['jenis_sidang'] == 0) {
-        $nama_matkul_display = 'Tugas Akhir';
-    } else {
-        $nama_matkul_display = $row['nama_matkul'];
+if ($totalRows == 0) {
+    $dataSidang = [];
+} else {
+    $query = "
+        SELECT
+            s.id_sidang,
+            s.judul,
+            s.jenis_sidang,
+            ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
+            ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
+        FROM
+            dbo.Sidang AS s
+        LEFT JOIN 
+            dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
+        LEFT JOIN 
+            dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
+        LEFT JOIN 
+            dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
+        WHERE
+            s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
+            AND s.status_ajuan IS NULL
+            $filterClause
+        ORDER BY
+            s.id_sidang DESC
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    ";
+    $params_main = [$offset, $rowsPerPage];
+    $result = sqlsrv_query($conn, $query, $params_main);
+    if ($result === false) {
+        die(print_r(sqlsrv_errors(), true));
     }
 
-    $dataSidang[] = [
-        "id_sidang" => $row['id_sidang'],
-        "judul" => $row['judul'],
-        "matkul" => $nama_matkul_display, // Gunakan variabel yang sudah diproses
-        "dosen" => $row['nama_dosen'] ?? 'N/A'
-    ];
+    $dataSidang = [];
+    while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+        // Logika untuk menampilkan nama matkul yang benar berdasarkan jenis sidang
+        if ($row['jenis_sidang'] == 0) {
+            $nama_matkul_display = 'Tugas Akhir';
+        } else {
+            $nama_matkul_display = $row['nama_matkul'];
+        }
+
+        $dataSidang[] = [
+            "id_sidang" => $row['id_sidang'],
+            "judul" => $row['judul'],
+            "matkul" => $nama_matkul_display, // Gunakan variabel yang sudah diproses
+            "dosen" => $row['nama_dosen'] ?? 'N/A'
+        ];
+    }
 }
 ?>
 
@@ -266,22 +270,26 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
                                             <td><?php echo htmlspecialchars($sidang['matkul']); ?></td>
                                             <td><?php echo htmlspecialchars($sidang['dosen']); ?></td>
                                             <td class="text-center">
-                                                <form method="post" style="display:inline;">
+                                            <!-- The form now wraps the container for proper submission -->
+                                            <form method="post" class="d-inline-block">
+                                                <!-- Hidden inputs stay inside the form -->
                                                 <input type="hidden" name="id_sidang" value="<?php echo $sidang['id_sidang']; ?>">
-                                                <!-- This input will be used by our JavaScript for the delete action -->
-                                                <input type="hidden" name="delete_sidang" value=""> 
+                                                <input type="hidden" name="delete_sidang" value="">
 
-                                                <!-- EDIT BUTTON: type="submit" and formaction tells it where to go -->
-                                                <button type="submit" formaction="mEditPengajuan.php" class="btn btn-link p-0 m-0" title="Edit Pengajuan">
-                                                    <i class="fa-solid fa-file-signature"></i>
-                                                </button>
+                                                <!-- Flex container for the buttons -->
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <!-- EDIT BUTTON -->
+                                                    <button type="submit" formaction="mEditPengajuan.php" class="btn btn-link p-0" title="Edit Pengajuan">
+                                                        <i class="fa-solid fa-file-signature fs-5"></i>
+                                                    </button>
 
-                                                <!-- DELETE BUTTON: type="button" to let JavaScript handle it -->
-                                                <button type="button" class="btn btn-link p-0 m-0 delete-btn" title="Hapus Pengajuan">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
+                                                    <!-- DELETE BUTTON - with a margin-start class (ms-3) for spacing -->
+                                                    <button type="button" class="btn btn-link p-0 ms-3 delete-btn" title="Hapus Pengajuan">
+                                                        <i class="fa-solid fa-trash fs-5"></i>
+                                                    </button>
+                                                </div>
                                             </form>
-                                            </td>
+                                        </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
