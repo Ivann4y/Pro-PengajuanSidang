@@ -42,17 +42,15 @@ include "../../koneksi/koneksiAndrew.php";
                 <i class="bi bi-list open"></i>
                 <i class="bi bi-x-lg close"></i>
             </div>
-            <div class="header-icons">
-                <a href="dNotifikasi" title="Profil"><i class="bi bi-bell-fill"></i>
-                <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
+            <div class="header-icons"><a href="dNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;"><i class="bi bi-bell-fill"></i></a>
+                <div class="profile-icon"><a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;"><i class="bi bi-person-fill fs-5"></i></a></div>
             </div>
         </div>
 
         <div class="NavSide__main-content" id="mainContent">
             <div class="dashboard-header">
                 <div class="page-title">Beranda Dosen</div>
-                <div class="header-icons d-none d-lg-flex">
-                    <i class="bi bi-bell-fill"></i>
+                <div class="header-icons d-none d-md-flex"><a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
                 </div>
             </div>
