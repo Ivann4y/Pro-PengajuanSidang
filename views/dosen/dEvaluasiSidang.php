@@ -219,8 +219,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
      <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
 
 
-    <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
-   
+
 
 </head>
 
