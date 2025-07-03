@@ -8,13 +8,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     exit();
 }
 
-// // 2. [FIX] Menggunakan struktur session yang benar dan lebih aman
+// 2. Menggunakan struktur session yang benar dan lebih aman
 if (!isset($_SESSION['user_data']) || !isset($_SESSION['user_data']['nomor_dosen'])) {
     header("Location: ../../logout.php");
     exit();
 }
 $nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
-// $nomor_dosen_login = "1003";
 
 // --- KONEKSI DAN LOGIKA LAINNYA ---
 include "../../koneksi/koneksiAndrew.php";
@@ -30,30 +29,56 @@ $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// Query ini tidak perlu diubah.
+// [PERUBAHAN 1: LOGIKA PENGAMBILAN DATA]
+// Query dasar diubah untuk secara akurat menentukan judul dan nama penanggung jawab.
 $baseQuery = "
     WITH FullSidangData AS (
         SELECT
-            s.id_sidang, s.id_kelompok, s.jenis_sidang,
+            s.id_sidang,
+            s.id_kelompok,
+            s.jenis_sidang,
+            -- Menentukan Judul/Nama Mata Kuliah
             CASE 
-                WHEN s.jenis_sidang = 0x00 THEN s.judul
-                ELSE (SELECT TOP 1 mk.nama_matkul FROM [dbo].[Detail_Sidang] ds JOIN [dbo].[MataKuliah] mk ON ds.id_matkul = mk.id_matkul WHERE ds.id_sidang = s.id_sidang)
+                WHEN s.jenis_sidang = 0x00 THEN s.judul -- Jika Sidang TA, tampilkan judul
+                ELSE (SELECT TOP 1 mk.nama_matkul FROM [dbo].[Detail_Sidang] ds JOIN [dbo].[MataKuliah] mk ON ds.id_matkul = mk.id_matkul WHERE ds.id_sidang = s.id_sidang) -- Jika Sidang Semester, tampilkan nama matkul
             END AS display_title,
-            (SELECT TOP 1 d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = s.id_kelompok AND d.isPembimbing = 0x01) AS pembimbing
+            -- Menentukan Penanggung Jawab (Pembimbing/Pengampu)
+            CASE 
+                WHEN s.jenis_sidang = 0x00 THEN -- Untuk Sidang TA, cari Dosen Pembimbing
+                    (SELECT TOP 1 d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = s.id_kelompok)
+                ELSE -- Untuk Sidang Semester, cari Dosen Pengampu Mata Kuliah
+                    (SELECT TOP 1 d.nama_dosen FROM [dbo].[Detail_Sidang] ds JOIN [dbo].[Pengampu_Kelas] pk ON ds.id_matkul = pk.id_matkul JOIN [dbo].[Dosen] d ON pk.nomor_dosen = d.nomor_dosen WHERE ds.id_sidang = s.id_sidang)
+            END AS nama_penanggung_jawab
         FROM [dbo].[Sidang] s
     )
 ";
 
-// --- [PERUBAHAN UTAMA] KLAUSA WHERE DINAMIS DISIMPLIFIKASI ---
+// --- [PERUBAHAN 2: LOGIKA PENYARINGAN] ---
 $whereConditions = [];
 $params = [];
 
-// [DIUBAH] Kondisi sekarang HANYA memeriksa jika dosen yang login adalah pembimbing.
-// Tidak ada lagi 'OR EXISTS' untuk penguji.
-$whereConditions[] = "EXISTS (SELECT 1 FROM [dbo].[Bimbingan] b WHERE b.id_kelompok = FullSidangData.id_kelompok AND b.nomor_dosen = ?)";
-array_push($params, $nomor_dosen_login);
+// Kondisi utama: Tampilkan sidang hanya jika dosen yang login adalah penanggung jawab.
+$mainFilterCondition = "
+(
+    -- Kondisi 1: Dosen adalah pembimbing untuk Sidang TA (jenis_sidang = 0x00)
+    (FullSidangData.jenis_sidang = 0x00 AND EXISTS (
+        SELECT 1 FROM [dbo].[Bimbingan] b 
+        WHERE b.id_kelompok = FullSidangData.id_kelompok AND b.nomor_dosen = ?
+    ))
+    OR
+    -- Kondisi 2: Dosen adalah pengampu mata kuliah untuk Sidang Semester (jenis_sidang = 0x01)
+    (FullSidangData.jenis_sidang = 0x01 AND EXISTS (
+        SELECT 1 FROM [dbo].[Detail_Sidang] ds 
+        JOIN [dbo].[Pengampu_Kelas] pk ON ds.id_matkul = pk.id_matkul 
+        WHERE ds.id_sidang = FullSidangData.id_sidang AND pk.nomor_dosen = ?
+    ))
+)";
+$whereConditions[] = $mainFilterCondition;
+// Tambahkan nomor dosen login untuk kedua kondisi di atas
+array_push($params, $nomor_dosen_login, $nomor_dosen_login);
 
-// Filter jenis sidang tetap sama
+
+// Filter jenis sidang (TA atau Semester) tetap sama
 if ($filter === 'ta') {
     $whereConditions[] = "jenis_sidang = ?";
     array_push($params, 0x00);
@@ -62,13 +87,14 @@ if ($filter === 'ta') {
     array_push($params, 0x01);
 }
 
-// Filter pencarian tetap sama
+// Filter pencarian tetap sama, namun sekarang mencari di 'nama_penanggung_jawab'
 if (!empty($search)) {
-    $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR display_title LIKE ? OR pembimbing LIKE ?)";
+    $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR display_title LIKE ? OR nama_penanggung_jawab LIKE ?)";
     $likeParam = "%" . $search . "%";
     array_push($params, $likeParam, $likeParam, $likeParam);
 }
 
+// Gabungkan semua kondisi WHERE
 $whereClause = " WHERE " . implode(' AND ', $whereConditions);
 
 // --- QUERY PENGHITUNGAN TOTAL DATA ---
@@ -86,7 +112,7 @@ if ($currentPage > $totalPages) {
 }
 
 // --- QUERY UTAMA UNTUK MENGAMBIL DATA ---
-$mainQuery = $baseQuery . "SELECT id_sidang, id_kelompok, display_title, pembimbing FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+$mainQuery = $baseQuery . "SELECT id_sidang, id_kelompok, display_title, nama_penanggung_jawab FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 $mainParams = array_merge($params, [$offset, $rowsPerPage]);
 $result = sqlsrv_query($conn, $mainQuery, $mainParams);
 if ($result === false) {
@@ -94,12 +120,28 @@ if ($result === false) {
 }
 
 $nomor = $offset + 1;
+
+// Logika untuk label header tabel tetap sama
+$headerLabel = 'Pembimbing/Pengampu';
+if ($filter === 'ta') {
+    $headerLabel = 'Pembimbing';
+} elseif ($filter === 'semester') {
+    $headerLabel = 'Pengampu';
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-<!-- Sisa kode HTML tidak perlu diubah sama sekali -->
+<!-- ... Sisa kode HTML Anda ... -->
+<!-- Jangan lupa ubah bagian ini di dalam <tbody> -->
+<!-- 
+    Ganti:
+    <td><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
+    Menjadi:
+    <td><?= htmlspecialchars($row['nama_penanggung_jawab'] ?? 'Belum Ditentukan') ?></td>
+-->
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -154,7 +196,6 @@ $nomor = $offset + 1;
                                 <li><a class="dropdown-item" href="?filter=semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
                             </ul>
                         </div>
-                        <!-- [PERUBAHAN] Form pencarian disesuaikan -->
                         <form method="GET" action="" class="search-form ms-auto">
                             <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
                             <div class="search-input-wrapper">
@@ -173,7 +214,8 @@ $nomor = $offset + 1;
                                     <th scope="col">No</th>
                                     <th scope="col">Kelompok</th>
                                     <th scope="col">Judul/Mata Kuliah</th>
-                                    <th scope="col">Pembimbing</th>
+                                    <!-- [PERUBAHAN] Teks di sini diubah untuk menggunakan variabel dinamis -->
+                                    <th scope="col"><?= htmlspecialchars($headerLabel) ?></th>
                                     <th scope="col" style="text-align: center;">Aksi</th>
                                 </tr>
                             </thead>
@@ -184,8 +226,8 @@ $nomor = $offset + 1;
                                             <td data-label="No"><?= $nomor++ ?></td>
                                             <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok'] ?? '-') ?></td>
                                             <td data-label="Judul/Mata Kuliah"><?= htmlspecialchars($row['display_title'] ?? 'N/A') ?></td>
-                                            <td data-label="Pembimbing"><?= htmlspecialchars($row['pembimbing'] ?? 'Belum Ditentukan') ?></td>
-                                            <td data-label="Aksi" style="text-align: center;">
+                                            <!-- [PERUBAHAN] Atribut data-label diubah untuk menggunakan variabel dinamis -->
+                                            <td data-label="<?= htmlspecialchars($headerLabel) ?>"><?= htmlspecialchars($row['nama_penanggung_jawab'] ?? 'Belum Ditentukan') ?></td>                                            <td data-label="Aksi" style="text-align: center;">
                                                 <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn" title="Evaluasi Sidang">
                                                     <i class="fa-solid fa-file-signature"></i>
                                                 </a>
