@@ -19,7 +19,6 @@ $nim = $_SESSION['user_data']['nim'];
 require "../../koneksi/koneksiAndrew.php";
 
 // === 1. Ambil ID Sidang yang diikuti mahasiswa ===
-// PERBAIKAN: Menggunakan Penilaian untuk memastikan mahasiswa punya nilai.
 $sqlGetSidang = "SELECT TOP 1 id_sidang FROM Penilaian WHERE nim = ?";
 $stmtGetSidang = sqlsrv_query($conn, $sqlGetSidang, [$nim]);
 
@@ -33,8 +32,6 @@ $id_sidang = $row['id_sidang'];
 
 
 // === 2. Hitung Nilai Akhir MAHASISWA (Weighted Average) ===
-// PERBAIKAN: Logika ini sekarang benar-benar menghitung nilai akhir mahasiswa yang sedang login
-// dengan memperhitungkan bobot dari setiap dosen penilai.
 $sqlNilai = "
     WITH NilaiPerDosen AS (
         SELECT
@@ -66,7 +63,6 @@ if ($stmtNilai && ($rowNilai = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC
 }
 
 // === 3. Ambil Data Mahasiswa + Judul Sidang + Pembimbing ===
-// PERBAIKAN: Query yang lebih sederhana dan fokus untuk mendapatkan data yang relevan.
 $sqlDataSidang = "
     SELECT 
         m.nama_mhs, 
@@ -94,7 +90,6 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
 
 
 // === 4. Ambil Catatan Sidang yang Relevan untuk Mahasiswa ===
-// PERBAIKAN: Menambahkan 'AND p.nim = ?' untuk memastikan hanya catatan untuk mahasiswa ini yang diambil.
 $sqlCatatan = "
     SELECT d.nama_dosen, p.catatan_sidang
     FROM Penilaian p
@@ -115,6 +110,9 @@ $catatanText = !empty($catatanList) ? implode("<br><br>", $catatanList) : "Tidak
 
 sqlsrv_close($conn);
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,7 +120,6 @@ sqlsrv_close($conn);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
     <!-- === STYLESHEETS & FONTS === -->
-    <!-- Bootstrap & Icons (These paths from CDN are fi ne) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -217,7 +214,7 @@ sqlsrv_close($conn);
                     <div class="col-12">
                         <div class="card" id="cardcatatan">
                             <div class="card-body">
-                                <h3 class="card-title text-dark" >Catatan</h3>
+                                <h3 class="card-title text-dark" >Catatan Evaluasi</h3>
                                 <!-- PERBAIKAN: Menggunakan $catatanText dan membiarkan HTML (seperti <br>) dirender -->
                                 <div class="text-dark" id="catatan-content">
                                     <?= $catatanText ?>

@@ -9,6 +9,20 @@ require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 // ===================================================================================
 // BAGIAN 1: PENGAMBILAN ID SIDANG (VERSI BARU YANG LEBIH BAIK)
 // ===================================================================================
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    header("Location: dEvaluasiSidang.php");
+}
+
+
+
+
+
+// Simulasi Dosen yang Login (nantinya ganti dengan session asli)
+
+
+if (!isset($_SESSION['id_sidang_aktif'])) {
+    die("ID sidang tidak tersedia.");
 // Ambil ID Sidang langsung dari GET. Jauh lebih sederhana dan tidak merusak parameter lain.
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     // Jika tidak ada ID, kita tidak bisa melanjutkan.
@@ -48,14 +62,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 1. UPDATE CATATAN REVISI DI TABEL Detail_Sidang
     $sql_update_catatan = "UPDATE Detail_Sidang SET catatan_sidang = ? WHERE id_sidang = ? AND nomor_dosen = ?";
-    $stmt_update_catatan = sqlsrv_query($conn, $sql_update_catatan, [$catatan_post, $id_sidang, $nomor_dosen_login]);
-
+    $params_update_catatan = [$catatan_post, $id_sidang, $nomor_dosen_login];
+    $stmt_update_catatan = sqlsrv_query($conn, $sql_update_catatan, $params_update_catatan);
+    $error_message = '';
     if ($stmt_update_catatan === false) {
         $_SESSION['error'] = "Gagal memperbarui catatan revisi: " . print_r(sqlsrv_errors(), true);
-        // Redirect kembali ke tab mahasiswa yang sama
-        header("Location: dEvaluasiSidang.php?id=$id_sidang&nim=$nim_mahasiswa");
-        exit; // PENTING
+        header("Location: dDaftarSidang.php?id=$id_sidang");
+        exit;
     }
+
+
 
     // 2. CEK & SIMPAN NILAI (UPSERT) PER MAHASISWA
     $sql_cek_nilai = "SELECT COUNT(*) as 'count' FROM Penilaian WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
@@ -192,10 +208,12 @@ if (!empty($current_nim)) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-     <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
+    <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
 
 
     <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
+
+
 </head>
 <body>
 
@@ -305,44 +323,86 @@ if (!empty($current_nim)) {
                             </div>
                         </div>
                     </div>
-                    
+
                     <h3>Nilai Sidang (Sementara)</h3>
                     <div class="form-card">
-                        <h4 class="mb-3">Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4>Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
+                        </div>
+
+                        <!-- Wadah untuk tampilan desktop (horizontal) -->
                         <div class="penilaian-container">
                             <div class="penilaian-item">
                                 <label for="nilaiLaporan">Nilai Laporan :</label>
-                                <input type="number" class="form-control-custom text-center" name="nilaiLaporan" min="0" max="100" value="<?= htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? '') ?>" required>
+                                <input type="text" class="form-control-custom text-center input-nilai" name="nilaiLaporan" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? '') ?>">
                             </div>
                             <div class="penilaian-item">
                                 <label for="materiPresentasi">Materi Presentasi :</label>
-                                <input type="number" class="form-control-custom text-center" name="materiPresentasi" min="0" max="100" value="<?= htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? '') ?>" required>
+                                <input type="text" class="form-control-custom text-center input-nilai" name="materiPresentasi" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? '') ?>">
                             </div>
                             <div class="penilaian-item">
                                 <label for="nilaiPenyampaian">Penyampaian :</label>
-                                <input type="number" class="form-control-custom text-center" name="nilaiPenyampaian" min="0" max="100" value="<?= htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? '') ?>" required>
+                                <input type="text" class="form-control-custom text-center input-nilai" name="nilaiPenyampaian" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? '') ?>">
                             </div>
                             <div class="penilaian-item">
                                 <label for="nilaiProyek">Nilai Proyek :</label>
-                                <input type="number" class="form-control-custom text-center" name="nilaiProyek" min="0" max="100" value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>" required>
+                                <input type="text" class="form-control-custom text-center input-nilai" name="nilaiProyek" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>">
                             </div>
                         </div>
-                        <!-- Layout vertikal untuk mobile tetap bisa digunakan jika CSS Anda sudah mengaturnya -->
+
+                        <!-- Wadah BARU untuk tampilan tablet/mobile (vertikal) -->
+                        <div class="penilaian-grid-vertical">
+                            <label for="nilaiLaporan_v">Nilai Laporan</label> <span>:</span>
+                            <input type="text" class="form-control-custom text-center input-nilai" name="nilaiLaporan_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? '') ?>">
+
+                            <label for="materiPresentasi_v">Materi Presentasi</label> <span>:</span>
+                            <input type="text" class="form-control-custom text-center input-nilai" name="materiPresentasi_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? '') ?>">
+
+                            <label for="nilaiPenyampaian_v">Penyampaian</label> <span>:</span>
+                            <input type="text" class="form-control-custom text-center input-nilai" name="nilaiPenyampaian_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? '') ?>">
+
+                            <label for="nilaiProyek_v">Nilai Proyek</label> <span>:</span>
+                            <input type="text" class="form-control-custom text-center input-nilai" name="nilaiProyek_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>">
+                        </div>
+
+                        <p class="error-message" id="nilaiSidangErrorMessage"> *Semua nilai harus diisi!</p>
                     </div>
+
+
+
+
+
+
+                    <?php if (!empty($_SESSION['error'])): ?>
+                        <div style="color: red; font-weight: bold;">
+                            <?= htmlspecialchars($_SESSION['error']) ?>
+                        </div>
+                        <?php unset($_SESSION['error']); ?>
+                    <?php endif; ?>
+
 
                     <h3>Catatan Evaluasi Sidang</h3>
                     <div class="form-card">
-                        <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
-                        <p class="text-muted small">Catatan ini berlaku untuk seluruh anggota kelompok.</p>
-                        <div class="form-group-custom mt-2">
-                            <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.." required><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
                         </div>
+                        <div class="form-group-custom">
+                            <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
+
+                            <!-- TAMBAHKAN LOGIKA 'readonly' DI SINI -->
+                            <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.." <?= $nilai_sudah_dikirim_dan_lengkap ? 'readonly' : '' ?>><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
+                        </div>
+                        <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                     </div>
 
-                    <div class="button-group-bottom">
-                        <!-- Tombol ini sekarang menjadi tombol submit form -->
-                        <button style="margin-left:auto;" type="submit" class="btn-kirim">Simpan Nilai Sementara</button>
-                    </div>
+                    <?php
+                    // GUNAKAN BLOK 'if' UNTUK MENAMPILKAN TOMBOL SECARA KONDISIONAL
+                    if (!$nilai_sudah_dikirim_dan_lengkap): ?>
+                        <div class="button-group-bottom">
+                            <button style="margin-left:auto;" type="button" class="btn-kirim" id="btnKirim">Kirim</button>
+                        </div>
+                    <?php endif; ?>
+
                 </form>
             </main>
         </div>
@@ -350,7 +410,8 @@ if (!empty($current_nim)) {
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Ganti dengan path JS Anda jika ada -->
-    <!-- <script src="../../assets/js/dEvaluasiSidang.js"></script> --> 
+    <script src="../../assets/js/dEvaluasiSidang.js"></script>
+
+
 </body>
 </html>

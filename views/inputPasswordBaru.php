@@ -11,12 +11,18 @@ $role = ''; // Akan diisi dari tabel password_resets jika token valid
 // Validasi token di database
 $reset = null;
 if ($token) {
-  $stmt = sqlsrv_query($conn, "SELECT * FROM password_resets WHERE token=? AND used=0", [$token]);
-    $reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    // Gunakan prepared statement yang benar untuk sqlsrv
+    $sql = "SELECT * FROM password_resets WHERE token = ? AND used = 0";
+    $params = [$token];
+    $stmt = sqlsrv_query($conn, $sql, $params);
+    if ($stmt) {
+        $reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    }
+}
 
 // Logika untuk menentukan tanggal kadaluarsa token 
 if ($reset) {
-     $role = $reset['role']; // role dari database, BUKAN dari GET/POST
+    $role = $reset['role']; // role dari database, BUKAN dari GET/POST
 
     // Mapping table dan kolom berdasarkan role
     switch ($role) {
@@ -37,30 +43,29 @@ if ($reset) {
             $reset = null;
     }
 
-    date_default_timezone_set('Asia/Jakarta');
-    $now = date('Y-m-d H:i:s');
-    $expires_at = $reset['expires_at'];
-    if ($expires_at instanceof DateTime) {
-        $expires_at = $expires_at->format('Y-m-d H:i:s');
+    if ($reset) { // Cek lagi setelah switch-case
+        date_default_timezone_set('Asia/Jakarta');
+        $now = new DateTime();
+        $expires_at = $reset['expires_at'];
+
+        // Pastikan expires_at adalah objek DateTime untuk perbandingan
+        if (!$expires_at instanceof DateTime) {
+            $expires_at = new DateTime($expires_at);
+        }
+
+        if ($expires_at > $now) {
+            $role = $reset['role'];
+        } else {
+            $reset = null;
+        }
     }
-    // Bandingkan sebagai string
-    if ($expires_at > $now) {
-        $role = $reset['role'];
-    } else {
-        $reset = null;
-    }
-}
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
     $newPassword = $_POST['newPassword'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';
-    
-    // $tableNama = $_POST['tableNama'] ?? $_GET['tableNama'] ?? '';
-    // $emailKolom = $_POST['emailKolom'] ?? $_GET['emailKolom'] ?? 'email';
-   
 
-    // Validasi jika password kosong
+    // Validasi
     if (empty($newPassword) || empty($confirmPassword)) {
         header("Location: inputPasswordBaru.php?token=$token&error=empty");
         exit;
@@ -73,23 +78,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
     } else {
         // Hash password baru dan update ke database
         $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-        sqlsrv_query($conn, "UPDATE [dbo].[$tableNama] SET password_hash=? WHERE [$emailKolom]=? AND role=?", [$hash, $reset['email'], $reset['role']]);
-        sqlsrv_query($conn, "UPDATE password_resets SET used=1 WHERE token=?", [$token]);
-         // Hapus semua reset password yang sudah digunakan atau kadaluarsa
-       sqlsrv_query($conn, "DELETE FROM password_resets WHERE (used=1 OR expires_at < GETDATE()) AND email=?", [$reset['email']]);
+        $updateUserSql = "UPDATE dbo.[$tableNama] SET password_hash = ? WHERE $emailKolom = ?";
+        sqlsrv_query($conn, $updateUserSql, [$hash, $reset['email']]);
+
+        // Tandai token sebagai sudah digunakan
+        $updateTokenSql = "UPDATE password_resets SET used = 1 WHERE token = ?";
+        sqlsrv_query($conn, $updateTokenSql, [$token]);
+
+        // Hapus semua token yang sudah tidak berlaku untuk email ini
+        $deleteOldTokensSql = "DELETE FROM password_resets WHERE (used = 1 OR expires_at < GETDATE()) AND email = ?";
+        sqlsrv_query($conn, $deleteOldTokensSql, [$reset['email']]);
+
         $success = "Kata sandi berhasil diubah!";
-     
-       
     }
 }
-
-// ...HTML... Jika token tidak valid atau sudah kadaluarsa, tampilkan pesan error
-// if (!$reset) {
-//     echo ' <div class="token-alert">
-//         <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
-//         Token tidak valid atau sudah kadaluarsa.
-//     </div>';
-// }
 
 // Cek pesan sukses/error
 if (isset($_GET['success'])) {
@@ -304,6 +306,20 @@ switch ($role) {
             font-size: 1.5rem;
             color: #b71c1c;
         }
+        
+        /* */
+        .password-wrap {
+            position: relative;
+        }
+        .password-wrap .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+        }
+        /* */
 
         /* RESPONSIVE DESIGN */
 @media (max-width: 991.98px) {
@@ -379,8 +395,6 @@ switch ($role) {
         align-items: stretch;
     }
 }
-
-        
     </style>
 </head>
 
@@ -433,74 +447,63 @@ switch ($role) {
                             </div>
                         <?php endif; ?>
                     </div>
-                  
+                
                     <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
 
                     <div class="mb-3">
-                        <label for="">Masukkan Kata Sandi Baru</label>
-                        <input type="password"
-                            class="form-control form-control-lg <?= in_array($errorType, ['empty', 'short']) ? 'border border-danger' : 'border border-dark' ?>"
-                            name="newPassword">
+                        <label for="newPassword">Masukkan Kata Sandi Baru</label>
+                        <div class="password-wrap">
+                            <input type="password"
+                                id="newPassword"
+                                class="form-control form-control-lg <?= in_array($errorType, ['empty', 'short']) ? 'border border-danger' : 'border border-dark' ?>"
+                                name="newPassword">
+                            <i class="bi bi-eye-slash-fill toggle-password" id="toggleNewPassword"></i>
+                        </div>
                         <?php if ($errorType === 'empty'): ?>
                             <div class="text-danger">Kata sandi tidak boleh kosong.</div>
                         <?php elseif ($errorType === 'short'): ?>
                             <div class="text-danger">Kata sandi minimal 8 karakter.</div>
                         <?php endif; ?>
                     </div>
-
                     <div class="mb-3">
-                        <label for="">Konfirmasi Kata Sandi Baru</label>
-                        <input type="password"
-                            class="form-control form-control-lg <?= in_array($errorType, ['empty', 'mismatch']) ? 'border border-danger' : 'border border-dark' ?>"
-                            name="confirmPassword">
+                        <label for="confirmPassword">Konfirmasi Kata Sandi Baru</label>
+                        <div class="password-wrap">
+                            <input type="password"
+                                id="confirmPassword"
+                                class="form-control form-control-lg <?= in_array($errorType, ['empty', 'mismatch']) ? 'border border-danger' : 'border border-dark' ?>"
+                                name="confirmPassword">
+                            <i class="bi bi-eye-slash-fill toggle-password" id="toggleConfirmPassword"></i>
+                        </div>
                         <?php if ($errorType === 'empty'): ?>
                             <div class="text-danger">Konfirmasi kata sandi tidak boleh kosong.</div>
                         <?php elseif ($errorType === 'mismatch'): ?>
                             <div class="text-danger">Kata sandi dan konfirmasi tidak cocok.</div>
                         <?php endif; ?>
                     </div>
-                    <div class="button-container d-flex justify-content-end gap-3 mt-4">
-                 
-                   <button type="submit" class="btn btn-setujui" id="btnKirim">
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-setujui" id="btnKirim">
                             Kirim
-                  </button>
-        
-             </div>
-                <div class="button-container d-flex justify-content-end gap-3 mt-4">
-                 <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
-                    <span class="icon-circle">
-                <i class="fa-solid fa-arrow-left"></i>
-                  </span>
-                        Kembali
-                      </button>
-                  
-        
-             </div>
+                        </button>
+                    </div>
+
+                    <div class="button-container d-flex justify-content-start gap-3 mt-4" style="padding-left:0;">
+                       <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
+                         <span class="icon-circle">
+                            <i class="fa-solid fa-arrow-left"></i>
+                         </span>
+                         Kembali
+                       </button>
+                    </div>
+                    </form>
+                <?php endif; ?>
+
+                <?php if (!$reset): ?>    
+                <div class="token-alert">
+                   <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                       Token tidak valid atau sudah kadaluarsa.
+                    </div>
+                <?php endif; ?>
             </div>
-            
-
-            <!-- <div class="button-container d-flex justify-content-between">
-              
-                <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>
-            
-            </div> -->
-
-            </form>
-            <?php endif; ?>
-
-            <!-- Jika token tidak valid atau sudah kadaluarsa -->
-            <?php if (!$reset): ?>    
-            <div class="token-alert">
-             <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
-                Token tidak valid atau sudah kadaluarsa.
-             </div>
-            <?php endif; ?>
-
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
@@ -511,11 +514,31 @@ switch ($role) {
             }, 2000);
         </script>
     <?php endif; ?>
+
     <script>
+        function setupPasswordToggle(inputId, toggleId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(toggleId);
+
+            toggleIcon.addEventListener('click', function() {
+                // Toggle the type
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle the icon
+                this.classList.toggle('bi-eye-slash-fill');
+                this.classList.toggle('bi-eye-fill');
+            });
+        }
+
+        // Terapkan fungsi ke kedua input password
+        setupPasswordToggle('newPassword', 'toggleNewPassword');
+        setupPasswordToggle('confirmPassword', 'toggleConfirmPassword');
+
         function kembaliKeLupaPassword() {
             window.location.href = `lupaPassword.php?role=<?= htmlspecialchars($role) ?>`;
         }
     </script>
-</body>
+    </body>
 
 </html>
