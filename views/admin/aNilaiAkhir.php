@@ -5,14 +5,14 @@ require "../../koneksi/koneksiAndrew.php";
 
 // ======================= STATIC DATA FOR TESTING =======================
 $id_sidang = 4001;
-$nim = '1000000001'; // Pastikan nim adalah string jika di database tipenya char/varchar
+$nim = '1000000001';
 
 // ======================= INITIALIZE VARIABLES =======================
 $dataMahasiswa = [
     'nim' => $nim,
     'nama_mhs' => 'Data tidak ditemukan',
     'nama_matkul' => 'Data tidak ditemukan',
-    'nama_pembimbing' => 'Data tidak ditemukan' // Akan diisi dengan salah satu nama penguji
+    'nama_pembimbing' => 'Data tidak ditemukan' 
 ];
 $nilaiDetail = [
     'dokumen' => '-',
@@ -26,7 +26,6 @@ $semuaCatatan = 'Tidak ada catatan.';
 
 
 // ======================= 1. GET MAHASISWA & SIDANG INFO =======================
-// untuk menghubungkan Mahasiswa dengan Detail_Sidang, karena Detail_Sidang tidak punya kolom 'nim'.
 $sqlInfo = "
     SELECT TOP 1
         m.nama_mhs,
