@@ -93,10 +93,14 @@ if (isset($_POST['approve'])) {
 // ===================================================================================
 // BAGIAN 1: INISIALISASI HALAMAN (GET REQUEST)
 // ===================================================================================
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid.");
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id_sidang = (int)$_GET['id'];
+    $_SESSION['id_sidang_aktif'] = $id_sidang;
+} elseif (isset($_SESSION['id_sidang_aktif'])) {
+    $id_sidang = (int)$_SESSION['id_sidang_aktif'];
+} else {
+    die("Error: ID sidang tidak valid atau tidak ditemukan.");
 }
-$id_sidang = (int)$_GET['id'];
 
 // Pastikan data user dan nomor_dosen ada di session
 if (!isset($_SESSION['user_data']['nomor_dosen'])) {
