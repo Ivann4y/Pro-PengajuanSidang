@@ -3,16 +3,21 @@ if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
 
+// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
 $path_to_root = '../../';
 
+// 1. Cek jika pengguna BELUM login.
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
   $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+  // Arahkan ke halaman login utama di root
   header("Location: " . $path_to_root . "index.php");
   exit();
 }
 
+// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+  // Arahkan ke halaman login utama di root
   header("Location: " . $path_to_root . "index.php");
   exit();
 }
@@ -40,7 +45,6 @@ JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
 JOIN Penjadwalan p ON ds.id_sidang = p.id_sidang AND ds.nomor_dosen = p.nomor_dosen
 WHERE ds.id_sidang = ?
 ";
-
 
 $params = [$id_sidang];
 $stmt = sqlsrv_query($conn, $sql, $params);
@@ -145,6 +149,7 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
       </div>
 
       <?php while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)): ?>
+        <?php $statusRevisi = unpack("C", $row['status_revisi'])[1]; ?>
         <?php $peranDosen = unpack("C", $row['peran_dosen'])[1]; ?>
         <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
           <h6 class="card-h">
@@ -155,7 +160,7 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
             <?= htmlspecialchars($row['catatan_sidang']) ?>
           </p>
           <div class="approved-badge">
-            <?= $row['status_revisi'] ?>
+            <?= ($statusRevisi == 0) ? 'Telah Menyetujui' : 'Belum Disetujui' ?>
           </div>
         </div>
       <?php endwhile; ?>
