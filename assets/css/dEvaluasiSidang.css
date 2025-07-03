@@ -142,7 +142,7 @@ body {
 
 .NavSide__main-content {
   flex-grow: 1;
-  padding: 20px;
+  padding: 20px 20px 20px calc(20px + 1cm) !important;
   margin-right: 50%;
   overflow-y: auto;
   transition: margin-left 0.5s ease-in-out;
@@ -324,7 +324,7 @@ body {
     /* ======================================================= */
 
     /* --- KONTEN UTAMA & KOMPONENNYA --- */
-    .NavSide__main-content { flex-grow: 1; padding: 20px 0.7cm 20px calc(20px + 0.7cm); margin-right: 0; overflow-y: auto; padding-top: 20px; }
+    .NavSide__main-content { flex-grow: 1; padding: 20px 0.7px 20px calc(20px + 0.7cm); margin-right: 0; overflow-y: auto; padding-top: 20px; }
     .NavSide__main-content h2 { margin-bottom: 0.9cm; font-weight: 700; }
     .NavSide__main-content h3 { font-weight: 700; font-size: 1.4rem; margin-bottom: 0.2cm; }
 

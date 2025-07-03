@@ -321,6 +321,8 @@ elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
               <div class="modal-body">
                   <h2>Penjadwalan Sidang TA</h2>
                   <form id="formDalamModal-ta" novalidate>
+                        <input type="hidden" name="id_sidang" id="modal_id_sidang-ta">
+                        <input type="hidden" name="tipe_sidang" value="TA">
                       <div class="form-container">
                           <div class="form-group"><label for="modal_nim-ta">Kelompok</label><input type="text" id="modal_nim-ta" readonly /></div>
                           <div class="form-group"><label for="modal_judul_sidang-ta">Judul Sidang</label><input type="text" id="modal_judul_sidang-ta" readonly /></div>
@@ -379,6 +381,8 @@ elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
               <div class="modal-body">
                   <h2>Penjadwalan Sidang Semester</h2>
                   <form id="formDalamModal-sem" novalidate>
+                        <input type="hidden" name="id_sidang" id="modal_id_sidang-sem">
+                        <input type="hidden" name="tipe_sidang" value="Semester">
                       <div class="form-container">
                           <div class="form-group"><label for="modal_nim-sem">Kelompok</label><input type="text" id="modal_nim-sem" readonly /></div>
                           <div class="form-group"><label for="modal_matkul-sem">Mata Kuliah</label><input type="text" id="modal_matkul-sem" readonly /></div>

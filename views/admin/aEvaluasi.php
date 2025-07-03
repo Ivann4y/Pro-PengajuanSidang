@@ -78,8 +78,6 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
 </head>
 
 <body>
-
-
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
@@ -159,29 +157,21 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
           <p class="mt-2 mb-0 text-truncate-2">
             <?= htmlspecialchars($row['catatan_sidang']) ?>
           </p>
-          <div class="approved-badge">
-            <?= ($statusRevisi == 0) ? 'Telah Menyetujui' : 'Belum Disetujui' ?>
-          </div>
+          <?php if ($row['status_revisi'] === 'Pending'): ?>
+            <div class="badge-statusDosen bg-warning text-dark">
+              <?= $row['status_revisi'] ?>
+            </div>
+          <?php elseif ($row['status_revisi'] === 'Disetujui'): ?>
+            <div class="badge-statusDosen bg-success text-white">
+              <?= $row['status_revisi'] ?>
+            </div>
+          <?php elseif ($row['status_revisi'] === 'Ditolak'): ?>
+            <div class="badge-statusDosen bg-danger text-white">
+              <?= $row['status_revisi'] ?>
+            </div>
+          <?php endif; ?>
         </div>
       <?php endwhile; ?>
-
-
-
-      <!-- <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-        <h6 class="card-h">Yosep Setiawan, S.Kom, M.Kom - Penguji</h6>
-        <p class="mt-2 mb-0 text-truncate-2">
-          Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
-        </p>
-        <div class="approved-badge">Telah Menyetujui</div>
-      </div>
-
-      <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-        <h6 class="card-h">Yosep Setiawan, S.Kom, M.Kom - Penguji</h6>
-        <p class="mt-2 mb-0 text-truncate-2">
-          Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
-        </p>
-        <div class="approved-badge">Telah Menyetujui</div>
-      </div> -->
 
       <?php
       // File dummy seolah-olah hasil upload
@@ -190,7 +180,7 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
       <div class="revision-card shadow-sm">
         <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
         <div class="revision-cardUp">
-          
+
           <div class="text-center mt-3">
             <a href="../../uploads/<?= rawurlencode($namaFileRevisi) ?>" download target="_blank" style="text-decoration:none">
               <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16">
@@ -203,7 +193,6 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
       </div>
 
       <br />
-      <!-- HTML kosong -->
       <div id="downloadContainer"></div>
 
       <script>

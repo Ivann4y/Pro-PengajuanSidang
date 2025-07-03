@@ -9,18 +9,11 @@ $nim_mahasiswa_logged_in = $_SESSION['nim'];
 
 $path_to_root = '../../';
 
-// 1. Cek jika pengguna BELUM login.
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+// 1. Cek jika pengguna BELUM login atau bukan mahasiswa.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || !isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php"); 
-    exit(); 
-}
-
-// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
-    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     header("Location: " . $path_to_root . "index.php");
-    exit(); 
+    exit();
 }
 
 include '../../koneksi/koneksiAndrew.php';
@@ -37,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && 
         FROM dbo.Sidang s
         WHERE s.id_sidang = ? 
           AND s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-          AND s.status_ajuan = 0x00 -- Only drafts can be deleted
+          AND s.status_ajuan = 'Draft' -- PERBAIKAN: Mencari 'Draft' dengan huruf besar
     ";
     $checkParams = [$id_sidang_to_delete, $nim_mahasiswa_logged_in];
     $checkStmt = sqlsrv_query($conn, $checkQuery, $checkParams);
@@ -46,11 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && 
     if ($can_delete) {
         sqlsrv_begin_transaction($conn);
         try {
-            // Delete from child table first
             $sql_delete_detail = "DELETE FROM dbo.Detail_Sidang WHERE id_sidang = ?";
             sqlsrv_query($conn, $sql_delete_detail, [$id_sidang_to_delete]);
 
-            // Then delete from parent table
             $sql_delete_sidang = "DELETE FROM dbo.Sidang WHERE id_sidang = ?";
             sqlsrv_query($conn, $sql_delete_sidang, [$id_sidang_to_delete]);
             
@@ -65,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && 
         $_SESSION['error_message'] = "Gagal menghapus: Anda tidak memiliki izin atau pengajuan bukan draft.";
     }
     
-    // Redirect to prevent form resubmission
     header("Location: mPengajuan.php?filter=" . urlencode($_GET['filter'] ?? 'Semua') . "&page=" . urlencode($_GET['page'] ?? 1));
     exit();
 }
@@ -74,25 +64,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && 
 $rowsPerPage = 10;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $rowsPerPage;
+
 // Filter settings
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $filterClause = '';
-
 if ($filter === 'TA') {
-    // 0 adalah untuk Tugas Akhir
     $filterClause = " AND s.jenis_sidang = 0";
 } elseif ($filter === 'Semester') {
-    // 1 adalah untuk Sidang Mata Kuliah lain
     $filterClause = " AND s.jenis_sidang = 1";
 }
 
+// PERBAIKAN: Query untuk menghitung total baris menjadi lebih aman dan mencari status 'Draft'
 $countQuery = "
     SELECT COUNT(s.id_sidang) as total
     FROM dbo.Sidang s
     WHERE
-        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
-        AND s.status_ajuan IS NULL -- Hanya DRAF
-        $filterClause -- <-- PERBAIKAN: Tambahkan klausa filter di sini
+        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
+        AND s.status_ajuan = 'Draft' -- Mencari status 'Draft'
+        $filterClause
 ";
 $params_count = [$nim_mahasiswa_logged_in];
 $countResult = sqlsrv_query($conn, $countQuery, $params_count);
@@ -102,30 +91,24 @@ $totalPages = ceil($totalRows / $rowsPerPage);
 if ($totalRows == 0) {
     $dataSidang = [];
 } else {
+    // PERBAIKAN: Query utama menjadi lebih aman dan mencari status 'Draft'
     $query = "
         SELECT
-            s.id_sidang,
-            s.judul,
-            s.jenis_sidang,
+            s.id_sidang, s.judul, s.jenis_sidang,
             ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
             ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
-        FROM
-            dbo.Sidang AS s
-        LEFT JOIN 
-            dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
-        LEFT JOIN 
-            dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
-        LEFT JOIN 
-            dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
+        FROM dbo.Sidang AS s
+        LEFT JOIN dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
+        LEFT JOIN dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
+        LEFT JOIN dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
         WHERE
-            s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = '$nim_mahasiswa_logged_in')
-            AND s.status_ajuan IS NULL
+            s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
+            AND s.status_ajuan = 'Draft' -- Mencari status 'Draft'
             $filterClause
-        ORDER BY
-            s.id_sidang DESC
+        ORDER BY s.id_sidang DESC
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ";
-    $params_main = [$offset, $rowsPerPage];
+    $params_main = [$nim_mahasiswa_logged_in, $offset, $rowsPerPage];
     $result = sqlsrv_query($conn, $query, $params_main);
     if ($result === false) {
         die(print_r(sqlsrv_errors(), true));
@@ -133,17 +116,11 @@ if ($totalRows == 0) {
 
     $dataSidang = [];
     while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-        // Logika untuk menampilkan nama matkul yang benar berdasarkan jenis sidang
-        if ($row['jenis_sidang'] == 0) {
-            $nama_matkul_display = 'Tugas Akhir';
-        } else {
-            $nama_matkul_display = $row['nama_matkul'];
-        }
-
+        $nama_matkul_display = ($row['jenis_sidang'] == 0) ? 'Tugas Akhir' : $row['nama_matkul'];
         $dataSidang[] = [
             "id_sidang" => $row['id_sidang'],
             "judul" => $row['judul'],
-            "matkul" => $nama_matkul_display, // Gunakan variabel yang sudah diproses
+            "matkul" => $nama_matkul_display,
             "dosen" => $row['nama_dosen'] ?? 'N/A'
         ];
     }

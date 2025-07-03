@@ -253,19 +253,22 @@ async function loadKelompokList() {
       const kelompokItem = document.createElement("div");
       kelompokItem.className = "kelompok-list-item";
       kelompokItem.innerHTML = `
-                <div class="kelompok-list-header">
-                    <div>
-                        <div class="kelompok-list-title">${
-                          kelompok.id_kelompok
-                        }</div>
-                        <div class="kelompok-list-prodi">${
-                          kelompok.prodi || "Tidak ada prodi"
-                        }</div>
-                    </div>
-                </div>
-                <div class="kelompok-list-anggota">
-                    <strong>Anggota:</strong><br>${anggotaList}
-                </div>`;
+        <div class="kelompok-list-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="kelompok-list-title">${kelompok.id_kelompok}</div>
+            <div class="kelompok-list-prodi">${
+              kelompok.prodi || "Tidak ada prodi"
+            }</div>
+          </div>
+          <button class="btn btn-link text-danger p-0 ms-2" title="Hapus Kelompok" onclick="deleteKelompok(${
+            kelompok.id_kelompok
+          }, this)">
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </div>
+        <div class="kelompok-list-anggota">
+          <strong>Anggota:</strong><br>${anggotaList}
+        </div>`;
       container.appendChild(kelompokItem);
     });
   } catch (error) {
@@ -530,3 +533,25 @@ function updateToggleButtonsVisibility() {
     }
   });
 }
+
+// Add deleteKelompok function globally
+window.deleteKelompok = async function (id_kelompok, btn) {
+  if (!confirm("Yakin ingin menghapus kelompok ini?")) return;
+  try {
+    const formData = new FormData();
+    formData.append("id_kelompok", id_kelompok);
+    const response = await fetch("../../control/delete_kelompok.php", {
+      method: "POST",
+      body: formData,
+    });
+    const result = await response.json();
+    if (result.success) {
+      // Remove kelompok from DOM
+      btn.closest(".kelompok-list-item").remove();
+    } else {
+      alert(result.message || "Gagal menghapus kelompok.");
+    }
+  } catch (e) {
+    alert("Terjadi kesalahan saat menghapus kelompok.");
+  }
+};
