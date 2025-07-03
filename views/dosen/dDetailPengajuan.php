@@ -366,11 +366,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     approveInput = document.createElement('input');
                     approveInput.type = 'hidden';
                     approveInput.name = 'approve';
-                    approveInput.value = '1';
+                    approveInput.value = 'Approve';
                     approveForm.appendChild(approveInput);
                 }
                 approveForm.submit();
-                window.location.href = 'dPengajuan.php'; // Redirect ke halaman pengajuan
+               // window.location.href = 'dPengajuan.php';
             }
         });
     });
@@ -395,9 +395,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#4B68FB'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    this.submit(); // submit form setelah konfirmasi
-                    window.location.href = 'dPengajuan.php'; // Redirect ke halaman pengajuan
+               if (result.isConfirmed) {
+                    let rejectInput = this.querySelector('input[name="reject"]');
+                    if (!rejectInput) {
+                        rejectInput = document.createElement('input');
+                        rejectInput.type = 'hidden';
+                        rejectInput.name = 'reject';
+                        rejectInput.value = 'Reject';
+                        this.appendChild(rejectInput);
+                    }
+                    this.submit();
                 }
             });
         }
