@@ -80,12 +80,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
             sqlsrv_free_stmt($stmt_dosen);
         }
 
-        // LANGKAH 4: Baca isi file (konten biner) ke dalam variabel dengan validasi
-        $dok_laporan_content = null;
+        // LANGKAH 4: Upload file ke folder dan simpan path + nama file
+        $dok_laporan_nama = null;
+        $dok_laporan_path = null;
         if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
             $file = $_FILES['DokumenSidang'];
             $fileSize = $file['size'];
-            $allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/zip'];
+            $allowedTypes = [
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/zip'
+            ];
             $fileType = mime_content_type($file['tmp_name']);
             if ($fileSize > 10 * 1024 * 1024) { // Batas 10MB
                 throw new Exception("Ukuran file melebihi 10MB.");
@@ -93,7 +99,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
             if (!in_array($fileType, $allowedTypes)) {
                 throw new Exception("Tipe file tidak diizinkan. Gunakan PDF, DOCX, PPTX, atau ZIP.");
             }
-            $dok_laporan_content = file_get_contents($file['tmp_name']);
+            // Nama file asli
+            $dok_laporan_nama = $file['name'];
+            // Nama file unik untuk disimpan di server
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $unique_name = 'laporan_' . uniqid() . '.' . $ext;
+            $dok_laporan_path = 'uploads/' . $unique_name;
+            $upload_path = __DIR__ . '/../../uploads/' . $unique_name;
+            if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
+                throw new Exception("Gagal menyimpan file ke server.");
+            }
         } else {
             throw new Exception("Gagal mengunggah file: " . ($_FILES['DokumenSidang']['error'] ? "Error " . $_FILES['DokumenSidang']['error'] : "Tidak ada file yang dipilih"));
         }
@@ -134,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $params_sidang = [
             $next_id_sidang,
             $judul,
-            $dok_laporan_content, // Cukup kirim variabelnya langsung
+            $dok_laporan_path, // Simpan path file
             $status_ajuan,
             $jenis_sidang_bit,
             $id_kelompok
@@ -145,9 +160,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         }
 
         // LANGKAH 7: INSERT KEDUA KE TABEL 'Detail_Sidang'
-        $sql_detail = "INSERT INTO dbo.Detail_Sidang (id_sidang, nomor_dosen, id_matkul) 
-                       VALUES (?, ?, ?)";
-        $params_detail = [$next_id_sidang, $nomor_dosen_pembimbing, $id_matkul_terpilih];
+        $sql_detail = "INSERT INTO dbo.Detail_Sidang (id_sidang, nomor_dosen, id_matkul, nama_file) 
+                       VALUES (?, ?, ?, ?)";
+        $params_detail = [$next_id_sidang, $nomor_dosen_pembimbing, $id_matkul_terpilih, $dok_laporan_nama];
         $stmt_detail = sqlsrv_prepare($conn, $sql_detail, $params_detail);
         if ($stmt_detail === false || !sqlsrv_execute($stmt_detail)) {
             throw new Exception("Gagal menyimpan ke tabel Detail_Sidang: " . print_r(sqlsrv_errors(), true));
