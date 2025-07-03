@@ -93,7 +93,7 @@ body {
    ================================= */
 
 .badge-custom {
-  background-color: #4bfbaf;
+  background-color: #4fd382;
   color: white;
   font-weight: 600;
   padding: 8px 14px;
@@ -270,14 +270,15 @@ body {
   cursor: not-allowed;
 } */
 
-.approved-badge {
-  color: #e6f4ec;
-  background-color: #4bfbaf;
+.badge-statusDosen {
+  /* color: #e6f4ec; */
+  /* background-color: #4fd382; */
   font-size: 0.8rem;
-  padding: 5px 10px;
+  /* padding: 5px 10px; */
+  padding: 8px 14px;
   border-radius: 20px;
   display: inline-block;
-  font-weight: 500;
+  font-weight: bold;
   margin-top: 10px;
 }
 
