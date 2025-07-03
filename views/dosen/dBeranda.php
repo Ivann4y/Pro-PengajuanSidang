@@ -23,7 +23,8 @@ if ($nomor_dosen) {
         "SELECT COUNT(*) AS total 
          FROM Sidang s
          JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-         WHERE s.status_ajuan = 'Belum' AND b.nomor_dosen = ?", 
+         WHERE s.status_ajuan IS NULL OR s.status_ajuan = 'Belum'
+         AND b.nomor_dosen = ?", 
         [$nomor_dosen]
     );
     if ($stmt && $row = sqlsrv_fetch_array($stmt)) {
