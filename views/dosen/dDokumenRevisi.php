@@ -67,26 +67,25 @@ if (isset($_POST['approve'])) {
     $params_update = [$id_sidang, $nomor_dosen];
     $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
 
-  $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
+    $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
 
-if ($stmt_update === false) {
-    error_log("❌ UPDATE GAGAL:");
-    error_log(print_r(sqlsrv_errors(), true));
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Terjadi kesalahan saat memperbarui status revisi.'
-    ]);
-    exit;
-} else {
-    error_log("✅ UPDATE SUKSES: status_revisi harusnya jadi 0x01");
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Dokumen revisi berhasil disetujui!',
-        'redirectUrl' => "dNilaiAkhir.php?id=" . $id_sidang
-    ]);
-    exit;
-
-}
+    if ($stmt_update === false) {
+        error_log("❌ UPDATE GAGAL:");
+        error_log(print_r(sqlsrv_errors(), true));
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Terjadi kesalahan saat memperbarui status revisi.'
+        ]);
+        exit;
+    } else {
+        error_log("✅ UPDATE SUKSES: status_revisi harusnya jadi 0x01");
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Dokumen revisi berhasil disetujui!',
+            'redirectUrl' => "dNilaiAkhir.php?id=" . $id_sidang
+        ]);
+        exit;
+    }
 }
 
 
@@ -94,10 +93,14 @@ if ($stmt_update === false) {
 // ===================================================================================
 // BAGIAN 1: INISIALISASI HALAMAN (GET REQUEST)
 // ===================================================================================
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid.");
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id_sidang = (int)$_GET['id'];
+    $_SESSION['id_sidang_aktif'] = $id_sidang;
+} elseif (isset($_SESSION['id_sidang_aktif'])) {
+    $id_sidang = (int)$_SESSION['id_sidang_aktif'];
+} else {
+    die("Error: ID sidang tidak valid atau tidak ditemukan.");
 }
-$id_sidang = (int)$_GET['id'];
 
 // Pastikan data user dan nomor_dosen ada di session
 if (!isset($_SESSION['user_data']['nomor_dosen'])) {
@@ -212,7 +215,7 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dNilaiAkhir.php?id=<?= $id_sidang ?>">
+                    <a href="dNilaiAkhir.php?id_sidang=<?= $id_sidang ?>">
                         <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                     </a>
                 </li>
@@ -225,93 +228,89 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
             </ul>
         </div>
 
-        <div class="NavSide__topbar">
-            <div class="NavSide__toggle">
-                <i class="bi bi-list open"></i>
-                <i class="bi bi-x-lg close"></i>
-            </div>
-        </div>
-
-        <main class="NavSide__main-content">
-            <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-            <div class="info-card">
-                <div class="section">
-                    <?php if (!empty($dosenPembimbing)): ?>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
-                            <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'Belum ada judul'; ?></div>
-                        </div>
-
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
-                            <div class="value-row">
-                                <?php echo implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)); ?>
+        <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+        <div id="page-content-wrapper">
+            <div class="NavSide__topbar"></div>
+            <main class="NavSide__main-content">
+                <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
+                <div class="info-card">
+                    <div class="section">
+                        <?php if (!empty($dosenPembimbing)): ?>
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
+                                <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'Belum ada judul'; ?></div>
                             </div>
-                        </div>
 
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Penguji</span></div>
-                            <div class="value-row">
-                                <?php echo !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan'; ?>
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
+                                <div class="value-row">
+                                    <?php echo implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)); ?>
+                                </div>
                             </div>
-                        </div>
 
-                    <?php elseif (!empty($dosen_pengampu)): ?>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div>
-                            <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'N/A'; ?></div>
-                        </div>
-
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Pengampu</span></div>
-                            <div class="value-row">
-                                <?php echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu)); ?>
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Penguji</span></div>
+                                <div class="value-row">
+                                    <?php echo !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan'; ?>
+                                </div>
                             </div>
+
+                        <?php elseif (!empty($dosen_pengampu)): ?>
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div>
+                                <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'N/A'; ?></div>
+                            </div>
+
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Pengampu</span></div>
+                                <div class="value-row">
+                                    <?php echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu)); ?>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <p class="info-item">Data sidang tidak lengkap atau tidak dikenali.</p>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="section">
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-door-open"></i><span class="fw-bold">Ruangan</span></div>
+                            <div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div>
                         </div>
+
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-calendar-days"></i><span class="fw-bold">Tanggal</span></div>
+                            <div class="value-row"><?php echo htmlspecialchars($tanggal_formatted); ?></div>
+                        </div>
+
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-clock"></i><span class="fw-bold">Jam</span></div>
+                            <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Dokumen Revisi</h3>
+                <div class="file-buttons-container d-flex flex-wrap">
+                    <?php if (!empty($data_revisi['dok_revisi'])): ?>
+                        <a href="../../uploadtesting/<?= $namaFileRevisi ?>" class="file-button" download>
+                            <i class="fa-solid fa-file-zipper"></i>
+                            <?= htmlspecialchars(basename($namaFileRevisi)) ?>
+                        </a>
                     <?php else: ?>
-                        <p class="info-item">Data sidang tidak lengkap atau tidak dikenali.</p>
+                        <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>
                     <?php endif; ?>
                 </div>
 
-                <div class="section">
-                    <div class="info-group">
-                        <div class="label-row"><i class="fa-solid fa-door-open"></i><span class="fw-bold">Ruangan</span></div>
-                        <div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div>
-                    </div>
-
-                    <div class="info-group">
-                        <div class="label-row"><i class="fa-solid fa-calendar-days"></i><span class="fw-bold">Tanggal</span></div>
-                        <div class="value-row"><?php echo htmlspecialchars($tanggal_formatted); ?></div>
-                    </div>
-
-                    <div class="info-group">
-                        <div class="label-row"><i class="fa-solid fa-clock"></i><span class="fw-bold">Jam</span></div>
-                        <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
+                <div class="button-group-bottom" id="grup-aksi-dokumen">
+                    <div class="button-group">
+                        <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
+                        <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
                     </div>
                 </div>
-            </div>
-
-            <h5>Dokumen Revisi</h5>
-            <div class="file-buttons-container d-flex flex-wrap">
-                <?php if (!empty($data_revisi['dok_revisi'])): ?>
-                    <a href="../../uploadtesting/<?= $namaFileRevisi ?>" class="file-button" download>
-                        <i class="fa-solid fa-file-zipper"></i>
-                        <?= htmlspecialchars(basename($namaFileRevisi)) ?>
-                    </a>
-                <?php else: ?>
-                    <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>
-                <?php endif; ?>
-            </div>
-
-            <div class="button-group-bottom" id="grup-aksi-dokumen">
-                <div class="button-group">
-                    <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
-                    <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
-                </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
-
     <!-- Modal Konfirmasi -->
     <div class="modal fade" id="confirmationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
