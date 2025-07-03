@@ -49,13 +49,28 @@ WHERE ds.id_sidang = ?
 $params = [$id_sidang];
 $stmt = sqlsrv_query($conn, $sql, $params);
 
-$sqlStatus = "SELECT status_ajuan FROM Sidang WHERE id_sidang = ?";
-$stmtStatus = sqlsrv_query($conn, $sqlStatus, [$id_sidang]);
-$rowStatus = sqlsrv_fetch_array($stmtStatus, SQLSRV_FETCH_ASSOC);
+$statusList = [];
 
-$status_ajuan_binary = unpack("C", $rowStatus['status_ajuan'])[1];
-$status_ajuan_global = ($status_ajuan_binary === 1) ? "Disetujui" : "Pending";
-$badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
+while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+  $statusList[] = $row['status_revisi'];
+  $allRows[] = $row; // simpan baris-baris untuk ditampilkan nanti
+}
+
+// Reset ulang pointer untuk looping nanti
+sqlsrv_free_stmt($stmt);
+
+// Hitung status global
+if (in_array('Ditolak', $statusList)) {
+  $statusRevisiGlobal = "Ditolak";
+  $badgeClass = "badge-danger";
+} elseif (in_array('Pending', $statusList)) {
+  $statusRevisiGlobal = "Belum Disetujui";
+  $badgeClass = "badge-warning";
+} else {
+  $statusRevisiGlobal = "Disetujui";
+  $badgeClass = "badge-success";
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -142,12 +157,11 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
           <h5 class="mt-5">Catatan Perbaikan</h5>
         </div>
         <span class="badge-custom <?= $badgeClass ?>">
-          Status Revisi : <?= $status_ajuan_global ?>
+          Status Revisi : <?= $statusRevisiGlobal ?>
         </span>
       </div>
 
-      <?php while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)): ?>
-        <?php $statusRevisi = unpack("C", $row['status_revisi'])[1]; ?>
+      <?php foreach ($allRows as $row): ?>
         <?php $peranDosen = unpack("C", $row['peran_dosen'])[1]; ?>
         <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
           <h6 class="card-h">
@@ -158,20 +172,15 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
             <?= htmlspecialchars($row['catatan_sidang']) ?>
           </p>
           <?php if ($row['status_revisi'] === 'Pending'): ?>
-            <div class="badge-statusDosen bg-warning text-dark">
-              <?= $row['status_revisi'] ?>
-            </div>
+            <div class="badge-statusDosen badge-warning"><?= $row['status_revisi'] ?></div>
           <?php elseif ($row['status_revisi'] === 'Disetujui'): ?>
-            <div class="badge-statusDosen bg-success text-white">
-              <?= $row['status_revisi'] ?>
-            </div>
+            <div class="badge-statusDosen badge-success"><?= $row['status_revisi'] ?></div>
           <?php elseif ($row['status_revisi'] === 'Ditolak'): ?>
-            <div class="badge-statusDosen bg-danger text-white">
-              <?= $row['status_revisi'] ?>
-            </div>
+            <div class="badge-statusDosen badge-danger"><?= $row['status_revisi'] ?></div>
           <?php endif; ?>
         </div>
-      <?php endwhile; ?>
+      <?php endforeach; ?>
+
 
       <?php
       // File dummy seolah-olah hasil upload
