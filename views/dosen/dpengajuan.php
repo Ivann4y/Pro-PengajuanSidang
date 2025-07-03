@@ -45,7 +45,7 @@ $baseQuery = "
         LEFT JOIN
             MataKuliah mk ON ds.id_matkul = mk.id_matkul
         WHERE
-            s.status_ajuan = 0
+            s.status_ajuan = 'Pending'
     )
 ";
 
