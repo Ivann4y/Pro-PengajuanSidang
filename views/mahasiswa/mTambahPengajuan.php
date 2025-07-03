@@ -34,6 +34,9 @@ if (!isset($_SESSION['nim'])) {
 // Gunakan variabel nim dari sesi yang sudah ada
 $nim_mahasiswa_logged_in = $_SESSION['nim'];
 
+// Tambahkan require_once ke file external
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
+
 // Menangani pengiriman form
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
     // Mulai transaksi
@@ -77,12 +80,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
             sqlsrv_free_stmt($stmt_dosen);
         }
 
-        // LANGKAH 4: Baca isi file (konten biner) ke dalam variabel dengan validasi
-        $dok_laporan_content = null;
+        // LANGKAH 4: Upload file ke folder dan simpan path + nama file
+        $dok_laporan_nama = null;
+        $dok_laporan_path = null;
         if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
             $file = $_FILES['DokumenSidang'];
             $fileSize = $file['size'];
-            $allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/zip'];
+            $allowedTypes = [
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/zip'
+            ];
             $fileType = mime_content_type($file['tmp_name']);
             if ($fileSize > 10 * 1024 * 1024) { // Batas 10MB
                 throw new Exception("Ukuran file melebihi 10MB.");
@@ -90,7 +99,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
             if (!in_array($fileType, $allowedTypes)) {
                 throw new Exception("Tipe file tidak diizinkan. Gunakan PDF, DOCX, PPTX, atau ZIP.");
             }
-            $dok_laporan_content = file_get_contents($file['tmp_name']);
+            // Nama file asli
+            $dok_laporan_nama = $file['name'];
+            // Nama file unik untuk disimpan di server
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $unique_name = 'laporan_' . uniqid() . '.' . $ext;
+            $dok_laporan_path = 'uploads/' . $unique_name;
+            $upload_path = __DIR__ . '/../../uploads/' . $unique_name;
+            if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
+                throw new Exception("Gagal menyimpan file ke server.");
+            }
         } else {
             throw new Exception("Gagal mengunggah file: " . ($_FILES['DokumenSidang']['error'] ? "Error " . $_FILES['DokumenSidang']['error'] : "Tidak ada file yang dipilih"));
         }
@@ -99,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
         $aksi = $_POST['aksi'];
-        $status_ajuan = ($aksi == 'Kirim') ? 0 : null; // Karena aksi 'Kirim' berarti mengajukan, sedangkan 'Simpan' hanya menyimpan sebagai draf 
+        $status_ajuan = ($aksi == 'Kirim') ? 'pending' : 'Draft'; // Karena aksi 'Kirim' berarti mengajukan, sedangkan 'Simpan' hanya menyimpan sebagai draf 
 
         if (empty($judul)) {
             throw new Exception("Judul tidak boleh kosong.");
@@ -131,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         $params_sidang = [
             $next_id_sidang,
             $judul,
-            array($dok_laporan_content, SQLSRV_PARAM_IN, SQLSRV_PHPTYPE_STREAM(SQLSRV_ENC_BINARY)),
+            $dok_laporan_path, // Simpan path file
             $status_ajuan,
             $jenis_sidang_bit,
             $id_kelompok
@@ -142,9 +160,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         }
 
         // LANGKAH 7: INSERT KEDUA KE TABEL 'Detail_Sidang'
-        $sql_detail = "INSERT INTO dbo.Detail_Sidang (id_sidang, nomor_dosen, id_matkul) 
-                       VALUES (?, ?, ?)";
-        $params_detail = [$next_id_sidang, $nomor_dosen_pembimbing, $id_matkul_terpilih];
+        $sql_detail = "INSERT INTO dbo.Detail_Sidang (id_sidang, nomor_dosen, id_matkul, nama_file) 
+                       VALUES (?, ?, ?, ?)";
+        $params_detail = [$next_id_sidang, $nomor_dosen_pembimbing, $id_matkul_terpilih, $dok_laporan_nama];
         $stmt_detail = sqlsrv_prepare($conn, $sql_detail, $params_detail);
         if ($stmt_detail === false || !sqlsrv_execute($stmt_detail)) {
             throw new Exception("Gagal menyimpan ke tabel Detail_Sidang: " . print_r(sqlsrv_errors(), true));
@@ -152,16 +170,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
 
         // Commit transaksi jika semua berhasil
         sqlsrv_commit($conn);
-        if (is_null($status_ajuan)) {
-            $success_message = 'Pengajuan Berhasil Disimpan!';
-        } elseif ($status_ajuan === 0) {
-            $success_message = 'Pengajuan Berhasil Dikirim!';
-        }
+        $success_message = ($status_ajuan == 'Pending') ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan sebagai Draft!';
+
+        // Kirim notifikasi ke dosen pembimbing
+        $nama_mahasiswa = $_SESSION['user_data']['nama_mhs'] ?? $nim_mahasiswa_logged_in;
+        $nim_mahasiswa = $_SESSION['user_data']['username'] ?? $nim_mahasiswa_logged_in;
+        $pesan_notif = "Mahasiswa $nama_mahasiswa ($nim_mahasiswa) telah mengajukan sidang baru. Silakan cek pengajuan di sistem.";
+        kirimNotifikasi($nomor_dosen_pembimbing, $pesan_notif, $nim_mahasiswa, $conn);
 
     } catch (Exception $e) {
         // Rollback transaksi jika ada error
         sqlsrv_rollback($conn);
-        $error_message = "Error: " . $e->getMessage();
+        //$error_message = "Error: " . $e->getMessage();
+        die("<pre>DEBUGGING: " . $e->getMessage() . "</pre>");
     }
 
     // Bebaskan sumber daya
@@ -359,7 +380,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
                             </div>
                             <div class="d-flex gap-2">
                                 <button type="button" name="aksi" value="Simpan" class="btn btn-secondary" id="btnSimpan">Simpan</button>
-                                <button type="button" name="aksi" value="Kirim" class="btn-setuju" id="btnKirim">Kirim</button>
+                                <button type="button" name="aksi" value="Kirim" class="btn-setuju" id="btnKirim" onclick="kirimNotifikasi($penerima, $pesan, $pengirim = null, $conn)">Kirim</button>
                             </div>
                         </div>
                     </form>

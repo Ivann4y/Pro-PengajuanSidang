@@ -18,6 +18,15 @@ body {
   position: relative;
 }
 
+#page-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-left: 280px; /* Adjusted for sidebar width */
+  transition: margin-left 0.5s ease-in-out;
+}
+
 .NavSide__sidebar {
   position: fixed;
   top: 0px;
@@ -25,7 +34,6 @@ body {
   bottom: 0px;
   width: 280px;
   border-radius: 1px;
-  box-sizing: border-box;
   border-left: 5px solid #4b68fb;
   background: #4b68fb;
   overflow-x: hidden;
@@ -144,14 +152,20 @@ body {
 .NavSide__main-content {
   flex-grow: 1;
   padding: 20px 20px 20px calc(20px + 1cm);
-  margin-left: 280px;
+  margin-right: 0;
   overflow-y: auto;
   transition: margin-left 0.5s ease-in-out;
+  padding-top: 3vh;
 }
 
 .NavSide__main-content h2 {
-  margin-bottom: 1.2cm;
+  margin-bottom: 0.9cm;
   font-weight: 700;
+}
+.NavSide__main-content h3 {
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 0.2cm;
 }
 
 /* ======================================================= */
@@ -160,34 +174,36 @@ body {
 
 /* 1. Mengatur Kartu Utama (.info-card) */
 .info-card {
-            position: relative;
-            background: rgb(235, 238, 245);
-            border-radius: 30px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            overflow: hidden;
-            transition: background-color 0.4s ease;
-            margin-bottom: 1.2cm;
-            margin-right: 0.9cm;
-        }
+  position: relative;
+  background: rgb(235, 238, 245);
+  border-radius: 30px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  overflow: hidden;
+  transition: background-color 0.4s ease;
+  margin-bottom: 1.2cm;
+  margin-right: 50px;
+  margin-left: auto;
+  max-width: 900px;
+}
 
 /* 2. Garis Biru di Kanan pada .info-card */
 .info-card::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px;
-            height: 100%;
-            background-color: #4B68FB;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-            transition: width 0.4s ease;
-            z-index: 0;
-        }
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 100%;
+  background-color: #4b68fb;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  transition: width 0.4s ease;
+  z-index: 0;
+}
 
 /* 3. Efek Hover */
 .info-card:hover::after {
@@ -197,76 +213,76 @@ body {
 }
 
 .info-card .section {
-            flex: 0 0 48%;
-            z-index: 1;
-            color: #333;
-            transition: color 0.4s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+  flex: 0 0 48%;
+  z-index: 1;
+  color: #333;
+  transition: color 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-        .info-card:hover .section {
-            color: white;
-        }
+.info-card:hover .section {
+  color: white;
+}
 
-        /* Teks menjadi putih saat di-hover */
-        .info-card .section .info-group {
-            margin-bottom: 1rem;
-        }
+/* Teks menjadi putih saat di-hover */
+.info-card .section .info-group {
+  margin-bottom: 1rem;
+}
 
-        .info-card .section .info-group:last-child {
-            margin-bottom: 0;
-        }
+.info-card .section .info-group:last-child {
+  margin-bottom: 0;
+}
 
-        .info-card .section .label-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.25rem;
-            font-size: 1rem;
-        }
+.info-card .section .label-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
 
-        .info-card .section .label-row i {
-            margin-right: 10px;
-            color: #495057;
-            font-weight: 900;
-            transition: color 0.4s ease;
-            width: 20px;
-            text-align: center;
-        }
+.info-card .section .label-row i {
+  margin-right: 10px;
+  color: #495057;
+  font-weight: 900;
+  transition: color 0.4s ease;
+  width: 20px;
+  text-align: center;
+}
 
-        .info-card:hover .section .label-row i {
-            color: white;
-        }
+.info-card:hover .section .label-row i {
+  color: white;
+}
 
-        /* Ikon menjadi putih saat di-hover */
-        .info-card .section .label-row .fw-bold {
-            font-weight: 600;
-            font-size: 1.05rem;
-        }
+/* Ikon menjadi putih saat di-hover */
+.info-card .section .label-row .fw-bold {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
 
-        .info-card .section .value-row {
-            margin-left: 30px;
-            line-height: 1.5;
-            font-size: 0.95rem;
-            margin-bottom: 0;
-        }
+.info-card .section .value-row {
+  margin-left: 30px;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  margin-bottom: 0;
+}
 
-        /* Kartu Form (Form Card) & Elemen Form */
-        .form-card {
-            background: rgb(235, 238, 245);
-            border-radius: 30px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-            padding: 15px 25px;
-            margin-bottom: 1.2cm;
-            margin-right: 0.9cm;
-        }
+/* Kartu Form (Form Card) & Elemen Form */
+.form-card {
+  background: rgb(235, 238, 245);
+  border-radius: 30px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+  padding: 15px 25px;
+  margin-bottom: 1.2cm;
+  margin-right: 0.9cm;
+}
 
-        .form-card h4 {
-            font-weight: 600;
-            font-size: 1.05rem;
-            margin-bottom: 0.8cm;
-        }
+.form-card h4 {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.8cm;
+}
 
 /* --- Responsive Design Styles --- */
 .NavSide__toggle {

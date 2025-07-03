@@ -114,9 +114,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 error_log("File uploaded successfully: " . $path_target);
                 error_log("File size: " . filesize($path_target));
                 
-                $file_content = file_get_contents($path_target);
-                $params_update = array($file_content, $id_sidang);
-                
+                $query_update_dokumen = "UPDATE Detail_Sidang SET dok_revisi = ?, nama_file = ? WHERE id_sidang = ?";
+                $params_update = array($path_relatif, $file_asli, $id_sidang);
+
                 // Debug: Log query dan parameter
                 error_log("Update query: " . $query_update_dokumen);
                 error_log("Parameters: " . print_r($params_update, true));

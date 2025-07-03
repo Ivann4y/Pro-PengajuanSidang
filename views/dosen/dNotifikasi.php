@@ -12,8 +12,8 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     exit(); 
 }
 
-// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+// 2. Cek jika role pengguna BUKAN 'dosen'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     header("Location: " . $path_to_root . "index.php");
     exit(); 
@@ -21,11 +21,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 
 include '../../koneksi/koneksiAndrew.php';
 
-$nim_mahasiswa = $_SESSION['user_data']['username'];
+// Ambil nomor_dosen dari session user_data
+$nomor_dosen = $_SESSION['user_data']['nomor_dosen'];
 
 // Ambil notifikasi yang belum dibaca
 $query_unread = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL) ORDER BY waktu DESC";
-$stmt_unread = sqlsrv_query($conn, $query_unread, array($nim_mahasiswa));
+$stmt_unread = sqlsrv_query($conn, $query_unread, array($nomor_dosen));
 if (!$stmt_unread) {
     die(print_r(sqlsrv_errors(), true));
 }
@@ -36,7 +37,7 @@ while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
 
 // Ambil notifikasi yang sudah dibaca
 $query_read = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND status_baca = 1 ORDER BY waktu DESC";
-$stmt_read = sqlsrv_query($conn, $query_read, array($nim_mahasiswa));
+$stmt_read = sqlsrv_query($conn, $query_read, array($nomor_dosen));
 if (!$stmt_read) {
     die(print_r(sqlsrv_errors(), true));
 }
@@ -52,18 +53,14 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-   <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css" />
   <link rel="stylesheet" href="../../extra/style.css">
   <link rel="stylesheet" href="../../css/button-styles.css">
   <link rel="stylesheet" href="../../assets/css/mNotifikasi.css">
-  
-  <title>Mahasiswa - Notifikasi</title>
-  <style>
-  
-  </style>
+  <title>Dosen - Notifikasi</title>
 </head>
 
 <body>
@@ -75,19 +72,19 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logDBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -109,7 +106,7 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
         <div class="container-fluid">
           <div class="row">
             <h2 class="text-heading text-black">
-              <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)
+              <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?> (Dosen)
             </h2>
           </div><br>
           <div class="row align-items-center mb-3">
@@ -198,7 +195,7 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
     </div>
   </div>
 </div>
-  <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="logDBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-heading-color">
@@ -220,9 +217,7 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  
-    <script src="../../assets/js/mNotifikasi.js"></script>
-  
+  <script src="../../assets/js/mNotifikasi.js"></script>
 </body>
 
-</html>
+</html> 

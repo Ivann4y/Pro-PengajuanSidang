@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
          
         $sql_action = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
         // Mengirim nilai sebagai 1 untuk status disetujui
-        $params_action = [1, $id_sidang]; 
+        $params_action = ['Approve', $id_sidang]; 
         
         $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
 
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $sql_action = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
             // Mengirim nilai sebagai 2 untuk status ditolak
-            $params_action = [2, $id_sidang];
+            $params_action = ['Reject', $id_sidang];
 
             $stmt_action = sqlsrv_query($conn, $sql_action, $params_action);
 
@@ -366,11 +366,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     approveInput = document.createElement('input');
                     approveInput.type = 'hidden';
                     approveInput.name = 'approve';
-                    approveInput.value = '1';
+                    approveInput.value = 'Approve';
                     approveForm.appendChild(approveInput);
                 }
                 approveForm.submit();
-                window.location.href = 'dPengajuan.php'; // Redirect ke halaman pengajuan
+               // window.location.href = 'dPengajuan.php';
             }
         });
     });
@@ -395,9 +395,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#4B68FB'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    this.submit(); // submit form setelah konfirmasi
-                    window.location.href = 'dPengajuan.php'; // Redirect ke halaman pengajuan
+               if (result.isConfirmed) {
+                    let rejectInput = this.querySelector('input[name="reject"]');
+                    if (!rejectInput) {
+                        rejectInput = document.createElement('input');
+                        rejectInput.type = 'hidden';
+                        rejectInput.name = 'reject';
+                        rejectInput.value = 'Reject';
+                        this.appendChild(rejectInput);
+                    }
+                    this.submit();
                 }
             });
         }
