@@ -24,6 +24,25 @@ $id_kelompok = null; // Untuk menyimpan ID kelompok mahasiswa.
 $id_matkul = null; // Untuk menyimpan ID mata kuliah.
 $jenis_sidang = null; // Untuk menyimpan jenis sidang (0=TA, 1=Semester).
 
+// ====== SIDANG ID HANDLING (like aDetailSidang) ======
+if (isset($_GET['id_sidang']) && is_numeric($_GET['id_sidang'])) {
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id_sidang'];
+    // Redirect to the same page without GET parameter
+    $redirectUrl = 'aNilaiAkhir.php';
+    if (isset($_GET['nim'])) {
+        $redirectUrl .= '?nim=' . urlencode($_GET['nim']);
+    }
+    header('Location: ' . $redirectUrl);
+    exit();
+}
+
+if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif'])) {
+    $id_sidang = (int)$_SESSION['id_sidang_aktif'];
+} else {
+    $_SESSION['error_message'] = "ID Sidang tidak valid atau tidak ditemukan. Silakan pilih sidang dari daftar.";
+    header("Location: aDaftarSidang.php");
+    exit();
+}
 
 // =========================================================================
 // 3. PENGAMBILAN DETAIL SIDANG (ID KELOMPOK, JENIS, ID MATKUL)
@@ -306,9 +325,13 @@ if ($current_nim && empty($error_message)) {
                     </h3>
                 <?php endif; ?>
           <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <a class="nav-link active" id="mahasiswa-tab" href="#"><?= htmlspecialchars($dataMahasiswa['nama_mhs']) ?></a>
-            </li>
+            <?php foreach ($mahasiswa_list as $mhs): ?>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link<?= $current_nim === $mhs['nim'] ? ' active' : '' ?>" href="?id_sidang=<?= urlencode($id_sidang) ?>&nim=<?= urlencode($mhs['nim']) ?>">
+                  <?= htmlspecialchars($mhs['nama_mhs']) ?>
+                </a>
+              </li>
+            <?php endforeach; ?>
           </ul>
         </div>
         <div class="header-icons d-none d-md-flex">
