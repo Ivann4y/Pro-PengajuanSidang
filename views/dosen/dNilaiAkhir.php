@@ -445,13 +445,6 @@ if (!empty($current_nim) && $id_sidang) {
              <div class="value-row text-secondary fw-bold">
                  <?php echo htmlspecialchars($dosen_terkait_sidang ?? ''); ?>
              </div>
-             <!-- Debug Info -->
-             <!-- <div style="font-size: 12px; color: #666; margin-top: 5px;">
-                 Debug: jenis_sidang=<?php echo $jenis_sidang; ?>, 
-                 id_kelompok=<?php echo $id_kelompok; ?>, 
-                 id_matkul=<?php echo $id_matkul; ?>, 
-                 dosen_terkait_sidang=<?php echo $dosen_terkait_sidang; ?>
-             </div> -->
            </div>
          </div>
        </div>
