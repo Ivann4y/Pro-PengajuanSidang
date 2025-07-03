@@ -237,6 +237,11 @@ body {
   color: white;
   font-weight: 600;
 }
+  #catatanEvaluasi {
+            text-align: left !important;
+            padding-left: 15px; /* Memberi sedikit ruang dari tepi kiri */
+            padding-top: 10px; /* Memberi sedikit ruang dari tepi atas */
+        }
 
     /* --- LAYOUT UTAMA --- */
     #NavSide { display: flex; min-height: 100vh; position: relative; }
