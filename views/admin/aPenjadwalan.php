@@ -53,7 +53,7 @@ $params = [];
 $whereClauses = [];
 
 // Filter WAJIB: Hanya tampilkan yang status ajuannya disetujui (1)
-$whereClauses[] = "s.status_ajuan = 0x01";
+$whereClauses[] = "s.status_ajuan = 'Approve'";
 
 // Filter OPSIONAL: Berdasarkan tipe sidang
 if ($selectedTipe == 'TA') {
