@@ -110,6 +110,9 @@ $catatanText = !empty($catatanList) ? implode("<br><br>", $catatanList) : "Tidak
 
 sqlsrv_close($conn);
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -211,7 +214,7 @@ sqlsrv_close($conn);
                     <div class="col-12">
                         <div class="card" id="cardcatatan">
                             <div class="card-body">
-                                <h3 class="card-title text-dark" >Catatan</h3>
+                                <h3 class="card-title text-dark" >Catatan Evaluasi</h3>
                                 <!-- PERBAIKAN: Menggunakan $catatanText dan membiarkan HTML (seperti <br>) dirender -->
                                 <div class="text-dark" id="catatan-content">
                                     <?= $catatanText ?>
