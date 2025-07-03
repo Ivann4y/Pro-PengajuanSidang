@@ -65,12 +65,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // 2. Logika Penguji & BOBOT
     if ($all_queries_ok) {
-        $sql_sidang = "SELECT id_kelompok, CAST(jenis_sidang AS INT) as jenis FROM Sidang WHERE id_sidang = ?";
-        $stmt_sidang = sqlsrv_query($conn, $sql_sidang, array($id_sidang));
+       $sql_sidang = "SELECT k.id_kelompok, k.jenis_sidang 
+               FROM Sidang s
+               JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+               WHERE s.id_sidang = ?";
+$stmt_sidang = sqlsrv_query($conn, $sql_sidang, array($id_sidang));
         
         if ($stmt_sidang !== false) {
-            $data_sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC);
-            if ($data_sidang && $data_sidang['jenis'] == 0) {
+    $data_sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC);
+    // PERBAIKAN: Cek dengan string 'TA'
+    if ($data_sidang && $data_sidang['jenis_sidang'] == 'TA') { 
                 
                 // Ambil daftar nomor dosen penguji lama untuk dihapus dari Penilaian
                 $penguji_lama_nos = [];

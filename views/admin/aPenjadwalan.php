@@ -57,9 +57,9 @@ $whereClauses[] = "s.status_ajuan = 'Approve'";
 
 // Filter OPSIONAL: Berdasarkan tipe sidang
 if ($selectedTipe == 'TA') {
-    $whereClauses[] = "s.jenis_sidang = 0x00";
+    $whereClauses[] = "k.jenis_sidang = 'TA'";
 } elseif ($selectedTipe == 'Semester') {
-    $whereClauses[] = "s.jenis_sidang = 0x01";
+    $whereClauses[] = "k.jenis_sidang = 'Semester'";
 }
 
 // --- BARU: Filter OPSIONAL: Berdasarkan prodi ---
@@ -72,37 +72,33 @@ $query = "SELECT
     s.id_sidang AS id,
     s.id_kelompok,
     s.judul AS judulSidang,
+    k.jenis_sidang AS tipeSidang, 
     MAX(m.prodi) as prodi,
     STRING_AGG(m.nama_mhs, ', ') AS namaList,
     MAX(mk.nama_matkul) AS mataKuliah,
-    CASE 
-        WHEN s.jenis_sidang = 0x00 THEN 'TA'
-        WHEN s.jenis_sidang = 0x01 THEN 'Semester'
-    END AS tipeSidang,
     MAX(d_pembimbing.nama_dosen) AS pembimbing,
    (SELECT STRING_AGG(d.nama_dosen, CHAR(13) + CHAR(10))
      FROM Pengampu_Kelas pk
      JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
      WHERE 
-        -- Filter 1: Mencocokkan mata kuliah dari sidang ini
         pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang)
-        
-        -- Filter 2: Mencocokkan kelas dari mahasiswa di kelompok ini
         AND pk.id_kelas = (SELECT TOP 1 km.id_kelas
                            FROM Kelompok_Mahasiswa kpm
                            JOIN Kelas_Mahasiswa km ON kpm.nim = km.nim
                            WHERE kpm.id_kelompok = s.id_kelompok)
     ) AS dosenPengampuList
     FROM Sidang s
+    INNER JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
     INNER JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
     INNER JOIN Mahasiswa m ON km.nim = m.nim
-    LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND s.jenis_sidang = 0x00
+    LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND k.jenis_sidang = 'TA'
     LEFT JOIN Dosen d_pembimbing ON b.nomor_dosen = d_pembimbing.nomor_dosen
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang AND s.jenis_sidang = 0x01
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang AND k.jenis_sidang = 'Semester'
     LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
     WHERE " . implode(' AND ', $whereClauses) . "
      AND NOT EXISTS (SELECT 1 FROM Jadwal j WHERE j.id_sidang = s.id_sidang)
-    GROUP BY s.id_sidang, s.id_kelompok, s.judul, s.jenis_sidang
+    -- PERBAIKAN: GROUP BY menggunakan k.jenis_sidang
+    GROUP BY s.id_sidang, s.id_kelompok, s.judul, k.jenis_sidang
     ORDER BY s.id_sidang";
 
 

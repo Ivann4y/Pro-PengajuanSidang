@@ -61,9 +61,10 @@ $sql_utama = "SELECT
                     WHEN s.status_sidang = 0 THEN 'Ditolak'
                     ELSE 'Menunggu'
                 END AS status_sidang_text, 
-                CAST(s.jenis_sidang AS INT) AS jenis_sidang,
+                k.jenis_sidang,
                 s.id_kelompok
               FROM Sidang s
+              JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
               WHERE s.id_sidang = ?";
 $params_utama = array($id_sidang);
 $stmt_utama = sqlsrv_query($conn, $sql_utama, $params_utama);
@@ -89,7 +90,7 @@ if ($row = sqlsrv_fetch_array($stmt_mahasiswa, SQLSRV_FETCH_ASSOC)) {
 }
 
 
-if ($data_sidang['jenis_sidang'] == 0) { 
+if ($data_sidang['jenis_sidang'] == 'TA') { 
 
     
     $sql_dosen_terlibat = "SELECT 
@@ -121,7 +122,7 @@ if ($data_sidang['jenis_sidang'] == 0) {
             }
         }
     }
-} elseif ($data_sidang['jenis_sidang'] == 1) { 
+} elseif ($data_sidang['jenis_sidang'] == 'Semester') { 
    
     $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul 
                    FROM MataKuliah mk 
@@ -239,9 +240,8 @@ $dosen_list_json = json_encode($dosen_list_penguji);
             <main class="NavSide__main-content">
                 <h2>Detail Sidang -
                     <?php
-                    if ($data_sidang['jenis_sidang'] == 0 && !empty($data_sidang)) {
-                        echo htmlspecialchars($data_sidang['judul']);
-                    } elseif ($data_sidang['jenis_sidang'] == 1 && !empty($data_sidang)) {
+                    // Cek jika jenis sidang adalah TA atau Semester
+                    if ($data_sidang['jenis_sidang'] == 'TA' || $data_sidang['jenis_sidang'] == 'Semester') {
                         echo htmlspecialchars($data_sidang['judul']);
                     }
                     ?></h2>
@@ -251,7 +251,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                 <div class="info-card">
                     <div class="section">
                         <!-- Tampilan akan dirender berdasarkan kondisi IF -->
-                        <?php if ($data_sidang['jenis_sidang'] == 0): ?>
+                        <?php if ($data_sidang['jenis_sidang'] == 'TA'): ?>
                             <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Belum ada judul'; ?></p>
                             <p><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br><?php echo !empty($dosen_pembimbing['nama_dosen']) ? htmlspecialchars($dosen_pembimbing['nama_dosen']) : 'Belum ditentukan'; ?></p>
                             <p><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>
@@ -262,7 +262,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                     echo 'Belum ditentukan';
                                 }
                                 ?></p>
-                        <?php elseif ($data_sidang['jenis_sidang'] == 1): ?>
+                        <?php elseif ($data_sidang['jenis_sidang'] == 'Semester'): ?>
                             <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'N/A'; ?></p>
                             <p><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>
                                 <?php
@@ -332,12 +332,12 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                             <p><?php echo htmlspecialchars($nama_prodi); ?></p>
                                         </div>
                                         <div class="form-group">
-                                            <label><?php echo ($data_sidang['jenis_sidang'] == 0) ? 'Judul Sidang' : 'Mata Kuliah'; ?></label>
-                                            <p><?php echo htmlspecialchars(($data_sidang['jenis_sidang'] == 0) ? $data_sidang['judul'] : ($data_matkul['nama_matkul'] ?? 'N/A')); ?></p>
+                                           <label><?php echo ($data_sidang['jenis_sidang'] == 'TA') ? 'Judul Sidang' : 'Mata Kuliah'; ?></label>
+                                            <p><?php echo htmlspecialchars(($data_sidang['jenis_sidang'] == 'TA') ? $data_sidang['judul'] : ($data_matkul['nama_matkul'] ?? 'N/A')); ?></p>
                                         </div>
 
                                        
-                                        <?php if ($data_sidang['jenis_sidang'] == 0): ?>
+                                        <?php if ($data_sidang['jenis_sidang'] == 'TA'): ?>
                                             <div class="form-group">
                                                 <label>Pembimbing</label>
                                                 <p><?php echo htmlspecialchars($dosen_pembimbing['nama_dosen'] ?? 'Belum ada'); ?></p>
@@ -377,7 +377,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                         <?php endif; ?>
 
                                     
-                                        <?php if ($data_sidang['jenis_sidang'] == 1): ?>
+                                        <?php if ($data_sidang['jenis_sidang'] == 'Semester'): ?>
                                             <hr>
                                             <div id="pengampu-wrapper">
                                                 <?php if (!empty($dosen_pengampu)): ?>
@@ -436,7 +436,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
    <script type="text/javascript">
        
         const dosenData = <?php echo $dosen_list_json; ?>;
-        const isSidangTA = <?php echo ($data_sidang['jenis_sidang'] == 0) ? 'true' : 'false'; ?>;
+        const isSidangTA = <?php echo ($data_sidang['jenis_sidang'] == 'TA') ? 'true' : 'false'; ?>;
     </script>
     
    
