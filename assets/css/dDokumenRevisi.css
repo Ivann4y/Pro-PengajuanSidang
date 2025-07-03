@@ -152,13 +152,12 @@ body {
 .NavSide__main-content {
   flex-grow: 1;
   padding: 20px 0.7px 20px calc(20px + 0.7cm);
-  margin-right: 50%;
-  margin-left: 270px;;
+  margin-right: 0;
+  margin-left: 270px;
   overflow-y: auto;
   transition: margin-left 0.5s ease-in-out;
   background-color: #f9fafb;
   padding-top: 3vh;
-
 }
 
 .NavSide__main-content h2 {
