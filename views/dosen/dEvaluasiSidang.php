@@ -278,9 +278,15 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
                 <h2>Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+
+                <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;">
+              Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($id_kelompok ?? ''); ?>
+          </h2><br>
                 <form id="evaluasiForm" method="POST" action="dEvaluasiSidang.php?id=<?php echo $id_sidang; ?>">
                     <div class="info-card">
                         <div class="section">
+
+                        
                             <div class="info-group">
                                 <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
                                 <div class="value-row"><?php echo htmlspecialchars($judul); ?></div>
