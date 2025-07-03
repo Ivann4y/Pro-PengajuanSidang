@@ -1,18 +1,18 @@
 <?php
 session_start();
-// Ganti dengan path file koneksi Anda yang benar
+
 require "../../koneksi/koneksiAndrew.php";
 
 // ======================= STATIC DATA FOR TESTING =======================
 $id_sidang = 4001;
-$nim = '1000000001'; // Pastikan nim adalah string jika di database tipenya char/varchar
+$nim = '1000000001';
 
 // ======================= INITIALIZE VARIABLES =======================
 $dataMahasiswa = [
     'nim' => $nim,
     'nama_mhs' => 'Data tidak ditemukan',
     'nama_matkul' => 'Data tidak ditemukan',
-    'nama_pembimbing' => 'Data tidak ditemukan' // Akan diisi dengan salah satu nama penguji
+    'nama_pembimbing' => 'Data tidak ditemukan' 
 ];
 $nilaiDetail = [
     'dokumen' => '-',
@@ -26,8 +26,6 @@ $semuaCatatan = 'Tidak ada catatan.';
 
 
 // ======================= 1. GET MAHASISWA & SIDANG INFO =======================
-// FIX: Query ini diubah untuk menggunakan tabel Penilaian sebagai "jembatan"
-// untuk menghubungkan Mahasiswa dengan Detail_Sidang, karena Detail_Sidang tidak punya kolom 'nim'.
 $sqlInfo = "
     SELECT TOP 1
         m.nama_mhs,
@@ -124,6 +122,7 @@ if ($stmtCatatan === false) {
     die("Error query catatan: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
+
 $catatanArray = [];
 while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
     $catatan = trim($rowCatatan['catatan_sidang']);
@@ -155,8 +154,8 @@ if (!empty($catatanArray)) {
   <link rel="stylesheet" href="../../css/button-styles.css" />
   <link rel="stylesheet" href="../../extra/style.css" />
   <title>Admin - Nilai Akhir</title>
+
   <style>
-    /* CSS ANDA TIDAK DIUBAH, HANYA DIRAPIKAN */
     #NavSide { display: flex; min-height: 100vh; position: relative; }
     .label-row i { font-size: 1.5rem; }
     body, .card, .form-control, h1, h2, h3, h4, h5, h6 { font-family: "Poppins", sans-serif !important; color: #464869; }
@@ -168,7 +167,7 @@ if (!empty($catatanArray)) {
       width: 100%;
     }
     .nilai-mahasiswa-display {
-      font-size: 5rem !important; /* Disesuaikan agar lebih proporsional */
+      font-size: 5rem !important; 
       font-weight: bold;
       text-align: center;
       background-color: transparent !important;
@@ -179,7 +178,7 @@ if (!empty($catatanArray)) {
     }
     #carddetailPenilaian label { font-weight: 550; }
     .detail-penilaian-input {
-      font-size: 1.2rem; /* Sedikit diperbesar */
+      font-size: 1.2rem; 
       font-weight: 600;
       text-align: center;
       border: none;
@@ -195,13 +194,12 @@ if (!empty($catatanArray)) {
       font-size: 1rem;
       resize: vertical;
       cursor: default;
-      white-space: pre-wrap; /* Agar format newline dari PHP tampil benar */
+      white-space: pre-wrap; 
     }
     textarea[readonly], input[readonly] { background-color: #e9ecef; }
   </style>
 </head>
 <body>
-
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
@@ -226,7 +224,6 @@ if (!empty($catatanArray)) {
         </li>
       </ul>
     </div>
-
     <div class="NavSide__topbar">
       <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
     </div>
@@ -250,11 +247,11 @@ if (!empty($catatanArray)) {
 
       <!-- KONTEN UTAMA -->
       <div class="p-3">
-          <div class="row align-items-stretch mb-4">
+          <div class="row align-items-stretch mb-2">
             <!-- Kartu Data Mahasiswa -->
             <div class="col-lg-6 mb-4 d-flex">
               <div class="card flex-fill" id="carddataMahasiswa">
-                <div class="card-body px-4 py-3">
+                <div class="card-body px-3 py-2">
                   <h3 class="card-title text-black mb-4 text-center py-2">Data Mahasiswa</h3>
                   <div class="d-flex flex-column gap-4 px-4 py-2">
                     <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nim']) ?></div></div>
@@ -298,13 +295,12 @@ if (!empty($catatanArray)) {
             <div class="col-12">
               <div class="card h-100" id="cardcatatan">
                 <div class="card-body px-4 py-4 d-flex flex-column">
-                  <h3 class="card-title text-black mb-3">Catatan dari Dosen Penguji</h3>
+                  <h3 class="card-title text-black mb-3">Catatan</h3>
                   <div id="catatan" class="form-control flex-grow-1" rows="8" ><?= htmlspecialchars($semuaCatatan) ?></div>
                 </div>
               </div>
             </div>
           </div>
-
 
 <script>
     // Kode untuk toggle sidebar (tidak diubah)
