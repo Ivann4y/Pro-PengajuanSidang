@@ -1,11 +1,63 @@
 <?php
 session_start();
-if ($_SESSION['role'] !== 'dosen') {
+
+// Validasi role dosen
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
-    exit();
+    exit(); 
 }
+
 include "../../koneksi/koneksiAndrew.php";
+
+// Ambil nomor_dosen dari session
+$nomor_dosen = $_SESSION['user_data']['nomor_dosen'] ?? null;
+
+// Inisialisasi nilai awal
+$pengajuan = 0;
+$perbaikan = 0;
+$penilaian = 0;
+
+if ($nomor_dosen) {
+    // 🔹 1. Jumlah Pengajuan dengan status "Belum"
+    $stmt = sqlsrv_query($conn, 
+        "SELECT COUNT(*) AS total 
+         FROM Sidang s
+         JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+         WHERE s.status_ajuan = 'Belum' AND b.nomor_dosen = ?", 
+        [$nomor_dosen]
+    );
+    if ($stmt && $row = sqlsrv_fetch_array($stmt)) {
+        $pengajuan = $row['total'];
+    }
+
+    // 🔹 2. Jumlah Perbaikan yang belum selesai
+    $stmt = sqlsrv_query($conn, 
+        "SELECT COUNT(*) AS total 
+         FROM Detail_Sidang 
+         WHERE (status_revisi IS NULL OR status_revisi = 'Belum') 
+         AND nomor_dosen = ?", 
+        [$nomor_dosen]
+    );
+    if ($stmt && $row = sqlsrv_fetch_array($stmt)) {
+        $perbaikan = $row['total'];
+    }
+
+    // 🔹 3. Jumlah Penilaian yang belum lengkap
+    $stmt = sqlsrv_query($conn, 
+        "SELECT COUNT(*) AS total 
+         FROM Penilaian 
+         WHERE (n_dokumen IS NULL OR n_presentasi IS NULL OR n_tanyajawab IS NULL OR n_proyek IS NULL) 
+         AND nomor_dosen = ?", 
+        [$nomor_dosen]
+    );
+    if ($stmt && $row = sqlsrv_fetch_array($stmt)) {
+        $penilaian = $row['total'];
+    }
+}
+
+// var_dump($_SESSION['user_data']['nomor_dosen']);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -62,7 +114,7 @@ include "../../koneksi/koneksiAndrew.php";
                     <div class="mb-4">
                         <a href="dPengajuan.php" style="text-decoration: none; color: inherit;">
                             <div class="dashboard-card card-pengajuan status-card-common hover-effect-card">
-                                <div class="number">0</div>
+                                <div class="number"><?= $pengajuan ?></div>
                                 <div class="text-content">
                                     <span class="title">Pengajuan</span>
                                     <span class="description">Menunggu Persetujuan</span>
@@ -73,7 +125,7 @@ include "../../koneksi/koneksiAndrew.php";
                     <div class="mb-4">
                         <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
                             <div class="dashboard-card card-perbaikan status-card-common hover-effect-card">
-                                <div class="number">0</div>
+                                <div class="number"><?= $perbaikan ?></div>
                                 <div class="text-content">
                                     <span class="title">Perbaikan</span>
                                     <span class="description">Menunggu untuk Dinilai</span>
@@ -84,7 +136,7 @@ include "../../koneksi/koneksiAndrew.php";
                     <div>
                         <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
                             <div class="dashboard-card card-penilaian status-card-common hover-effect-card">
-                                <div class="number">0</div>
+                                <div class="number"><?= $penilaian ?></div>
                                 <div class="text-content">
                                     <span class="title">Penilaian</span>
                                     <span class="description">Menunggu untuk Dinilai</span>
