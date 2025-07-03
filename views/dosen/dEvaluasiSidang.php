@@ -1,93 +1,84 @@
+
+
+
+
 <?php
 session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
 // ===================================================================================
-// BAGIAN 1: AMBIL ID SIDANG DARI GET SEKALI SAJA, LALU SIMPAN KE SESSION
+// BAGIAN 1: PENGAMBILAN ID SIDANG (VERSI BARU YANG LEBIH BAIK)
 // ===================================================================================
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
-    header("Location: dEvaluasiSidang.php");
-   
+// Ambil ID Sidang langsung dari GET. Jauh lebih sederhana dan tidak merusak parameter lain.
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    // Jika tidak ada ID, kita tidak bisa melanjutkan.
+    // Anda bisa redirect ke halaman daftar sidang atau menampilkan pesan error.
+    die("ID sidang tidak valid atau tidak tersedia.");
 }
-
-
-
-
-
-// Simulasi Dosen yang Login (nantinya ganti dengan session asli)
-
-
-if (!isset($_SESSION['id_sidang_aktif'])) {
-    die("ID sidang tidak tersedia.");
-}
-$id_sidang = $_SESSION['id_sidang_aktif'];
+$id_sidang = (int)$_GET['id'];
 
 // ===================================================================================
 // SIMULASI DOSEN LOGIN (GANTI DENGAN SESSION ASLI NANTI)
 // ===================================================================================
-$nomor_dosen_login = '1001';
 
-
-
-// if (!isset($_SESSION['user']['nomor_dosen'])) { die("Akses ditolak."); }
-// $nomor_dosen_login = $_SESSION['user']['nomor_dosen'];
+if (!isset($_SESSION['user_data']['nomor_dosen'])) { die("Akses ditolak."); }
+$nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
 
 // ===================================================================================
 // BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
 // ===================================================================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Ambil semua data dari form yang dikirim
-    $catatan_post = $_POST['catatanEvaluasi'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Ambil data dari form
+    $nim_mahasiswa = $_POST['nim_mahasiswa'] ?? null;
+    $catatan_post = $_POST['catatanEvaluasi'] ?? '';
     $nilaiLaporan = !empty($_POST['nilaiLaporan']) ? (int)$_POST['nilaiLaporan'] : null;
     $nilaiPresentasi = !empty($_POST['materiPresentasi']) ? (int)$_POST['materiPresentasi'] : null;
     $nilaiPenyampaian = !empty($_POST['nilaiPenyampaian']) ? (int)$_POST['nilaiPenyampaian'] : null;
     $nilaiProyek = !empty($_POST['nilaiProyek']) ? (int)$_POST['nilaiProyek'] : null;
 
-    // Tidak perlu koneksi baru, gunakan $conn yang sudah ada dari include
-    // $conn_post = sqlsrv_connect($serverName, $connectionOptions); 
+    // Validasi dasar
+    if (!$nim_mahasiswa) {
+        $_SESSION['error'] = "Terjadi kesalahan: NIM Mahasiswa tidak ditemukan.";
+        // Redirect kembali ke halaman dengan ID sidang
+        header("Location: dEvaluasiSidang.php?id=$id_sidang");
+        exit; // PENTING: Selalu exit setelah header redirect
+    }
 
     // 1. UPDATE CATATAN REVISI DI TABEL Detail_Sidang
     $sql_update_catatan = "UPDATE Detail_Sidang SET catatan_sidang = ? WHERE id_sidang = ? AND nomor_dosen = ?";
-    $params_update_catatan = [$catatan_post, $id_sidang, $nomor_dosen_login];
-    $stmt_update_catatan = sqlsrv_query($conn, $sql_update_catatan, $params_update_catatan);
-    $error_message = '';
-if ($stmt_update_catatan === false) {
-    $_SESSION['error'] = "Gagal memperbarui catatan revisi: " . print_r(sqlsrv_errors(), true);
-    header("Location: dDaftarSidang.php?id=$id_sidang");
-    exit;
-}
+    $stmt_update_catatan = sqlsrv_query($conn, $sql_update_catatan, [$catatan_post, $id_sidang, $nomor_dosen_login]);
 
+    if ($stmt_update_catatan === false) {
+        $_SESSION['error'] = "Gagal memperbarui catatan revisi: " . print_r(sqlsrv_errors(), true);
+        // Redirect kembali ke tab mahasiswa yang sama
+        header("Location: dEvaluasiSidang.php?id=$id_sidang&nim=$nim_mahasiswa");
+        exit; // PENTING
+    }
 
-
-    // 2. CEK & SIMPAN NILAI (UPSERT) KE TABEL Penilaian
-    $sql_cek_nilai = "SELECT COUNT(*) as 'count' FROM Penilaian WHERE id_sidang = ? AND nomor_dosen = ?";
-    $stmt_cek_nilai = sqlsrv_query($conn, $sql_cek_nilai, [$id_sidang, $nomor_dosen_login]);
+    // 2. CEK & SIMPAN NILAI (UPSERT) PER MAHASISWA
+    $sql_cek_nilai = "SELECT COUNT(*) as 'count' FROM Penilaian WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
+    $stmt_cek_nilai = sqlsrv_query($conn, $sql_cek_nilai, [$id_sidang, $nim_mahasiswa, $nomor_dosen_login]);
     $nilai_exists = sqlsrv_fetch_array($stmt_cek_nilai, SQLSRV_FETCH_ASSOC)['count'] > 0;
 
     if ($nilai_exists) {
-        $sql_nilai = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ? WHERE id_sidang = ? AND nomor_dosen = ?";
-        $params_nilai = [$nilaiLaporan, $nilaiPresentasi, $nilaiPenyampaian, $nilaiProyek, $id_sidang, $nomor_dosen_login];
+        $sql_nilai = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ? WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
     } else {
-        $sql_get_nim = "SELECT TOP 1 km.nim FROM Sidang s JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok WHERE s.id_sidang = ?";
-        $stmt_get_nim = sqlsrv_query($conn, $sql_get_nim, [$id_sidang]);
-        $nim_untuk_insert = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)['nim'];
         $sql_nilai = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, n_dokumen, n_presentasi, n_tanyajawab, n_proyek) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $params_nilai = [$id_sidang, $nim_untuk_insert, $nomor_dosen_login, $nilaiLaporan, $nilaiPresentasi, $nilaiPenyampaian, $nilaiProyek];
     }
-
+    $params_nilai = [$nilaiLaporan, $nilaiPresentasi, $nilaiPenyampaian, $nilaiProyek, $id_sidang, $nim_mahasiswa, $nomor_dosen_login];
+    
     $stmt_nilai = sqlsrv_query($conn, $sql_nilai, $params_nilai);
     if ($stmt_nilai === false) {
-        die("Gagal menyimpan nilai: " . print_r(sqlsrv_errors(), true));
+        $_SESSION['error'] = "Gagal menyimpan nilai mahasiswa: " . print_r(sqlsrv_errors(), true);
+    } else {
+        $_SESSION['success'] = "Evaluasi untuk NIM $nim_mahasiswa berhasil disimpan.";
     }
 
-    // sqlsrv_close($conn_post); // Jangan tutup koneksi di sini
-
-    // ### INI BAGIAN YANG DIPERBAIKI ###
-    // Pastikan ada tanda "=" setelah "id"
-    header("Location: dEvaluasiSidang.php?id=" .$id_sidang . "&status=sukses");
-    exit();
+    // FIX UTAMA: Redirect kembali ke halaman dengan ID dan NIM yang sama agar tab yang benar tetap aktif
+    header("Location: dEvaluasiSidang.php?id=$id_sidang&nim=$nim_mahasiswa");
+    exit(); // PENTING
 }
 
 // ===================================================================================
@@ -95,6 +86,9 @@ if ($stmt_update_catatan === false) {
 // ===================================================================================
 
 // Variabel default
+$mahasiswa = [];
+$current_nim = '';
+$current_nama_mhs = 'Mahasiswa tidak ditemukan';
 $id_kelompok = null;
 $judul = 'Data tidak ditemukan';
 $ruangan = '-';
@@ -105,108 +99,90 @@ $dosenPenguji = [];
 $catatan_revisi = '';
 $nilai_mahasiswa = ['n_dokumen' => '', 'n_presentasi' => '', 'n_tanyajawab' => '', 'n_proyek' => ''];
 
-// Ambil data sidang
-$sql_sidang = "SELECT Judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
-$result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
-if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
-    $judul = $data_sidang['Judul'];
+// 1. Ambil detail dasar sidang (id_kelompok & judul)
+$sql_sidang = "SELECT id_kelompok, judul FROM Sidang WHERE id_sidang = ?";
+$stmt_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
+if ($stmt_sidang && $data_sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC)) {
     $id_kelompok = $data_sidang['id_kelompok'];
-    // ==============================================================================
-    // PERBAIKAN: AMBIL DATA DOSEN DARI TABEL PENJADWALAN BERDASARKAN PERAN
-    // ==============================================================================
+    $judul = $data_sidang['judul'];
+} else {
+    die("Detail sidang dengan ID $id_sidang tidak ditemukan.");
+}
 
-      // ==============================================================================
-    // [PERBAIKAN] PENGAMBILAN DATA DOSEN DENGAN LOGIKA FALLBACK
-    // ==============================================================================
-    // ==============================================================================
-    // [PERBAIKAN] AMBIL DATA DOSEN HANYA DARI TABEL PENJADWALAN
-    // ==============================================================================
-
-    // Inisialisasi variabel array
-    $dosenPembimbing = [];
-    $dosenPenguji = [];
-
-    // Satu query untuk mengambil semua dosen yang terlibat dari tabel Penjadwalan
-    $sql_dosen_terjadwal = "SELECT d.nama_dosen, p.peran_dosen 
-                           FROM [dbo].[Penjadwalan] p 
-                           JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen 
-                           WHERE p.id_sidang = ?";
-    $stmt_dosen_terjadwal = sqlsrv_query($conn, $sql_dosen_terjadwal, [$id_sidang]);
-
-    if ($stmt_dosen_terjadwal) {
-        // Loop untuk memilah hasil berdasarkan peran
-        while ($row = sqlsrv_fetch_array($stmt_dosen_terjadwal, SQLSRV_FETCH_ASSOC)) {
-            
-            // ======================================================================
-            // INI BAGIAN YANG DIUBAH: Membandingkan dengan data biner
-            // Kita akan membandingkan dengan nilai biner '\x01' dan '\x00'
-            // ======================================================================
-
-            if ($row['peran_dosen'] === "\x01") { // "\x01" adalah representasi biner untuk 0x01
-                $dosenPembimbing[] = $row['nama_dosen'];
-            } elseif ($row['peran_dosen'] === "\x00") { // "\x00" adalah representasi biner untuk 0x00
-                $dosenPenguji[] = $row['nama_dosen'];
-            }
+// 2. Ambil daftar mahasiswa dalam kelompok
+if ($id_kelompok) {
+    $sql_mhs = "SELECT km.nim, m.nama_mhs FROM Kelompok_Mahasiswa km JOIN Mahasiswa m ON km.nim = m.nim WHERE km.id_kelompok = ? ORDER BY km.nim";
+    $stmt_mhs = sqlsrv_query($conn, $sql_mhs, [$id_kelompok]);
+    if ($stmt_mhs) {
+        while ($row = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {
+            $mahasiswa[] = $row;
         }
     }
-    // ... sisa kode Anda untuk mengambil jadwal, catatan, dan nilai tetap sama ...
+}
 
-
-
-    // Ambil jadwal
-    $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang FROM Jadwal WHERE id_sidang = ?";
-    $result_jadwal = sqlsrv_query($conn, $sql_jadwal, [$id_sidang]);
-    if ($result_jadwal && $data_jadwal = sqlsrv_fetch_array($result_jadwal, SQLSRV_FETCH_ASSOC)) {
-        $ruangan = $data_jadwal['ruang_sidang'] ?? '-';
-        $jam = $data_jadwal['jam_sidang'] ? $data_jadwal['jam_sidang']->format('H:i') : '-';
-        if ($data_jadwal['tanggal_sidang'] instanceof DateTime) {
-            setlocale(LC_TIME, 'id_ID.UTF-8', 'Indonesian');
-            $tanggal_formatted = strftime('%A, %d %B %Y', $data_jadwal['tanggal_sidang']->getTimestamp());
+// 3. Tentukan mahasiswa yang sedang aktif
+if (!empty($mahasiswa)) {
+    if (isset($_GET['nim']) && in_array($_GET['nim'], array_column($mahasiswa, 'nim'))) {
+        $current_nim = $_GET['nim'];
+    } else {
+        $current_nim = $mahasiswa[0]['nim']; // Default ke mahasiswa pertama
+    }
+    // Cari nama mahasiswa yang aktif
+    foreach ($mahasiswa as $mhs) {
+        if ($mhs['nim'] == $current_nim) {
+            $current_nama_mhs = $mhs['nama_mhs'];
+            break;
         }
     }
+}
 
-      $sql_catatan = "SELECT catatan_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-    $result_catatan = sqlsrv_query($conn, $sql_catatan, [$id_sidang, $nomor_dosen_login]);
-    if ($result_catatan && $row_catatan = sqlsrv_fetch_array($result_catatan, SQLSRV_FETCH_ASSOC)) {
-        $catatan_revisi = $row_catatan['catatan_sidang'];
+// 4. Ambil data dosen, jadwal, catatan, dan nilai
+$sql_dosen_terjadwal = "SELECT d.nama_dosen, p.peran_dosen FROM Penjadwalan p JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ?";
+$stmt_dosen_terjadwal = sqlsrv_query($conn, $sql_dosen_terjadwal, [$id_sidang]);
+if ($stmt_dosen_terjadwal) {
+    while ($row = sqlsrv_fetch_array($stmt_dosen_terjadwal, SQLSRV_FETCH_ASSOC)) {
+        // Asumsi peran_dosen adalah bit/boolean (1 untuk Pembimbing, 0 untuk Penguji)
+        if ($row['peran_dosen']) { 
+            $dosenPembimbing[] = $row['nama_dosen'];
+        } else {
+            $dosenPenguji[] = $row['nama_dosen'];
+        }
     }
+}
+$namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
+$namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
 
-    $sql_get_nilai = "SELECT n_dokumen, n_presentasi, n_tanyajawab, n_proyek FROM Penilaian WHERE id_sidang = ? AND nomor_dosen = ?";
-    $result_get_nilai = sqlsrv_query($conn, $sql_get_nilai, [$id_sidang, $nomor_dosen_login]);
+$sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang FROM Jadwal WHERE id_sidang = ?";
+$result_jadwal = sqlsrv_query($conn, $sql_jadwal, [$id_sidang]);
+if ($result_jadwal && $data_jadwal = sqlsrv_fetch_array($result_jadwal, SQLSRV_FETCH_ASSOC)) {
+    $ruangan = $data_jadwal['ruang_sidang'] ?? '-';
+    $jam = $data_jadwal['jam_sidang'] ? $data_jadwal['jam_sidang']->format('H:i') : '-';
+    if ($data_jadwal['tanggal_sidang'] instanceof DateTime) {
+        setlocale(LC_TIME, 'id_ID.UTF-8', 'Indonesian');
+        $tanggal_formatted = strftime('%A, %d %B %Y', $data_jadwal['tanggal_sidang']->getTimestamp());
+    }
+}
+
+// Ambil catatan (berlaku per kelompok)
+$sql_catatan = "SELECT catatan_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
+$result_catatan = sqlsrv_query($conn, $sql_catatan, [$id_sidang, $nomor_dosen_login]);
+if ($result_catatan && $row_catatan = sqlsrv_fetch_array($result_catatan, SQLSRV_FETCH_ASSOC)) {
+    $catatan_revisi = $row_catatan['catatan_sidang'];
+}
+
+// Ambil nilai untuk mahasiswa yang aktif
+if (!empty($current_nim)) {
+    $sql_get_nilai = "SELECT n_dokumen, n_presentasi, n_tanyajawab, n_proyek FROM Penilaian WHERE id_sidang = ? AND nim = ? AND nomor_dosen = ?";
+    $result_get_nilai = sqlsrv_query($conn, $sql_get_nilai, [$id_sidang, $current_nim, $nomor_dosen_login]);
     if ($result_get_nilai && $row_nilai = sqlsrv_fetch_array($result_get_nilai, SQLSRV_FETCH_ASSOC)) {
         $nilai_mahasiswa = $row_nilai;
     }
 }
 
-// =========================================================================
-// ### LETAKKAN BLOK KODE YANG HILANG DI SINI ###
-// =========================================================================
-$nilai_sudah_dikirim_dan_lengkap = false; // Default-nya false
-if (
-    !empty($catatan_revisi) &&
-    isset($nilai_mahasiswa['n_dokumen']) && $nilai_mahasiswa['n_dokumen'] !== null &&
-    isset($nilai_mahasiswa['n_presentasi']) && $nilai_mahasiswa['n_presentasi'] !== null &&
-    isset($nilai_mahasiswa['n_tanyajawab']) && $nilai_mahasiswa['n_tanyajawab'] !== null &&
-    isset($nilai_mahasiswa['n_proyek']) && $nilai_mahasiswa['n_proyek'] !== null
-) {
-    $nilai_sudah_dikirim_dan_lengkap = true;
-}
-// =========================================================================
-// ### AKHIR DARI BLOK KODE YANG HARUS DITAMBAHKAN ###
-// =========================================================================
-
-
-$namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
-$namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
-
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="id">
-<!-- KODE HTML LANJUTANNYA TETAP SAMA -->
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -220,42 +196,31 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 
 
     <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
-   
-
 </head>
-
 <body>
+
+    
     <div id="NavSide">
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand">
                 <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
             </div>
-
-            <!-- PERBAIKAN UTAMA ADA DI DALAM 'ul' INI -->
             <ul class="NavSide__sidebar-nav">
-
-                <!-- PERBAIKAN: Nama kelas diperbaiki dan dipisah dengan spasi -->
-                <!-- Item ini akan menjadi aktif karena memiliki DUA kelas -->
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="dEvaluasiSidang.php?id=<?= $id_sidang ?>">
-                        <!-- PERBAIKAN: Nama kelas span juga diperbaiki -->
+                    <a href="dEvaluasiSidang.php?">
                         <span class="fw-semibold NavSide__sidebar-title">Evaluasi</span>
                     </a>
                 </li>
-
-                <!-- PERBAIKAN: Nama kelas diperbaiki -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dDokumenRevisi.php?id=<?= $id_sidang ?>">
+                    <a href="dDokumenRevisi.php">
                         <span class="fw-semibold NavSide__sidebar-title">Dokumen</span>
                     </a>
                 </li>
-
-                <!-- PERBAIKAN: Nama kelas diperbaiki -->
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dNilaiAkhir.php?id_sidang=<?= $id_sidang ?>">
+                    <a href="dNilaiAkhir.php">
                         <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                     </a>
                 </li>
@@ -263,38 +228,69 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     <b></b><b></b>
                     <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a>
                 </li>
-
-
-
-
             </ul>
         </div>
-
-        <!-- Sisa dari halaman Anda (seperti page-content-wrapper, dll.) -->
-        <!-- ... -->
 
         <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
                 <h2>Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-                <form id="evaluasiForm" method="POST" action="dEvaluasiSidang.php?id=<?php echo $id_sidang; ?>">
+                </br>
+
+                <div class="container-fluid">
+                   <div class="row mb-3">
+                       <div class="col-12">
+                         <ul class="nav nav-tabs">
+                            <?php if (empty($mahasiswa)): ?>
+                                <li class="nav-item">
+                                    <span class="nav-link disabled">Tidak ada mahasiswa dalam kelompok ini</span>
+                                </li>
+                            <?php else: ?>
+                                <?php foreach ($mahasiswa as $index => $mhs): ?>
+                                    <li class="nav-item">
+                                        <!-- Link tab sekarang menyertakan parameter nim -->
+                                        <a class="nav-link <?php echo ($mhs['nim'] == $current_nim) ? 'active active-student-tab' : ''; ?>"
+                                           href="dEvaluasiSidang.php?id=<?php echo htmlspecialchars($id_sidang); ?>&nim=<?php echo htmlspecialchars($mhs['nim']); ?>">
+                                           Mahasiswa <?php echo $index + 1; ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                         </ul>
+                       </div>
+                   </div>
+                   <br>
+
+                <!-- Pastikan form memiliki id untuk di-submit via JavaScript jika perlu -->
+                <form id="evaluasiForm" method="POST" action="dEvaluasiSidang.php?id=<?php echo htmlspecialchars($id_sidang); ?>">
+                    <!-- INPUT HIDDEN UNTUK MENGIRIM NIM MAHASISWA YANG AKTIF -->
+                    <input type="hidden" name="nim_mahasiswa" value="<?= htmlspecialchars($current_nim) ?>">
+
                     <div class="info-card">
                         <div class="section">
-                            <div class="info-group">
-                                <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
-                                <div class="value-row"><?php echo htmlspecialchars($judul); ?></div>
-                            </div>
-                            <div class="info-group">
-                                <div class="label-row"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
-                                <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
-                            </div>
-                            <div class="info-group">
-                                <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Penguji</span></div>
-                                <div class="value-row"><?php echo $namaPenguji_html; ?></div>
-                            </div>
+                                  <div class="info-group">
+                                    <div class="label-row"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div>
+                                    <div class="value-row"> <?php echo htmlspecialchars($current_nim ?? 'N/A'); ?></div>
+                                  </div>
+                                  <div class="info-group">
+                                    <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
+                                    <div class="value-row"><?php echo htmlspecialchars($judul); ?></div>
+                                  </div>
+                                  <div class="info-group">
+                                    <div class="label-row"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
+                                    <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
+                                  </div>
+                                  <div class="info-group">
+                                    <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Penguji</span></div>
+                                    <div class="value-row"><?php echo $namaPenguji_html; ?></div>
+                                  </div>
                         </div>
                         <div class="section">
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span></div>
+                                <div class="value-row"><?php echo htmlspecialchars($current_nama_mhs); ?></div>
+                            </div>
                             <div class="info-group">
                                 <div class="label-row"><i class="fa-solid fa-door-open"></i><span class="fw-bold">Ruangan</span></div>
                                 <div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div>
@@ -311,106 +307,50 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     </div>
                     
                     <h3>Nilai Sidang (Sementara)</h3>
-<div class="form-card">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4>Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
-    </div>
+                    <div class="form-card">
+                        <h4 class="mb-3">Masukkan Nilai Sidang <span style="color: red;">*</span></h4>
+                        <div class="penilaian-container">
+                            <div class="penilaian-item">
+                                <label for="nilaiLaporan">Nilai Laporan :</label>
+                                <input type="number" class="form-control-custom text-center" name="nilaiLaporan" min="0" max="100" value="<?= htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? '') ?>" required>
+                            </div>
+                            <div class="penilaian-item">
+                                <label for="materiPresentasi">Materi Presentasi :</label>
+                                <input type="number" class="form-control-custom text-center" name="materiPresentasi" min="0" max="100" value="<?= htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? '') ?>" required>
+                            </div>
+                            <div class="penilaian-item">
+                                <label for="nilaiPenyampaian">Penyampaian :</label>
+                                <input type="number" class="form-control-custom text-center" name="nilaiPenyampaian" min="0" max="100" value="<?= htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? '') ?>" required>
+                            </div>
+                            <div class="penilaian-item">
+                                <label for="nilaiProyek">Nilai Proyek :</label>
+                                <input type="number" class="form-control-custom text-center" name="nilaiProyek" min="0" max="100" value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>" required>
+                            </div>
+                        </div>
+                        <!-- Layout vertikal untuk mobile tetap bisa digunakan jika CSS Anda sudah mengaturnya -->
+                    </div>
 
-    <!-- Wadah untuk tampilan desktop (horizontal) -->
-   <div class="penilaian-container">
-    <div class="penilaian-item">
-        <label for="nilaiLaporan">Nilai Laporan :</label>
-        <input type="text" class="form-control-custom text-center input-nilai" name="nilaiLaporan" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? '') ?>">
-    </div>
-    <div class="penilaian-item">
-        <label for="materiPresentasi">Materi Presentasi :</label>
-        <input type="text" class="form-control-custom text-center input-nilai" name="materiPresentasi" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? '') ?>">
-    </div>
-    <div class="penilaian-item">
-        <label for="nilaiPenyampaian">Penyampaian :</label>
-        <input type="text" class="form-control-custom text-center input-nilai" name="nilaiPenyampaian" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? '') ?>">
-    </div>
-    <div class="penilaian-item">
-        <label for="nilaiProyek">Nilai Proyek :</label>
-        <input type="text" class="form-control-custom text-center input-nilai" name="nilaiProyek" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>">
-    </div>
-</div>
+                    <h3>Catatan Evaluasi Sidang</h3>
+                    <div class="form-card">
+                        <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
+                        <p class="text-muted small">Catatan ini berlaku untuk seluruh anggota kelompok.</p>
+                        <div class="form-group-custom mt-2">
+                            <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.." required><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
+                        </div>
+                    </div>
 
-<!-- Wadah BARU untuk tampilan tablet/mobile (vertikal) -->
-<div class="penilaian-grid-vertical">
-    <label for="nilaiLaporan_v">Nilai Laporan</label> <span>:</span>
-    <input type="text" class="form-control-custom text-center input-nilai" name="nilaiLaporan_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_dokumen'] ?? '') ?>">
-    
-    <label for="materiPresentasi_v">Materi Presentasi</label> <span>:</span>
-    <input type="text" class="form-control-custom text-center input-nilai" name="materiPresentasi_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_presentasi'] ?? '') ?>">
-    
-    <label for="nilaiPenyampaian_v">Penyampaian</label> <span>:</span>
-    <input type="text" class="form-control-custom text-center input-nilai" name="nilaiPenyampaian_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_tanyajawab'] ?? '') ?>">
-    
-    <label for="nilaiProyek_v">Nilai Proyek</label> <span>:</span>
-    <input type="text" class="form-control-custom text-center input-nilai" name="nilaiProyek_v" maxlength="3" value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>">
-</div>
-    
-    <p class="error-message" id="nilaiSidangErrorMessage"> *Semua nilai harus diisi!</p>
-</div>
-
-
-   
-
-
-                   
-<?php if (!empty($_SESSION['error'])): ?>
-    <div style="color: red; font-weight: bold;">
-        <?= htmlspecialchars($_SESSION['error']) ?>
-    </div>
-    <?php unset($_SESSION['error']); ?>
-<?php endif; ?>
-
-
-  <h3>Catatan Evaluasi Sidang</h3>
-<div class="form-card">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
-    </div>
-    <div class="form-group-custom">
-        <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-        
-        <!-- TAMBAHKAN LOGIKA 'readonly' DI SINI -->
-        <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.." <?= $nilai_sudah_dikirim_dan_lengkap ? 'readonly' : '' ?>><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
-    </div>
-    <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
-</div>
-
-<?php 
-// GUNAKAN BLOK 'if' UNTUK MENAMPILKAN TOMBOL SECARA KONDISIONAL
-if (!$nilai_sudah_dikirim_dan_lengkap): ?>
-<div class="button-group-bottom">
-    <button style="margin-left:auto;" type="button" class="btn-kirim" id="btnKirim">Kirim</button>
-</div>
-<?php endif; ?>
-
-</form>
+                    <div class="button-group-bottom">
+                        <!-- Tombol ini sekarang menjadi tombol submit form -->
+                        <button style="margin-left:auto;" type="submit" class="btn-kirim">Simpan Nilai Sementara</button>
+                    </div>
+                </form>
             </main>
         </div>
     </div>
-    <div class="modal fade" id="confirmationKirimModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationKirimModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content custom-modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-                <div class="modal-header custom-modal-header border-0 justify-content-center">
-                    <h4 class="modal-title fw-bold" id="confirmationKirimModalLabel" style="font-size: 24px;">Perhatian!</h4>
-                </div>
-                <div class="modal-body custom-modal-body">
-                    <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda yakin hendak mengirimkan evaluasi sidang?</p>
-                    <div class="d-flex justify-content-between px-5"><button type="button" class="btn btn-tolak fw-semibold" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-setujui fw-semibold" id="btnKonfirmasiKirim">Kirimkan</button></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-     <script src="../../assets/js/dEvaluasiSidang.js"></script> 
-   
- 
+    <!-- Ganti dengan path JS Anda jika ada -->
+    <!-- <script src="../../assets/js/dEvaluasiSidang.js"></script> --> 
 </body>
-
 </html>
