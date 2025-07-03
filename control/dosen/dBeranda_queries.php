@@ -34,7 +34,7 @@ switch($action) {
 
     case 'perbaikan':
         // Filter perbaikan by dosen's nomor_dosen
-        $sqlPerbaikan = "SELECT COUNT(*) AS total FROM Detail_Sidang WHERE status_revisi = 0x00 AND nomor_dosen = ?";
+        $sqlPerbaikan = "SELECT COUNT(*) AS total FROM Detail_Sidang WHERE (status_revisi IS NULL OR status_revisi = 'Belum') AND nomor_dosen = ?";
         $stmtPerbaikan = sqlsrv_query($conn, $sqlPerbaikan, [$nomor_dosen]);
         if ($stmtPerbaikan === false) {
             echo json_encode(['error' => sqlsrv_errors()]);
