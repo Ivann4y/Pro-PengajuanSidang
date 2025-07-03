@@ -64,7 +64,7 @@ $mainFilterCondition = "
     (FullSidangData.jenis_sidang = 0x00 AND EXISTS (
         SELECT 1 FROM [dbo].[Bimbingan] b 
         WHERE b.id_kelompok = FullSidangData.id_kelompok AND b.nomor_dosen = ?
-    ))prnjsf
+    ))
     OR
     -- Kondisi 2: Dosen adalah pengampu mata kuliah untuk Sidang Semester (jenis_sidang = 0x01)
     (FullSidangData.jenis_sidang = 0x01 AND EXISTS (
