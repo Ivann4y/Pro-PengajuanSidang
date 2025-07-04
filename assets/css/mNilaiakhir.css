@@ -5,8 +5,8 @@
   margin-bottom: 0.5rem;
   margin-left: 10px;
 }
-#body{
-  min-height:10vh;
+#body {
+  min-height: 10vh;
 }
 
 /* Menghilangkan navigasi tab mahasiswa jika ada */
@@ -28,11 +28,10 @@
     238,
     245
   ); /* Warna latar belakang biru keabu-abuan muda */
-  border-radius: 20px; /* Sudut yang lebih tumpul */
+  border-radius: 50px; /* Sudut yang lebih tumpul */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Efek bayangan halus */
   margin-left: 10px;
-    border: none; /* <-- PERUBAHAN: Memastikan border hilang */
-
+  border: none; /* <-- PERUBAHAN: Memastikan border hilang */
 }
 
 /* Style untuk kartu nilai */
@@ -171,4 +170,17 @@
   ) !important; /* Background sedikit gelap */
   border-radius: 15px; /* Rounded corner */
   transition: all 0.3s ease; /* Transisi halus untuk semua properti */
+}
+
+/* Tambahkan ini di bagian paling bawah file mNilaiakhir.css */
+
+#catatan {
+  /* Membuat background menjadi transparan agar warnanya sama dengan kartu induknya */
+  background-color: transparent !important;
+
+  /* Menghilangkan border yang diberikan oleh kelas .form-control */
+  border: none !important;
+
+  /* Opsional: memastikan warna teks tetap hitam jika terpengaruh */
+  color: #000000;
 }

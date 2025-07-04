@@ -92,14 +92,6 @@ body {
    STYLING TAMBAHAN YANG HILANG
    ================================= */
 
-.badge-custom {
-  background-color: #4fd382;
-  color: white;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 20px;
-}
-
 .card-comment {
   background-color: #f1f3f5 !important;
   padding: 20px;
@@ -270,11 +262,29 @@ body {
   cursor: not-allowed;
 } */
 
+.badge-custom {
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 20px;
+}
+
+.badge-success {
+  background-color: #4fd382;
+  color: white;
+}
+
+.badge-danger {
+  background-color: #FD7D7D;
+  color: white;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: white; /* warna coklat gelap biar kontras tapi tetap lembut */
+}
+
 .badge-statusDosen {
-  /* color: #e6f4ec; */
-  /* background-color: #4fd382; */
   font-size: 0.8rem;
-  /* padding: 5px 10px; */
   padding: 8px 14px;
   border-radius: 20px;
   display: inline-block;

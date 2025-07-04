@@ -140,20 +140,16 @@ body {
   display: block;
 }
 
-
-
-
 .NavSide__main-content {
   flex-grow: 1;
-  padding: 20px;
-  margin-left: 280px;
+  padding: 20px 20px 20px calc(20px + 1cm) !important;
+  margin-right: 50%;
   overflow-y: auto;
   transition: margin-left 0.5s ease-in-out;
   background-color: #f9fafb;
   padding-top: 3vh;
   /* Default for larger screens */
 }
-
 
 .NavSide__toggle {
   position: fixed;
@@ -241,765 +237,355 @@ body {
   color: white;
   font-weight: 600;
 }
+  #catatanEvaluasi {
+            text-align: left !important;
+            padding-left: 15px; /* Memberi sedikit ruang dari tepi kiri */
+            padding-top: 10px; /* Memberi sedikit ruang dari tepi atas */
+        }
 
-/* --- LAYOUT UTAMA --- */
-#NavSide {
-  display: flex;
-  min-height: 100vh;
-  position: relative;
-}
-#page-content-wrapper {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  margin-left: 280px;
-  transition: margin-left 0.5s ease-in-out;
-}
+    /* --- LAYOUT UTAMA --- */
+    #NavSide { display: flex; min-height: 100vh; position: relative; }
+    #page-content-wrapper { flex-grow: 1; display: flex; flex-direction: column; position: relative; margin-left: 280px; transition: margin-left 0.5s ease-in-out; }
 
-/* --- SIDEBAR (NAVIGASI KIRI) --- */
-.NavSide__sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 280px;
-  border-left: 5px solid #4b68fb;
-  background: #4b68fb;
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
-}
-.NavSide__sidebar-brand {
-  padding: 10% 5% 50% 5%;
-  text-align: center;
-}
-.NavSide__sidebar-brand img {
-  width: 90%;
-  max-width: 180px;
-  height: auto;
-  display: inline-block;
-  filter: brightness(0) invert(1);
-}
-.NavSide__sidebar-nav {
-  width: 100%;
-  padding-left: 0;
-  padding-top: 0;
-  list-style: none;
-  flex-grow: 1;
-}
+    /* --- SIDEBAR (NAVIGASI KIRI) --- */
+    .NavSide__sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; border-left: 5px solid #4B68FB; background: #4B68FB; overflow-x: hidden; overflow-y: auto; z-index: 1000; display: flex; flex-direction: column; transition: transform 0.5s ease-in-out, width 0.5s ease-in-out; }
+    .NavSide__sidebar-brand { padding: 10% 5% 50% 5%; text-align: center; }
+    .NavSide__sidebar-brand img { width: 90%; max-width: 180px; height: auto; display: inline-block; filter: brightness(0) invert(1); }
+    .NavSide__sidebar-nav { width: 100%; padding-left: 0; padding-top: 0; list-style: none; flex-grow: 1; }
+    
+    /* ======================================================= */
+    /* === PERBAIKAN UTAMA DIMULAI DARI SINI === */
+    /* ======================================================= */
 
-/* ======================================================= */
-/* === PERBAIKAN UTAMA DIMULAI DARI SINI === */
-/* ======================================================= */
+    /* Style dasar untuk setiap item menu di sidebar */
+    .NavSide__sidebar-item { 
+        position: relative; 
+        display: block; 
+        width: 100%; 
+        border-top-left-radius: 20px; 
+        border-bottom-left-radius: 20px; 
+        margin-bottom: 15px; 
+    }
+    
+    /* Style untuk link (tag <a>) di dalam item menu */
+    .NavSide__sidebar-item a { 
+        position: relative; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        width: 100%; 
+        text-decoration: none; 
+        color: rgb(252, 252, 252); 
+        height: 60px; 
+        box-sizing: border-box; 
+    }
 
-/* Style dasar untuk setiap item menu di sidebar */
-.NavSide__sidebar-item {
-  position: relative;
-  display: block;
-  width: 100%;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-  margin-bottom: 15px;
-}
+    /* Style untuk judul/teks di dalam link menu */
+    .NavSide__sidebar-title { 
+        white-space: normal; 
+        text-align: center; 
+        line-height: 1.5; 
+    }
+    
+    /* Style untuk item menu yang sedang AKTIF (latar putih, teks biru) */
+    .NavSide__sidebar-item.NavSide__sidebar-item--active { 
+        background: #ffffff; 
+    }
+    .NavSide__sidebar-item.NavSide__sidebar-item--active a { 
+        color: #4B68FB !important; 
+    }
+    
+    /* Efek Sudut Melengkung pada Item Aktif (menggunakan elemen <b>) */
+    .NavSide__sidebar-item b {
+        position: absolute;
+        height: 20px;
+        width: 100%;
+        background: #ffffff; /* Warna ini HARUS SAMA dengan background item aktif */
+        display: none;       /* Sembunyikan secara default */
+    }
+    .NavSide__sidebar-item b:nth-child(1) { top: -20px; }  /* Posisi lengkungan atas */
+    .NavSide__sidebar-item b:nth-child(2) { bottom: -20px; } /* Posisi lengkungan bawah */
 
-/* Style untuk link (tag <a>) di dalam item menu */
-.NavSide__sidebar-item a {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  text-decoration: none;
-  color: rgb(252, 252, 252);
-  height: 60px;
-  box-sizing: border-box;
-}
+    /* Pseudo-elemen '::before' untuk menciptakan bentuk lengkungannya */
+    .NavSide__sidebar-item b::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #4B68FB; /* Warna ini HARUS SAMA dengan background sidebar */
+    }
+    .NavSide__sidebar-item b:nth-child(1)::before { border-bottom-right-radius: 20px; }
+    .NavSide__sidebar-item b:nth-child(2)::before { border-top-right-radius: 20px; }
 
-/* Style untuk judul/teks di dalam link menu */
-.NavSide__sidebar-title {
-  white-space: normal;
-  text-align: center;
-  line-height: 1.5;
-}
+    /* KUNCI UTAMA: Tampilkan elemen lengkungan HANYA pada item yang aktif */
+    .NavSide__sidebar-item.NavSide__sidebar-item--active b {
+        display: block;
+    }
+    
+    /* ======================================================= */
+    /* === AKHIR DARI BAGIAN YANG DIPERBAIKI === */
+    /* ======================================================= */
 
-/* Style untuk item menu yang sedang AKTIF (latar putih, teks biru) */
-.NavSide__sidebar-item.NavSide__sidebar-item--active {
-  background: #ffffff;
-}
-.NavSide__sidebar-item.NavSide__sidebar-item--active a {
-  color: #4b68fb !important;
-}
+    /* --- KONTEN UTAMA & KOMPONENNYA --- */
+    .NavSide__main-content { flex-grow: 1; padding: 20px 0.7px 20px calc(20px + 0.7cm); margin-right: 0; overflow-y: auto; padding-top: 20px; }
+    .NavSide__main-content h2 { margin-bottom: 0.9cm; font-weight: 700; }
+    .NavSide__main-content h3 { font-weight: 700; font-size: 1.4rem; margin-bottom: 0.2cm; }
 
-/* Efek Sudut Melengkung pada Item Aktif (menggunakan elemen <b>) */
-.NavSide__sidebar-item b {
-  position: absolute;
-  height: 20px;
-  width: 100%;
-  background: #ffffff; /* Warna ini HARUS SAMA dengan background item aktif */
-  display: none; /* Sembunyikan secara default */
-}
-.NavSide__sidebar-item b:nth-child(1) {
-  top: -20px;
-} /* Posisi lengkungan atas */
-.NavSide__sidebar-item b:nth-child(2) {
-  bottom: -20px;
-} /* Posisi lengkungan bawah */
+    /* Badge Status */
+    .status-badge { background-color: #FFA3A3; color: black; border-radius: 20px; padding: 8px 18px; display: inline-block; font-size: 0.875rem; box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08); font-weight: bold; margin-bottom: 1.2cm; }
+    .status-badge.approved { background-color: #4BFBAF; } /* Warna badge jika statusnya 'approved' */
 
-/* Pseudo-elemen '::before' untuk menciptakan bentuk lengkungannya */
-.NavSide__sidebar-item b::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #4b68fb; /* Warna ini HARUS SAMA dengan background sidebar */
-}
-.NavSide__sidebar-item b:nth-child(1)::before {
-  border-bottom-right-radius: 20px;
-}
-.NavSide__sidebar-item b:nth-child(2)::before {
-  border-top-right-radius: 20px;
-}
+    /* Kartu Informasi (Info Card) */
+    .info-card { position: relative; background: rgb(235, 238, 245); border-radius: 30px; box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05); padding: 25px; display: flex; justify-content: space-between; flex-wrap: wrap; overflow: hidden; transition: background-color 0.4s ease; margin-bottom: 1.2cm; margin-right: 0.9cm; }
+    /* Efek hover biru yang menutupi kartu (trik dengan pseudo-elemen '::after') */
+    .info-card::after { content: ""; position: absolute; top: 0; right: 0; width: 60px; height: 100%; background-color: #4B68FB; border-top-right-radius: 20px; border-bottom-right-radius: 20px; transition: width 0.4s ease; z-index: 0; }
+    .info-card:hover::after { width: 100%; border-radius: 20px; }
+    /* Section di dalam info-card (perlu z-index agar teks tetap di atas efek hover) */
+    .info-card .section { flex: 0 0 48%; z-index: 1; color: #333; transition: color 0.4s ease; display: flex; flex-direction: column; justify-content: space-between; }
+    .info-card:hover .section { color: white; } /* Teks menjadi putih saat di-hover */
+    .info-card .section .info-group { margin-bottom: 1rem; }
+    .info-card .section .info-group:last-child { margin-bottom: 0; }
+    .info-card .section .label-row { display: flex; align-items: center; margin-bottom: 0.25rem; font-size: 1rem; }
+    .info-card .section .label-row i { margin-right: 10px; color: #495057; font-weight: 900; transition: color 0.4s ease; width: 20px; text-align: center; }
+    .info-card:hover .section .label-row i { color: white; } /* Ikon menjadi putih saat di-hover */
+    .info-card .section .label-row .fw-bold { font-weight: 600; font-size: 1.05rem; }
+    .info-card .section .value-row { margin-left: 30px; line-height: 1.5; font-size: 0.95rem; margin-bottom: 0; }
 
-/* KUNCI UTAMA: Tampilkan elemen lengkungan HANYA pada item yang aktif */
-.NavSide__sidebar-item.NavSide__sidebar-item--active b {
-  display: block;
-}
+    /* Kartu Form (Form Card) & Elemen Form */
+    .form-card { background:rgb(235, 238, 245); border-radius: 30px; box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05); padding: 15px 25px; margin-bottom: 1.2cm; margin-right: 0.9cm; }
+    .form-card h4 { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.8cm; }
+    /* Layout untuk baris input penilaian */
+    .penilaian-row { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center; margin-top: 0.5cm; margin-bottom: 1rem; margin-left: 0 !important; margin-right: 0 !important; gap: 20px; }
+    .penilaian-row .col-item { padding: 0 !important; flex: 0 0 auto; width: calc(25% - (20px * 3 / 4)); box-sizing: border-box; display: flex; align-items: center; margin-bottom: 0; }
+    .penilaian-row label { flex-shrink: 0; white-space: nowrap; margin-right: 10px; font-weight: 550; margin-top: 0; color: #333; min-width: unset; text-align: left; }
+    .penilaian-row .colon { flex-shrink: 0; margin-right: 10px; color: #333; }
+    /* Style untuk input nilai yang kecil */
+    input.form-control-custom.input-nilai { width: 75px; font-size: 1rem; height: 40px; padding: 5px 10px; text-align: center; flex-grow: 0; min-width: unset; background-color: #ffffff !important; border: 1px solid #F2F2F2; border-radius: 10px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .form-card .form-control-custom.input-nilai:focus { border-color: #4B68FB; box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25); outline: none; }
+    /* Grup form umum (label + input) */
+    .form-group-custom { margin-bottom: 1rem; display: flex; align-items: center; flex-wrap: wrap; }
+    .form-group-custom label { flex: 0 0 180px; margin-right: 20px; font-size: 1rem; font-weight: 500; color: #333; }
+    .form-group-custom .form-control-custom { flex: 1; min-width: 200px; background-color: white !important; border: 1px solid #F2F2F2; border-radius: 10px; padding: 10px 15px; font-size: 0.95rem; height: 45px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .form-group-custom .form-control-custom:focus { border-color: #4B68FB; box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25); outline: none; }
+    .form-group-custom textarea.form-control-custom { min-height: 200px; resize: vertical; }
 
-/* ======================================================= */
-/* === AKHIR DARI BAGIAN YANG DIPERBAIKI === */
-/* ======================================================= */
+    /* --- TOMBOL-TOMBOL --- */
+    /* Grup tombol di bagian bawah halaman */
+    .button-group-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 1.2cm; margin-right: 0.9cm; }
+    /* Tombol Kembali */
+    .btn-kembali { background-color: #4B68FB; color: white; border: none; border-radius: 20px; padding: 0 25px; cursor: pointer; font-size: 0.95rem; font-weight: 500; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; display: flex; align-items: center; justify-content: center; height: 45px; text-decoration: none;}
+    .btn-kembali:hover { position: relative; background-color: white; color: #4B68FB; border: 1px solid #4B68FB; }
+    .btn-kembali .icon-circle { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background-color: white; border-radius: 50%; margin-right: 10px; transition: background-color 0.3s ease; }
+    .btn-kembali:hover .icon-circle { background-color: #4B68FB; }
+    .btn-kembali .icon-circle i { color: #4B68FB; }
+    .btn-kembali:hover .icon-circle i { color: white; }
+    /* Tombol Kirim */
+    .btn-kirim { background-color: #4FD382; color: #FFFFFF; border: none; border-radius: 20px; padding: 0 25px; cursor: pointer; font-size: 0.95rem; font-weight: 500; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; display: flex; align-items: center; justify-content: center; height: 45px; }
+    .btn-kirim:hover { background-color: #3AB070; color: white; }
 
-/* --- KONTEN UTAMA & KOMPONENNYA --- */
-.NavSide__main-content {
-  flex-grow: 1;
-  padding: 20px 0.7px 20px calc(20px + 0.7cm);
-  margin-right: 0;
-  overflow-y: auto;
-  padding-top: 20px;
-}
-.NavSide__main-content h2 {
-  margin-bottom: 0.9cm;
-  font-weight: 700;
-}
-.NavSide__main-content h3 {
-  font-weight: 700;
-  font-size: 1.4rem;
-  margin-bottom: 0.2cm;
-}
-
-/* Badge Status */
-.status-badge {
-  background-color: #ffa3a3;
-  color: black;
-  border-radius: 20px;
-  padding: 8px 18px;
-  display: inline-block;
-  font-size: 0.875rem;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
-  font-weight: bold;
-  margin-bottom: 1.2cm;
-}
-.status-badge.approved {
-  background-color: #4bfbaf;
-} /* Warna badge jika statusnya 'approved' */
-
-/* Kartu Informasi (Info Card) */
-.info-card {
-  position: relative;
-  background: rgb(235, 238, 245);
-  border-radius: 30px;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-  padding: 25px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  overflow: hidden;
-  transition: background-color 0.4s ease;
-  margin-bottom: 1.2cm;
-  margin-right: 0.9cm;
-}
-/* Efek hover biru yang menutupi kartu (trik dengan pseudo-elemen '::after') */
-.info-card::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 60px;
-  height: 100%;
-  background-color: #4b68fb;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  transition: width 0.4s ease;
-  z-index: 0;
-}
-.info-card:hover::after {
-  width: 100%;
-  border-radius: 20px;
-}
-/* Section di dalam info-card (perlu z-index agar teks tetap di atas efek hover) */
-.info-card .section {
-  flex: 0 0 48%;
-  z-index: 1;
-  color: #333;
-  transition: color 0.4s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.info-card:hover .section {
-  color: white;
-} /* Teks menjadi putih saat di-hover */
-.info-card .section .info-group {
-  margin-bottom: 1rem;
-}
-.info-card .section .info-group:last-child {
-  margin-bottom: 0;
-}
-.info-card .section .label-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.25rem;
-  font-size: 1rem;
-}
-.info-card .section .label-row i {
-  margin-right: 10px;
-  color: #495057;
-  font-weight: 900;
-  transition: color 0.4s ease;
-  width: 20px;
-  text-align: center;
-}
-.info-card:hover .section .label-row i {
-  color: white;
-} /* Ikon menjadi putih saat di-hover */
-.info-card .section .label-row .fw-bold {
-  font-weight: 600;
-  font-size: 1.05rem;
-}
-.info-card .section .value-row {
-  margin-left: 30px;
-  line-height: 1.5;
-  font-size: 0.95rem;
-  margin-bottom: 0;
-}
-
-/* Kartu Form (Form Card) & Elemen Form */
-.form-card {
-  background: rgb(235, 238, 245);
-  border-radius: 30px;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-  padding: 15px 25px;
-  margin-bottom: 1.2cm;
-  margin-right: 0.9cm;
-}
-.form-card h4 {
-  font-weight: 600;
-  font-size: 1.05rem;
-  margin-bottom: 0.8cm;
-}
-/* Layout untuk baris input penilaian */
-.penilaian-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: center;
-  margin-top: 0.5cm;
-  margin-bottom: 1rem;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  gap: 20px;
-}
-.penilaian-row .col-item {
-  padding: 0 !important;
-  flex: 0 0 auto;
-  width: calc(25% - (20px * 3 / 4));
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  margin-bottom: 0;
-}
-.penilaian-row label {
-  flex-shrink: 0;
-  white-space: nowrap;
-  margin-right: 10px;
-  font-weight: 550;
-  margin-top: 0;
-  color: #333;
-  min-width: unset;
-  text-align: left;
-}
-.penilaian-row .colon {
-  flex-shrink: 0;
-  margin-right: 10px;
-  color: #333;
-}
-/* Style untuk input nilai yang kecil */
-input.form-control-custom.input-nilai {
-  width: 75px;
-  font-size: 1rem;
-  height: 40px;
-  padding: 5px 10px;
-  text-align: center;
-  flex-grow: 0;
-  min-width: unset;
-  background-color: #ffffff !important;
-  border: 1px solid #f2f2f2;
-  border-radius: 10px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.form-card .form-control-custom.input-nilai:focus {
-  border-color: #4b68fb;
-  box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25);
-  outline: none;
-}
-/* Grup form umum (label + input) */
-.form-group-custom {
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.form-group-custom label {
-  flex: 0 0 180px;
-  margin-right: 20px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
-}
-.form-group-custom .form-control-custom {
-  flex: 1;
-  min-width: 200px;
-  background-color: white !important;
-  border: 1px solid #f2f2f2;
-  border-radius: 10px;
-  padding: 10px 15px;
-  font-size: 0.95rem;
-  height: 45px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.form-group-custom .form-control-custom:focus {
-  border-color: #4b68fb;
-  box-shadow: 0 0 0 0.25rem rgba(75, 104, 251, 0.25);
-  outline: none;
-}
-.form-group-custom textarea.form-control-custom {
-  min-height: 200px;
-  resize: vertical;
-}
-
-/* --- TOMBOL-TOMBOL --- */
-/* Grup tombol di bagian bawah halaman */
-.button-group-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1.2cm;
-  margin-right: 0.9cm;
-}
-/* Tombol Kembali */
-.btn-kembali {
-  background-color: #4b68fb;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 0 25px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 45px;
-  text-decoration: none;
-}
-.btn-kembali:hover {
-  position: relative;
-  background-color: white;
-  color: #4b68fb;
-  border: 1px solid #4b68fb;
-}
-.btn-kembali .icon-circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  background-color: white;
-  border-radius: 50%;
-  margin-right: 10px;
-  transition: background-color 0.3s ease;
-}
-.btn-kembali:hover .icon-circle {
-  background-color: #4b68fb;
-}
-.btn-kembali .icon-circle i {
-  color: #4b68fb;
-}
-.btn-kembali:hover .icon-circle i {
-  color: white;
-}
-/* Tombol Kirim */
-.btn-kirim {
-  background-color: #4fd382;
-  color: #ffffff;
-  border: none;
-  border-radius: 20px;
-  padding: 0 25px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 45px;
-}
-.btn-kirim:hover {
-  background-color: #3ab070;
-  color: white;
-}
-
-/* --- MODAL (POP-UP) --- */
-/* Style untuk konten modal (sebelumnya) */
-.modal-content.custom-modal-content {
-  border-radius: 30px !important;
-  background-color: #f8f9fa;
-  border: none;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
-  padding: 20px;
-}
-/* Header modal (sebelumnya) */
-.modal-header.custom-modal-header {
-  border-bottom: none;
-  justify-content: center;
-  padding: 0;
-  margin-bottom: 20px;
-}
-/* Body modal (sebelumnya) */
-.modal-body.custom-modal-body {
-  text-align: center;
-  padding: 0;
-}
-/* Tombol di dalam modal (sebelumnya) */
-.btn-tolak,
-.btn-setujui {
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-  height: 45px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 25px;
-}
-.btn-tolak {
-  background-color: #fd7d7d;
-  color: white;
-}
-.btn-tolak:hover {
-  background-color: #f85c5c;
-  color: white;
-}
-.btn-setujui {
-  background-color: #4fd382;
-  color: white;
-}
-.btn-setujui:hover {
-  background-color: #3ab070;
-  color: white;
-}
-
-/* Pesan Error Validasi */
-.error-message {
-  color: red;
-  font-size: 0.9rem;
-  font-weight: 500;
-  display: none;
-  margin-top: 10px;
-  margin-left: 0;
-  text-align: left;
-}
+    /* --- MODAL (POP-UP) --- */
+    /* Style untuk konten modal (sebelumnya) */
+    .modal-content.custom-modal-content { border-radius: 30px !important; background-color: #f8f9fa; border: none; box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05); padding: 20px; }
+    /* Header modal (sebelumnya) */
+    .modal-header.custom-modal-header { border-bottom: none; justify-content: center; padding: 0; margin-bottom: 20px; }
+    /* Body modal (sebelumnya) */
+    .modal-body.custom-modal-body { text-align: center; padding: 0; }
+    /* Tombol di dalam modal (sebelumnya) */
+    .btn-tolak, .btn-setujui { border-radius: 20px; cursor: pointer; font-size: 0.95rem; font-weight: 500; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; height: 45px; border: none; display: flex; align-items: center; justify-content: center; padding: 0 25px; }
+    .btn-tolak { background-color: #FD7D7D; color: white; }
+    .btn-tolak:hover { background-color: #F85C5C; color: white; }
+    .btn-setujui { background-color: #4FD382; color: white; }
+    .btn-setujui:hover { background-color: #3AB070; color: white; }
+    
+    /* Pesan Error Validasi */
+    .error-message { color: red; font-size: 0.9rem; font-weight: 500; display: none; margin-top: 10px; margin-left: 0; text-align: left; }
 .penilaian-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap; /* Agar bisa turun baris jika tidak muat */
-  gap: 20px; /* Jarak antar item */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Agar bisa turun baris jika tidak muat */
+    gap: 20px; /* Jarak antar item */
 }
 .penilaian-item {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* Jarak antara label dan input */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Jarak antara label dan input */
 }
 .penilaian-item label {
-  font-weight: 500;
-  white-space: nowrap;
-  margin-bottom: 0;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-bottom: 0;
 }
 .penilaian-item .form-control-custom {
-  width: 80px; /* Lebar input box di desktop */
-  height: 45px;
-  border-radius: 10px;
+    width: 80px; /* Lebar input box di desktop */
+    height: 45px;
+    border-radius: 10px;
 }
 
 /* --- 2. Pengaturan untuk Tampilan Tablet/Mobile (Vertikal) --- */
 .penilaian-grid-vertical {
-  display: grid;
-  /* Tiga kolom: [Label] [:] [Input] */
-  grid-template-columns: 150px auto 1fr;
-  gap: 15px 10px; /* Jarak baris 15px, jarak kolom 10px */
-  align-items: center;
+    display: grid;
+    /* Tiga kolom: [Label] [:] [Input] */
+    grid-template-columns: 150px auto 1fr;
+    gap: 15px 10px; /* Jarak baris 15px, jarak kolom 10px */
+    align-items: center;
 }
 .penilaian-grid-vertical label,
 .penilaian-grid-vertical span {
-  font-weight: 500;
-  color: #555;
-  margin: 0;
+    font-weight: 500;
+    color: #555;
+    margin: 0;
 }
 .penilaian-grid-vertical label {
-  justify-self: start; /* Rata kiri */
+    justify-self: start; /* Rata kiri */
 }
 .penilaian-grid-vertical .form-control-custom {
-  width: 100px; /* Lebar input box di mobile */
-  height: 45px;
-  border-radius: 10px;
-  justify-self: end; /* Paksa input box untuk rata kanan */
+    width: 100px ; /* Lebar input box di mobile */
+    height: 45px;
+    border-radius: 10px;
+    justify-self: end; /* Paksa input box untuk rata kanan */
 }
 
 /* --- 3. Logika Switcher (Paling Penting!) --- */
 
 /* Secara default (layar > 1416px), sembunyikan tampilan vertikal */
 .penilaian-grid-vertical {
-  display: none;
+    display: none;
 }
 
 /* Saat layar 1416px atau lebih kecil, lakukan penukaran */
 @media (max-width: 1416px) {
-  /* Sembunyikan tampilan horizontal */
-  .penilaian-container {
-    display: none;
-  }
-  /* Tampilkan tampilan vertikal */
-  .penilaian-grid-vertical {
-    display: grid;
-  }
+    /* Sembunyikan tampilan horizontal */
+    .penilaian-container {
+        display: none;
+    }
+    /* Tampilkan tampilan vertikal */
+    .penilaian-grid-vertical {
+        display: grid;
+    }
 }
 
-/* --- RESPONSIVE DESIGN --- */
 
-/* Style untuk Tablet (lebar layar maks 768px) */
-@media (max-width: 768px) {
-  .penilaian-row {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    gap: 15px 0;
-  }
-  .penilaian-row .col-3 {
-    width: 100%;
-    justify-content: flex-start;
-    padding: 0 !important;
-    margin-bottom: 0;
-  }
-  .penilaian-row label {
-    min-width: unset;
-    text-align: left;
-    margin-right: 10px;
-  }
-  .form-card .form-control-custom.input-nilai {
-    flex-grow: 1;
-  }
-  .form-group-custom {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .form-group-custom label {
-    flex: none;
-    width: 100%;
-    margin-bottom: 0.5rem;
-    margin-right: 0;
-  }
-  .form-group-custom .form-control-custom {
-    width: 100%;
-    min-width: unset;
-  }
-  .modal-dialog {
-    margin: 1rem auto;
-    max-width: 95% !important;
-  }
-  .modal-content.custom-modal-content {
-    padding: 15px !important;
-  }
-  .modal-body.custom-modal-body {
-    padding: 0 !important;
-    text-align: center;
-  }
-  .modal-body.custom-modal-body > .d-flex.justify-content-between.px-5 {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-    gap: 15px;
-    width: 100%;
-    flex-wrap: nowrap;
-  }
-  .modal-body.custom-modal-body .btn-tolak,
-  .modal-body.custom-modal-body .btn-setujui {
-    flex-grow: 1;
-    flex-shrink: 0;
-    flex-basis: auto;
-    width: auto;
-    height: 40px;
-    font-size: 0.9rem;
-    padding: 0 10px !important;
-    border-radius: 18px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  }
-  /* ===== [START] PERBAIKAN HOVER DI MOBILE ===== */
-  /* Hapus efek hover biru di mobile karena interaksi hover tidak umum */
-  .isiTabel:hover td {
-    background-color: transparent;
-    color: inherit; /* Kembalikan ke warna teks asli */
-    box-shadow: none;
-  }
 
-  .penilaian-row {
-    flex-direction: column; /* PAKSA SEMUA ITEM JADI TUMPUKAN VERTIKAL */
-    align-items: stretch; /* Buat item membentang selebar kontainer */
-    gap: 20px; /* Jarak antar baris nilai */
-  }
 
-  /* --- INI KODE BARU YANG SUDAH DIPERBAIKI --- */
-  .penilaian-row .col-item {
+
+
+
+
+    /* --- RESPONSIVE DESIGN --- */
+
+
+    /* Style untuk Tablet (lebar layar maks 768px) */
+    @media (max-width: 768px) {
+        .penilaian-row { margin-left: 0 !important; margin-right: 0 !important; gap: 15px 0; }
+        .penilaian-row .col-3 { width: 100%; justify-content: flex-start; padding: 0 !important; margin-bottom: 0; }
+        .penilaian-row label { min-width: unset; text-align: left; margin-right: 10px; }
+        .form-card .form-control-custom.input-nilai { flex-grow: 1;}
+        .form-group-custom { flex-direction: column; align-items: flex-start; }
+        .form-group-custom label { flex: none; width: 100%; margin-bottom: 0.5rem; margin-right: 0; }
+        .form-group-custom .form-control-custom { width: 100%; min-width: unset; }
+        .modal-dialog { margin: 1rem auto; max-width: 95% !important; }
+        .modal-content.custom-modal-content { padding: 15px !important; }
+        .modal-body.custom-modal-body { padding: 0 !important; text-align: center; }
+        .modal-body.custom-modal-body > .d-flex.justify-content-between.px-5 { padding-left: 20px !important; padding-right: 20px !important; gap: 15px; width: 100%; flex-wrap: nowrap; }
+        .modal-body.custom-modal-body .btn-tolak, .modal-body.custom-modal-body .btn-setujui { flex-grow: 1; flex-shrink: 0; flex-basis: auto; width: auto; height: 40px; font-size: 0.9rem; padding: 0 10px !important; border-radius: 18px; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); }
+            /* ===== [START] PERBAIKAN HOVER DI MOBILE ===== */
+    /* Hapus efek hover biru di mobile karena interaksi hover tidak umum */
+    .isiTabel:hover td {
+        background-color: transparent;
+        color: inherit; /* Kembalikan ke warna teks asli */
+        box-shadow: none;
+    }
+
+
+.penilaian-row {
+        flex-direction: column; /* PAKSA SEMUA ITEM JADI TUMPUKAN VERTIKAL */
+        align-items: stretch;   /* Buat item membentang selebar kontainer */
+        gap: 20px;              /* Jarak antar baris nilai */
+    }
+
+ /* --- INI KODE BARU YANG SUDAH DIPERBAIKI --- */
+.penilaian-row .col-item {
     display: grid;
     /* UBAH 'auto' MENJADI LEBAR TETAP (misal: 150px) */
     grid-template-columns: 150px 1fr; /* <--- INI SOLUSINYA */
     gap: 10px;
     width: 100%;
     align-items: center; /* Tambahkan ini agar label dan input sejajar di tengah */
-  }
-  /* Hilangkan titik dua di mobile agar lebih bersih */
-  .penilaian-row label::after {
-    content: "";
-  }
-
-  .penilaian-row label {
-    text-align: left;
-  }
-
-  /* ===== [END] PERBAIKAN HOVER DI MOBILE ===== */
 }
+    /* Hilangkan titik dua di mobile agar lebih bersih */
+    .penilaian-row label::after {
+        content: ""; 
+    }
+    
+    .penilaian-row label {
+        text-align: left;
+    }
 
-/* Style untuk Mobile (lebar layar maks 700px) */
-@media (max-width: 700px) {
-  /* Sidebar menjadi slide-in menu (tersembunyi secara default) */
+   
+    
+    /* ===== [END] PERBAIKAN HOVER DI MOBILE ===== */
 
-  /* Konten utama memenuhi seluruh layar */
-  #page-content-wrapper {
-    margin-left: 0;
-  }
-  /* Topbar ditampilkan di mobile */
+    }
+    
+    /* Style untuk Mobile (lebar layar maks 700px) */
+    @media (max-width: 700px) {
+        /* Sidebar menjadi slide-in menu (tersembunyi secara default) */
+        
+        /* Konten utama memenuhi seluruh layar */
+        #page-content-wrapper { margin-left: 0; }
+        /* Topbar ditampilkan di mobile */
+        
+        .status-badge { margin-bottom: 0.5cm; }
+        .info-card { margin-bottom: 0.5cm; margin-right: 0; flex-direction: column; }
+        .info-card .section { flex: 0 0 100%; margin-bottom: 1rem; }
+        .info-card .section:last-child { margin-bottom: 0; }
+        .form-card { margin-right: 0; padding: 15px; }
+        .button-group-bottom { flex-direction: row; justify-content: space-between; align-items: center; margin-top: 1.2cm; margin-left: 0; margin-right: 0; }
+        .btn-kembali, .btn-kirim { width: auto; flex: none; margin: 0; height: 40px; padding: 0 10px; font-size: 0.85rem; border-radius: 18px; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); }
+        .btn-kembali .icon-circle { width: 25px; height: 25px; margin-right: 8px; }
+        .btn-kembali .icon-circle i { font-size: 1.1rem; }
+        .penilaian-row label { width: 150px; flex-shrink: 0; white-space: nowrap; margin-right: 10px; text-align: left; }
+        input.form-control-custom.input-nilai { flex-grow: 1; }
 
-  .status-badge {
-    margin-bottom: 0.5cm;
-  }
-  .info-card {
-    margin-bottom: 0.5cm;
-    margin-right: 0;
-    flex-direction: column;
-  }
-  .info-card .section {
-    flex: 0 0 100%;
-    margin-bottom: 1rem;
-  }
-  .info-card .section:last-child {
-    margin-bottom: 0;
-  }
-  .form-card {
-    margin-right: 0;
-    padding: 15px;
-  }
-  .button-group-bottom {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1.2cm;
-    margin-left: 0;
-    margin-right: 0;
-  }
-  .btn-kembali,
-  .btn-kirim {
-    width: auto;
-    flex: none;
-    margin: 0;
-    height: 40px;
-    padding: 0 10px;
-    font-size: 0.85rem;
-    border-radius: 18px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  }
-  .btn-kembali .icon-circle {
-    width: 25px;
-    height: 25px;
-    margin-right: 8px;
-  }
-  .btn-kembali .icon-circle i {
-    font-size: 1.1rem;
-  }
-  .penilaian-row label {
-    width: 150px;
-    flex-shrink: 0;
-    white-space: nowrap;
-    margin-right: 10px;
-    text-align: left;
-  }
-  input.form-control-custom.input-nilai {
-    flex-grow: 1;
+        .col-lg-49 {
+     flex: 0 0 100%;
+     max-width: 100%;
   }
 
-  .col-lg-49 {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
 
-  /* ... (kode media query Anda yang lain) ... */
+   /* ... (kode media query Anda yang lain) ... */
 
-  .penilaian-row {
-    flex-direction: column; /* PAKSA SEMUA ITEM JADI TUMPUKAN VERTIKAL */
-    align-items: stretch; /* Buat item membentang selebar kontainer */
-    gap: 20px; /* Jarak antar baris nilai */
-  }
+     .penilaian-row {
+        flex-direction: column; /* PAKSA SEMUA ITEM JADI TUMPUKAN VERTIKAL */
+        align-items: stretch;   /* Buat item membentang selebar kontainer */
+        gap: 20px;              /* Jarak antar baris nilai */
+    }
 
-  /* --- INI KODE BARU YANG SUDAH DIPERBAIKI --- */
-  .penilaian-row .col-item {
+/* --- INI KODE BARU YANG SUDAH DIPERBAIKI --- */
+.penilaian-row .col-item {
     display: grid;
     /* UBAH 'auto' MENJADI LEBAR TETAP (misal: 150px) */
     grid-template-columns: 150px 1fr; /* <--- INI SOLUSINYA */
     gap: 10px;
     width: 100%;
     align-items: center; /* Tambahkan ini agar label dan input sejajar di tengah */
-  }
-
-  /* Hilangkan titik dua di mobile agar lebih bersih */
-  .penilaian-row label::after {
-    content: "";
-  }
-
-  .penilaian-row label {
-    text-align: left;
-  }
 }
 
+    /* Hilangkan titik dua di mobile agar lebih bersih */
+    .penilaian-row label::after {
+        content: ""; 
+    }
+    
+    .penilaian-row label {
+        text-align: left;
+    }
+
+    }
+
+    
 @media (max-width: 700px) {
   .NavSide__sidebar {
     width: 50%;
@@ -1028,6 +614,7 @@ input.form-control-custom.input-nilai {
     padding: 12% 10%;
     height: auto;
   }
+
 
   .NavSide__toggle {
     display: flex;
@@ -1061,12 +648,16 @@ input.form-control-custom.input-nilai {
   }
 
   .text-heading {
-    font-size: 30px;
+    font-size:30px;
   }
 
   .text-heading-mobile {
     font-weight: 550;
-
+    
     margin: auto;
   }
 }
+
+
+
+    
