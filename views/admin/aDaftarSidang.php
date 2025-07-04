@@ -227,16 +227,8 @@ if ($result === false) {
                         <tr>
                             <th scope="col">Nomor</th>
                             <th scope="col">Kelompok</th>
-                            <th scope="col" id="thDynamicHeader">
-                                <?php
-                                if ($filter === 'ta')
-                                    echo "Judul Sidang";
-                                elseif ($filter === 'semester')
-                                    echo "Mata Kuliah";
-                                else
-                                    echo "Judul/Mata Kuliah";
-                                ?>
-                            </th>
+                            <th scope="col">Judul</th>
+                            <th scope="col">Mata Kuliah</th>
                             <th scope="col" id="thDynamicHeader">
                                  <?php
                                 if ($filter === 'ta') echo "Pembimbing";
@@ -256,14 +248,11 @@ if ($result === false) {
             <tr class="isiTabel">
                 <td data-label="Nomor"><?= $counter ?></td>
                 <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
-                <td data-label="Judul/MK">
-                    <?php 
-                     if ($row['jenis_sidang'] == 'Semester') {
-                        echo htmlspecialchars($row['nama_matkul'] ?? 'N/A');
-                    } else {
-                        echo htmlspecialchars($row['judul'] ?? 'N/A');
-                    }
-                    ?>
+                <td data-label="Judul">
+                    <?= htmlspecialchars($row['judul']) ?>
+                </td>
+                <td data-label="Mata Kuliah">
+                    <?= htmlspecialchars($row['nama_matkul'] ?? 'Tidak ada mata kuliah') ?>
                 </td>
                 <td data-label="Pembimbing/Pengampu">
                     <?php 
