@@ -327,7 +327,7 @@ if ($current_nim && empty($error_message)) {
             <!-- Kartu Data Mahasiswa -->
             <div class="col-lg-6 mb-4 d-flex">
               <div class="card flex-fill" id="carddataMahasiswa">
-                <div class="card-body px-3 py-2">
+                <div class="card-body px-4 py-4">
                   <h3 class="card-title text-black mb-4 text-center py-2">Data Mahasiswa</h3>
                   <div class="d-flex flex-column gap-4 px-4 py-2">
                     <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nim']) ?></div></div>
@@ -342,7 +342,7 @@ if ($current_nim && empty($error_message)) {
             <div class="col-lg-6 mb-4 d-flex">
               <div class="card flex-fill" id="cardNilai">
                 <div class="card-body px-4 py-3 text-center d-flex flex-column justify-content-center">
-                  <h3 class="card-title mb-3 text-black" style="padding:10px ;">Nilai Mahasiswa</h3>
+                  <h3 class="card-title text-black mb-4 text-center py-2">Nilai Mahasiswa</h3>
                   <input 
                   type="text" 
                   class="form-control nilai-mahasiswa-display" 
