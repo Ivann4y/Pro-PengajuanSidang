@@ -43,88 +43,84 @@ if ($prodiResult) {
 
 
 
-// Persiapan filter
+// --- Persiapan Filter ---
 $params = [];
-$whereClause = [];
-//filter jenis sidang
+$whereClauses = [];
+$joins = "
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    JOIN Jadwal j ON s.id_sidang = j.id_sidang
+";
+
+// Filter jenis sidang
 if ($filter === 'ta') {
-    $whereClause[] = "s.jenis_sidang = 0";
+    $whereClauses[] = "k.jenis_sidang = 'TA'";
 } elseif ($filter === 'semester') {
-    $whereClause[] = "s.jenis_sidang = 1";
+    $whereClauses[] = "k.jenis_sidang = 'Semester'";
 }
-//filter prodi
-$prodiJoin = "";
+
+// Filter prodi
 if ($prodiFilter !== 'all') {
-    $prodiJoin = "JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok JOIN Mahasiswa m_prodi ON km.nim = m_prodi.nim";
-    $whereClause[] = "m_prodi.prodi = ?";
+    // Tambahkan JOIN hanya jika filter prodi aktif
+    $joins .= "
+        JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+        JOIN Mahasiswa m_prodi ON km.nim = m_prodi.nim
+    ";
+    $whereClauses[] = "m_prodi.prodi = ?";
     $params[] = $prodiFilter;
 }
 
-// Query untuk menghitung total data
-$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang {$prodiJoin}";
-if (!empty($whereClause)) {
-    // Buat klausa WHERE untuk count query
-    $countWhereClause = $whereClause;
-    if ($prodiFilter !== 'all') {
-        array_pop($countWhereClause); // Hapus parameter prodi dari klausa count jika ada
-    }
-    if (!empty($countWhereClause)) {
-        $countQuery .= " WHERE " . implode(" AND ", $countWhereClause);
-    }
+// --- Query untuk menghitung total data (SUDAH DIPERBAIKI) ---
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total FROM Sidang s {$joins}";
+if (!empty($whereClauses)) {
+    $countQuery .= " WHERE " . implode(" AND ", $whereClauses);
 }
-$countParams = ($prodiFilter !== 'all' ? [$prodiFilter] : []);
-$countResult = sqlsrv_query($conn, $countQuery, $countParams);
-if($countResult === false) { die(print_r(sqlsrv_errors(), true)); }
+
+// Parameter untuk count query sama dengan query utama
+$countResult = sqlsrv_query($conn, $countQuery, $params);
+if($countResult === false) { die("Error di count query: " . print_r(sqlsrv_errors(), true)); }
 $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
-// Query utama untuk mengambil data sidang sesuai filter dan pagination
+// --- Query utama untuk mengambil data sidang (SUDAH DIPERBAIKI) ---
 $query = "SELECT DISTINCT
         s.id_sidang,
         s.judul,
         s.id_kelompok,
-        s.jenis_sidang,
-        
+        k.jenis_sidang,
         (SELECT TOP 1 mk.nama_matkul 
          FROM Detail_Sidang ds
          JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
          WHERE ds.id_sidang = s.id_sidang) AS nama_matkul,
         CASE 
-            WHEN s.jenis_sidang = 0 THEN -- Jika Sidang TA, ambil HANYA Pembimbing (peran=1)
+            WHEN k.jenis_sidang = 'TA' THEN
                 (SELECT d.nama_dosen
                  FROM Penjadwalan p
                  JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen
                  WHERE p.id_sidang = s.id_sidang AND p.peran_dosen = 1)
-            WHEN s.jenis_sidang = 1 THEN -- Jika Sidang Semester, ambil Pengampu
+            WHEN k.jenis_sidang = 'Semester' THEN
                 (SELECT STRING_AGG(d.nama_dosen, CHAR(13) + CHAR(10))
                  FROM Pengampu_Kelas pk
                  JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
                  WHERE 
-                -- Filter 1: Mencocokkan mata kuliahnya
-                pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang)
-                
-                -- Filter 2: Mencocokkan kelas mahasiswa
-                AND pk.id_kelas = (SELECT TOP 1 km.id_kelas
-                                   FROM Kelompok_Mahasiswa kpm
-                                   JOIN Kelas_Mahasiswa km ON kpm.nim = km.nim
-                                   WHERE kpm.id_kelompok = s.id_kelompok))
+                    pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang)
+                    AND pk.id_kelas = (SELECT TOP 1 k_mhs.id_kelas
+                                       FROM Kelompok_Mahasiswa kpm
+                                       JOIN Kelas_Mahasiswa k_mhs ON kpm.nim = k_mhs.nim
+                                       WHERE kpm.id_kelompok = s.id_kelompok))
         END AS nama_dosen_terkait
-    
     FROM Sidang s
-    JOIN Jadwal j ON s.id_sidang = j.id_sidang
-    {$prodiJoin}
+    {$joins}
 ";
 
-if (!empty($whereClause)) {
-    $query .= " WHERE " . implode(' AND ', $whereClause);
+if (!empty($whereClauses)) {
+    $query .= " WHERE " . implode(' AND ', $whereClauses);
 }
 
 $query .= " ORDER BY s.id_sidang OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
 // Tambahkan parameter untuk OFFSET dan FETCH
-$params_final = $params;
-$params_final[] = $offset;
-$params_final[] = $rowsPerPage;
+$params_final = array_merge($params, [$offset, $rowsPerPage]);
+
 // Eksekusi query utama
 $result = sqlsrv_query($conn, $query, $params_final);
 if ($result === false) {
@@ -256,19 +252,22 @@ if ($result === false) {
         <?php
         $counter = ($currentPage - 1) * $rowsPerPage + 1;
         while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
-             $jenis_sidang_int = ord($row['jenis_sidang']);
         ?>
             <tr class="isiTabel">
                 <td data-label="Nomor"><?= $counter ?></td>
                 <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                 <td data-label="Judul/MK">
                     <?php 
-                    echo htmlspecialchars(($jenis_sidang_int == 1) ? $row['nama_matkul'] : $row['judul']); 
+                     if ($row['jenis_sidang'] == 'Semester') {
+                        echo htmlspecialchars($row['nama_matkul'] ?? 'N/A');
+                    } else {
+                        echo htmlspecialchars($row['judul'] ?? 'N/A');
+                    }
                     ?>
                 </td>
                 <td data-label="Pembimbing/Pengampu">
                     <?php 
-                    echo nl2br(htmlspecialchars($row['nama_dosen_terkait'])); 
+                    echo nl2br(htmlspecialchars($row['nama_dosen_terkait'] ?? 'Belum ditentukan')); 
                     ?>
                 </td>
                 <td data-label="Aksi">
