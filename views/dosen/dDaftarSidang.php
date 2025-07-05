@@ -21,7 +21,6 @@ if ($conn === false) {
     die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
 }
 
-
 // --- LOGIKA FILTER & PAGINASI ---
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -29,43 +28,53 @@ $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// [PERUBAHAN 1: LOGIKA PENGAMBILAN DATA]
-// Query dasar diubah untuk secara akurat menentukan judul dan nama penanggung jawab.
+// [PERUBAHAN UTAMA: QUERY DISESUAIKAN DENGAN SKEMA BARU]
+// Query dasar diubah untuk JOIN dengan tabel Kelompok
 $baseQuery = "
     WITH FullSidangData AS (
         SELECT
             s.id_sidang,
-            s.id_kelompok,
-            s.jenis_sidang,
+            k.id_kelompok,      -- id_kelompok dari tabel Kelompok (Primary Key)
+            k.nomor_kelompok,  -- nomor_kelompok untuk ditampilkan
+            k.jenis_sidang,    -- jenis_sidang sekarang dari tabel Kelompok
+            -- Menentukan Judul/Nama Mata Kuliah
+            CASE 
+                WHEN k.jenis_sidang = 'Tugas Akhir' THEN s.judul -- Jika Sidang TA, tampilkan judul
+                ELSE (SELECT TOP 1 mk.nama_matkul FROM [dbo].[MataKuliah] mk WHERE mk.id_matkul = k.id_matkul) -- Jika Sidang Semester, tampilkan nama matkul dari Kelompok
+            END AS display_title,
             -- Menentukan Penanggung Jawab (Pembimbing/Pengampu)
             CASE 
-                WHEN s.jenis_sidang = 0x00 THEN -- Untuk Sidang TA, cari Dosen Pembimbing
+                WHEN k.jenis_sidang = 'Tugas Akhir' THEN -- Untuk Sidang TA, cari Dosen Pembimbing
                     (SELECT TOP 1 d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = s.id_kelompok)
                 ELSE -- Untuk Sidang Semester, cari Dosen Pengampu Mata Kuliah
-                    (SELECT TOP 1 d.nama_dosen FROM [dbo].[Detail_Sidang] ds JOIN [dbo].[Pengampu_Kelas] pk ON ds.id_matkul = pk.id_matkul JOIN [dbo].[Dosen] d ON pk.nomor_dosen = d.nomor_dosen WHERE ds.id_sidang = s.id_sidang)
+                    (SELECT TOP 1 d.nama_dosen FROM [dbo].[Pengampu_Kelas] pk JOIN [dbo].[Dosen] d ON pk.nomor_dosen = d.nomor_dosen WHERE pk.id_matkul = k.id_matkul)
             END AS nama_penanggung_jawab
-        FROM [dbo].[Sidang] s
+        FROM 
+            [dbo].[Sidang] s
+        JOIN 
+            [dbo].[Kelompok] k ON s.id_kelompok = k.id_kelompok -- JOIN PENTING untuk mendapatkan data dari Kelompok
     )
 ";
 
-// --- [PERUBAHAN 2: LOGIKA PENYARINGAN] ---
+
+// --- [PERUBAHAN: LOGIKA PENYARINGAN DISESUAIKAN] ---
 $whereConditions = [];
 $params = [];
 
 // Kondisi utama: Tampilkan sidang hanya jika dosen yang login adalah penanggung jawab.
+// Logika ini disederhanakan karena nama_penanggung_jawab sudah dihitung di CTE
 $mainFilterCondition = "
 (
-    -- Kondisi 1: Dosen adalah pembimbing untuk Sidang TA (jenis_sidang = 0x00)
-    (FullSidangData.jenis_sidang = 0x00 AND EXISTS (
+    -- Kondisi 1: Dosen adalah pembimbing untuk Sidang TA
+    (FullSidangData.jenis_sidang = 'Tugas Akhir' AND EXISTS (
         SELECT 1 FROM [dbo].[Bimbingan] b 
         WHERE b.id_kelompok = FullSidangData.id_kelompok AND b.nomor_dosen = ?
     ))
     OR
-    -- Kondisi 2: Dosen adalah pengampu mata kuliah untuk Sidang Semester (jenis_sidang = 0x01)
-    (FullSidangData.jenis_sidang = 0x01 AND EXISTS (
-        SELECT 1 FROM [dbo].[Detail_Sidang] ds 
-        JOIN [dbo].[Pengampu_Kelas] pk ON ds.id_matkul = pk.id_matkul 
-        WHERE ds.id_sidang = FullSidangData.id_sidang AND pk.nomor_dosen = ?
+    -- Kondisi 2: Dosen adalah pengampu mata kuliah untuk Sidang Semester
+    (FullSidangData.jenis_sidang = 'Semester' AND EXISTS (
+        SELECT 1 FROM [dbo].[Pengampu_Kelas] pk 
+        WHERE pk.id_matkul = (SELECT id_matkul FROM Kelompok WHERE id_kelompok = FullSidangData.id_kelompok) AND pk.nomor_dosen = ?
     ))
 )";
 $whereConditions[] = $mainFilterCondition;
@@ -73,41 +82,50 @@ $whereConditions[] = $mainFilterCondition;
 array_push($params, $nomor_dosen_login, $nomor_dosen_login);
 
 
-// Filter jenis sidang (TA atau Semester) tetap sama
+// Filter jenis sidang (TA atau Semester) sekarang menggunakan string
 if ($filter === 'ta') {
     $whereConditions[] = "jenis_sidang = ?";
-    array_push($params, 0x00);
+    array_push($params, 'Tugas Akhir'); // Menggunakan string 'Tugas Akhir'
 } elseif ($filter === 'semester') {
     $whereConditions[] = "jenis_sidang = ?";
-    array_push($params, 0x01);
+    array_push($params, 'Semester'); // Menggunakan string 'Semester'
 }
 
-// Filter pencarian tetap sama, namun sekarang mencari di 'nama_penanggung_jawab'
+// Filter pencarian sekarang mencari di 'nomor_kelompok'
 if (!empty($search)) {
-    $whereConditions[] = "(CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR display_title LIKE ? OR nama_penanggung_jawab LIKE ?)";
+    // Mencari berdasarkan nomor kelompok, judul/matkul, atau nama penanggung jawab
+    $whereConditions[] = "(CAST(nomor_kelompok AS VARCHAR(255)) LIKE ? OR display_title LIKE ? OR nama_penanggung_jawab LIKE ?)";
     $likeParam = "%" . $search . "%";
     array_push($params, $likeParam, $likeParam, $likeParam);
 }
 
 // Gabungkan semua kondisi WHERE
-$whereClause = " WHERE " . implode(' AND ', $whereConditions);
+$whereClause = !empty($whereConditions) ? " WHERE " . implode(' AND ', $whereConditions) : "";
 
 // --- QUERY PENGHITUNGAN TOTAL DATA ---
 $countQuery = $baseQuery . "SELECT COUNT(id_sidang) as total FROM FullSidangData" . $whereClause;
 $countStmt = sqlsrv_query($conn, $countQuery, $params);
 if ($countStmt === false) {
-    die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true));
+    // Cetak error yang lebih detail untuk debugging
+    echo "Error saat menghitung total data: <pre>";
+    print_r(sqlsrv_errors());
+    echo "</pre>";
+    // Juga cetak query yang dijalankan untuk analisis
+    echo "Query Gagal: " . $countQuery;
+    die();
 }
 $totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
 $totalPages = $totalRecords > 0 ? ceil($totalRecords / $rowsPerPage) : 1;
 
-if ($currentPage > $totalPages) {
+// Pastikan halaman saat ini tidak melebihi total halaman
+if ($currentPage > $totalPages && $totalPages > 0) {
     $currentPage = $totalPages;
     $offset = ($currentPage - 1) * $rowsPerPage;
 }
 
 // --- QUERY UTAMA UNTUK MENGAMBIL DATA ---
-$mainQuery = $baseQuery . "SELECT id_sidang, id_kelompok, display_title, nama_penanggung_jawab FROM FullSidangData" . $whereClause . " ORDER BY id_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
+// Mengambil nomor_kelompok untuk ditampilkan
+$mainQuery = $baseQuery . "SELECT id_sidang, nomor_kelompok, display_title, nama_penanggung_jawab FROM FullSidangData" . $whereClause . " ORDER BY nomor_kelompok ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 $mainParams = array_merge($params, [$offset, $rowsPerPage]);
 $result = sqlsrv_query($conn, $mainQuery, $mainParams);
 if ($result === false) {
@@ -220,9 +238,8 @@ if ($filter === 'ta') {
                                     <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                         <tr class="isiTabel jadiBiru">
                                             <td data-label="No"><?= $nomor++ ?></td>
-                                            <td data-label="Kelompok">Kelompok <?= htmlspecialchars($row['id_kelompok'] ?? '-') ?></td>
-                                            <td data-label="Judul"><?= htmlspecialchars($row['display_title'] ?? 'N/A') ?></td>
-                                            <td data-label="Mata Kuliah"><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A') ?></td>
+                                            <td data-label="Kelompok"><?= htmlspecialchars($row['nomor_kelompok'] ?? '-') ?></td>
+                                            <td data-label="Judul/Mata Kuliah"><?= htmlspecialchars($row['display_title'] ?? 'N/A') ?></td>
                                             <!-- [PERUBAHAN] Atribut data-label diubah untuk menggunakan variabel dinamis -->
                                             <td data-label="<?= htmlspecialchars($headerLabel) ?>"><?= htmlspecialchars($row['nama_penanggung_jawab'] ?? 'Belum Ditentukan') ?></td>                                            <td data-label="Aksi" style="text-align: center;">
                                                 <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn" title="Evaluasi Sidang">
