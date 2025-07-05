@@ -32,51 +32,61 @@ if (!isset($_SESSION['selected_sidang_id']) || !is_numeric($_SESSION['selected_s
 }
 $id_sidang = (int) $_SESSION['selected_sidang_id'];
 
-
+// === LOGIKA FETCH DATA ===
 // === LOGIKA FETCH DATA ===
 $nama_mahasiswa = '';
 $status_revisi = '';
-$status_pengajuan = 'Belum Disetujui';
+$status_pengajuan = 'Belum Disetujui'; // Default value
 $catatan_list = [];
 
-// Query untuk mengambil informasi dasar
+// === FIX: Query untuk mengambil informasi dasar ===
+// Menggunakan JOIN yang benar: Sidang -> Kelompok -> Mahasiswa
 $query_info = "
-    SELECT TOP 1 ds.status_revisi, m.nama_mhs
-    FROM Detail_Sidang ds
-    JOIN Sidang s ON ds.id_sidang = s.id_sidang
-    JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-    JOIN Mahasiswa m ON km.nim = m.nim
-    WHERE ds.id_sidang = ?
+    SELECT TOP 1 ds.status_revisi, m.nama_mhs, s.status_ajuan
+    FROM Sidang s
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    JOIN Mahasiswa m ON k.nim = m.nim
+    WHERE s.id_sidang = ?
 ";
+
 $params_info = array($id_sidang);
 $stmt_info = sqlsrv_query($conn, $query_info, $params_info);
 if ($stmt_info === false) {
     die("Error saat menjalankan query info: <br><pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 $data_info = sqlsrv_fetch_array($stmt_info, SQLSRV_FETCH_ASSOC);
+
 if (!$data_info) {
     die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan.");
 }
-$nama_mahasiswa = $data_info['nama_mhs'];
-$status_revisi = $data_info['status_revisi'];
 
-// Perbaikan: Konversi nilai binary ke string yang sesuai
-if ($status_revisi === null || $status_revisi === '') {
-    $status_revisi = 'Belum Ada Revisi';
-} elseif ($status_revisi === 0x00 || $status_revisi === 0) {
-    $status_revisi = 'Menunggu Persetujuan';
-} elseif ($status_revisi === 0x01 || $status_revisi === 1) {
-    $status_revisi = 'Disetujui';
-} else {
-    $status_revisi = 'Status Tidak Diketahui';
+$nama_mahasiswa = $data_info['nama_mhs'];
+
+// Set status pengajuan
+if (isset($data_info['status_ajuan'])) {
+    if (strtolower($data_info['status_ajuan']) == 'approved' || $data_info['status_ajuan'] == 1) {
+        $status_pengajuan = 'Disetujui';
+    } else {
+        $status_pengajuan = 'Belum Disetujui';
+    }
 }
 
-// Query untuk mengambil catatan perbaikan
+
+// === FIX: Menggunakan nilai varchar dari DB untuk status revisi ===
+$status_revisi_from_db = $data_info['status_revisi'];
+if (empty($status_revisi_from_db)) {
+    $status_revisi = 'Belum Ada Revisi';
+} else {
+    $status_revisi = $status_revisi_from_db; // e.g., 'Menunggu Persetujuan', 'Disetujui'
+}
+
+// Query untuk mengambil catatan perbaikan (sudah benar)
 $query_catatan = "
     SELECT ds.catatan_sidang, d.nama_dosen
     FROM Detail_Sidang ds
     JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-    WHERE ds.id_sidang = ?
+    WHERE ds.id_sidang = ? AND ds.catatan_sidang IS NOT NULL AND ds.catatan_sidang <> ''
     ORDER BY d.nama_dosen ASC
 ";
 $params_catatan = array($id_sidang);
@@ -114,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 error_log("File uploaded successfully: " . $path_target);
                 error_log("File size: " . filesize($path_target));
                 
-                $query_update_dokumen = "UPDATE Detail_Sidang SET dok_revisi = ?, nama_file = ? WHERE id_sidang = ?";
+                $query_update_dokumen = "UPDATE Detail_Sidang SET dok_revisi = ?, nama_file = ?, status_revisi = 'Menunggu Persetujuan' WHERE id_sidang = ?";
                 $params_update = array($path_relatif, $file_asli, $id_sidang);
 
                 // Debug: Log query dan parameter

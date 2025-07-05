@@ -122,9 +122,12 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
                                     <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
                                     <td><?= htmlspecialchars($row['dosen']) ?></td>
                                     <td>
-                                        <a href="?action=set_sidang_session&id_sidang=<?= $row['id_sidang'] ?>" class="detail-btn">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+                                        <form action="mdetailSidang.php" method="POST" style="display: inline;">
+                                            <input type="hidden" name="id_sidang" value="<?= $row['id_sidang'] ?>">
+                                            <button type="submit" class="detail-btn" style="border: none; background: none; padding: 0; cursor: pointer;">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php 

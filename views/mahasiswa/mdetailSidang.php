@@ -29,7 +29,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPerbaikan.php?id_sidang=<?= htmlspecialchars($id_sidang) ?>">
+                    <a href="mPerbaikan.php">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
