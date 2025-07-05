@@ -220,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h5 class="fw-semibold section">Informasi Pengajuan</h5>
                 <div class="row mt-2">
                     <div class="col-md-6 section">
-                        <p class="mb-1 fw-bold">ID Sidang</p>
+                        <p class="mb-1 fw-bold">ID Kelompok</p>
                         <p class="fw-normal"><?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></p>
                         
                    <p class="mb-1 fw-bold">Kelompok <?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></p>

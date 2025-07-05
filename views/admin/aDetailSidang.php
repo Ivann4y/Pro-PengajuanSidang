@@ -253,6 +253,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                         <!-- Tampilan akan dirender berdasarkan kondisi IF -->
                         <?php if ($data_sidang['jenis_sidang'] == 'TA'): ?>
                             <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Belum ada judul'; ?></p>
+                            <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'Tugas Akhir'; ?></p>
                             <p><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br><?php echo !empty($dosen_pembimbing['nama_dosen']) ? htmlspecialchars($dosen_pembimbing['nama_dosen']) : 'Belum ditentukan'; ?></p>
                             <p><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>
                                 <?php
@@ -263,6 +264,7 @@ $dosen_list_json = json_encode($dosen_list_penguji);
                                 }
                                 ?></p>
                         <?php elseif ($data_sidang['jenis_sidang'] == 'Semester'): ?>
+                            <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Belum ada judul'; ?></p>
                             <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo !empty($data_matkul['nama_matkul']) ? htmlspecialchars($data_matkul['nama_matkul']) : 'N/A'; ?></p>
                             <p><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>
                                 <?php
