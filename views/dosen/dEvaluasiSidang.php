@@ -112,19 +112,19 @@ $current_nim = '';
 $current_nama_mhs = 'Data mahasiswa tidak ditemukan';
 
 // Ambil data sidang utama
-$sql_sidang = "SELECT Judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
+$sql_sidang = "SELECT s.judul, k.nomor_kelompok, k.id_kelompok FROM Sidang s, Kelompok k WHERE id_sidang = ? AND s.id_kelompok = k.id_kelompok";
 $result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
 if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
-    $judul = $data_sidang['Judul'];
+    $judul = $data_sidang['judul'];
+    $nomor_kelompok = $data_sidang['nomor_kelompok'];
     $id_kelompok = $data_sidang['id_kelompok'];
-
     // [BARU] Mengambil daftar mahasiswa dari kelompok
     if ($id_kelompok) {
-        $sql_mhs = "SELECT km.nim, m.nama_mhs 
-                    FROM Kelompok_Mahasiswa km
-                    JOIN Mahasiswa m ON km.nim = m.nim
-                    WHERE km.id_kelompok = ? ORDER BY km.nim ASC"; // Mengubah ke ASC untuk urutan yang lebih umum
-        $stmt_mhs = sqlsrv_query($conn, $sql_mhs, [$id_kelompok]);
+        $sql_mhs = "SELECT DISTINCT k.nim, m.nama_mhs 
+                    FROM Kelompok k
+                    JOIN Mahasiswa m ON k.nim = m.nim
+                    WHERE k.nomor_kelompok = ? ORDER BY k.nim ASC"; // Mengubah ke ASC untuk urutan yang lebih umum
+        $stmt_mhs = sqlsrv_query($conn, $sql_mhs, [$nomor_kelompok]);
         if ($stmt_mhs) {
             while ($row_mhs = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {
                 $mahasiswa[] = $row_mhs;
@@ -150,21 +150,24 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
     }
 
     // Ambil data dosen (pembimbing dan penguji)
-
-$sql_dosen_terjadwal = "SELECT d.nama_dosen, p.peran_dosen FROM Penjadwalan p JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ?";
-$stmt_dosen_terjadwal = sqlsrv_query($conn, $sql_dosen_terjadwal, [$id_sidang]);
-if ($stmt_dosen_terjadwal) {
-    while ($row = sqlsrv_fetch_array($stmt_dosen_terjadwal, SQLSRV_FETCH_ASSOC)) {
-        // Asumsi peran_dosen adalah bit/boolean (1 untuk Pembimbing, 0 untuk Penguji)
-        if ($row['peran_dosen']) { 
+    // Ambil dosen pembimbing dari Bimbingan (seperti di mdetailSidang_logic.php)
+    $sql_pembimbing = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
+    $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, array($id_kelompok));
+    if ($stmt_pembimbing) {
+        while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
             $dosenPembimbing[] = $row['nama_dosen'];
-        } else {
+        }
+    }
+    // Ambil dosen penguji dari Penjadwalan (peran_dosen=0)
+    $sql_penguji = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ? AND p.peran_dosen = 0";
+    $stmt_penguji = sqlsrv_query($conn, $sql_penguji, array($id_sidang));
+    if ($stmt_penguji) {
+        while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
             $dosenPenguji[] = $row['nama_dosen'];
         }
     }
-}
-$namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
-$namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
+    $namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
+    $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
 
 
     // Ambil jadwal
@@ -264,7 +267,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
-                <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+                <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= htmlspecialchars($judul) ?></h2>
                 
                 <div class="container-fluid">
                     <!-- [BARU] TAB NAVIGASI MAHASISWA -->
@@ -363,7 +366,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                         </div>
                         
                         <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;">
-                            Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($id_kelompok ?? ''); ?>
+                            Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
                         </h2><br>
                         <div class="form-card">
                             <div class="d-flex justify-content-between align-items-center mb-2">
