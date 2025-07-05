@@ -89,26 +89,28 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
 }
 
 
-// === 4. Ambil Catatan Sidang yang Relevan untuk Mahasiswa ===
-$sqlCatatan = "
-    SELECT d.nama_dosen, p.catatan_sidang
-    FROM Penilaian p
-    JOIN Dosen d ON p.nomor_dosen = d.nomor_dosen
-    WHERE p.id_sidang = ? AND p.nim = ?
-";
-$stmtCat = sqlsrv_query($conn, $sqlCatatan, [$id_sidang, $nim]);
-$catatanList = [];
+    $sqlCatatan = "
+        SELECT d.nama_dosen, ds.catatan_sidang
+        FROM Detail_Sidang ds
+        JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+        WHERE ds.id_sidang = ?
+        ORDER BY d.nama_dosen;
+    ";
+    $paramsCatatan = array($id_sidang);
+    $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
 
-if ($stmtCat) {
-    while ($row = sqlsrv_fetch_array($stmtCat, SQLSRV_FETCH_ASSOC)) {
-        if (!empty(trim($row['catatan_sidang']))) {
-            $catatanList[] = "<strong>" . htmlspecialchars($row['nama_dosen']) . ":</strong> " . htmlspecialchars($row['catatan_sidang']);
+    $catatanArray = [];
+    if ($stmtCatatan) {
+        while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
+            $catatan = trim($rowCatatan['catatan_sidang']);
+            if (!empty($catatan) && $catatan !== '-') {
+                $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
+            }
+        }
+        if (!empty($catatanArray)) {
+            $semuaCatatan = implode("\n\n", $catatanArray);
         }
     }
-}
-$catatanText = !empty($catatanList) ? implode("<br><br>", $catatanList) : "Tidak ada catatan.";
-
-sqlsrv_close($conn);
 ?>
 
 
@@ -145,6 +147,8 @@ sqlsrv_close($conn);
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <title>Mahasiswa - Nilai Akhir</title>
+
+    
 </head>
 <body>
     <div id="NavSide">
@@ -166,7 +170,7 @@ sqlsrv_close($conn);
             <div class="container-fluid">
                 <div class="row mb-4 title-container"><div class="col-12"><h2 class="main-title">Detail Evaluasi - Sistem Pengajuan Sidang</h2></div></div>
                 
-                <div class="row mt-5 g-5">
+                <div class="row mt-3 g-3">
                     <div class="col-lg-6 d-flex">
                     <div class="card flex-fill" id="carddataMahasiswa">
                         <div class="card-body card-soft p-4">
@@ -209,23 +213,16 @@ sqlsrv_close($conn);
                         </div>
                     </div>
                 </div>
-
-                <div class="row mt-5 ">
+                <div class="row mt-4"> <!-- Tambahkan mt-4 untuk margin-top -->
                     <div class="col-12">
-                        <div class="card" id="cardcatatan">
-                            <div class="card-body">
-                                <h3 class="card-title text-dark" >Catatan Evaluasi</h3>
-                                <!-- PERBAIKAN: Menggunakan $catatanText dan membiarkan HTML (seperti <br>) dirender -->
-                                <div class="text-dark" id="catatan-content">
-                                    <?= $catatanText ?>
-                                </div>
+                        <div class="card h-100 mb-4" id="cardcatatan"> <!-- Tambahkan mb-4 untuk margin-bottom -->
+                            <div class="card-body px-4 py-4 d-flex flex-column">
+                                <h3 class="card-title text-black mb-3">Catatan Evaluasi</h3>
+                                <div id="catatan" class="form-control flex-grow-1" rows="8"><?= nl2br(htmlspecialchars($semuaCatatan)) ?></div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
     
 
 <script src="../../assets/js/mNilaiakhir.js"></script>
