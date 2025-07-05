@@ -123,7 +123,7 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
         $sql_mhs = "SELECT km.nim, m.nama_mhs 
                     FROM Kelompok_Mahasiswa km
                     JOIN Mahasiswa m ON km.nim = m.nim
-                    WHERE km.id_kelompok = ? ORDER BY m.nama_mhs ASC"; // Mengubah ke ASC untuk urutan yang lebih umum
+                    WHERE km.id_kelompok = ? ORDER BY km.nim ASC"; // Mengubah ke ASC untuk urutan yang lebih umum
         $stmt_mhs = sqlsrv_query($conn, $sql_mhs, [$id_kelompok]);
         if ($stmt_mhs) {
             while ($row_mhs = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {

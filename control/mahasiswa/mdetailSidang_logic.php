@@ -90,7 +90,7 @@ $status_class = '';
 if ($status_ajuan === 0) {
     $status_text = 'Status Pengajuan : Belum Disetujui';
     $status_class = 'belum-disetujui';
-} elseif ($status_ajuan === 1) {
+} elseif ($status_ajuan === 'Approved') {
     $status_text = 'Status Pengajuan : Disetujui';
     $status_class = 'disetujui';
 } else {
