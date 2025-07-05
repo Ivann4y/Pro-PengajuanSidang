@@ -46,11 +46,13 @@ $status_ajuan = null;
 $sql_utama = "SELECT
                 s.id_sidang,
                 s.judul,
-                CAST(s.jenis_sidang AS INT) AS jenis_sidang,
+                CAST(k.jenis_sidang AS VARCHAR(20)) AS jenis_sidang,
                 s.id_kelompok,
                 s.dok_laporan,
-                s.status_ajuan
+                s.status_ajuan,
+                k.nomor_kelompok
               FROM Sidang s
+              JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
               WHERE s.id_sidang = ?";
 
 $stmt_utama = sqlsrv_prepare($conn, $sql_utama, array(&$id_sidang));
@@ -111,6 +113,7 @@ if (isset($data_jadwal['jam_sidang']) && $data_jadwal['jam_sidang'] instanceof D
 
 $jenis_sidang = $data_sidang['jenis_sidang'];
 $id_kelompok = $data_sidang['id_kelompok'];
+$nomor_kelompok = $data_sidang['nomor_kelompok'];
 
 if (!empty($id_kelompok)) {
     $sql_prodi = "SELECT m.prodi FROM Mahasiswa m JOIN Kelompok_Mahasiswa km ON m.nim = km.nim WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
@@ -122,7 +125,7 @@ if (!empty($id_kelompok)) {
     }
 }
 
-if ($jenis_sidang === 0) {
+if ($jenis_sidang === 'Tugas Akhir') {
     $sql_pembimbing = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
     $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, array($id_kelompok));
     if ($stmt_pembimbing) {
@@ -144,7 +147,7 @@ if ($jenis_sidang === 0) {
         error_log("Error fetching penguji: " . print_r(sqlsrv_errors(), true));
     }
 
-} elseif ($jenis_sidang === 1) {
+} elseif ($jenis_sidang === 'Semester') {
     $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk
                     JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul
                     WHERE ds.id_sidang = ?";
