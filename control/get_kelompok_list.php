@@ -6,21 +6,25 @@ header('Content-Type: application/json');
 
 $kelompok_list = [];
 
-// Query to get all kelompok and their anggota
+// Query to get all kelompok and their anggota using the new structure
 $sql = "
     SELECT
-        K.id_kelompok,
-        M.nim,
-        M.nama_mhs,
-        M.prodi
+        k.nomor_kelompok,
+        k.tahun_ajaran,
+        k.jenis_sidang,
+        k.id_matkul,
+        k.nim,
+        m.nama_mhs,
+        m.prodi,
+        mk.nama_matkul
     FROM
-        Kelompok K
-    LEFT JOIN
-        Kelompok_Mahasiswa KM ON K.id_kelompok = KM.id_kelompok
-    LEFT JOIN
-        Mahasiswa M ON KM.nim = M.nim
+        Kelompok k
+    JOIN
+        Mahasiswa m ON k.nim = m.nim
+    JOIN
+        MataKuliah mk ON k.id_matkul = mk.id_matkul
     ORDER BY
-        K.id_kelompok DESC, M.nim ASC
+        k.tahun_ajaran DESC, k.jenis_sidang ASC, k.nomor_kelompok ASC, k.nim ASC
 ";
 
 $stmt = sqlsrv_query($conn, $sql);
@@ -33,32 +37,28 @@ if ($stmt === false) {
 $temp_kelompok = [];
 
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-    $id_kelompok = $row['id_kelompok'];
+    $group_key = $row['tahun_ajaran'] . '_' . $row['jenis_sidang'] . '_' . $row['id_matkul'] . '_' . $row['nomor_kelompok'];
 
-    // Inisialisasi kelompok jika belum ada
-    if (!isset($temp_kelompok[$id_kelompok])) {
-        $temp_kelompok[$id_kelompok] = [
-            'id_kelompok' => $id_kelompok,
-            'prodi' => '', // Prodi akan diisi dari anggota pertama atau jika ada kolom prodi di tabel Kelompok
+    // Initialize kelompok if not exists
+    if (!isset($temp_kelompok[$group_key])) {
+        $temp_kelompok[$group_key] = [
+            'nomor_kelompok' => $row['nomor_kelompok'],
+            'tahun_ajaran' => $row['tahun_ajaran'],
+            'jenis_sidang' => $row['jenis_sidang'],
+            'nama_matkul' => $row['nama_matkul'],
+            'prodi' => $row['prodi'],
             'anggota' => []
         ];
     }
 
-    // Tambahkan prodi dari anggota jika belum terisi
-    if (empty($temp_kelompok[$id_kelompok]['prodi']) && !empty($row['prodi'])) {
-        $temp_kelompok[$id_kelompok]['prodi'] = $row['prodi'];
-    }
-
-    // Tambahkan anggota jika ada
-    if (!empty($row['nim'])) {
-        $temp_kelompok[$id_kelompok]['anggota'][] = [
-            'nim' => $row['nim'],
-            'nama_mhs' => $row['nama_mhs']
-        ];
-    }
+    // Add anggota
+    $temp_kelompok[$group_key]['anggota'][] = [
+        'nim' => $row['nim'],
+        'nama_mhs' => $row['nama_mhs']
+    ];
 }
 
-// Ubah associative array menjadi indexed array
+// Convert associative array to indexed array
 $kelompok_list = array_values($temp_kelompok);
 
 echo json_encode($kelompok_list);

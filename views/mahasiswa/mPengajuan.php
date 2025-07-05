@@ -28,9 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && 
     $checkQuery = "
         SELECT COUNT(s.id_sidang) as total 
         FROM dbo.Sidang s
+        JOIN dbo.Kelompok sg ON s.id_kelompok = sg.id_kelompok
+        JOIN dbo.Kelompok k_student ON k_student.nomor_kelompok = sg.nomor_kelompok
+            AND k_student.tahun_ajaran = sg.tahun_ajaran
+            AND k_student.jenis_sidang = sg.jenis_sidang
+            AND k_student.id_matkul = sg.id_matkul
         WHERE s.id_sidang = ? 
-          AND s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-          AND s.status_ajuan = 'Draft' -- PERBAIKAN: Mencari 'Draft' dengan huruf besar
+          AND k_student.nim = ?
+          AND s.status_ajuan = 'Draft'
     ";
     $checkParams = [$id_sidang_to_delete, $nim_mahasiswa_logged_in];
     $checkStmt = sqlsrv_query($conn, $checkQuery, $checkParams);
@@ -67,44 +72,83 @@ $offset = ($page - 1) * $rowsPerPage;
 
 // Filter settings
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
+$status_filter = isset($_GET['status']) ? $_GET['status'] : 'Semua';
+
+// Build filter conditions
 $filterClause = '';
+$statusClause = '';
+
 if ($filter === 'TA') {
-    $filterClause = " AND s.jenis_sidang = 0";
+    $filterClause = " AND sg.jenis_sidang = 'Tugas Akhir'";
 } elseif ($filter === 'Semester') {
-    $filterClause = " AND s.jenis_sidang = 1";
+    $filterClause = " AND sg.jenis_sidang = 'Semester'";
 }
 
-// PERBAIKAN: Query untuk menghitung total baris menjadi lebih aman dan mencari status 'Draft'
+if ($status_filter === 'Draft') {
+    $statusClause = " AND s.status_ajuan = 'Draft'";
+} elseif ($status_filter === 'Pending') {
+    $statusClause = " AND s.status_ajuan = 'Pending'";
+} elseif ($status_filter === 'Approved') {
+    $statusClause = " AND s.status_ajuan = 'Approved'";
+} elseif ($status_filter === 'Rejected') {
+    $statusClause = " AND s.status_ajuan = 'Rejected'";
+} else {
+    // Show all statuses
+    $statusClause = "";
+}
+
+// Use the comprehensive approach that handles all student's groups
+// Query untuk menghitung total baris
 $countQuery = "
-    SELECT COUNT(s.id_sidang) as total
+    SELECT COUNT(DISTINCT s.id_sidang) as total
     FROM dbo.Sidang s
-    WHERE
-        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-        AND s.status_ajuan = 'Draft' -- Mencari status 'Draft'
-        $filterClause
+    JOIN dbo.Kelompok sg ON s.id_kelompok = sg.id_kelompok
+    JOIN dbo.Kelompok k_student ON k_student.nomor_kelompok = sg.nomor_kelompok
+        AND k_student.tahun_ajaran = sg.tahun_ajaran
+        AND k_student.jenis_sidang = sg.jenis_sidang
+        AND k_student.id_matkul = sg.id_matkul
+    WHERE k_student.nim = ?
+    $filterClause
+    $statusClause
 ";
-$params_count = [$nim_mahasiswa_logged_in];
-$countResult = sqlsrv_query($conn, $countQuery, $params_count);
+
+$countParams = [$nim_mahasiswa_logged_in];
+$countResult = sqlsrv_query($conn, $countQuery, $countParams);
+if ($countResult === false) {
+    die("Error in count query: " . print_r(sqlsrv_errors(), true));
+}
 $totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRows / $rowsPerPage);
+
+// Debug: Log the query and parameters
+error_log("mPengajuan Debug - NIM: $nim_mahasiswa_logged_in, Filter: $filter, Status: $status_filter, Total Rows: $totalRows");
 
 if ($totalRows == 0) {
     $dataSidang = [];
 } else {
-    // PERBAIKAN: Query utama menjadi lebih aman dan mencari status 'Draft'
+    // Query utama untuk mengambil data pengajuan
     $query = "
-        SELECT
-            s.id_sidang, s.judul, s.jenis_sidang,
-            ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
-            ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
+        SELECT DISTINCT
+            s.id_sidang, 
+            s.judul, 
+            s.status_ajuan,
+            sg.nomor_kelompok,
+            sg.jenis_sidang,
+            sg.tahun_ajaran,
+            mk.nama_matkul,
+            d.nama_dosen AS nama_pembimbing
         FROM dbo.Sidang AS s
-        LEFT JOIN dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
-        LEFT JOIN dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
-        LEFT JOIN dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
-        WHERE
-            s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-            AND s.status_ajuan = 'Draft' -- Mencari status 'Draft'
-            $filterClause
+        JOIN dbo.Kelompok AS sg ON s.id_kelompok = sg.id_kelompok
+        JOIN dbo.MataKuliah AS mk ON sg.id_matkul = mk.id_matkul
+        JOIN dbo.Kelompok AS k_student ON k_student.nomor_kelompok = sg.nomor_kelompok
+            AND k_student.tahun_ajaran = sg.tahun_ajaran
+            AND k_student.jenis_sidang = sg.jenis_sidang
+            AND k_student.id_matkul = sg.id_matkul
+        LEFT JOIN dbo.Bimbingan AS b ON sg.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
+        LEFT JOIN dbo.Dosen AS d ON b.nomor_dosen = d.nomor_dosen
+        WHERE k_student.nim = ?
+        $filterClause
+        $statusClause
         ORDER BY s.id_sidang DESC
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ";
@@ -116,12 +160,15 @@ if ($totalRows == 0) {
 
     $dataSidang = [];
     while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-        $nama_matkul_display = ($row['jenis_sidang'] == 0) ? 'Tugas Akhir' : $row['nama_matkul'];
         $dataSidang[] = [
             "id_sidang" => $row['id_sidang'],
             "judul" => $row['judul'],
-            "matkul" => $nama_matkul_display,
-            "dosen" => $row['nama_dosen'] ?? 'N/A'
+            "status_ajuan" => $row['status_ajuan'],
+            "nomor_kelompok" => $row['nomor_kelompok'],
+            "jenis_sidang" => $row['jenis_sidang'],
+            "tahun_ajaran" => $row['tahun_ajaran'],
+            "matkul" => $row['nama_matkul'],
+            "dosen" => $row['nama_pembimbing'] ?? 'N/A'
         ];
     }
 }
@@ -206,9 +253,32 @@ if ($totalRows == 0) {
                                 <?php echo htmlspecialchars($filter === 'TA' ? 'Sidang TA' : ($filter === 'Semester' ? 'Sidang Semester' : 'Semua')); ?>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="?filter=Semua&page=1">Semua</a></li>
-                                <li><a class="dropdown-item" href="?filter=TA&page=1">Sidang TA</a></li>
-                                <li><a class="dropdown-item" href="?filter=Semester&page=1">Sidang Semester</a></li>
+                                <li><a class="dropdown-item" href="?filter=Semua&status=<?= urlencode($status_filter) ?>&page=1">Semua</a></li>
+                                <li><a class="dropdown-item" href="?filter=TA&status=<?= urlencode($status_filter) ?>&page=1">Sidang TA</a></li>
+                                <li><a class="dropdown-item" href="?filter=Semester&status=<?= urlencode($status_filter) ?>&page=1">Sidang Semester</a></li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Status Filter -->
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMStatus">
+                                <?php 
+                                $statusLabels = [
+                                    'Semua' => 'Semua',
+                                    'Draft' => 'Draft',
+                                    'Pending' => 'Pending',
+                                    'Approved' => 'Diterima',
+                                    'Rejected' => 'Ditolak'
+                                ];
+                                echo htmlspecialchars($statusLabels[$status_filter] ?? 'Semua');
+                                ?>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?filter=<?= urlencode($filter) ?>&status=Semua&page=1">Semua</a></li>
+                                <li><a class="dropdown-item" href="?filter=<?= urlencode($filter) ?>&status=Draft&page=1">Draft</a></li>
+                                <li><a class="dropdown-item" href="?filter=<?= urlencode($filter) ?>&status=Pending&page=1">Pending</a></li>
+                                <li><a class="dropdown-item" href="?filter=<?= urlencode($filter) ?>&status=Approved&page=1">Diterima</a></li>
+                                <li><a class="dropdown-item" href="?filter=<?= urlencode($filter) ?>&status=Rejected&page=1">Ditolak</a></li>
                             </ul>
                         </div>
                     </div>
@@ -228,24 +298,55 @@ if ($totalRows == 0) {
                             <thead>
                                 <tr>
                                     <th scope="col">No</th>
+                                    <th scope="col">Kelompok</th>
                                     <th scope="col">Judul</th>
                                     <th scope="col">Mata Kuliah</th>
                                     <th scope="col">Dosen Pembimbing</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="mSidangTableBody">
                                 <?php if (empty($dataSidang)): ?>
                                     <tr class="isiTabel">
-                                        <td colspan="5" class="text-center py-4">Tidak ada data untuk ditampilkan.</td>
+                                        <td colspan="7" class="text-center py-4">Tidak ada data untuk ditampilkan.</td>
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($dataSidang as $index => $sidang): ?>
                                         <tr class="isiTabel jadiBiru">
                                             <td><?php echo ($page - 1) * $rowsPerPage + $index + 1; ?></td>
+                                            <td><?php echo htmlspecialchars($sidang['nomor_kelompok']); ?></td>
                                             <td><?php echo htmlspecialchars($sidang['judul']); ?></td>
                                             <td><?php echo htmlspecialchars($sidang['matkul']); ?></td>
                                             <td><?php echo htmlspecialchars($sidang['dosen']); ?></td>
+                                            <td>
+                                                <?php 
+                                                $statusClass = '';
+                                                $statusText = '';
+                                                switch($sidang['status_ajuan']) {
+                                                    case 'Draft':
+                                                        $statusClass = 'badge bg-secondary';
+                                                        $statusText = 'Draft';
+                                                        break;
+                                                    case 'Pending':
+                                                        $statusClass = 'badge bg-warning';
+                                                        $statusText = 'Pending';
+                                                        break;
+                                                    case 'Approved':
+                                                        $statusClass = 'badge bg-success';
+                                                        $statusText = 'Diterima';
+                                                        break;
+                                                    case 'Rejected':
+                                                        $statusClass = 'badge bg-danger';
+                                                        $statusText = 'Ditolak';
+                                                        break;
+                                                    default:
+                                                        $statusClass = 'badge bg-secondary';
+                                                        $statusText = 'Unknown';
+                                                }
+                                                ?>
+                                                <span class="<?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
+                                            </td>
                                             <td class="text-center">
                                             <!-- The form now wraps the container for proper submission -->
                                             <form method="post" class="d-inline-block">
@@ -255,15 +356,27 @@ if ($totalRows == 0) {
 
                                                 <!-- Flex container for the buttons -->
                                                 <div class="d-flex justify-content-center align-items-center">
-                                                    <!-- EDIT BUTTON -->
-                                                    <button type="submit" formaction="mEditPengajuan.php" class="btn btn-link p-0" title="Edit Pengajuan">
-                                                        <i class="fa-solid fa-file-signature fs-5"></i>
-                                                    </button>
+                                                    <?php if ($sidang['status_ajuan'] === 'Draft'): ?>
+                                                        <!-- EDIT BUTTON - Only for Draft -->
+                                                        <button type="submit" formaction="mEditPengajuan.php" class="btn btn-link p-0" title="Edit Pengajuan">
+                                                            <i class="fa-solid fa-file-signature fs-5"></i>
+                                                        </button>
 
-                                                    <!-- DELETE BUTTON - with a margin-start class (ms-3) for spacing -->
-                                                    <button type="button" class="btn btn-link p-0 ms-3 delete-btn" title="Hapus Pengajuan">
-                                                        <i class="fa-solid fa-trash fs-5"></i>
-                                                    </button>
+                                                        <!-- DELETE BUTTON - Only for Draft -->
+                                                        <button type="button" class="btn btn-link p-0 ms-3 delete-btn" title="Hapus Pengajuan">
+                                                            <i class="fa-solid fa-trash fs-5"></i>
+                                                        </button>
+                                                    <?php elseif ($sidang['status_ajuan'] === 'Rejected'): ?>
+                                                        <!-- CREATE NEW BUTTON - For Rejected -->
+                                                        <button type="button" class="btn btn-link p-0" title="Buat Pengajuan Baru" onclick="createNewPengajuan(<?php echo $sidang['nomor_kelompok']; ?>, '<?php echo $sidang['jenis_sidang']; ?>', <?php echo $sidang['tahun_ajaran']; ?>)">
+                                                            <i class="fa-solid fa-plus fs-5"></i>
+                                                        </button>
+                                                    <?php else: ?>
+                                                        <!-- VIEW BUTTON - For other statuses -->
+                                                        <button type="button" class="btn btn-link p-0" title="Lihat Detail" onclick="viewDetail(<?php echo $sidang['id_sidang']; ?>)">
+                                                            <i class="fa-solid fa-eye fs-5"></i>
+                                                        </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </form>
                                         </td>
@@ -277,7 +390,7 @@ if ($totalRows == 0) {
                                 <ul class="pagination justify-content-center">
                                     <?php if ($totalPages > 1): ?>
                                         <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
-                                            <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page - 1; ?>" aria-label="Previous">
+                                            <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&status=<?php echo urlencode($status_filter); ?>&page=<?php echo $page - 1; ?>" aria-label="Previous">
                                                 <span aria-hidden="true">«</span>
                                             </a>
                                         </li>
@@ -295,7 +408,7 @@ if ($totalRows == 0) {
 
                                         // First page
                                         if ($startPage > 1) {
-                                            echo "<li class='page-item'><a class='page-link' href='?filter=" . urlencode($filter) . "&page=1'>1</a></li>";
+                                            echo "<li class='page-item'><a class='page-link' href='?filter=" . urlencode($filter) . "&status=" . urlencode($status_filter) . "&page=1'>1</a></li>";
                                             if ($startPage > 2) {
                                                 echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
                                             }
@@ -304,7 +417,7 @@ if ($totalRows == 0) {
                                         // Page numbers
                                         for ($i = $startPage; $i <= $endPage; $i++) {
                                             echo "<li class='page-item " . ($i == $page ? 'active' : '') . "'>";
-                                            echo "<a class='page-link' href='?filter=" . urlencode($filter) . "&page=$i'>$i</a>";
+                                            echo "<a class='page-link' href='?filter=" . urlencode($filter) . "&status=" . urlencode($status_filter) . "&page=$i'>$i</a>";
                                             echo "</li>";
                                         }
 
@@ -313,12 +426,12 @@ if ($totalRows == 0) {
                                             if ($endPage < $totalPages - 1) {
                                                 echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
                                             }
-                                            echo "<li class='page-item'><a class='page-link' href='?filter=" . urlencode($filter) . "&page=$totalPages'>$totalPages</a></li>";
+                                            echo "<li class='page-item'><a class='page-link' href='?filter=" . urlencode($filter) . "&status=" . urlencode($status_filter) . "&page=$totalPages'>$totalPages</a></li>";
                                         }
                                         ?>
 
                                         <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
-                                            <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page + 1; ?>" aria-label="Next">
+                                            <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&status=<?php echo urlencode($status_filter); ?>&page=<?php echo $page + 1; ?>" aria-label="Next">
                                                 <span aria-hidden="true">»</span>
                                             </a>
                                         </li>
@@ -368,6 +481,15 @@ if ($totalRows == 0) {
             window.tambahData = function () {
                 window.location.href = 'mTambahPengajuan.php';
             };
+            
+            window.createNewPengajuan = function (nomorKelompok, jenisSidang, tahunAjaran) {
+                window.location.href = `mTambahPengajuan.php?nomor_kelompok=${nomorKelompok}&jenis_sidang=${jenisSidang}&tahun_ajaran=${tahunAjaran}`;
+            };
+            
+            window.viewDetail = function (idSidang) {
+                window.location.href = `mDetailPengajuan.php?id_sidang=${idSidang}`;
+            };
+            
             <?php if (isset($_SESSION['success_message'])): ?>
             Swal.fire({
                 title: 'Berhasil!',

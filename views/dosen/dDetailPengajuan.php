@@ -74,14 +74,15 @@ if (isset($_GET['download']) && $_GET['download'] === 'main') {
 $sql_main = "
     WITH SidangInfo AS (
         SELECT DISTINCT
-            s.id_sidang, s.id_kelompok, s.judul, s.jenis_sidang, 
+            s.id_sidang, s.id_kelompok, s.judul, s.status_ajuan,
+            k.nomor_kelompok, k.jenis_sidang, k.tahun_ajaran,
             d.nama_dosen AS nama_pembimbing,
             mk.nama_matkul
         FROM Sidang s
-        JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
-        JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
-        LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-        LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+        JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+        JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul
+        LEFT JOIN Bimbingan b ON k.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
+        LEFT JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
     )
     SELECT * FROM SidangInfo WHERE id_sidang = ?";
 $stmt_main = sqlsrv_query($conn, $sql_main, [$id_sidang]);
@@ -95,7 +96,7 @@ if (!$data_sidang) {
 }
 
 // Tentukan label jenis sidang
-$jenis_sidang_label = (isset($data_sidang['nama_matkul']) && strcasecmp($data_sidang['nama_matkul'], 'Tugas Akhir') == 0)
+$jenis_sidang_label = ($data_sidang['jenis_sidang'] === 'Tugas Akhir')
     ? 'Sidang Tugas Akhir'
     : 'Sidang Semester';
 
@@ -106,10 +107,13 @@ $jenis_sidang_label = (isset($data_sidang['nama_matkul']) && strcasecmp($data_si
 $id_kelompok = $data_sidang['id_kelompok'];
 $anggota_kelompok = [];
 $sql_anggota = "SELECT m.nim, m.nama_mhs 
-                FROM Kelompok_Mahasiswa km 
-                JOIN Mahasiswa m ON km.nim = m.nim 
-                WHERE km.id_kelompok = ?";
-$stmt_anggota = sqlsrv_query($conn, $sql_anggota, [$id_kelompok]);
+                FROM Kelompok k
+                JOIN Mahasiswa m ON k.nim = m.nim 
+                WHERE k.nomor_kelompok = (SELECT nomor_kelompok FROM Kelompok WHERE id_kelompok = ?)
+                  AND k.tahun_ajaran = (SELECT tahun_ajaran FROM Kelompok WHERE id_kelompok = ?)
+                  AND k.jenis_sidang = (SELECT jenis_sidang FROM Kelompok WHERE id_kelompok = ?)
+                  AND k.id_matkul = (SELECT id_matkul FROM Kelompok WHERE id_kelompok = ?)";
+$stmt_anggota = sqlsrv_query($conn, $sql_anggota, [$id_kelompok, $id_kelompok, $id_kelompok, $id_kelompok]);
 if ($stmt_anggota) {
     while ($row = sqlsrv_fetch_array($stmt_anggota, SQLSRV_FETCH_ASSOC)) {
         $anggota_kelompok[] = $row;
@@ -221,9 +225,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="row mt-2">
                     <div class="col-md-6 section">
                         <p class="mb-1 fw-bold">ID Sidang</p>
-                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></p>
+                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['id_sidang'] ?? '-') ?></p>
                         
-                   <p class="mb-1 fw-bold">Kelompok <?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></p>
+                   <p class="mb-1 fw-bold">Kelompok <?= htmlspecialchars($data_sidang['nomor_kelompok'] ?? '-') ?></p>
                         <ul class="fw-bold ps-3 mb-3">
                             <?php if (!empty($anggota_kelompok)) : ?>
                                 <?php foreach ($anggota_kelompok as $anggota) : ?>

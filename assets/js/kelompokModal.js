@@ -4,6 +4,7 @@ let currentProdi = "";
 let mahasiswaData = [];
 let kelompokData = [];
 let dosenData = [];
+let matkulData = [];
 let dosenCount = 1; // Separate counter for Dosen
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   fetchMahasiswaData();
   fetchDosenData();
+  fetchMatkulData();
   updateToggleButtonsVisibility();
 });
 
@@ -53,6 +55,19 @@ async function fetchDosenData() {
   }
 }
 
+async function fetchMatkulData() {
+  try {
+    const response = await fetch("../../control/get_matkul.php");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    matkulData = await response.json();
+  } catch (error) {
+    console.error("Error fetching matkul data:", error);
+    alert("Gagal memuat data mata kuliah.");
+  }
+}
+
 function openKelompokModal() {
   if (!kelompokModalInstance) {
     console.error("Modal instance not initialized");
@@ -68,10 +83,21 @@ function openKelompokModal() {
 
 async function setNextKelompokId() {
   try {
-    const response = await fetch("../../control/get_next_kelompok_id.php");
+    const jenisSidang = document.getElementById("kelompok_jenis_sidang").value;
+    const idMatkul = document.getElementById("kelompok_matkul").value;
+    const tahunAjaran = document.getElementById("kelompok_tahun_ajaran").value;
+
+    if (!jenisSidang || !idMatkul) {
+      document.getElementById("kelompok_id").value = "";
+      return;
+    }
+
+    const response = await fetch(
+      `../../control/get_next_kelompok_id.php?tahun_ajaran=${tahunAjaran}&jenis_sidang=${jenisSidang}&id_matkul=${idMatkul}`
+    );
     if (!response.ok) throw new Error("Failed to fetch next Kelompok ID");
     const data = await response.json();
-    document.getElementById("kelompok_id").value = data.next_id;
+    document.getElementById("kelompok_id").value = data.next_nomor;
   } catch (e) {
     document.getElementById("kelompok_id").value = "";
   }
@@ -96,6 +122,80 @@ function filterMahasiswaByProdi() {
   const prodiSelect = document.getElementById("kelompok_prodi");
   currentProdi = prodiSelect.value;
   resetAnggotaInputs();
+}
+
+function onJenisSidangChange() {
+  const jenisSidang = document.getElementById("kelompok_jenis_sidang").value;
+  const matkulSelect = document.getElementById("kelompok_matkul");
+  const dosenSection = document.getElementById("dosen-section");
+
+  // Reset mata kuliah dropdown
+  matkulSelect.innerHTML = '<option value="">Pilih Mata Kuliah</option>';
+
+  if (jenisSidang === "Tugas Akhir") {
+    // Show dosen pembimbing section
+    dosenSection.style.display = "block";
+
+    // Filter mata kuliah for Tugas Akhir
+    const tugasAkhirMatkul = matkulData.find(
+      (mk) => mk.nama_matkul === "Tugas Akhir"
+    );
+    if (tugasAkhirMatkul) {
+      const option = document.createElement("option");
+      option.value = tugasAkhirMatkul.id_matkul;
+      option.textContent = tugasAkhirMatkul.nama_matkul;
+      matkulSelect.appendChild(option);
+    }
+  } else if (jenisSidang === "Semester") {
+    // Hide dosen pembimbing section for Semester
+    dosenSection.style.display = "none";
+
+    // Filter mata kuliah for Semester (exclude Tugas Akhir)
+    matkulData.forEach((mk) => {
+      if (mk.nama_matkul !== "Tugas Akhir") {
+        const option = document.createElement("option");
+        option.value = mk.id_matkul;
+        option.textContent = mk.nama_matkul;
+        matkulSelect.appendChild(option);
+      }
+    });
+  }
+
+  // Update kelompok ID
+  setNextKelompokId();
+}
+
+function onMatkulChange() {
+  setNextKelompokId();
+
+  // If Semester is selected, show dosen pengampu info
+  const jenisSidang = document.getElementById("kelompok_jenis_sidang").value;
+  const idMatkul = document.getElementById("kelompok_matkul").value;
+
+  if (jenisSidang === "Semester" && idMatkul) {
+    fetchDosenPengampu(idMatkul);
+  }
+}
+
+async function fetchDosenPengampu(idMatkul) {
+  try {
+    const response = await fetch(
+      `../../control/get_dosen_pengampu.php?id_matkul=${idMatkul}`
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const dosenPengampu = await response.json();
+
+    if (dosenPengampu.length > 0) {
+      const dosenList = dosenPengampu.map((d) => d.nama_dosen).join(", ");
+      alert(`Dosen Pengampu untuk mata kuliah ini: ${dosenList}`);
+    } else {
+      alert("Tidak ada dosen pengampu yang ditemukan untuk mata kuliah ini.");
+    }
+  } catch (error) {
+    console.error("Error fetching dosen pengampu:", error);
+  }
 }
 
 function searchMahasiswa(input, anggotaIndex) {
@@ -226,6 +326,11 @@ function resetAnggotaInputs() {
 function resetKelompokForm() {
   document.getElementById("kelompokForm").reset();
   document.getElementById("kelompok_prodi").value = "";
+  document.getElementById("kelompok_jenis_sidang").value = "";
+  document.getElementById("kelompok_matkul").value = "";
+  document.getElementById("kelompok_tahun_ajaran").value =
+    new Date().getFullYear();
+  document.getElementById("dosen-section").style.display = "none";
   resetAnggotaInputs();
   updateToggleButtonsVisibility();
 }
@@ -255,14 +360,10 @@ async function loadKelompokList() {
       kelompokItem.innerHTML = `
         <div class="kelompok-list-header d-flex justify-content-between align-items-center">
           <div>
-            <div class="kelompok-list-title">${kelompok.id_kelompok}</div>
-            <div class="kelompok-list-prodi">${
-              kelompok.prodi || "Tidak ada prodi"
-            }</div>
+            <div class="kelompok-list-title">Kelompok ${kelompok.nomor_kelompok} (${kelompok.jenis_sidang})</div>
+            <div class="kelompok-list-prodi">${kelompok.nama_matkul} - ${kelompok.tahun_ajaran}</div>
           </div>
-          <button class="btn btn-link text-danger p-0 ms-2" title="Hapus Kelompok" onclick="deleteKelompok(${
-            kelompok.id_kelompok
-          }, this)">
+          <button class="btn btn-link text-danger p-0 ms-2" title="Hapus Kelompok" onclick="deleteKelompok(${kelompok.nomor_kelompok}, '${kelompok.tahun_ajaran}', '${kelompok.jenis_sidang}', ${kelompok.id_matkul}, this)">
             <i class="bi bi-trash-fill"></i>
           </button>
         </div>
@@ -315,10 +416,24 @@ function validateKelompokForm() {
     .forEach((el) => el.classList.remove("is-invalid"));
 
   const prodi = document.getElementById("kelompok_prodi").value;
+  const jenisSidang = document.getElementById("kelompok_jenis_sidang").value;
+  const matkul = document.getElementById("kelompok_matkul").value;
+
   if (!prodi) {
     showError("kelompok_prodi", "Pilih Prodi terlebih dahulu!");
     isValid = false;
   }
+
+  if (!jenisSidang) {
+    showError("kelompok_jenis_sidang", "Pilih Jenis Sidang terlebih dahulu!");
+    isValid = false;
+  }
+
+  if (!matkul) {
+    showError("kelompok_matkul", "Pilih Mata Kuliah terlebih dahulu!");
+    isValid = false;
+  }
+
   let hasAnggota = false;
   const selectedNIMs = new Set();
   const nimInputs = document.querySelectorAll('input[name="anggota_nim[]"]');
@@ -535,11 +650,21 @@ function updateToggleButtonsVisibility() {
 }
 
 // Add deleteKelompok function globally
-window.deleteKelompok = async function (id_kelompok, btn) {
+window.deleteKelompok = async function (
+  nomor_kelompok,
+  tahun_ajaran,
+  jenis_sidang,
+  id_matkul,
+  btn
+) {
   if (!confirm("Yakin ingin menghapus kelompok ini?")) return;
   try {
     const formData = new FormData();
-    formData.append("id_kelompok", id_kelompok);
+    formData.append("nomor_kelompok", nomor_kelompok);
+    formData.append("tahun_ajaran", tahun_ajaran);
+    formData.append("jenis_sidang", jenis_sidang);
+    formData.append("id_matkul", id_matkul);
+
     const response = await fetch("../../control/delete_kelompok.php", {
       method: "POST",
       body: formData,

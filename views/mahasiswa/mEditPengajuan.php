@@ -38,9 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['id_sidang'])) {
 
 // STEP 2: Ambil data yang sudah ada untuk mengisi form
 $query_existing = "
-    SELECT s.judul, s.id_kelompok, ds.id_matkul, s.dok_laporan
+    SELECT s.judul, s.id_kelompok, s.status_ajuan, s.dok_laporan,
+           k.nomor_kelompok, k.jenis_sidang, k.tahun_ajaran, k.id_matkul,
+           mk.nama_matkul
     FROM Sidang s
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul
     WHERE s.id_sidang = ?";
 $stmt_existing = sqlsrv_query($conn, $query_existing, [$id_sidang]);
 if ($stmt_existing === false) die("Error saat mengambil data awal.");
@@ -53,7 +56,17 @@ if (!$existing_data) {
 $existing_judul = $existing_data['judul'];
 $existing_id_matkul = $existing_data['id_matkul'];
 $existing_id_kelompok = $existing_data['id_kelompok'];
+$existing_nomor_kelompok = $existing_data['nomor_kelompok'];
+$existing_jenis_sidang = $existing_data['jenis_sidang'];
+$existing_tahun_ajaran = $existing_data['tahun_ajaran'];
+$existing_nama_matkul = $existing_data['nama_matkul'];
+$existing_status_ajuan = $existing_data['status_ajuan'];
 $file_exists = !empty($existing_data['dok_laporan']);
+
+// Check if student can edit this pengajuan
+if ($existing_status_ajuan !== 'Draft') {
+    die("Pengajuan ini tidak dapat diedit karena statusnya bukan Draft.");
+}
 
 // STEP 3: Proses form jika ada aksi 'Simpan' atau 'Kirim'
 if (isset($_POST['aksi'])) {
@@ -75,22 +88,15 @@ if (isset($_POST['aksi'])) {
 
         // B. Ambil data dari form dan tentukan status
         $judul = trim($_POST['judul']);
-        $id_matkul_terpilih = $_POST['matkul'];
-        $status_ajuan = ($_POST['aksi'] == 'Kirim') ? 'Pending' : 'Draft'; // PERBAIKAN: Gunakan string
-        if (empty($judul) || empty($id_matkul_terpilih)) throw new Exception("Judul dan Mata Kuliah wajib diisi.");
-
-        // C. Tentukan jenis sidang
-        $sql_matkul_name = "SELECT nama_matkul FROM dbo.MataKuliah WHERE id_matkul = ?";
-        $nama_matkul_terpilih = sqlsrv_fetch_array(sqlsrv_query($conn, $sql_matkul_name, [$id_matkul_terpilih]), SQLSRV_FETCH_ASSOC)['nama_matkul'];
-        $jenis_sidang_bit = (strcasecmp($nama_matkul_terpilih, 'Tugas Akhir') == 0) ? 0x00 : 0x01;
+        $status_ajuan = ($_POST['aksi'] == 'Kirim') ? 'Pending' : 'Draft';
+        if (empty($judul)) throw new Exception("Judul wajib diisi.");
         
         // D. Bangun query UPDATE untuk tabel 'Sidang'
-        $sql_update_sidang = "UPDATE dbo.Sidang SET judul = ?, status_ajuan = ?, jenis_sidang = ?, waktu_pengumpulan = GETDATE()";
-        $params_update_sidang = [$judul, $status_ajuan, $jenis_sidang_bit];
+        $sql_update_sidang = "UPDATE dbo.Sidang SET judul = ?, status_ajuan = ?, waktu_pengumpulan = GETDATE()";
+        $params_update_sidang = [$judul, $status_ajuan];
         
         if ($updateFile) {
             $sql_update_sidang .= ", dok_laporan = ?";
-            // PERBAIKAN: Cukup kirim variabelnya langsung
             $params_update_sidang[] = $dok_laporan_content;
         }
         
@@ -100,13 +106,6 @@ if (isset($_POST['aksi'])) {
         $stmt_update_sidang = sqlsrv_prepare($conn, $sql_update_sidang, $params_update_sidang);
         if ($stmt_update_sidang === false || !sqlsrv_execute($stmt_update_sidang)) {
             throw new Exception("Gagal mengupdate data Sidang: " . print_r(sqlsrv_errors(), true));
-        }
-
-        // E. Update tabel 'Detail_Sidang'
-        $sql_update_detail = "UPDATE dbo.Detail_Sidang SET id_matkul = ? WHERE id_sidang = ?";
-        $stmt_update_detail = sqlsrv_prepare($conn, $sql_update_detail, [$id_matkul_terpilih, $id_sidang]);
-        if ($stmt_update_detail === false || !sqlsrv_execute($stmt_update_detail)) {
-            throw new Exception("Gagal mengupdate Detail Sidang: " . print_r(sqlsrv_errors(), true));
         }
 
         // F. Commit jika semua berhasil
@@ -195,31 +194,13 @@ if (isset($_POST['aksi'])) {
               </label>
               <input type="text" class="forM form-control" id="judul" name="judul" value="<?php echo htmlspecialchars($existing_judul); ?>" placeholder="Masukkan Judul Sidang" required />
             </div>
-            <!-- ADD THIS MISSING BLOCK -->
-            <div class="mb-3">
-                <label for="matkul" class="form-label">Mata Kuliah<span class="text-danger">* </span></label>
-                <select class="form-select" id="matkul" name="matkul" required>
-                    <option value="" disabled>Pilih Mata Kuliah</option>
-                    <?php
-                    // Logika untuk menampilkan daftar mata kuliah dan memilih yang sudah ada
-                    $query_matkul = "SELECT id_matkul, nama_matkul FROM Matakuliah ORDER BY nama_matkul ASC";
-                    $result_matkul = sqlsrv_query($conn, $query_matkul);
-                    while ($row = sqlsrv_fetch_array($result_matkul, SQLSRV_FETCH_ASSOC)) {
-                        $matkul_id = $row['id_matkul'];
-                        $nama_matkul = $row['nama_matkul'];
-                        $selected = ($matkul_id == $existing_id_matkul) ? 'selected' : '';
-                        echo "<option value=\"$matkul_id\" $selected>$nama_matkul</option>";
-                    }
-                    ?>
-                </select>
+                        <div class="mb-3">
+                <label for="kelompok" class="form-label">Kelompok</label>
+                <div class="form-control" style="background-color: #e9ecef; cursor: not-allowed;">
+                    Kelompok <?php echo htmlspecialchars($existing_nomor_kelompok); ?> - <?php echo htmlspecialchars($existing_nama_matkul); ?> (<?php echo htmlspecialchars($existing_jenis_sidang); ?>) - <?php echo htmlspecialchars($existing_tahun_ajaran); ?>
+                </div>
+                <input type="hidden" name="kelompok" value="<?php echo $existing_id_kelompok; ?>">
             </div>
-            <div class="mb-3">
-              <label for="kelompok" class="form-label">Kelompok</label>
-              <div class="form-control" style="background-color: #e9ecef; cursor: not-allowed;">
-                  Kelompok <?php echo htmlspecialchars($existing_id_kelompok); ?>
-              </div>
-              <input type="hidden" name="kelompok" value="<?php echo $existing_id_kelompok; ?>">
-          </div>
             <div class="row">
               <div class="mb-4">
                 <div class="p-4 rounded bg-light border text-start">
@@ -383,17 +364,11 @@ if (isset($_POST['aksi'])) {
     // Form validation function
     function validateForm() {
         const judul = document.getElementById('judul').value;
-        const matkul = document.getElementById('matkul').value;
         const laporan = document.getElementById('DokumenSidang').files.length;
         const fileExists = <?php echo $file_exists ? 'true' : 'false'; ?>;
 
         if (judul.trim() === "") {
             Swal.fire({ title: 'Judul tidak boleh kosong!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
-            return false;
-        }
-
-        if (matkul === "" || !matkul) {
-            Swal.fire({ title: 'Pilih mata kuliah!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
             return false;
         }
         
