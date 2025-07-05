@@ -37,11 +37,6 @@ $baseQuery = "
             s.id_sidang,
             s.id_kelompok,
             s.jenis_sidang,
-            -- Menentukan Judul/Nama Mata Kuliah
-            CASE 
-                WHEN s.jenis_sidang = 0x00 THEN s.judul -- Jika Sidang TA, tampilkan judul
-                ELSE (SELECT TOP 1 mk.nama_matkul FROM [dbo].[Detail_Sidang] ds JOIN [dbo].[MataKuliah] mk ON ds.id_matkul = mk.id_matkul WHERE ds.id_sidang = s.id_sidang) -- Jika Sidang Semester, tampilkan nama matkul
-            END AS display_title,
             -- Menentukan Penanggung Jawab (Pembimbing/Pengampu)
             CASE 
                 WHEN s.jenis_sidang = 0x00 THEN -- Untuk Sidang TA, cari Dosen Pembimbing
@@ -213,7 +208,8 @@ if ($filter === 'ta') {
                                 <tr>
                                     <th scope="col">No</th>
                                     <th scope="col">Kelompok</th>
-                                    <th scope="col">Judul/Mata Kuliah</th>
+                                    <th scope="col">Judul</th>
+                                    <th scope="col">Mata Kuliah</th>
                                     <!-- [PERUBAHAN] Teks di sini diubah untuk menggunakan variabel dinamis -->
                                     <th scope="col"><?= htmlspecialchars($headerLabel) ?></th>
                                     <th scope="col" style="text-align: center;">Aksi</th>
@@ -224,8 +220,9 @@ if ($filter === 'ta') {
                                     <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                         <tr class="isiTabel jadiBiru">
                                             <td data-label="No"><?= $nomor++ ?></td>
-                                            <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok'] ?? '-') ?></td>
-                                            <td data-label="Judul/Mata Kuliah"><?= htmlspecialchars($row['display_title'] ?? 'N/A') ?></td>
+                                            <td data-label="Kelompok">Kelompok <?= htmlspecialchars($row['id_kelompok'] ?? '-') ?></td>
+                                            <td data-label="Judul"><?= htmlspecialchars($row['display_title'] ?? 'N/A') ?></td>
+                                            <td data-label="Mata Kuliah"><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A') ?></td>
                                             <!-- [PERUBAHAN] Atribut data-label diubah untuk menggunakan variabel dinamis -->
                                             <td data-label="<?= htmlspecialchars($headerLabel) ?>"><?= htmlspecialchars($row['nama_penanggung_jawab'] ?? 'Belum Ditentukan') ?></td>                                            <td data-label="Aksi" style="text-align: center;">
                                                 <a href="dEvaluasiSidang.php?id=<?= $row['id_sidang'] ?>" class="detail-btn" title="Evaluasi Sidang">
