@@ -83,7 +83,7 @@ $data_jadwal = sqlsrv_fetch_array($stmt_jadwal, SQLSRV_FETCH_ASSOC) ?: [];
 
 
 $id_kelompok = $data_sidang['id_kelompok'];
-$sql_mahasiswa = "SELECT m.prodi FROM Mahasiswa m JOIN Kelompok_Mahasiswa km ON m.nim = km.nim WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
+$sql_mahasiswa = "SELECT m.prodi FROM Mahasiswa m JOIN Kelompok km ON m.nim = km.nim WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
 $stmt_mahasiswa = sqlsrv_query($conn, $sql_mahasiswa, array($id_kelompok));
 if ($row = sqlsrv_fetch_array($stmt_mahasiswa, SQLSRV_FETCH_ASSOC)) {
     $nama_prodi = $row['prodi'];
@@ -149,7 +149,7 @@ if ($data_sidang['jenis_sidang'] == 'TA') {
                 
                 AND pk.id_kelas = (
                     SELECT TOP 1 km.id_kelas
-                    FROM Kelompok_Mahasiswa kpm
+                    FROM Kelompok kpm
                     JOIN Kelas_Mahasiswa km ON kpm.nim = km.nim
                     WHERE kpm.id_kelompok = ?
                 )
