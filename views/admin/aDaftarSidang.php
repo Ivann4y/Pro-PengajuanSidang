@@ -62,7 +62,7 @@ if ($filter === 'ta') {
 if ($prodiFilter !== 'all') {
     // Tambahkan JOIN hanya jika filter prodi aktif
     $joins .= "
-        JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+        JOIN Kelompok km ON s.id_kelompok = km.id_kelompok
         JOIN Mahasiswa m_prodi ON km.nim = m_prodi.nim
     ";
     $whereClauses[] = "m_prodi.prodi = ?";
@@ -104,7 +104,7 @@ $query = "SELECT DISTINCT
                  WHERE 
                     pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang)
                     AND pk.id_kelas = (SELECT TOP 1 k_mhs.id_kelas
-                                       FROM Kelompok_Mahasiswa kpm
+                                       FROM Kelompok kpm
                                        JOIN Kelas_Mahasiswa k_mhs ON kpm.nim = k_mhs.nim
                                        WHERE kpm.id_kelompok = s.id_kelompok))
         END AS nama_dosen_terkait
