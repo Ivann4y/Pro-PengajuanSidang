@@ -7,6 +7,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     exit(); 
 }
 include "../../koneksi/koneksiAndrew.php";
+
 ?>
 
 
@@ -152,38 +153,7 @@ include "../../koneksi/koneksiAndrew.php";
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/dosen-dashboard-ajax.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Pengajuan
-        fetch('../../control/dosen/dBeranda_queries.php?action=pengajuan')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('pengajuan-count').textContent = data.total ?? 0;
-            });
 
-        // Perbaikan
-        fetch('../../control/dosen/dBeranda_queries.php?action=perbaikan')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('perbaikan-count').textContent = data.total ?? 0;
-            });
-
-        // Penilaian
-        fetch('../../control/dosen/dBeranda_queries.php?action=penilaian')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('penilaian-count').textContent = data.total ?? 0;
-            });
-
-        // Sidang Mendatang (jika ingin diisi dinamis juga)
-        fetch('../../control/dosen/dBeranda_queries.php?action=sidang_mendatang')
-            .then(response => response.json())
-            .then(data => {
-                // Isi elemen sidang mendatang sesuai kebutuhan
-                // Contoh: tampilkan daftar sidang di .sidang-mendatang-card
-            });
-    });
-</script>
 </body>
 
 </html>
