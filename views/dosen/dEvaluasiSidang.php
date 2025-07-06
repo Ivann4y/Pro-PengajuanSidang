@@ -222,16 +222,19 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
                 JOIN Kelas kls ON pk.id_kelas = kls.id_kelas
                 WHERE kls.id_matkul = ?";
             
-            $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
-            if ($stmt_pengampu) {
-                while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
-                    $dosenPembimbing[] = $row['nama_dosen'];
-                    $dosenPenguji[] = $row['nama_dosen'];
-                }
+        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
+        if ($stmt_pengampu) {
+            while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
+                $dosenPembimbing[] = $row['nama_dosen'];
+                $dosenPenguji[] = $row['nama_dosen'];
             }
         }
     }
-
+}
+// HILANGKAN DUPLIKAT DI KEDUA ARRAY
+if (!empty($dosenPembimbing)) {
+    $dosenPembimbing = array_unique($dosenPembimbing);
+}
     // Ambil penguji dari penjadwalan
     $sql_penguji_jadwal = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ? AND p.peran_dosen = 0";
     $stmt_penguji_jadwal = sqlsrv_query($conn, $sql_penguji_jadwal, array($id_sidang));
@@ -302,10 +305,18 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluasi Sidang</title>
+
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link CSS Font Awesome (Sudah Benar) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Link Script Font Awesome (INI YANG PERLU DITAMBAHKAN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script> 
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../assets/css/dEvaluasiSidang.css">
 </head>
@@ -346,7 +357,9 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
                 <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= htmlspecialchars($judul) ?></h2>
-                
+                <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;   color: #464869;">
+              Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
+          </h2><br>
                 <div class="container-fluid">
                     <!-- [BARU] TAB NAVIGASI MAHASISWA -->
                     <div class="row mt-4">
@@ -378,11 +391,11 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                         <div class="info-card">
                             <div class="section">
                                 <div class="info-group">
-                                    <div class="label-row"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div>
+                                    <div class="label-row"> <i class="fa-solid fa-id-card"></i> <span class="fw-bold"> NIM</span></div>
                                     <div class="value-row"><?php echo htmlspecialchars($current_nim ?: '-'); ?></div>
                                 </div>
                                 <div class="info-group">
-                                    <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
+                                    <div class="label-row"> <i class="fa-solid fa-file-invoice"></i> <span class="fw-bold"> Judul Sidang</span></div>
                                     <div class="value-row"><?php echo htmlspecialchars($judul); ?></div>
                                 </div>
                               <div class="info-group">
@@ -393,25 +406,25 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
     <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
 </div>
                                 <div class="info-group">
-                                    <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Penguji</span></div>
+                                   <div class="label-row"><i class="fa-solid fa-id-card-clip"></i><span class="fw-bold">Dosen Penguji</span></div>
                                     <div class="value-row"><?php echo $namaPenguji_html; ?></div>
                                 </div>
                             </div>
                             <div class="section">
                                  <div class="info-group">
-                                    <div class="label-row"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama Mahasiswa</span></div>
+                                    <div class="label-row"> <i class="fa-solid fa-user"></i>  <span class="fw-bold"> Nama Mahasiswa</span></div>
                                     <div class="value-row"><?php echo htmlspecialchars($current_nama_mhs); ?></div>
                                 </div>
                                 <div class="info-group">
-                                    <div class="label-row"><i class="fa-solid fa-door-open"></i><span class="fw-bold">Ruangan</span></div>
+                                    <div class="label-row"> <i class="fa-solid fa-door-open"></i>  <span class="fw-bold"> Ruangan</span></div>
                                     <div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div>
                                 </div>
                                 <div class="info-group">
-                                    <div class="label-row"><i class="fa-solid fa-calendar-days"></i><span class="fw-bold">Tanggal</span></div>
+                                    <div class="label-row"> <i class="fa-solid fa-calendar-days"></i>  <span class="fw-bold"> Tanggal</span></div>
                                     <div class="value-row"><?php echo $tanggal_formatted; // tidak perlu htmlspecialchars karena sudah diformat aman ?></div>
                                 </div>
                                 <div class="info-group">
-                                    <div class="label-row"><i class="fa-solid fa-clock"></i><span class="fw-bold">Jam</span></div>
+                                    <div class="label-row"> <i class="fa-solid fa-clock"></i>  <span class="fw-bold"> Jam</span></div>
                                     <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
                                 </div>
                             </div>
@@ -450,15 +463,18 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                    value="<?= htmlspecialchars($nilai_mahasiswa['n_proyek'] ?? '') ?>" <?= $nilai_sudah_dikirim_dan_lengkap ? 'readonly' : '' ?>>
         </div>
     </div>
-    <!-- Form vertikal untuk mobile tetap sama -->
-    <p class="error-message" id="nilaiSidangErrorMessage"> *Semua nilai harus diisi!</p>
-</div>
-
-
+      <!-- Form vertikal untuk mobile tetap sama -->
+                            <p class="error-message" id="nilaiSidangErrorMessage"> *Semua nilai harus diisi!</p>
+                        </div>
                         
-                        <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;">
-                            Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
-                        </h2><br>
+                        <?php if (!empty($_SESSION['error'])): ?>
+                            <div class="alert alert-danger">
+                                <?= htmlspecialchars($_SESSION['error']) ?>
+                            </div>
+                            <?php unset($_SESSION['error']); ?>
+                        <?php endif; ?>
+
+                        <h3>Catatan Evaluasi Sidang</h3>
                         <div class="form-card">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
@@ -469,15 +485,6 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                             </div>
                             <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                         </div>
-
-                        <!-- ==== PERUBAHAN SELESAI DI SINI ==== -->
-                        
-                        <?php if (!empty($_SESSION['error'])): ?>
-                            <div class="alert alert-danger">
-                                <?= htmlspecialchars($_SESSION['error']) ?>
-                            </div>
-                            <?php unset($_SESSION['error']); ?>
-                        <?php endif; ?>
 
                         <?php if (!$nilai_sudah_dikirim_dan_lengkap): ?>
                         <div class="button-group-bottom">
@@ -490,6 +497,10 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
             </main>
         </div>
     </div>
+
+
+
+    
     
     <!-- Modal konfirmasi -->
     <div class="modal fade" id="confirmationKirimModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationKirimModalLabel" aria-hidden="true">
