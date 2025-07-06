@@ -26,8 +26,8 @@ if (isset($_GET['id_sidang']) && is_numeric($_GET['id_sidang'])) {
     $redirectUrl = 'aNilaiAkhir.php';
     if (isset($_GET['nim'])) {
         $redirectUrl .= '?nim=' . urlencode($_GET['nim']);
-    }
-    header('Location: ' . $redirectUrl);
+    }    header('Location: '
+ . $redirectUrl);
     exit();
 }
 
@@ -41,16 +41,17 @@ if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif
 
 // 3. PENGAMBILAN DETAIL SIDANG (ID KELOMPOK, JENIS, ID MATKUL)
 if ($id_sidang > 0) {
-    $sql_detail = "SELECT TOP 1 s.id_kelompok, s.jenis_sidang, ds.id_matkul
-                   FROM Sidang s
-                   LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-                   WHERE s.id_sidang = ?";
+    $sql_detail = "SELECT DISTINCT k.nomor_kelompok, k.id_kelompok, k.jenis_sidang, ds.id_matkul, s.judul
+                   FROM Sidang s, Detail_Sidang ds, Kelompok k
+                   WHERE s.id_sidang = ? AND s.id_sidang = ds.id_sidang AND s.id_kelompok = k.id_kelompok";
     $stmt_detail = sqlsrv_query($conn, $sql_detail, array($id_sidang));
 
     if ($stmt_detail && $detail = sqlsrv_fetch_array($stmt_detail, SQLSRV_FETCH_ASSOC)) {
+        $nomor_kelompok = $detail['nomor_kelompok'];
         $id_kelompok = $detail['id_kelompok'];
         $id_matkul = $detail['id_matkul'];
         $jenis_sidang = $detail['jenis_sidang'];
+        $judul = $detail['judul'];
     } else {
         $error_message = "Data Sidang dengan ID: " . htmlspecialchars($id_sidang) . " tidak ditemukan.";
         $id_sidang = 0; 
@@ -60,23 +61,28 @@ if ($id_sidang > 0) {
 }
 
 // 4. PENGAMBILAN DAFTAR MAHASISWA DALAM KELOMPOK
-if ($id_kelompok) {
-    $sql_mhs_list = "SELECT km.nim, m.nama_mhs
-                     FROM Kelompok_Mahasiswa km
-                     JOIN Mahasiswa m ON km.nim = m.nim
-                     WHERE km.id_kelompok = ?
-                     ORDER BY m.nama_mhs";
-    $stmt_mhs_list = sqlsrv_query($conn, $sql_mhs_list, array($id_kelompok));
-
-    if ($stmt_mhs_list) {
-        while ($row = sqlsrv_fetch_array($stmt_mhs_list, SQLSRV_FETCH_ASSOC)) {
+if ($id_sidang) {
+    $sql_mhs = "SELECT DISTINCT k.nim, m.nama_mhs
+                FROM Kelompok k
+                JOIN Mahasiswa m ON k.nim = m.nim
+                WHERE k.nomor_kelompok = ?
+                ORDER BY k.nim";
+    $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($nomor_kelompok));
+    
+    if ($stmt_mhs) {
+        while ($row = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {
             $mahasiswa_list[] = $row;
         }
     }
-    
-    if (empty($current_nim) || !in_array($current_nim, array_column($mahasiswa_list, 'nim'))) {
-        $current_nim = !empty($mahasiswa_list) ? $mahasiswa_list[0]['nim'] : null;
+
+    if (isset($_GET['nim']) && in_array($_GET['nim'], array_column($mahasiswa_list, 'nim'))) {
+        $current_nim = $_GET['nim'];
+    } elseif (!empty($mahasiswa_list)) {
+        $current_nim = $mahasiswa_list[0]['nim'];
     }
+} else {
+    $mahasiswa_list = [];
+    $error_message = "ID Sidang tidak valid.";
 }
 
 if (empty($mahasiswa_list) && empty($error_message) && $id_sidang > 0) {
@@ -92,21 +98,23 @@ if ($id_matkul) {
     }
 }
 
-if (isset($jenis_sidang)) {
-    if ((int)$jenis_sidang === 0) { 
-        $sql_dosen = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ? AND b.isPembimbing = 1";
-        $params_dosen = array($id_kelompok);
-    } elseif ((int)$jenis_sidang === 1 && $id_matkul) { 
-        $sql_dosen = "SELECT TOP 1 d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
-        $params_dosen = array($id_matkul);
+if ($jenis_sidang === 'Tugas Akhir') { 
+    $sql_dosen_ta = "SELECT DISTINCT d.nama_dosen 
+                     FROM Dosen d 
+                     JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen 
+                     WHERE b.id_kelompok = ? AND b.isPembimbing = 1"; 
+    $stmt_dosen_ta = sqlsrv_query($conn, $sql_dosen_ta, array($id_kelompok));
+    if ($stmt_dosen_ta && $row = sqlsrv_fetch_array($stmt_dosen_ta, SQLSRV_FETCH_ASSOC)) {
+        $dosen_terkait_sidang = $row['nama_dosen'];
     }
-
-    if (isset($sql_dosen)) {
-        $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
-        if ($stmt_dosen && $row_dosen = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
-            $dosen_terkait_sidang = $row_dosen['nama_dosen'];
-        }
+} elseif ($jenis_sidang === 'Semester' && $id_matkul) {
+    $sql_dosen_semester = "SELECT TOP 1 d.nama_dosen FROM Dosen d, Pengampu_Kelas pk, Detail_Sidang ds WHERE ds.id_sidang = ? AND pk.id_matkul = ds.id_matkul AND pk.nomor_dosen = d.nomor_dosen";
+    $stmt_dosen_semester = sqlsrv_query($conn, $sql_dosen_semester, array($id_sidang));
+    if ($stmt_dosen_semester && $row = sqlsrv_fetch_array($stmt_dosen_semester, SQLSRV_FETCH_ASSOC)) {
+        $dosen_terkait_sidang = $row['nama_dosen'];
     }
+} else {
+    $dosen_terkait_sidang = 'Jenis sidang tidak valid';
 }
 
 //HITUNG NILAI AKHIR
@@ -249,6 +257,13 @@ if ($current_nim && empty($error_message)) {
       white-space: pre-wrap; 
     }
     textarea[readonly], input[readonly] { background-color: #e9ecef; }
+    
+    /* Style untuk tab aktif */
+    .nav-link.active-student-tab {
+      font-weight: bold;
+      color: var(--primary-color) !important;
+      border-bottom: 2px solid var(--primary-color) !important;
+    }
   </style>
 </head>
 <body>
@@ -293,31 +308,42 @@ if ($current_nim && empty($error_message)) {
 
     <main class="NavSide__main-content">
       <div class="dashboard-header p-3">
-        <div>
-          <h2 class="text-heading text-black " style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-           <?php if ($id_kelompok): ?>
-                    <h3 class="fs-5 fw-semibold mb-2 mt-4" style="color: #6c757d;">
-                        Kelompok: <?php echo htmlspecialchars($id_kelompok); ?>
-                    </h3>
-                <?php endif; ?>
-          <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <?php foreach ($mahasiswa_list as $mhs): ?>
-              <li class="nav-item" role="presentation">
-                <a class="nav-link<?= $current_nim === $mhs['nim'] ? ' active' : '' ?>" href="?id_sidang=<?= urlencode($id_sidang) ?>&nim=<?= urlencode($mhs['nim']) ?>">
-                  <?= htmlspecialchars($mhs['nama_mhs']) ?>
-                </a>
-              </li>
-            <?php endforeach; ?>
-          </ul>
+        <div class="col-12">
+          <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= htmlspecialchars($judul ?? 'Sistem Evaluasi Sidang') ?></h2>
         </div>
         <div class="header-icons d-none d-md-flex">
-            <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
-            <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
+          <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+          <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
         </div>
+      </div>
+      <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;">
+        Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
+      </h2><br>
+      <div class="container-fluid">
+        <div class="row mb-3">
+          <div class="col-12">
+            <ul class="nav nav-tabs">
+              <?php foreach ($mahasiswa_list as $index => $mhs): ?>
+                <li class="nav-item">
+                  <a class="nav-link <?php echo ($mhs['nim'] == $current_nim) ? 'active active-student-tab' : ''; ?>"
+                     href="aNilaiAkhir.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>&nim=<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>">
+                     <?php echo htmlspecialchars($mhs['nama_mhs'] ?? 'Mahasiswa ' . ($index + 1)); ?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+              <?php if (empty($mahasiswa_list)): ?>
+                <li class="nav-item">
+                  <span class="nav-link disabled">Tidak ada mahasiswa dalam kelompok ini</span>
+                </li>
+              <?php endif; ?>
+            </ul>
+          </div>
+        </div>
+        <br>
       </div>
 
             <!-- KONTEN UTAMA -->
-      <div class="p-3">
+      <div class="container-fluid">
         <?php if (!empty($error_message)): ?>
             <div class="alert alert-danger" role="alert"><?= htmlspecialchars($error_message) ?></div>
         <?php elseif(empty($current_nim)): ?>
