@@ -262,10 +262,17 @@ body {
   cursor: not-allowed;
 } */
 
+.judul {
+  font-size: 2rem; /* 28px */
+  color: #374151; /* abu-abu gelap */
+  font-weight: 600;
+  margin-bottom: 1.5rem; /* 24px */
+}
+
 .badge-custom {
   font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 20px;
+  padding: 14px;
+  border-radius: 25px;
 }
 
 .badge-success {

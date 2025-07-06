@@ -18,9 +18,6 @@ require_once '../../control/admin/aDetailSidang_queries.php';
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/aDetailSidang.css">
-
-
-
 </head>
 
 <body>
