@@ -18,15 +18,17 @@ $tanggal = $_POST['tanggal'] ?? null;
 $jam_awal = $_POST['jam_awal'] ?? null;
 $jam_akhir = $_POST['jam_akhir'] ?? null;
 
+
 // Ambil data dosen tergantung tipe sidang
-if ($tipe_sidang === 'TA') {
+if ($tipe_sidang === 'Tugas Akhir') {
+    $pembimbing_nama = $_POST['pembimbing_nama'] ?? null;
     $dosen_nama_list = $_POST['penguji_nama'] ?? [];
     $dosen_bobot_list = $_POST['penguji_bobot'] ?? [];
     $peran_dosen = 0; // 0 untuk Penguji
 } elseif ($tipe_sidang === 'Semester') {
     $dosen_nama_list = $_POST['pengampu_nama'] ?? [];
     $dosen_bobot_list = $_POST['pengampu_bobot'] ?? [];
-    $peran_dosen = 2; // Asumsi 2 untuk Pengampu
+     // Asumsi 2 untuk Pengampu
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Tipe sidang tidak valid.']);
     exit;
@@ -79,26 +81,62 @@ if ($all_queries_ok) {
 // 3. Ambil data mahasiswa dari kelompok
 $list_nim_mahasiswa = [];
 if ($all_queries_ok) {
-    $sql_get_kelompok = "SELECT id_kelompok FROM Sidang WHERE id_sidang = ?";
-    $stmt_get_kelompok = sqlsrv_query($conn, $sql_get_kelompok, array($id_sidang));
-    $kelompok_data = sqlsrv_fetch_array($stmt_get_kelompok, SQLSRV_FETCH_ASSOC);
+    // Ambil ID kelompok dan NIM perwakilan dari Sidang
+    $sql_get_info = "SELECT k.id_kelompok, k.nim 
+                     FROM Sidang s 
+                     JOIN Kelompok k ON s.id_kelompok = k.id_kelompok 
+                     WHERE s.id_sidang = ?";
+    $stmt_get_info = sqlsrv_query($conn, $sql_get_info, array($id_sidang));
+    $info_data = sqlsrv_fetch_array($stmt_get_info, SQLSRV_FETCH_ASSOC);
 
-    if ($kelompok_data) {
-        $id_kelompok = $kelompok_data['id_kelompok'];
-        $sql_get_nim = "SELECT nim FROM Kelompok_Mahasiswa WHERE id_kelompok = ?";
-        $stmt_get_nim = sqlsrv_query($conn, $sql_get_nim, array($id_kelompok));
-        while ($row = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)) {
-            $list_nim_mahasiswa[] = $row['nim'];
+    if ($info_data) {
+        $id_kelompok = $info_data['id_kelompok'];
+        $nim_perwakilan = $info_data['nim'];
+
+        // Cari id_kelas dari nim perwakilan
+        $sql_get_kelas = "SELECT TOP 1 id_kelas FROM Kelas_Mahasiswa WHERE nim = ?";
+        $stmt_get_kelas = sqlsrv_query($conn, $sql_get_kelas, array($nim_perwakilan));
+        $kelas_data = sqlsrv_fetch_array($stmt_get_kelas, SQLSRV_FETCH_ASSOC);
+        
+        if ($kelas_data) {
+            $id_kelas = $kelas_data['id_kelas'];
+            // Ambil semua NIM dari id_kelas yang sama
+            $sql_get_nim = "SELECT nim FROM Kelas_Mahasiswa WHERE id_kelas = ?";
+            $stmt_get_nim = sqlsrv_query($conn, $sql_get_nim, array($id_kelas));
+            while ($row = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)) {
+                $list_nim_mahasiswa[] = $row['nim'];
+            }
         }
     }
+
+    // Validasi: pastikan kita mendapatkan mahasiswa
     if (empty($list_nim_mahasiswa)) {
         $all_queries_ok = false;
-        $error_message = "Gagal menemukan mahasiswa dalam kelompok.";
+        $error_message = "Gagal menemukan daftar mahasiswa dalam kelompok atau kelas.";
     }
 }
 
+
 // 4. Insert data dosen (penguji/pengampu) dan bobotnya
 if ($all_queries_ok) {
+    $sql_get_pembimbing = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
+    $stmt_get_pembimbing = sqlsrv_query($conn, $sql_get_pembimbing, array($pembimbing_nama));
+    $pembimbing_data = sqlsrv_fetch_array($stmt_get_pembimbing, SQLSRV_FETCH_ASSOC);
+
+    if ($pembimbing_data) {
+        $nomor_pembimbing = $pembimbing_data['nomor_dosen'];
+        // Insert ke Penjadwalan dengan peran_dosen = 1
+        $sql_insert_pembimbing = "INSERT INTO Penjadwalan (id_sidang, nomor_dosen, peran_dosen) VALUES (?, ?, 1)";
+        if (sqlsrv_query($conn, $sql_insert_pembimbing, array($id_sidang, $nomor_pembimbing)) === false) {
+            $all_queries_ok = false;
+            $error_message = "Gagal menyimpan data pembimbing.";
+        }
+    } else {
+        $all_queries_ok = false;
+        $error_message = "Dosen pembimbing dengan nama '$pembimbing_nama' tidak ditemukan.";
+    }
+
+
     foreach ($dosen_nama_list as $index => $nama_dosen) {
         if (empty(trim($nama_dosen))) continue;
 
