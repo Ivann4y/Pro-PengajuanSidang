@@ -30,10 +30,13 @@ $baseQuery = "
             s.id_sidang,
             s.id_kelompok,
             s.judul,
-            s.jenis_sidang,
             d.nomor_dosen,
             d.nama_dosen,
-            mk.nama_matkul
+            mk.nama_matkul,
+            CASE 
+                WHEN mk.nama_matkul = 'Tugas Akhir' THEN 0 
+                ELSE 1 
+            END AS jenis_sidang
         FROM
             Sidang s
         JOIN
@@ -236,14 +239,7 @@ $nomor = $offset + 1;
                             <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
                                 <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                     <?php
-                                    $jenisSidangTampilan = '';
-
-                                    // Cek apakah mata kuliahnya adalah 'Tugas Akhir'
-                                    if (isset($row['nama_matkul']) && $row['nama_matkul'] === 'Tugas Akhir') {
-                                        $jenisSidangTampilan = 'TA';
-                                    } else {
-                                        $jenisSidangTampilan = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
-                                    }
+                                    $jenisSidangTampilan = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
                                     ?>
                                     <tr class="isiTabel jadiBiru">
                                         <td><?= $nomor++; ?></td>
@@ -255,9 +251,13 @@ $nomor = $offset + 1;
                                         <td><?= $jenisSidangTampilan; ?></td>
 
                                         <td style="text-align: center;">
-                                            <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $jenisSidangTampilan; ?>')">
+                                            <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
+                                            <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
+                                            <input type="hidden" name="tipe" value="<?= $jenisSidangTampilan; ?>">
+                                            <button type="submit" class="detail-btn">
                                                 <i class="bi bi-eye"></i>
                                             </button>
+                                        </form>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
