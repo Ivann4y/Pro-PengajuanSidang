@@ -1,22 +1,18 @@
 // ==========================================================================
 // BAGIAN 1: FUNGSI GLOBAL & INSTANCE MODAL
-// Fungsi-fungsi ini berada di lingkup global agar bisa dipanggil
-// oleh atribut onclick="..." di HTML.
-// Variabel `dosenData` akan diinisialisasi oleh skrip dari file PHP.
 // ==========================================================================
 
 let taModalInstance, semModalInstance;
-let pengujiCount = 0; // Mulai dari 0, akan di-increment oleh addPenguji()
+let pengujiCount = 0;
 
 /**
  * Fungsi utama untuk membuka modal penjadwalan.
- * Dipanggil dari tombol "Aksi" di tabel.
  * @param {HTMLElement} rowElement - Elemen <tr> dari baris yang diklik.
  */
 function openJadwalModal(rowElement) {
     const tipeSidang = rowElement.dataset.tipeSidang;
 
-    if (tipeSidang === 'TA') {
+    if (tipeSidang === 'Tugas Akhir') { // Disesuaikan dengan nilai dari DB
         if (!taModalInstance) {
             taModalInstance = new bootstrap.Modal(document.getElementById('penjadwalanSidangTAModal'));
         }
@@ -33,28 +29,24 @@ function openJadwalModal(rowElement) {
 
 /**
  * Mengisi data ke modal Sidang TA dan mereset field.
- * Ini adalah fungsi kunci yang memastikan penguji pertama bekerja dengan benar.
  * @param {HTMLElement} el - Elemen <tr> dari baris yang diklik.
  */
 function resetAndPopulateTAModal(el) {
     const formTA = document.getElementById('formDalamModal-ta');
-    formTA.reset(); // Membersihkan semua input di form
-    document.getElementById('modal_id_sidang-ta').value = el.dataset.id || ''; // Menyimpan ID Sidang
+    formTA.reset();
+    document.getElementById('modal_id_sidang-ta').value = el.dataset.id || '';
 
-    // Mengisi field yang readonly
     document.getElementById('modal_nim-ta').value = el.dataset.kelompok || '';
     document.getElementById('modal_judul_sidang-ta').value = el.dataset.judul || '';
     document.getElementById('modal_pembimbing-ta').value = el.dataset.pembimbing || '';
     document.getElementById('modal_prodi-ta').value = el.dataset.prodi || '';
     document.getElementById('form-error-ta').textContent = '';
 
-    // Reset field penguji dengan membangun ulang dari awal
     const wrapper = document.getElementById('penguji-wrapper-ta');
-    wrapper.innerHTML = ''; // Hapus semua field penguji yang ada
-    pengujiCount = 0; // Reset counter
+    wrapper.innerHTML = '';
+    pengujiCount = 0;
 
-    // Buat field penguji pertama secara dinamis
-    addPenguji(); 
+    addPenguji();
 }
 
 /**
@@ -64,22 +56,20 @@ function resetAndPopulateTAModal(el) {
 function populateSemModal(el) {
     const formSem = document.getElementById('formDalamModal-sem');
     formSem.reset();
-    document.getElementById('modal_id_sidang-sem').value = el.dataset.id || ''; // Menyimpan ID Sidang
+    document.getElementById('modal_id_sidang-sem').value = el.dataset.id || '';
 
-    // Mengisi field readonly
     document.getElementById('modal_nim-sem').value = el.dataset.kelompok || '';
     document.getElementById('modal_matkul-sem').value = el.dataset.judul || '';
     document.getElementById('modal_prodi-sem').value = el.dataset.prodi || '';
     document.getElementById('form-error-sem').textContent = '';
 
-    // Mengisi field pengampu secara dinamis
     const pengampuWrapper = document.getElementById('pengampu-wrapper-sem');
-    pengampuWrapper.innerHTML = ''; // Kosongkan dulu
+    pengampuWrapper.innerHTML = '';
     try {
         const pengampuList = JSON.parse(el.dataset.pengampu || '[]');
         if (pengampuList.length > 0) {
             pengampuList.forEach((nama, index) => {
-                if (!nama) return; // Lewati jika nama kosong
+                if (!nama) return;
                 const pengampuIndex = index + 1;
                 const pengampuHtml = `
                     <div class="form-group" id="pengampu-form-sem-${pengampuIndex}">
@@ -102,7 +92,7 @@ function populateSemModal(el) {
 }
 
 /**
- * Menambah field input penguji baru dengan struktur autocomplete.
+ * Menambah field input penguji baru.
  */
 function addPenguji() {
     pengujiCount++;
@@ -153,11 +143,11 @@ function removePenguji() {
  */
 function updateToggleButtonsVisibility() {
     const allToggleButtons = document.querySelectorAll('#penguji-wrapper-ta .form-toggle-buttons');
-    allToggleButtons.forEach(group => group.style.display = 'none'); // Sembunyikan semua
+    allToggleButtons.forEach(group => group.style.display = 'none');
 
     if (allToggleButtons.length > 0) {
         const lastGroup = allToggleButtons[allToggleButtons.length - 1];
-        lastGroup.style.display = 'inline-flex'; // Tampilkan yang terakhir
+        lastGroup.style.display = 'inline-flex';
 
         const removeButton = lastGroup.querySelector('button[onclick="removePenguji()"]');
         if (removeButton) {
@@ -168,8 +158,6 @@ function updateToggleButtonsVisibility() {
 
 /**
  * Mencari dosen untuk dropdown autocomplete.
- * @param {HTMLInputElement} inputElement - Elemen input yang diketik.
- * @param {number} index - Nomor urut penguji.
  */
 function searchPenguji(inputElement, index) {
     const query = inputElement.value.toLowerCase().trim();
@@ -201,8 +189,6 @@ function searchPenguji(inputElement, index) {
 
 /**
  * Memilih dosen dari dropdown dan mengisi input.
- * @param {string} namaDosen - Nama dosen yang dipilih.
- * @param {number} index - Nomor urut penguji.
  */
 function selectPenguji(namaDosen, index) {
     document.getElementById(`modal_penguji-ta-${index}`).value = namaDosen;
@@ -211,7 +197,6 @@ function selectPenguji(namaDosen, index) {
 
 /**
  * Menambah nilai pada input bobot.
- * @param {string} inputId - ID dari input bobot.
  */
 function incrementValue(inputId) {
     const input = document.getElementById(inputId);
@@ -220,52 +205,40 @@ function incrementValue(inputId) {
 
 /**
  * Mengurangi nilai pada input bobot.
- * @param {string} inputId - ID dari input bobot.
  */
 function decrementValue(inputId) {
     const input = document.getElementById(inputId);
     if (input) {
         let val = parseInt(input.value, 10);
-        if (val > (input.min || 0)) {
+        if (val > (parseInt(input.min, 10) || 0)) {
             input.value = val - 1;
         }
     }
 }
 
 /**
- * Menangani pengiriman data dari form modal (TA atau Semester).
- * @param {Event} event - Event 'submit' dari form.
+ * Menangani pengiriman data dari form modal.
  */
 function handleFormSubmit(event) {
     event.preventDefault();
     const form = event.target;
-    const modalSuffix = form.id.includes('-ta') ? 'ta' : 'sem';
-    const modalType = modalSuffix === 'ta' ? 'TA' : 'Semester';
-    const errorBox = document.getElementById(`form-error-${modalSuffix}`);
+    const modalType = form.id.includes('-ta') ? 'TA' : 'Semester';
+    const errorBox = document.getElementById(`form-error-${modalType.toLowerCase()}`);
 
     if (!validateForm(modalType)) return;
 
-    // Tampilkan loading spinner atau disable tombol submit
     const submitButton = form.querySelector('button[type="submit"]');
     submitButton.disabled = true;
     submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengirim...';
     errorBox.textContent = '';
 
-
-    // --- LOGIKA PENGIRIMAN DATA DENGAN FETCH ---
     const formData = new FormData(form);
 
-    // Ganti 'createPenjadwalan.php' dengan path yang benar jika file PHP ada di direktori lain
     fetch('createPenjadwalan.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
             const modalToHide = modalType === 'TA' ? taModalInstance : semModalInstance;
@@ -273,17 +246,16 @@ function handleFormSubmit(event) {
             
             Swal.fire({
                 title: 'Berhasil!',
-                text: data.message, // Gunakan pesan dari server
+                text: data.message,
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => location.reload());
 
         } else {
-            // Tampilkan pesan error dari server di form
-            errorBox.textContent = data.message || 'Terjadi kesalahan yang tidak diketahui.';
+            errorBox.textContent = data.message || 'Terjadi kesalahan.';
             Swal.fire({
                 title: 'Gagal!',
-                text: data.message, // Gunakan pesan dari server
+                text: data.message,
                 icon: 'error',
                 confirmButtonText: 'Coba Lagi'
             });
@@ -291,16 +263,15 @@ function handleFormSubmit(event) {
     })
     .catch(error => {
         console.error('Fetch Error:', error);
-        errorBox.textContent = 'Tidak dapat terhubung ke server. Periksa koneksi Anda.';
+        errorBox.textContent = 'Tidak dapat terhubung ke server.';
         Swal.fire({
             title: 'Koneksi Gagal',
-            text: 'Tidak dapat mengirim data ke server. Silakan periksa koneksi internet Anda dan coba lagi.',
+            text: 'Tidak dapat mengirim data ke server.',
             icon: 'error',
             confirmButtonText: 'Tutup'
         });
     })
     .finally(() => {
-        // Kembalikan tombol submit ke keadaan semula
         submitButton.disabled = false;
         submitButton.innerHTML = 'Buat Penjadwalan';
     });
@@ -308,15 +279,12 @@ function handleFormSubmit(event) {
 
 /**
  * Validasi form sebelum dikirim.
- * @param {string} modalType - 'TA' atau 'Semester'.
- * @returns {boolean} - True jika valid, false jika tidak.
  */
 function validateForm(modalType) {
     const suffix = modalType === 'TA' ? '-ta' : '-sem';
     const errorBox = document.getElementById(`form-error${suffix}`);
     errorBox.textContent = '';
     
-    // Validasi field umum
     const fieldsToValidate = [
         { id: `modal_ruangan${suffix}`, message: 'Ruangan harus diisi.' },
         { id: `modal_tanggal${suffix}`, message: 'Tanggal harus dipilih.' },
@@ -331,7 +299,6 @@ function validateForm(modalType) {
         }
     }
     
-    // Validasi jam
     const jamAwal = document.getElementById(`modal_jam_awal${suffix}`).value;
     const jamAkhir = document.getElementById(`modal_jam_akhir${suffix}`).value;
     if (jamAkhir <= jamAwal) {
@@ -339,7 +306,6 @@ function validateForm(modalType) {
         return false;
     }
     
-       // Validasi dosen/penguji
     if (modalType === 'TA') {
         const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
         const namaPengujiList = [];
@@ -348,48 +314,69 @@ function validateForm(modalType) {
             const input = pengujiInputs[i];
             const nama = input.value.trim();
 
-            // 1. Cek apakah input kosong
             if (nama === '') {
                 errorBox.textContent = `Nama Penguji ${i + 1} harus diisi.`;
                 return false;
             }
             
-            // 2. Cek apakah nama dosen valid (ada di daftar autocomplete)
             const isDosenValid = dosenData.some(dosen => dosen.nama === nama);
             if (!isDosenValid) {
                 errorBox.textContent = `Nama dosen '${nama}' tidak valid. Harap pilih dari daftar.`;
                 return false;
             }
-
-            // 3. Kumpulkan nama untuk cek duplikasi nanti
             namaPengujiList.push(nama);
         }
-
-        // 4. Cek duplikasi nama
-        // Buat Set dari array untuk mendapatkan nama-nama unik
+        
         const uniqueNama = new Set(namaPengujiList);
         if (uniqueNama.size < namaPengujiList.length) {
             errorBox.textContent = 'Tidak boleh ada nama dosen penguji yang sama.';
             return false;
         }
-    } else { // Validasi untuk Sidang Semester (jika diperlukan)
-        const pengampuInputs = document.querySelectorAll('input[name="pengampu_nama[]"]');
-        for (let i = 0; i < pengampuInputs.length; i++) {
-            if (pengampuInputs[i].value.trim() === '') {
-                errorBox.textContent = `Nama Pengampu ${i + 1} harus diisi.`;
-                return false;
-            }
-        }
     }
-
     return true;
 }
-
 
 // ==========================================================================
 // BAGIAN 2: SCRIPT YANG BERJALAN SETELAH HALAMAN SIAP (DOMContentLoaded)
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", function () {
+    
+    // ==========================================================
+    // == BAGIAN BARU: LOGIKA UNTUK RESPONSIVE LAYOUT ==
+    // ==========================================================
+    const sidebar = document.getElementById('main-sidebar');
+    const toggleButton = document.querySelector('.NavSide__toggle');
+    const desktopIconsContainer = document.getElementById('desktop-icons-container');
+    const topbar = document.querySelector('.NavSide__topbar');
+    const headerIcons = desktopIconsContainer ? desktopIconsContainer.querySelector('.header-icons') : null;
+
+    // 1. Logika untuk Toggle Sidebar
+    if (toggleButton && sidebar) {
+        toggleButton.addEventListener('click', function() {
+            sidebar.classList.toggle('NavSide__sidebar--active-mobile');
+            this.classList.toggle('NavSide__toggle--active');
+        });
+    }
+    
+    // 2. Logika untuk Memindahkan Ikon
+    if (topbar && headerIcons) {
+        function handleResponsiveIcons() {
+            if (window.innerWidth <= 992) {
+                if (!topbar.contains(headerIcons)) {
+                    topbar.appendChild(headerIcons);
+                }
+            } else {
+                if (desktopIconsContainer && !desktopIconsContainer.contains(headerIcons)) {
+                    desktopIconsContainer.appendChild(headerIcons);
+                }
+            }
+        }
+        handleResponsiveIcons();
+        window.addEventListener('resize', handleResponsiveIcons);
+    }
+    
+    // --- (KODE ASLI ANDA MULAI DARI SINI) ---
+
     // --- PASANG EVENT LISTENER KE FORM MODAL ---
     document.getElementById('formDalamModal-ta')?.addEventListener('submit', handleFormSubmit);
     document.getElementById('formDalamModal-sem')?.addEventListener('submit', handleFormSubmit);
@@ -398,8 +385,11 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener('click', function(event) {
         const allDropdowns = document.querySelectorAll('.autocomplete-dropdown');
         const clickedInsideContainer = event.target.closest('.autocomplete-container');
+        
+        // Sembunyikan semua dropdown KECUALI yang sedang aktif
         allDropdowns.forEach(dropdown => {
-            if (!clickedInsideContainer || !dropdown.closest('.autocomplete-container').contains(event.target)) {
+            const container = dropdown.closest('.autocomplete-container');
+            if (container !== clickedInsideContainer) {
                 dropdown.style.display = 'none';
             }
         });
@@ -407,77 +397,114 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // --- LOGIKA PENCARIAN DAN PAGINASI TABEL UTAMA ---
     const searchInput = document.querySelector('.search-input-group .form-control');
-    const allRows = Array.from(document.querySelectorAll('#adminSidangContent tr.isiTabel'));
+    const tableBody = document.getElementById('adminSidangContent');
     const paginationControls = document.getElementById('pagination-controls');
     const noDataRow = document.querySelector('.no-results-row');
     const rowsPerPage = 10;
+    let allRows = []; // Akan diisi dengan baris tabel yang ada
+
+    function initializeTableLogic() {
+        allRows = Array.from(tableBody.querySelectorAll('tr.isiTabel'));
+        if (allRows.length > 0) {
+            renderTable();
+        } else if(noDataRow) {
+            noDataRow.style.display = ''; // Tampilkan jika tidak ada data sama sekali
+            if(paginationControls) paginationControls.innerHTML = ''; // Kosongkan paginasi
+        }
+    }
 
     function renderTable() {
-        const searchText = searchInput.value.toLowerCase().trim();
+        const searchText = searchInput ? searchInput.value.toLowerCase().trim() : '';
         const filteredRows = allRows.filter(row => {
-            const judulText = (row.cells[2]?.textContent || '').toLowerCase();
-            const dosenText = (row.cells[3]?.textContent || '').toLowerCase();
-            return judulText.includes(searchText) || dosenText.includes(searchText);
+            // Mengambil dari data-attributes untuk pencarian yang lebih akurat
+            const namaList = (row.dataset.namaList || '').toLowerCase();
+            const judul = (row.dataset.judul || '').toLowerCase();
+            const pembimbing = (row.dataset.pembimbing || '').toLowerCase();
+
+            return namaList.includes(searchText) || 
+                   judul.includes(searchText) || 
+                   pembimbing.includes(searchText);
         });
         
-        if (noDataRow) noDataRow.style.display = filteredRows.length === 0 ? '' : 'none';
+        if (noDataRow) {
+            // Tampilkan "no data" hanya jika tidak ada baris setelah filter
+            noDataRow.style.display = filteredRows.length === 0 ? '' : 'none';
+        }
         
         setupPagination(filteredRows);
         displayPage(1, filteredRows);
     }
 
     function displayPage(page, rows) {
-        allRows.forEach(row => row.style.display = 'none');
+        // Sembunyikan SEMUA baris yang ada di DOM terlebih dahulu
+        tableBody.querySelectorAll('tr.isiTabel').forEach(row => row.style.display = 'none');
         
         const startIndex = (page - 1) * rowsPerPage;
         const paginatedRows = rows.slice(startIndex, startIndex + rowsPerPage);
+        
+        // Tampilkan hanya baris yang terpaginasi
         paginatedRows.forEach(row => row.style.display = '');
 
         updatePaginationButtons(rows.length, page);
     }
 
     function setupPagination(rows) {
+        if (!paginationControls) return;
         paginationControls.innerHTML = '';
         const pageCount = Math.ceil(rows.length / rowsPerPage);
         if (pageCount <= 1) return;
 
-        const createPageItem = (content, pageNum) => {
+        const createPageItem = (content, pageNum, isDisabled = false) => {
             const li = document.createElement('li');
-            li.className = 'page-item';
+            li.className = `page-item ${isDisabled ? 'disabled' : ''}`;
             li.innerHTML = `<a class="page-link" href="#">${content}</a>`;
-            li.addEventListener('click', e => { e.preventDefault(); displayPage(pageNum, rows); });
+            if (!isDisabled) {
+                li.addEventListener('click', e => { e.preventDefault(); displayPage(pageNum, rows); });
+            }
             return li;
         };
-
-        paginationControls.appendChild(createPageItem('«', 1));
+        
+        const currentPage = 1; // Selalu mulai dari halaman 1 saat setup
+        paginationControls.appendChild(createPageItem('«', currentPage - 1, currentPage === 1));
+        
         for (let i = 1; i <= pageCount; i++) {
-            paginationControls.appendChild(createPageItem(i, i));
+            const item = createPageItem(i, i);
+            if (i === currentPage) item.classList.add('active');
+            paginationControls.appendChild(item);
         }
-        paginationControls.appendChild(createPageItem('»', pageCount));
+        
+        paginationControls.appendChild(createPageItem('»', currentPage + 1, currentPage === pageCount));
     }
     
     function updatePaginationButtons(totalRows, currentPage) {
+        if (!paginationControls) return;
         const pageCount = Math.ceil(totalRows / rowsPerPage);
         const pageItems = paginationControls.querySelectorAll('.page-item');
+        
         pageItems.forEach(item => {
             const link = item.querySelector('.page-link');
-            const pageNum = parseInt(link.textContent);
+            const content = link.innerHTML;
             item.classList.remove('active', 'disabled');
 
-            if (link.textContent === '«') {
+            if (content === '«') {
                 if (currentPage === 1) item.classList.add('disabled');
-            } else if (link.textContent === '»') {
+                link.onclick = (e) => { e.preventDefault(); if(currentPage > 1) displayPage(currentPage - 1, allRows.filter(r => r.style.display !== 'none')); };
+            } else if (content === '»') {
                 if (currentPage === pageCount) item.classList.add('disabled');
-            } else if (pageNum === currentPage) {
-                item.classList.add('active');
+                link.onclick = (e) => { e.preventDefault(); if(currentPage < pageCount) displayPage(currentPage + 1, allRows.filter(r => r.style.display !== 'none')); };
+            } else {
+                const pageNum = parseInt(content);
+                if (pageNum === currentPage) {
+                    item.classList.add('active');
+                }
             }
         });
     }
 
-    if (searchInput) searchInput.addEventListener('input', renderTable);
-    
-    // Inisialisasi awal tabel dan paginasi
-    if (allRows.length > 0) {
-        renderTable();
+    if (searchInput) {
+        searchInput.addEventListener('input', renderTable);
     }
+    
+    // Inisialisasi awal tabel
+    initializeTableLogic();
 });
