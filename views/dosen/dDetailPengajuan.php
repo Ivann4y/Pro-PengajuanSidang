@@ -14,19 +14,18 @@ if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-// Get parameters dari URL
-$id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : 0;
-$jenis_sidang_url = isset($_GET['tipe']) ? $_GET['tipe'] : null;
-$nomorDosen = $_SESSION['user_data']['nomor_dosen'];
-
-if (!$id_sidang) {
-    die("Error: ID Sidang tidak valid.");
+if (!isset($_POST['id_sidang']) || empty($_POST['id_sidang'])) {
+    // If no ID is posted, we cannot proceed.
+    die("Error: ID Sidang tidak valid atau tidak diberikan.");
 }
+$id_sidang = (int)$_POST['id_sidang'];
+$jenis_sidang_url = isset($_POST['tipe']) ? $_POST['tipe'] : null;
+$nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
 // =================================================================
 // PERUBAHAN 1: Logika Download File dari Database
 // =================================================================
-if (isset($_GET['download']) && $_GET['download'] === 'main') {
+if (isset($_POST['download']) && $_POST['download'] === 'main') {
     // Ambil hanya kolom dok_laporan dari database
     $sql_download = "SELECT dok_laporan, jenis_sidang FROM Sidang WHERE id_sidang = ?";
     $stmt_download = sqlsrv_query($conn, $sql_download, [$id_sidang]);
@@ -74,7 +73,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'main') {
 $sql_main = "
     WITH SidangInfo AS (
         SELECT DISTINCT
-            s.id_sidang, s.id_kelompok, s.judul, s.jenis_sidang, 
+            s.id_sidang, s.id_kelompok, s.judul, 
             d.nama_dosen AS nama_pembimbing,
             mk.nama_matkul
         FROM Sidang s
@@ -262,84 +261,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $doc_data = sqlsrv_fetch_array($stmt_check_doc, SQLSRV_FETCH_ASSOC);
                     ?>
                     <?php if (!empty($doc_data['dok_laporan'])) : ?>
-                        <a class="text-decoration-none base-tombol berkas-laporan"
-                            href="?id_sidang=<?= urlencode($id_sidang) ?>&tipe=<?= urlencode($jenis_sidang_url) ?>&download=main">
+                        <form action="dDetailPengajuan.php" method="POST" style="display: inline-block;">
+                        <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($id_sidang) ?>">
+                        <input type="hidden" name="tipe" value="<?= htmlspecialchars($jenis_sidang_url) ?>">
+                        <input type="hidden" name="download" value="main">
+                        <button type="submit" class="text-decoration-none base-tombol berkas-laporan" style="border: 1px solid #212529 !important;">
                             <i class="fa-solid fa-file-lines me-2"></i>Unduh Dokumen Laporan
-                        </a>
+                        </button>
+                    </form>
                     <?php else : ?>
                         <p class="text-muted">Tidak ada dokumen yang diunggah</p>
                     <?php endif; ?>
                 </div>
             </div>
             
-<div class="action-buttons mt-4 d-flex justify-content-between align-items-center">
-    <a href="dPengajuan.php" class="btn btn-secondary btn-circle">
-        <i class="fa-solid fa-circle-arrow-left"></i>
-        <span class="ms-2">Kembali</span>
-    </a>
-    <div>
-        <button type="button" class="btn btn-danger btn-circle me-2" id="btnTolakOpenModal">Tolak</button>
-        <form id="approveForm" method="POST" style="display: inline;">
-            <button type="button" class="btn btn-success btn-circle" id="btnSetujuiOpenModal">Setujui</button>
-        </form>
-    </div>
-</div>
+<!-- This single form will handle both Approve and Reject actions -->
+            <form id="actionForm" method="POST" action="dDetailPengajuan.php">
+                <!-- Hidden fields to pass necessary data -->
+                <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($id_sidang) ?>">
+                <input type="hidden" name="tipe" value="<?= htmlspecialchars($jenis_sidang_url) ?>">
+                <input type="hidden" id="approveInput" name="approve" value="">
+                <input type="hidden" id="rejectInput" name="reject" value="">
+                <input type="hidden" id="catatanInput" name="catatan" value="">
 
-    <div class="modal fade" id="modalKonfirmasiSetujui" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 text-center py-4 px-3">
-                <div class="modal-header border-0 justify-content-center">
-                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel">Perhatian</h4>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-4 fw-semibold">Apakah Anda yakin ingin menyetujui pengajuan ini?</p>
-                    <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
-                        <button type="button" class="btn btn-success px-4 py-2 fw-semibold" id="confirmSetujuiBtn">Lanjutkan</button>
+                <div class="action-buttons mt-4 d-flex justify-content-between align-items-center">
+                    <a href="dPengajuan.php" class="btn btn-secondary btn-circle">
+                        <i class="fa-solid fa-circle-arrow-left"></i>
+                        <span class="ms-2">Kembali</span>
+                    </a>
+                    <div>
+                        <button type="button" class="btn btn-danger btn-circle me-2" id="btnTolakOpenModal">Tolak</button>
+                        <button type="button" class="btn btn-success btn-circle" id="btnSetujuiOpenModal">Setujui</button>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="modalKonfirmasiTolak" tabindex="-1" aria-labelledby="modalTolakLabel" aria-hidden="true">
-         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 text-center py-4 px-3">
-                <form id="rejectForm" method="POST">
-                    <div class="modal-header border-0 justify-content-center">
-                        <h4 class="modal-title fw-bold" id="modalTolakLabel">Alasan Penolakan</h4>
+            </form>
+
+            <!-- The "Tolak" modal should NOT have its own form tag -->
+            <div class="modal fade" id="modalKonfirmasiTolak" tabindex="-1" aria-labelledby="modalTolakLabel" aria-hidden="true">
+                 <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 rounded-4 text-center py-4 px-3">
+                        <div class="modal-header border-0 justify-content-center">
+                            <h4 class="modal-title fw-bold" id="modalTolakLabel">Alasan Penolakan</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-3 fw-semibold">Harap masukkan alasan penolakan pengajuan ini.</p>
+                            <textarea id="catatanTextarea" class="form-control" rows="4" placeholder="Ketik alasan di sini..."></textarea>
+                        </div>
+                        <div class="modal-footer border-0 justify-content-center gap-3">
+                             <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+                             <button type="button" class="btn btn-danger px-4 py-2 fw-semibold" id="confirmTolakBtn">Tolak Pengajuan</button>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        <p class="mb-3 fw-semibold">Harap masukkan alasan penolakan pengajuan ini.</p>
-                        <textarea name="catatan" class="form-control" rows="4" placeholder="Ketik alasan di sini..."></textarea>
-                        <input type="hidden" name="reject" value="1">
-                    </div>
-                    <div class="modal-footer border-0 justify-content-center gap-3">
-                         <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
-                         <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold">Tolak Pengajuan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div style="background-color: rgb(67, 54, 240);">
-                    <div class="modal-header"><h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1></div>
                 </div>
-                <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
-                <div class="modal-footer justify-content-center border-0">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div style="background-color: rgb(67, 54, 240);">
+                                <div class="modal-header"><h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1></div>
+                            </div>
+                            <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
+                            <div class="modal-footer justify-content-center border-0">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                 <div class="modal fade" id="modalKonfirmasiSetujui" tabindex="-1" aria-labelledby="modalSetujuiLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 rounded-4 text-center py-4 px-3">
+                            <div class="modal-header border-0 justify-content-center">
+                                <h4 class="modal-title fw-bold" id="modalSetujuiLabel">Konfirmasi Persetujuan</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p class="mb-3 fw-semibold">Anda yakin ingin menyetujui pengajuan sidang ini?</p>
+                            </div>
+                            <div class="modal-footer border-0 justify-content-center gap-3">
+                                 <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+                                 <button type="button" class="btn btn-success px-4 py-2 fw-semibold" id="confirmSetujuiBtn">Ya, Lanjutkan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const modalSetujui = new bootstrap.Modal(document.getElementById('modalKonfirmasiSetujui'));
     const modalTolak = new bootstrap.Modal(document.getElementById('modalKonfirmasiTolak'));
+    const mainForm = document.getElementById('actionForm');
 
     // Buka modal SETUJUI
     document.getElementById('btnSetujuiOpenModal').addEventListener('click', function () {
@@ -351,72 +362,42 @@ document.addEventListener('DOMContentLoaded', function () {
         modalTolak.show();
     });
 
-    // Konfirmasi SETUJUI
+    // Handle Lanjutkan button in aPROVE modal
     document.getElementById('confirmSetujuiBtn').addEventListener('click', function () {
-        Swal.fire({
-            title: 'Pengajuan Berhasil Disetujui!',
-            icon: 'success',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#4B68FB'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const approveForm = document.getElementById('approveForm');
-                let approveInput = approveForm.querySelector('input[name="approve"]');
-                if (!approveInput) {
-                    approveInput = document.createElement('input');
-                    approveInput.type = 'hidden';
-                    approveInput.name = 'approve';
-                    approveInput.value = 'Approve';
-                    approveForm.appendChild(approveInput);
-                }
-                approveForm.submit();
-               // window.location.href = 'dPengajuan.php';
-            }
-        });
+        mainForm.querySelector('#approveInput').value = '1';
+        mainForm.querySelector('#rejectInput').value = ''; // Clear other action
+        mainForm.submit();
     });
 
-    // Konfirmasi TOLAK
-    document.getElementById('rejectForm').addEventListener('submit', function (e) {
-        e.preventDefault(); // Stop submit dulu, validasi alasan
-
-        const catatan = this.querySelector('textarea[name="catatan"]').value.trim();
+    // Handle Tolak Pengajuan button in REJECT modal
+    document.getElementById('confirmTolakBtn').addEventListener('click', function () {
+        const catatan = document.getElementById('catatanTextarea').value.trim();
         if (catatan === "") {
             Swal.fire({
                 title: 'Gagal',
                 text: 'Silakan isi alasan penolakan terlebih dahulu.',
                 icon: 'error',
-                confirmButtonText: 'OK',
                 confirmButtonColor: '#4B68FB'
             });
-        } else {
-            Swal.fire({
-                title: 'Pengajuan Telah Ditolak!',
-                icon: 'error',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-            }).then((result) => {
-               if (result.isConfirmed) {
-                    let rejectInput = this.querySelector('input[name="reject"]');
-                    if (!rejectInput) {
-                        rejectInput = document.createElement('input');
-                        rejectInput.type = 'hidden';
-                        rejectInput.name = 'reject';
-                        rejectInput.value = 'Reject';
-                        this.appendChild(rejectInput);
-                    }
-                    this.submit();
-                }
-            });
+            return; // Stop submission
         }
+        
+        mainForm.querySelector('#catatanInput').value = catatan;
+        mainForm.querySelector('#rejectInput').value = '1';
+        mainForm.querySelector('#approveInput').value = ''; // Clear other action
+        mainForm.submit();
     });
 
+    // Your existing sidebar toggle logic can remain here
     let menuToggle = document.querySelector(".NavSide__toggle");
     let sidebar = document.getElementById("main-sidebar");
 
-    menuToggle.onclick = function() {
-        menuToggle.classList.toggle("NavSide__toggle--active");
-        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-    };
+    if (menuToggle) {
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+    }
 });
 </script>
 </body>
