@@ -12,7 +12,11 @@ let pengujiCount = 0;
 function openJadwalModal(rowElement) {
     const tipeSidang = rowElement.dataset.tipeSidang;
 
+<<<<<<< HEAD
     if (tipeSidang === 'Tugas Akhir') { // Disesuaikan dengan nilai dari DB
+=======
+    if (tipeSidang === 'Tugas Akhir') {
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
         if (!taModalInstance) {
             taModalInstance = new bootstrap.Modal(document.getElementById('penjadwalanSidangTAModal'));
         }
@@ -219,15 +223,31 @@ function decrementValue(inputId) {
 /**
  * Menangani pengiriman data dari form modal.
  */
+// --- GANTI SELURUH FUNGSI INI ---
 function handleFormSubmit(event) {
     event.preventDefault();
     const form = event.target;
+<<<<<<< HEAD
     const modalType = form.id.includes('-ta') ? 'TA' : 'Semester';
     const errorBox = document.getElementById(`form-error-${modalType.toLowerCase()}`);
 
     if (!validateForm(modalType)) return;
 
+=======
+    const modalType = form.elements['tipe_sidang'].value; // Ambil tipe dari input hidden
+
+    // Validasi form terlebih dahulu
+    if (!validateForm(modalType)) {
+        return; // Hentikan jika tidak valid
+    }
+    
+    // Dapatkan elemen yang benar setelah validasi
+    const modalSuffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
+    const errorBox = document.getElementById(`form-error-${modalSuffix}`);
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
     const submitButton = form.querySelector('button[type="submit"]');
+
+    // Lanjutkan dengan proses submit
     submitButton.disabled = true;
     submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengirim...';
     errorBox.textContent = '';
@@ -241,7 +261,7 @@ function handleFormSubmit(event) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            const modalToHide = modalType === 'TA' ? taModalInstance : semModalInstance;
+            const modalToHide = modalType === 'Tugas Akhir' ? taModalInstance : semModalInstance;
             if (modalToHide) modalToHide.hide();
             
             Swal.fire({
@@ -252,7 +272,11 @@ function handleFormSubmit(event) {
             }).then(() => location.reload());
 
         } else {
+<<<<<<< HEAD
             errorBox.textContent = data.message || 'Terjadi kesalahan.';
+=======
+            errorBox.textContent = data.message || 'Terjadi kesalahan yang tidak diketahui.';
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
             Swal.fire({
                 title: 'Gagal!',
                 text: data.message,
@@ -267,8 +291,12 @@ function handleFormSubmit(event) {
         Swal.fire({
             title: 'Koneksi Gagal',
             text: 'Tidak dapat mengirim data ke server.',
+<<<<<<< HEAD
             icon: 'error',
             confirmButtonText: 'Tutup'
+=======
+            icon: 'error'
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
         });
     })
     .finally(() => {
@@ -279,35 +307,61 @@ function handleFormSubmit(event) {
 
 /**
  * Validasi form sebelum dikirim.
+<<<<<<< HEAD
+=======
+ * @param {string} modalType - 'Tugas Akhir' atau 'Semester'.
+ * @returns {boolean} - True jika valid, false jika tidak.
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
  */
+// --- GANTI SELURUH FUNGSI INI JUGA ---
 function validateForm(modalType) {
-    const suffix = modalType === 'TA' ? '-ta' : '-sem';
-    const errorBox = document.getElementById(`form-error${suffix}`);
+    // Logika untuk mendapatkan suffix sudah benar sekarang
+    const suffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
+    const errorBox = document.getElementById(`form-error-${suffix}`);
+
+    // Pastikan errorBox ada sebelum melanjutkan
+    if (!errorBox) {
+        console.error(`Elemen error dengan ID 'form-error-${suffix}' tidak ditemukan!`);
+        return false;
+    }
     errorBox.textContent = '';
     
     const fieldsToValidate = [
-        { id: `modal_ruangan${suffix}`, message: 'Ruangan harus diisi.' },
-        { id: `modal_tanggal${suffix}`, message: 'Tanggal harus dipilih.' },
-        { id: `modal_jam_awal${suffix}`, message: 'Jam awal harus diisi.' },
-        { id: `modal_jam_akhir${suffix}`, message: 'Jam akhir harus diisi.' }
+        { id: `modal_ruangan-${suffix}`, message: 'Ruangan harus diisi.' },
+        { id: `modal_tanggal-${suffix}`, message: 'Tanggal harus dipilih.' },
+        { id: `modal_jam_awal-${suffix}`, message: 'Jam awal harus diisi.' },
+        { id: `modal_jam_akhir-${suffix}`, message: 'Jam akhir harus diisi.' }
     ];
 
     for (const field of fieldsToValidate) {
-        if (document.getElementById(field.id).value.trim() === '') {
+        const element = document.getElementById(field.id);
+        if (!element || element.value.trim() === '') {
             errorBox.textContent = field.message;
             return false;
         }
     }
     
+<<<<<<< HEAD
     const jamAwal = document.getElementById(`modal_jam_awal${suffix}`).value;
     const jamAkhir = document.getElementById(`modal_jam_akhir${suffix}`).value;
+=======
+    // Validasi jam
+    const jamAwal = document.getElementById(`modal_jam_awal-${suffix}`).value;
+    const jamAkhir = document.getElementById(`modal_jam_akhir-${suffix}`).value;
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
     if (jamAkhir <= jamAwal) {
         errorBox.textContent = 'Jam akhir harus setelah jam awal.';
         return false;
     }
     
+<<<<<<< HEAD
     if (modalType === 'TA') {
         const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
+=======
+    // Validasi dosen/penguji
+    if (modalType === 'Tugas Akhir') {
+        const pengujiInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="penguji_nama[]"]');
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
         const namaPengujiList = [];
 
         for (let i = 0; i < pengujiInputs.length; i++) {
@@ -326,12 +380,27 @@ function validateForm(modalType) {
             }
             namaPengujiList.push(nama);
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
         const uniqueNama = new Set(namaPengujiList);
         if (uniqueNama.size < namaPengujiList.length) {
             errorBox.textContent = 'Tidak boleh ada nama dosen penguji yang sama.';
             return false;
         }
+<<<<<<< HEAD
+=======
+    } else { // Validasi untuk Sidang Semester
+        const pengampuInputs = document.querySelectorAll('#penjadwalanSidangSemModal input[name="pengampu_nama[]"]');
+        for (let i = 0; i < pengampuInputs.length; i++) {
+            if (pengampuInputs[i].value.trim() === '') {
+                errorBox.textContent = `Nama Pengampu ${i + 1} harus diisi.`;
+                return false;
+            }
+        }
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
     }
     return true;
 }

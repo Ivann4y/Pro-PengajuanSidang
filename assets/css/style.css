@@ -222,8 +222,8 @@ body {
   margin-left: 280px;
   overflow-y: auto;
   transition: margin-left 0.5s ease-in-out;
-  background-color: #f9fafb;
   padding-top: 3vh;
+  background-color: #ffffff;
   /* Default for larger screens */
 }
 

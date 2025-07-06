@@ -110,6 +110,33 @@
     .detail-btn:hover {
         opacity: .7;
     }
+    /* ===== CSS UNTUK PERAPIHAN TABEL ===== */
+
+/* 1. Atur padding dan alignment vertikal untuk semua sel */
+table th, table td {
+    padding: 12px 15px; /* Memberi jarak di dalam sel */
+    vertical-align: middle; /* Membuat konten berada di tengah secara vertikal */
+}
+
+/* 2. Atur alignment default untuk header dan data menjadi rata kiri */
+table th, table td {
+    text-align: left;
+}
+
+/* 3. Buat pengecualian untuk kolom "No" dan "Aksi" agar berada di tengah */
+/* Kolom pertama (No) */
+table th:first-child,
+table td:first-child {
+    text-align: center;
+    width: 5%; /* Beri lebar agar tidak terlalu besar */
+}
+
+/* Kolom terakhir (Aksi) */
+table th:last-child,
+table td:last-child {
+    text-align: center;
+    width: 10%; /* Beri lebar agar tidak terlalu besar */
+}
 }
 
 /* ========================================================== */

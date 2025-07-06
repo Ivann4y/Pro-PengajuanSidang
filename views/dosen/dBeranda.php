@@ -1,11 +1,15 @@
 <?php
 session_start();
-if ($_SESSION['role'] !== 'dosen') {
+
+// Validasi role dosen
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
-    exit();
+    exit(); 
 }
 include "../../koneksi/koneksiAndrew.php";
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -62,7 +66,7 @@ include "../../koneksi/koneksiAndrew.php";
                     <div class="mb-4">
                         <a href="dPengajuan.php" style="text-decoration: none; color: inherit;">
                             <div class="dashboard-card card-pengajuan status-card-common hover-effect-card">
-                                <div class="number">0</div>
+                                <div class="number" id="pengajuan-count">0</div>
                                 <div class="text-content">
                                     <span class="title">Pengajuan</span>
                                     <span class="description">Menunggu Persetujuan</span>
@@ -73,7 +77,7 @@ include "../../koneksi/koneksiAndrew.php";
                     <div class="mb-4">
                         <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
                             <div class="dashboard-card card-perbaikan status-card-common hover-effect-card">
-                                <div class="number">0</div>
+                                <div class="number" id="perbaikan-count">0</div>
                                 <div class="text-content">
                                     <span class="title">Perbaikan</span>
                                     <span class="description">Menunggu untuk Dinilai</span>
@@ -84,7 +88,7 @@ include "../../koneksi/koneksiAndrew.php";
                     <div>
                         <a href="dDaftarSidang.php" style="text-decoration: none; color: inherit;">
                             <div class="dashboard-card card-penilaian status-card-common hover-effect-card">
-                                <div class="number">0</div>
+                                <div class="number" id="penilaian-count">0</div>
                                 <div class="text-content">
                                     <span class="title">Penilaian</span>
                                     <span class="description">Menunggu untuk Dinilai</span>
@@ -149,6 +153,7 @@ include "../../koneksi/koneksiAndrew.php";
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/dosen-dashboard-ajax.js"></script>
+
 </body>
 
 </html>

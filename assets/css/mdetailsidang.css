@@ -535,11 +535,11 @@ body {
 }
 
 .status-badge.belum-disetujui {
-    background-color: #FFA3A3; /* Reddish color for not approved */
+    background-color: #FD7D7D; /* Reddish color for not approved */
 }
 
 .status-badge.disetujui {
-    background-color: #4BFBAF; /* Greenish color for approved */
+    background-color: #4FD382; /* Greenish color for approved */
 }
 
 /* Other styles for your layout (NavSide, main-content, info-card, etc.) should already be here */

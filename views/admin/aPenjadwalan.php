@@ -228,11 +228,12 @@ elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
           <table class="table-admin-custom">
             <thead>
               <tr>
-                <th scope="col">Nomor</th>
-                <th scope="col">Kelompok</th>
-                <th scope="col"><?= htmlspecialchars($dynamicHeaderText) ?></th>
-                <th scope="col"><?= htmlspecialchars($dynamicDosenHeaderText) ?></th>
-                <th scope="col" style="text-align: center;">Aksi</th>
+                 <th scope="col">Nomor</th>
+                        <th scope="col">Kelompok</th>
+                        <th scope="col">Judul</th>
+                        <th scope="col">Mata Kuliah</th>
+                        <th scope="col">Pembimbing/Pengampu</th>
+                        <th scope="col" style="text-align: center;">Aksi</th>
               </tr>
             </thead>
             <tbody id="adminSidangContent">

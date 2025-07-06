@@ -25,10 +25,9 @@ $jenis_sidang = null;
 $current_nim = '';
 $allStudentsGradesComplete = false;
 
-$sql_detail = "SELECT s.id_kelompok, s.jenis_sidang, ds.id_matkul
-                FROM Sidang s
-                LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-                WHERE s.id_sidang = ?";
+$sql_detail = "SELECT DISTINCT k.nomor_kelompok, k.id_kelompok, k.jenis_sidang, ds.id_matkul, s.judul
+               FROM Sidang s, Detail_Sidang ds, Kelompok k
+               WHERE s.id_sidang = ? AND s.id_sidang = ds.id_sidang AND s.id_kelompok = k.id_kelompok";
 $stmt_detail = sqlsrv_query($conn, $sql_detail, array($id_sidang));
 
 if ($stmt_detail === false) {
@@ -38,9 +37,11 @@ if ($stmt_detail === false) {
 } else {
     $detail = sqlsrv_fetch_array($stmt_detail, SQLSRV_FETCH_ASSOC);
     if ($detail) {
+        $nomor_kelompok = $detail['nomor_kelompok'];
         $id_kelompok = $detail['id_kelompok'];
         $id_matkul = $detail['id_matkul'];
         $jenis_sidang = $detail['jenis_sidang'];
+        $judul = $detail['judul'];
     } else {
         $error_message = "Data Sidang dengan ID: " . htmlspecialchars($id_sidang ?? '') . " tidak ditemukan."; // Perbaikan: handle null
         $id_sidang = 0;
@@ -48,12 +49,12 @@ if ($stmt_detail === false) {
 }
 
 if ($id_sidang) {
-    $sql_mhs = "SELECT km.nim, m.nama_mhs
-                FROM Kelompok_Mahasiswa km
-                JOIN Mahasiswa m ON km.nim = m.nim
-                WHERE km.id_kelompok = ?
-                ORDER BY km.nim";
-    $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($id_kelompok));
+    $sql_mhs = "SELECT DISTINCT k.nim, m.nama_mhs
+                FROM Kelompok k
+                JOIN Mahasiswa m ON k.nim = m.nim
+                WHERE k.nomor_kelompok = ?
+                ORDER BY k.nim";
+    $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($nomor_kelompok));
     
     if ($stmt_mhs === false) {
         error_log("Query mahasiswa dari Kelompok_Mahasiswa gagal: " . print_r(sqlsrv_errors(), true));
@@ -91,10 +92,10 @@ if ($id_matkul) {
     }
 }
 
-if ((int)$jenis_sidang === 0) { 
-    error_log("Debug - jenis_sidang: " . $jenis_sidang . ", id_kelompok: " . $id_kelompok);
+if ($jenis_sidang === 'Tugas Akhir') { 
+    error_log("Debug - jenis_sidang: " . $jenis_sidang . ", nomor_kelompok: " . $nomor_kelompok);
     
-    $sql_dosen_ta = "SELECT d.nama_dosen 
+    $sql_dosen_ta = "SELECT DISTINCT d.nama_dosen 
                      FROM Dosen d 
                      JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen 
                      WHERE b.id_kelompok = ? AND b.isPembimbing = 1"; 
@@ -113,7 +114,7 @@ if ((int)$jenis_sidang === 0) {
             error_log("Debug - Dosen TA tidak ditemukan untuk id_kelompok: " . $id_kelompok);
         }
     }
-} elseif ((int)$jenis_sidang === 1 && $id_matkul) {
+} elseif ($jenis_sidang === 'Semester' && $id_matkul) {
     // Debug: Log the variables
     error_log("Debug - jenis_sidang: " . $jenis_sidang . ", id_sidang: " . $id_sidang . ", id_matkul: " . $id_matkul);
     
@@ -357,10 +358,10 @@ if (!empty($current_nim) && $id_sidang) {
 
       <main class="NavSide__main-content">
         <div class="col-12">
-          <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
+          <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= htmlspecialchars($judul) ?></h2>
         </div>
           <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;">
-              Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($id_kelompok ?? ''); ?>
+              Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
           </h2><br>
           <div class="container-fluid">
            <div class="row mb-3">
@@ -370,7 +371,7 @@ if (!empty($current_nim) && $id_sidang) {
                 <li class="nav-item">
                     <a class="nav-link <?php echo ($mhs['nim'] == $current_nim) ? 'active active-student-tab' : ''; ?>"
                        href="dNilaiAkhir.php?id_sidang=<?php echo htmlspecialchars($id_sidang); ?>&nim=<?php echo htmlspecialchars($mhs['nim'] ?? ''); ?>">
-                       Mahasiswa <?php echo $index + 1; ?>
+                       <?php echo htmlspecialchars($mhs['nama_mhs'] ?? 'Mahasiswa ' . ($index + 1)); ?>
                     </a>
                 </li>
             <?php endforeach; ?>
@@ -440,11 +441,18 @@ if (!empty($current_nim) && $id_sidang) {
            <div class="info-group mb-3 section-bawah" style="margin-top:45px;">
              <div class="label-row d-flex align-items-center gap-2 mb-1">
                <i class="fa-solid fa-user-tie"></i>
-               <span class="fw-bold">Dosen Terkait Sidang</span>
+               <span class="fw-bold">Dosen Pembimbing</span>
              </div>
              <div class="value-row text-secondary fw-bold">
                  <?php echo htmlspecialchars($dosen_terkait_sidang ?? ''); ?>
              </div>
+             <!-- Debug Info -->
+             <!-- <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                 Debug: jenis_sidang=<?php echo $jenis_sidang; ?>, 
+                 id_kelompok=<?php echo $id_kelompok; ?>, 
+                 id_matkul=<?php echo $id_matkul; ?>, 
+                 dosen_terkait_sidang=<?php echo $dosen_terkait_sidang; ?>
+             </div> -->
            </div>
          </div>
        </div>
@@ -523,8 +531,7 @@ if (!empty($current_nim) && $id_sidang) {
            </div>
            <div class="col-12 d-flex justify-content-end">
              <button type="button" class="btn btn-setujui" id="btnKirim"
-                onclick="bukaKonfirmasiModalKirim()" 
-                <?php echo ($allStudentsGradesComplete && !empty($mahasiswa)) ? '' : 'disabled'; ?>>
+                onclick="bukaKonfirmasiModalKirim()">
                Kirim
              </button>
            </div>
@@ -756,6 +763,80 @@ if (!empty($current_nim) && $id_sidang) {
             }
         }
     }
+</script>
+
+<!-- SCRIPT NILAI SEMENTARA -->
+<script>
+(function() {
+    var id_sidang = <?php echo json_encode($id_sidang); ?>;
+    var mahasiswaList = <?php echo json_encode($mahasiswa); ?>;
+    var btnKirim = document.getElementById('btnKirim');
+
+    // Fungsi cek semua nilai sudah diisi
+    function cekSemuaNilaiTerisi() {
+        if (!mahasiswaList || mahasiswaList.length === 0) return false;
+        for (var i = 0; i < mahasiswaList.length; i++) {
+            var nim = mahasiswaList[i].nim;
+            var storageKey = 'nilaiSementara_' + id_sidang + '_' + nim;
+            var dataStr = sessionStorage.getItem(storageKey);
+            if (!dataStr) return false;
+            try {
+                var data = JSON.parse(dataStr);
+                if (!data.n_dokumen || !data.n_presentasi || !data.n_tanyajawab || !data.n_proyek) {
+                    return false;
+                }
+            } catch(e) { return false; }
+        }
+        return true;
+    }
+
+    // Fungsi update status button
+    function updateBtnKirim() {
+        if (btnKirim) {
+            btnKirim.disabled = !cekSemuaNilaiTerisi();
+        }
+    }
+
+    // Set event listener ke semua input pada halaman ini
+    var inputLaporan = document.getElementById('nilaiLaporanInput');
+    var inputPresentasi = document.getElementById('materiPresentasiInput');
+    var inputTanyaJawab = document.getElementById('tanyaJawabInput');
+    var inputProyek = document.getElementById('nilaiProyekInput');
+    function simpanNilaiSementara() {
+        var nim = <?php echo json_encode($current_nim); ?>;
+        var storageKey = 'nilaiSementara_' + id_sidang + '_' + nim;
+        var data = {
+            n_dokumen: inputLaporan ? inputLaporan.value : '',
+            n_presentasi: inputPresentasi ? inputPresentasi.value : '',
+            n_tanyajawab: inputTanyaJawab ? inputTanyaJawab.value : '',
+            n_proyek: inputProyek ? inputProyek.value : ''
+        };
+        sessionStorage.setItem(storageKey, JSON.stringify(data));
+        updateBtnKirim();
+    }
+    if (inputLaporan) inputLaporan.addEventListener('input', simpanNilaiSementara);
+    if (inputPresentasi) inputPresentasi.addEventListener('input', simpanNilaiSementara);
+    if (inputTanyaJawab) inputTanyaJawab.addEventListener('input', simpanNilaiSementara);
+    if (inputProyek) inputProyek.addEventListener('input', simpanNilaiSementara);
+
+    // Cek juga saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', function() {
+        // Isi nilai dari sessionStorage jika ada (fungsi lama)
+        var nim = <?php echo json_encode($current_nim); ?>;
+        var storageKey = 'nilaiSementara_' + id_sidang + '_' + nim;
+        var dataStr = sessionStorage.getItem(storageKey);
+        if (dataStr) {
+            try {
+                var data = JSON.parse(dataStr);
+                if (inputLaporan && data.n_dokumen !== undefined) inputLaporan.value = data.n_dokumen;
+                if (inputPresentasi && data.n_presentasi !== undefined) inputPresentasi.value = data.n_presentasi;
+                if (inputTanyaJawab && data.n_tanyajawab !== undefined) inputTanyaJawab.value = data.n_tanyajawab;
+                if (inputProyek && data.n_proyek !== undefined) inputProyek.value = data.n_proyek;
+            } catch(e) {}
+        }
+        updateBtnKirim();
+    });
+})();
 </script>
   </body>
 </html>

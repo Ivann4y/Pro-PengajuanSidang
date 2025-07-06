@@ -1,8 +1,7 @@
 <?php
-// Memulai sesi untuk mengakses data pengguna yang login (jika diperlukan di masa depan).
 session_start();
 
-// Menyertakan file koneksi ke database.
+//koneksi ke database.
 require "../../koneksi/koneksiAndrew.php";
 
 
@@ -12,22 +11,18 @@ if ($conn === false) {
 
 
 $id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : 0;
-// Mengambil 'nim' mahasiswa yang aktif dari URL. Jika tidak ada, nilainya null.
 $current_nim = isset($_GET['nim']) ? trim($_GET['nim']) : null;
-// Variabel untuk menampung pesan error jika terjadi kesalahan.
 $error_message = '';
 
-$mahasiswa_list = []; // Array untuk menampung daftar mahasiswa dalam kelompok (untuk tab).
-$nama_matkul = 'Data tidak ditemukan'; // Untuk menyimpan nama mata kuliah sidang.
-$dosen_terkait_sidang = 'Data tidak ditemukan'; // Untuk menyimpan nama dosen pembimbing/pengampu.
-$id_kelompok = null; // Untuk menyimpan ID kelompok mahasiswa.
-$id_matkul = null; // Untuk menyimpan ID mata kuliah.
-$jenis_sidang = null; // Untuk menyimpan jenis sidang (0=TA, 1=Semester).
+$mahasiswa_list = []; 
+$nama_matkul = 'Data tidak ditemukan'; 
+$dosen_terkait_sidang = 'Data tidak ditemukan'; 
+$id_kelompok = null; 
+$id_matkul = null; 
+$jenis_sidang = null; 
 
-// ====== SIDANG ID HANDLING (like aDetailSidang) ======
 if (isset($_GET['id_sidang']) && is_numeric($_GET['id_sidang'])) {
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id_sidang'];
-    // Redirect to the same page without GET parameter
     $redirectUrl = 'aNilaiAkhir.php';
     if (isset($_GET['nim'])) {
         $redirectUrl .= '?nim=' . urlencode($_GET['nim']);
@@ -44,11 +39,8 @@ if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif
     exit();
 }
 
-// =========================================================================
 // 3. PENGAMBILAN DETAIL SIDANG (ID KELOMPOK, JENIS, ID MATKUL)
-// =========================================================================
 if ($id_sidang > 0) {
-    // Query untuk mengambil detail dasar sidang berdasarkan id_sidang dari URL.
     $sql_detail = "SELECT TOP 1 s.id_kelompok, s.jenis_sidang, ds.id_matkul
                    FROM Sidang s
                    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
@@ -56,23 +48,19 @@ if ($id_sidang > 0) {
     $stmt_detail = sqlsrv_query($conn, $sql_detail, array($id_sidang));
 
     if ($stmt_detail && $detail = sqlsrv_fetch_array($stmt_detail, SQLSRV_FETCH_ASSOC)) {
-        // Jika data ditemukan, isi variabel-variabel yang sudah disiapkan.
         $id_kelompok = $detail['id_kelompok'];
         $id_matkul = $detail['id_matkul'];
         $jenis_sidang = $detail['jenis_sidang'];
     } else {
         $error_message = "Data Sidang dengan ID: " . htmlspecialchars($id_sidang) . " tidak ditemukan.";
-        $id_sidang = 0; // Invalidate agar query lain tidak jalan.
+        $id_sidang = 0; 
     }
 } else {
     $error_message = "ID Sidang tidak valid atau tidak disediakan.";
 }
 
-// =========================================================================
 // 4. PENGAMBILAN DAFTAR MAHASISWA DALAM KELOMPOK
-// =========================================================================
 if ($id_kelompok) {
-    // Query untuk mengambil semua NIM dan nama mahasiswa berdasarkan id_kelompok.
     $sql_mhs_list = "SELECT km.nim, m.nama_mhs
                      FROM Kelompok_Mahasiswa km
                      JOIN Mahasiswa m ON km.nim = m.nim
@@ -86,21 +74,16 @@ if ($id_kelompok) {
         }
     }
     
-    // Menentukan mahasiswa mana yang aktif. Jika tidak ada 'nim' di URL, pakai yang pertama.
     if (empty($current_nim) || !in_array($current_nim, array_column($mahasiswa_list, 'nim'))) {
         $current_nim = !empty($mahasiswa_list) ? $mahasiswa_list[0]['nim'] : null;
     }
 }
 
-// Jika setelah semua proses tidak ada mahasiswa ditemukan, set pesan error.
 if (empty($mahasiswa_list) && empty($error_message) && $id_sidang > 0) {
     $error_message = "Tidak ada mahasiswa yang terdaftar dalam kelompok untuk sidang ini.";
 }
 
-// =========================================================================
 // 5. PENGAMBILAN NAMA MATA KULIAH & NAMA DOSEN TERKAIT
-// =========================================================================
-// Mengambil nama mata kuliah jika id_matkul ditemukan.
 if ($id_matkul) {
     $sql_matkul_q = "SELECT nama_matkul FROM MataKuliah WHERE id_matkul = ?";
     $stmt_matkul_q = sqlsrv_query($conn, $sql_matkul_q, array($id_matkul));
@@ -109,12 +92,11 @@ if ($id_matkul) {
     }
 }
 
-// Menentukan dan mengambil nama dosen berdasarkan jenis sidang.
 if (isset($jenis_sidang)) {
-    if ((int)$jenis_sidang === 0) { // Jika jenis sidang adalah 0 (Tugas Akhir).
+    if ((int)$jenis_sidang === 0) { 
         $sql_dosen = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ? AND b.isPembimbing = 1";
         $params_dosen = array($id_kelompok);
-    } elseif ((int)$jenis_sidang === 1 && $id_matkul) { // Jika jenis sidang adalah 1 (Semester).
+    } elseif ((int)$jenis_sidang === 1 && $id_matkul) { 
         $sql_dosen = "SELECT TOP 1 d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
         $params_dosen = array($id_matkul);
     }
@@ -127,9 +109,7 @@ if (isset($jenis_sidang)) {
     }
 }
 
-// =========================================================================
-// BAGIAN INI SPESIFIK UNTUK aNilaiAkhir.php (MENGHITUNG NILAI AKHIR)
-// =========================================================================
+//HITUNG NILAI AKHIR
 $dataMahasiswa = [
     'nim' => $current_nim ?? 'N/A',
     'nama_mhs' => 'Data tidak ditemukan',
@@ -152,9 +132,7 @@ function getGrade($nilai) {
     return 'E';
 }
 
-// Hanya jalankan query nilai jika ada mahasiswa yang aktif dan tidak ada error
 if ($current_nim && empty($error_message)) {
-    // Isi nama mahasiswa aktif
     foreach($mahasiswa_list as $mhs) {
         if($mhs['nim'] == $current_nim) {
             $dataMahasiswa['nama_mhs'] = $mhs['nama_mhs'];
@@ -162,7 +140,6 @@ if ($current_nim && empty($error_message)) {
         }
     }
 
-    // Query untuk menghitung rata-rata nilai dari semua dosen penguji
     $sqlNilai = "
         SELECT
             AVG(CAST(n_dokumen AS FLOAT)) AS avg_dokumen,
@@ -188,7 +165,6 @@ if ($current_nim && empty($error_message)) {
         }
     }
 
-    // Query untuk mengambil semua catatan dari setiap dosen penguji
     $sqlCatatan = "
         SELECT d.nama_dosen, ds.catatan_sidang
         FROM Detail_Sidang ds
@@ -351,13 +327,13 @@ if ($current_nim && empty($error_message)) {
             <!-- Kartu Data Mahasiswa -->
             <div class="col-lg-6 mb-4 d-flex">
               <div class="card flex-fill" id="carddataMahasiswa">
-                <div class="card-body px-3 py-2">
+                <div class="card-body px-4 py-4">
                   <h3 class="card-title text-black mb-4 text-center py-2">Data Mahasiswa</h3>
                   <div class="d-flex flex-column gap-4 px-4 py-2">
-                    <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nim']) ?></div></div>
-                    <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_mhs']) ?></div></div>
-                    <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_matkul']) ?></div></div>
-                    <div class="info-group"><div class="label-row d-flex align-items-center gap-3 mb-1"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_pembimbing']) ?></div></div>
+                    <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nim']) ?></div></div>
+                    <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_mhs']) ?></div></div>
+                    <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_matkul']) ?></div></div>
+                    <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_pembimbing']) ?></div></div>
                   </div>
                 </div>
               </div>
@@ -366,7 +342,7 @@ if ($current_nim && empty($error_message)) {
             <div class="col-lg-6 mb-4 d-flex">
               <div class="card flex-fill" id="cardNilai">
                 <div class="card-body px-4 py-3 text-center d-flex flex-column justify-content-center">
-                  <h3 class="card-title mb-3 text-black" style="padding:10px ;">Nilai Mahasiswa</h3>
+                  <h3 class="card-title text-black mb-4 text-center py-2">Nilai Mahasiswa</h3>
                   <input 
                   type="text" 
                   class="form-control nilai-mahasiswa-display" 

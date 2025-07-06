@@ -93,10 +93,14 @@ if (isset($_POST['approve'])) {
 // ===================================================================================
 // BAGIAN 1: INISIALISASI HALAMAN (GET REQUEST)
 // ===================================================================================
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid.");
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id_sidang = (int)$_GET['id'];
+    $_SESSION['id_sidang_aktif'] = $id_sidang;
+} elseif (isset($_SESSION['id_sidang_aktif'])) {
+    $id_sidang = (int)$_SESSION['id_sidang_aktif'];
+} else {
+    die("Error: ID sidang tidak valid atau tidak ditemukan.");
 }
-$id_sidang = (int)$_GET['id'];
 
 // Pastikan data user dan nomor_dosen ada di session
 if (!isset($_SESSION['user_data']['nomor_dosen'])) {
@@ -185,6 +189,7 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../css/button-styles.css">
+    <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for pop-up notifications -->
 
@@ -224,11 +229,15 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
             </ul>
         </div>
 
-        <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
+        </div>
+        
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
-                <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
+                <h2 class="text-heading text-black" style="font-weight: 700;">Detail Sidang - <?= htmlspecialchars($judul) ?></h2>
                 <div class="info-card">
                     <div class="section">
                         <?php if (!empty($dosenPembimbing)): ?>

@@ -6,6 +6,10 @@ if (!isset($_SESSION['nim'])) {
     die("KESALAHAN FATAL: NIM pengguna tidak ditemukan di sesi. Silakan login kembali.");
 }
 $nim_mahasiswa_logged_in = $_SESSION['nim'];
+// Debug: Pastikan NIM tidak kosong
+if (empty($nim_mahasiswa_logged_in)) {
+    die("Error: NIM mahasiswa tidak ditemukan dalam session. Silakan login kembali.");
+}
 
 $path_to_root = '../../';
 
@@ -17,6 +21,9 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || !
 }
 
 include '../../koneksi/koneksiAndrew.php';
+if ($conn === false) {
+    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
+}
 $success_message = '';
 $error_message = '';
 
@@ -28,9 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && 
     $checkQuery = "
         SELECT COUNT(s.id_sidang) as total 
         FROM dbo.Sidang s
+        JOIN dbo.Kelompok k ON s.id_kelompok = k.id_kelompok
         WHERE s.id_sidang = ? 
-          AND s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-          AND s.status_ajuan = 'Draft' -- PERBAIKAN: Mencari 'Draft' dengan huruf besar
+          AND k.nim = ?
+          AND s.status_ajuan = 'Draft'
     ";
     $checkParams = [$id_sidang_to_delete, $nim_mahasiswa_logged_in];
     $checkStmt = sqlsrv_query($conn, $checkQuery, $checkParams);
@@ -69,23 +77,26 @@ $offset = ($page - 1) * $rowsPerPage;
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $filterClause = '';
 if ($filter === 'TA') {
-    $filterClause = " AND s.jenis_sidang = 0";
+    $filterClause = " AND k.jenis_sidang = 'TA'";
 } elseif ($filter === 'Semester') {
-    $filterClause = " AND s.jenis_sidang = 1";
+    $filterClause = " AND k.jenis_sidang = 'Semester'";
 }
 
 // PERBAIKAN: Query untuk menghitung total baris menjadi lebih aman dan mencari status 'Draft'
 $countQuery = "
     SELECT COUNT(s.id_sidang) as total
     FROM dbo.Sidang s
-    WHERE
-        s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-        AND s.status_ajuan = 'Draft' -- Mencari status 'Draft'
+    JOIN dbo.Kelompok k ON s.id_kelompok = k.id_kelompok
+    WHERE k.nim = ?
+        AND s.status_ajuan = 'Draft'
         $filterClause
 ";
 $params_count = [$nim_mahasiswa_logged_in];
 $countResult = sqlsrv_query($conn, $countQuery, $params_count);
-$totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
+if ($countResult === false) {
+    die("Error pada query count: " . print_r(sqlsrv_errors(), true));
+}
+$totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
 $totalPages = ceil($totalRows / $rowsPerPage);
 
 if ($totalRows == 0) {
@@ -94,16 +105,16 @@ if ($totalRows == 0) {
     // PERBAIKAN: Query utama menjadi lebih aman dan mencari status 'Draft'
     $query = "
         SELECT
-            s.id_sidang, s.judul, s.jenis_sidang,
+            s.id_sidang, s.judul, k.jenis_sidang,
             ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
             ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
         FROM dbo.Sidang AS s
+        JOIN dbo.Kelompok AS k ON s.id_kelompok = k.id_kelompok
         LEFT JOIN dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
         LEFT JOIN dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
         LEFT JOIN dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
-        WHERE
-            s.id_kelompok IN (SELECT id_kelompok FROM dbo.Kelompok_Mahasiswa WHERE nim = ?)
-            AND s.status_ajuan = 'Draft' -- Mencari status 'Draft'
+        WHERE k.nim = ?
+            AND s.status_ajuan = 'Draft'
             $filterClause
         ORDER BY s.id_sidang DESC
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
@@ -116,7 +127,7 @@ if ($totalRows == 0) {
 
     $dataSidang = [];
     while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-        $nama_matkul_display = ($row['jenis_sidang'] == 0) ? 'Tugas Akhir' : $row['nama_matkul'];
+        $nama_matkul_display = ($row['jenis_sidang'] == 'TA') ? 'Tugas Akhir' : $row['nama_matkul'];
         $dataSidang[] = [
             "id_sidang" => $row['id_sidang'],
             "judul" => $row['judul'],

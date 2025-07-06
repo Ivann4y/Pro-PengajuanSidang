@@ -29,7 +29,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="mPerbaikan.php?id_sidang=<?= htmlspecialchars($id_sidang) ?>">
+                    <a href="mPerbaikan.php">
                         <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
                     </a>
                 </li>
@@ -59,23 +59,23 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
             <main class="NavSide__main-content">
                 <h2>Detail Sidang -
                     <?php
-                        if ((int)$data_sidang['jenis_sidang'] === 0) {
+                        if ($data_sidang['jenis_sidang'] === 'Tugas Akhir') {
                             echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Tugas Akhir';
-                        } elseif ((int)$data_sidang['jenis_sidang'] === 1 && !empty($data_matkul)) {
+                        } elseif ($data_sidang['jenis_sidang'] === 'Semester' && !empty($data_matkul)) {
                             echo htmlspecialchars($data_matkul['nama_matkul']);
                         }
                     ?>
                 </h2>
 
                 <h2 class="fs-5 fw-semibold mb-0">
-                    Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($id_kelompok); ?>
+                    Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok); ?>
                 </h2><br>
 
                 <div class="status-badge <?= $status_class ?>" id="statusBadge"><?= $status_text ?></div>
 
                 <div class="info-card">
                     <div class="section">
-                        <?php if ((int)$data_sidang['jenis_sidang'] === 1): ?>
+                        <?php if ($data_sidang['jenis_sidang'] === 'Semester'): ?>
                             <div class="info-group">
                                 <div class="label-row">
                                     <i class="fa-solid fa-book"></i>
@@ -95,7 +95,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                                     <?= !empty($dosen_pengampu) ? implode('<br>', array_map('htmlspecialchars', $dosen_pengampu)) : '-' ?>
                                 </div>
                             </div>
-                        <?php elseif ((int)$data_sidang['jenis_sidang'] === 0): ?>
+                        <?php elseif ($data_sidang['jenis_sidang'] === 'Tugas Akhir'): ?>
                             <div class="info-group">
                                 <div class="label-row">
                                     <i class="fa-solid fa-file-invoice"></i>
@@ -163,7 +163,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                     <?php if (!empty($dok_laporan)): ?>
                         <a href="download_document.php?id_sidang=<?= htmlspecialchars($id_sidang) ?>" class="file-button">
                             <i class="fa-solid fa-file-zipper"></i>
-                            Dokumen_Laporan_Kelompok_<?= htmlspecialchars($id_kelompok) ?>.zip </a>
+                            Dokumen_Laporan_Kelompok_<?= htmlspecialchars($nomor_kelompok) ?>.zip </a>
                     <?php else: ?>
                         <p>Dokumen tidak tersedia.</p>
                     <?php endif; ?>

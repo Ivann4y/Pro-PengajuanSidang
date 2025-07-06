@@ -22,7 +22,25 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
 include '../../koneksi/koneksiAndrew.php';
 
 // Ambil nomor_dosen dari session user_data
-$nomor_dosen = $_SESSION['user_data']['nomor_dosen'];
+$nomor_dosen = (string)$_SESSION['user_data']['nomor_dosen'];
+
+// Debug: cek tipe data nomor_dosen
+error_log("DEBUG: nomor_dosen = " . var_export($nomor_dosen, true) . ", tipe: " . gettype($nomor_dosen));
+
+// Validasi dan konversi nomor_dosen
+if (!is_numeric($nomor_dosen)) {
+    // Jika nomor_dosen bukan angka, coba ambil dari database berdasarkan username
+    $sql_get_dosen = "SELECT nomor_dosen FROM Dosen WHERE nomor_dosen = ?";
+    $stmt_get_dosen = sqlsrv_query($conn, $sql_get_dosen, array($nomor_dosen));
+    if ($stmt_get_dosen && sqlsrv_has_rows($stmt_get_dosen)) {
+        $row_dosen = sqlsrv_fetch_array($stmt_get_dosen, SQLSRV_FETCH_ASSOC);
+        $nomor_dosen = $row_dosen['nomor_dosen'];
+        error_log("DEBUG: nomor_dosen dikonversi ke: " . var_export($nomor_dosen, true));
+    } else {
+        error_log("ERROR: Tidak dapat menemukan dosen dengan nomor_dosen: " . $nomor_dosen);
+        die("Error: Data dosen tidak valid");
+    }
+}
 
 // Ambil notifikasi yang belum dibaca
 $query_unread = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL) ORDER BY waktu DESC";
