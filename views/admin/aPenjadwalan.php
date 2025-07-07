@@ -84,7 +84,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                 </div>
                 <div class="input-group search-input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control" placeholder="Cari Nama Mahasiswa..." aria-label="Cari">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Cari" aria-label="Cari">
                 </div>
             </div>
         </div>
