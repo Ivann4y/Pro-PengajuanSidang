@@ -212,7 +212,7 @@ if (in_array('Ditolak', $statusList)) {
           containerDiv.className = "d-flex justify-content-end mt-4";
 
           const downloadLink = document.createElement("a");
-          downloadLink.href = "<?= htmlspecialchars($allRows[0]['dok_revisi']) ?>";
+          downloadLink.href = "../../<?= htmlspecialchars($allRows[0]['dok_revisi']) ?>";
           downloadLink.className = "btn-custom-primaryUnd";
           downloadLink.id = "btnUnduh";
           downloadLink.setAttribute("download", "<?= htmlspecialchars($allRows[0]['nama_file']) ?>");
