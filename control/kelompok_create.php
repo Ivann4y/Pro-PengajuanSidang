@@ -82,9 +82,9 @@ foreach ($anggota as $nim) {
     // Remove any whitespace and convert to string
     $nim = trim((string)$nim);
     
-    // More flexible NIM validation - allow any numeric NIM
-    if (!is_numeric($nim) || $nim <= 0) {
-        die("NIM {$nim} harus berupa angka positif.");
+    // More flexible NIM validation - allow alphanumeric NIM (8-20 characters)
+    if (strlen($nim) < 8 || strlen($nim) > 20) {
+        die("NIM {$nim} harus berupa 8-20 karakter.");
     }
     
     if (in_array($nim, $validNIMs)) {
@@ -162,7 +162,7 @@ try {
     foreach ($anggota as $nim) {
         // Check if mahasiswa already exists in kelompok for this tahun_ajaran and jenis_sidang
         $checkSql = "SELECT id_kelompok FROM Kelompok WHERE nim = ? AND tahun_ajaran = ? AND jenis_sidang = ? AND id_matkul = ?";
-        $checkParams = [(int)$nim, (int)$tahun_ajaran, $jenis_sidang, (int)$id_matkul];
+        $checkParams = [$nim, (int)$tahun_ajaran, $jenis_sidang, (int)$id_matkul];
         $checkResult = sqlsrv_query($conn, $checkSql, $checkParams);
         
         if ($checkResult !== false) {
@@ -183,9 +183,9 @@ try {
                       OUTPUT INSERTED.id_kelompok 
                       VALUES (?, ?, ?, ?, ?)";
         
-        $insertParams = [
-            (int)$nomor_kelompok,
-            (int)$nim,
+                    $insertParams = [
+                (int)$nomor_kelompok,
+                $nim,
             (int)$tahun_ajaran,
             $jenis_sidang,
             (int)$id_matkul
@@ -214,7 +214,7 @@ try {
         if ($id_kelompok === null) {
             // Fallback: try to get the ID using a separate query
             $getLastIdSql = "SELECT TOP 1 id_kelompok FROM Kelompok WHERE nomor_kelompok = ? AND nim = ? AND tahun_ajaran = ? AND jenis_sidang = ? AND id_matkul = ? ORDER BY id_kelompok DESC";
-            $getLastIdParams = [(int)$nomor_kelompok, (int)$nim, (int)$tahun_ajaran, $jenis_sidang, (int)$id_matkul];
+            $getLastIdParams = [(int)$nomor_kelompok, $nim, (int)$tahun_ajaran, $jenis_sidang, (int)$id_matkul];
             $getLastIdResult = sqlsrv_query($conn, $getLastIdSql, $getLastIdParams);
             
             if ($getLastIdResult !== false) {

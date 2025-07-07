@@ -113,18 +113,18 @@ while ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
 error_log("Current anggota from database: " . json_encode($current_anggota));
 error_log("ID Kelompok map: " . json_encode($id_kelompok_map));
 // Convert anggota to integers for comparison
-$anggota_int = array_map('intval', $anggota);
-$current_anggota_int = array_map('intval', $current_anggota);
-
-$to_add = array_diff($anggota_int, $current_anggota_int);
-$to_remove = array_diff($current_anggota_int, $anggota_int);
+    $anggota_int = $anggota;
+    $current_anggota_int = $current_anggota;
+    
+    $to_add = array_diff($anggota_int, $current_anggota_int);
+    $to_remove = array_diff($current_anggota_int, $anggota_int);
 
 // Debug logging after variables are defined
 error_log("Anggota to add: " . json_encode($to_add));
 error_log("Anggota to remove: " . json_encode($to_remove));
 error_log("Current anggota: " . json_encode($current_anggota));
-error_log("Anggota int: " . json_encode($anggota_int));
-error_log("Current anggota int: " . json_encode($current_anggota_int));
+        error_log("Anggota: " . json_encode($anggota_int));
+        error_log("Current anggota: " . json_encode($current_anggota_int));
 error_log("Processing edit for kelompok: {$nomor_kelompok}, tahun: {$tahun_ajaran}, jenis: {$jenis_sidang}, matkul: {$id_matkul}");
 
 // Log the edit operation summary

@@ -49,15 +49,8 @@ $nim = $_SESSION['nim'];
                 <li class="NavSide__sidebar-item">
                     <b></b>
                     <b></b>
-                    <a href="mPengajuan_v2.php">
+                    <a href="mPengajuan.php">
                         <span class="NavSide__sidebar-title fw-semibold">Pengajuan</span>
-                    </a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <b></b>
-                    <b></b>
-                    <a href="#" onclick="showKelompokModal()">
-                        <span class="NavSide__sidebar-title fw-semibold">Kelompok</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a></li>
@@ -189,7 +182,7 @@ $nim = $_SESSION['nim'];
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="../../assets/js/mahasiswa-dashboard-ajax.js"></script>
-    <script src="../../assets/js/mPengajuan_v2.js"></script>
+    <script src="../../assets/js/mPengajuan.js"></script>
 </body>
 
 </html>

@@ -63,32 +63,32 @@ try {
     
     // Untuk Tugas Akhir: ambil pembimbing dari tabel Bimbingan
     if ($jenis_sidang === 'Tugas Akhir') {
-        $sql = "SELECT DISTINCT d.nomor_dosen, d.nama_dosen 
-                FROM Dosen d
-                JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen
-                JOIN Kelompok k ON b.id_kelompok = k.id_kelompok
-                WHERE k.nomor_kelompok = ? 
-                  AND k.tahun_ajaran = ? 
-                  AND k.jenis_sidang = ? 
-                  AND k.id_matkul = ?
+$sql = "SELECT DISTINCT d.nomor_dosen, d.nama_dosen
+        FROM Dosen d
+        JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen
+        JOIN Kelompok k ON b.id_kelompok = k.id_kelompok
+        WHERE k.nomor_kelompok = ? 
+          AND k.tahun_ajaran = ? 
+          AND k.jenis_sidang = ? 
+          AND k.id_matkul = ?
                   AND b.isPembimbing = 1";
-        
-        $stmt = sqlsrv_query($conn, $sql, [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul]);
-        
+
+$stmt = sqlsrv_query($conn, $sql, [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul]);
+
         if ($stmt === false) {
             $errors = sqlsrv_errors();
             error_log("Failed to get pembimbing: " . json_encode($errors));
             throw new Exception("Gagal mengambil data pembimbing: " . json_encode($errors, JSON_PRETTY_PRINT));
-        }
-        
+}
+
         $pembimbing_list = [];
-        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
             $pembimbing_list[] = [
                 'nomor_dosen' => $row['nomor_dosen'],
                 'nama_dosen' => $row['nama_dosen']
             ];
-        }
-        
+}
+
         error_log("Found pembimbing for Tugas Akhir: " . json_encode($pembimbing_list));
         echo json_encode(['status' => 'ok', 'data' => $pembimbing_list]);
     } else {

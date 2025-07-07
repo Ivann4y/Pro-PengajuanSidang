@@ -88,6 +88,33 @@ function showPembimbingField(show) {
     dosenWrapperGroup.style.display = show ? "block" : "none";
 }
 
+function handleJenisSidangChange() {
+  const jenisSidang = document.getElementById("jenis_sidang");
+  const matkulGroup = document.getElementById("matkul-group");
+  const dosenWrapperGroup = document.getElementById("dosen-wrapper-group");
+
+  if (jenisSidang.value === "Semester") {
+    showMatkulField(true);
+    showPembimbingField(false);
+    // Fetch mata kuliah for Semester
+    fetchMataKuliah();
+  } else if (jenisSidang.value === "Tugas Akhir") {
+    showMatkulField(false);
+    showPembimbingField(true);
+    // Set id_matkul to 2006 for Tugas Akhir
+    const idMatkul = document.getElementById("id_matkul");
+    if (idMatkul) {
+      idMatkul.value = "2006";
+    }
+  } else {
+    showMatkulField(false);
+    showPembimbingField(false);
+  }
+
+  // Update next kelompok ID when jenis sidang changes
+  setNextKelompokId();
+}
+
 async function fetchMahasiswaData() {
   try {
     const tahunAjaran = document.getElementById("tahun_ajaran")?.value || "";
@@ -940,6 +967,7 @@ async function loadKelompokList() {
     console.log("Loaded kelompok data:", kelompokData);
 
     // Apply filters and render
+    console.log("About to render kelompok list with data:", kelompokData);
     renderKelompokList(kelompokData);
   } catch (error) {
     console.error("Error fetching kelompok data:", error);
@@ -952,8 +980,12 @@ async function loadKelompokList() {
 
 // Function to render kelompok list with filtering
 function renderKelompokList(kelompokData) {
+  console.log("renderKelompokList called with data:", kelompokData);
   const container = document.getElementById("kelompok-list-container");
-  if (!container) return;
+  if (!container) {
+    console.error("kelompok-list-container not found");
+    return;
+  }
 
   // Get current filter values
   const filterSemester =
@@ -961,9 +993,14 @@ function renderKelompokList(kelompokData) {
   const filterTugasAkhir =
     document.getElementById("filter-tugas-akhir")?.checked || false;
 
+  console.log("Filter values:", { filterSemester, filterTugasAkhir });
+
   // Filter the data based on selected types
   let filteredData = kelompokData;
-  if (!filterSemester || !filterTugasAkhir) {
+  if (!filterSemester && !filterTugasAkhir) {
+    // If both filters are unchecked, show all data
+    filteredData = kelompokData;
+  } else if (!filterSemester || !filterTugasAkhir) {
     filteredData = kelompokData.filter((kelompok) => {
       if (filterSemester && kelompok.jenis_sidang === "Semester") return true;
       if (filterTugasAkhir && kelompok.jenis_sidang === "Tugas Akhir")
@@ -971,6 +1008,8 @@ function renderKelompokList(kelompokData) {
       return false;
     });
   }
+
+  console.log("Filtered data count:", filteredData.length);
 
   if (filteredData.length === 0) {
     if (kelompokData.length === 0) {
@@ -984,6 +1023,7 @@ function renderKelompokList(kelompokData) {
   }
 
   container.innerHTML = "";
+  console.log("Rendering", filteredData.length, "kelompok items");
   filteredData.forEach((kelompok) => {
     const anggotaList = kelompok.anggota
       .map((angg) => `${angg.nim} - ${angg.nama_mhs}`)
@@ -1370,9 +1410,12 @@ function validateKelompokForm() {
   for (const nimInput of nimInputs) {
     const nimValue = nimInput.value.trim();
     if (nimValue !== "") {
-      // Check NIM format (any positive number)
-      if (!/^\d+$/.test(nimValue) || parseInt(nimValue) <= 0) {
-        showError(nimInput.id, `NIM ${nimValue} harus berupa angka positif.`);
+      // Check NIM format (alphanumeric, 8-20 characters)
+      if (!/^[A-Za-z0-9]{8,20}$/.test(nimValue)) {
+        showError(
+          nimInput.id,
+          `NIM ${nimValue} harus berupa 8-20 karakter alfanumerik.`
+        );
         isValid = false;
         continue;
       }

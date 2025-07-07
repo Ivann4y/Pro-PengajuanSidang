@@ -385,6 +385,22 @@ tr.jadiBiru:hover .detail-btn i {
   padding: 8px 15px;
 }
 
+.kelompok-filter-container {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.kelompok-filter-container .form-check-inline {
+  margin-right: 20px;
+}
+
+.kelompok-filter-container .form-check-input:checked {
+  background-color: #4b68fb;
+  border-color: #4b68fb;
+}
+
 .kelompok-list-container {
   max-height: 400px;
   overflow-y: auto;

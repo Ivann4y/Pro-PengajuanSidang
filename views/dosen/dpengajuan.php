@@ -67,10 +67,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id_
 }
 
 // --- GET: Show the page ---
+// Pagination setup
+$rowsPerPage = 10; // Number of records per page
+$currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
 // Filter setup for frontend
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$offset = ($currentPage - 1) * $rowsPerPage;
+$offset = max(0, ($currentPage - 1) * $rowsPerPage);
 
 
 $baseQuery = "
@@ -138,13 +142,13 @@ $countStmt = sqlsrv_query($conn, $countSql, $params);
 if ($countStmt === false) {
     die("Error saat menghitung data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
-$totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'];
-$totalPages = ceil($totalRecords / $rowsPerPage) ?: 1;
+$totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
+$totalPages = ($rowsPerPage > 0) ? ceil($totalRecords / $rowsPerPage) : 1;
 
 // Sesuaikan halaman saat ini jika melebihi total halaman
-if ($currentPage > $totalPages) {
+if ($totalPages > 0 && $currentPage > $totalPages) {
     $currentPage = $totalPages;
-    $offset = ($currentPage - 1) * $rowsPerPage;
+    $offset = max(0, ($currentPage - 1) * $rowsPerPage);
 }
 
 
@@ -166,7 +170,7 @@ if ($result === false) {
 }
 
 // Set nomor awal untuk tabel
-$nomor = $offset + 1;
+$nomor = max(1, $offset + 1);
 ?>
 <!DOCTYPE html>
 <html lang="en">
