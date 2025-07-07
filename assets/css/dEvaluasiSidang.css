@@ -2,12 +2,64 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", sans-serif !important;
 }
 
 body {
   min-height: 100vh;
   background-color: #ffffff;
+}
+
+
+.nav-tabs
+ {
+    --bs-nav-tabs-border-width: var(--bs-border-width);
+    --bs-nav-tabs-border-color: var(--bs-border-color);
+    --bs-nav-tabs-border-radius: var(--bs-border-radius);
+    --bs-nav-tabs-link-hover-border-color: var(--bs-secondary-bg) var(--bs-secondary-bg) var(--bs-border-color);
+    --bs-nav-tabs-link-active-color: var(--bs-emphasis-color);
+    --bs-nav-tabs-link-active-bg: var(--bs-body-bg);
+    --bs-nav-tabs-link-active-border-color: var(--bs-border-color) var(--bs-border-color) var(--bs-body-bg);
+
+ }
+
+
+ 
+.nav-link.active-student-tab {
+    font-weight: bold;
+      color: #464869 !important;
+    border-bottom: 2px solid var(--primary-color) !important;
+}
+.nav-tabs .nav-link {
+    margin-bottom: calc(-1 * var(--bs-nav-tabs-border-width));
+    border: var(--bs-nav-tabs-border-width) solid transparent;
+    border-top-left-radius: var(--bs-nav-tabs-border-radius);
+    border-top-right-radius: var(--bs-nav-tabs-border-radius);
+}
+.nav-link {
+    display: block;
+    padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+    font-size: var(--bs-nav-link-font-size);
+    font-weight: var(--bs-nav-link-font-weight);
+    color: var(--bs-nav-link-color);
+    text-decoration: none;
+    background: 0 0;
+    border: 0;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+
+nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active
+
+ {
+    color: var(--bs-nav-tabs-link-active-color);
+    background-color: var(--bs-nav-tabs-link-active-bg);
+    border-color: var(--bs-nav-tabs-link-active-border-color);
+}
+
+.label-row {
+    display: flex;          /* Pastikan ini ada */
+    
+    gap: 8px;               /* INI SOLUSINYA: beri jarak 8px antar elemen */
 }
 
 #NavSide {
@@ -479,6 +531,29 @@ body {
 
     /* Style untuk Tablet (lebar layar maks 768px) */
     @media (max-width: 768px) {
+
+        /* 1. Ubah kontainer utama menjadi tumpukan vertikal */
+    .penilaian-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    /* 2. Atur setiap baris nilai menjadi 2 kolom yang rapi */
+    .penilaian-item {
+        display: grid;
+        grid-template-columns: 1fr 100px; /* Kolom label fleksibel, kolom input 100px */
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* 3. Pastikan label rata kiri */
+    .penilaian-item label {
+        text-align: left;
+        margin: 0;
+    }
+
         .penilaian-row { margin-left: 0 !important; margin-right: 0 !important; gap: 15px 0; }
         .penilaian-row .col-3 { width: 100%; justify-content: flex-start; padding: 0 !important; margin-bottom: 0; }
         .penilaian-row label { min-width: unset; text-align: left; margin-right: 10px; }
@@ -498,6 +573,8 @@ body {
         color: inherit; /* Kembalikan ke warna teks asli */
         box-shadow: none;
     }
+
+    
 
 
 .penilaian-row {

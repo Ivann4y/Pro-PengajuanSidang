@@ -15,7 +15,7 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     exit(); 
 }
 
-// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
+// 2. Cek jika role pengguna BUKAN 'admin'.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     // Arahkan ke halaman login utama di root
@@ -29,7 +29,6 @@ $queryAllDosen = "SELECT nama_dosen FROM Dosen ORDER BY nama_dosen";
 $resultAllDosen = sqlsrv_query($conn, $queryAllDosen);
 if ($resultAllDosen) {
     while ($row = sqlsrv_fetch_array($resultAllDosen, SQLSRV_FETCH_ASSOC)) {
-        // Ciptakan struktur array of objects agar cocok dengan JS
         $allDosenList[] = ['nama' => $row['nama_dosen']];
     }
 }
@@ -48,77 +47,84 @@ if ($resultProdi) {
     }
 }
 
-// --- MODIFIKASI: Query utama untuk mengambil data sidang ---
+// ==============================================================================
+// --- PERUBAHAN UTAMA: REKONSTRUKSI QUERY PENGAMBILAN DATA SIDANG ---
+// ==============================================================================
 $params = [];
 $whereClauses = [];
 
-// Filter WAJIB: Hanya tampilkan yang status ajuannya disetujui (1)
-$whereClauses[] = "s.status_ajuan = 'Approve'";
+// Filter WAJIB: Hanya tampilkan yang status ajuannya 'Approved' (sekarang VARCHAR)
+$whereClauses[] = "s.status_ajuan = 'Approved'";
 
-// Filter OPSIONAL: Berdasarkan tipe sidang
+// Filter OPSIONAL: Berdasarkan tipe sidang (sekarang dari tabel Kelompok)
 if ($selectedTipe == 'TA') {
-    $whereClauses[] = "k.jenis_sidang = 'TA'";
+    // Nilai sekarang adalah string 'Tugas Akhir'
+    $whereClauses[] = "k.jenis_sidang = ?";
+    $params[] = 'Tugas Akhir';
 } elseif ($selectedTipe == 'Semester') {
-    $whereClauses[] = "k.jenis_sidang = 'Semester'";
+    // Nilai sekarang adalah string 'Semester'
+    $whereClauses[] = "k.jenis_sidang = ?";
+    $params[] = 'Semester';
 }
 
-// --- BARU: Filter OPSIONAL: Berdasarkan prodi ---
+// Filter OPSIONAL: Berdasarkan prodi
 if ($selectedProdi !== 'semua') {
     $whereClauses[] = "m.prodi = ?";
     $params[] = $selectedProdi;
 }
 
-$query = "SELECT 
-    s.id_sidang AS id,
-    s.id_kelompok,
-    s.judul AS judulSidang,
-    k.jenis_sidang AS tipeSidang, 
-    MAX(m.prodi) as prodi,
-    STRING_AGG(m.nama_mhs, ', ') AS namaList,
-    MAX(mk.nama_matkul) AS mataKuliah,
-    MAX(d_pembimbing.nama_dosen) AS pembimbing,
-   (SELECT STRING_AGG(d.nama_dosen, CHAR(13) + CHAR(10))
-     FROM Pengampu_Kelas pk
-     JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
-     WHERE 
-        pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang)
-        AND pk.id_kelas = (SELECT TOP 1 km.id_kelas
-                           FROM Kelompok_Mahasiswa kpm
-                           JOIN Kelas_Mahasiswa km ON kpm.nim = km.nim
-                           WHERE kpm.id_kelompok = s.id_kelompok)
-    ) AS dosenPengampuList
+// Query baru yang disesuaikan dengan skema database baru
+$query = "
+    SELECT 
+        s.id_sidang AS id,
+        k.nomor_kelompok, -- Menggunakan nomor_kelompok sebagai pengenal logis
+        s.judul AS judulSidang,
+        MAX(m.prodi) as prodi,
+        STRING_AGG(m.nama_mhs, ', ') WITHIN GROUP (ORDER BY m.nama_mhs) AS namaList,
+        MAX(mk.nama_matkul) AS mataKuliah,
+        MAX(k.jenis_sidang) AS tipeSidang,
+        MAX(d_pembimbing.nama_dosen) AS pembimbing,
+        (
+            SELECT STRING_AGG(d.nama_dosen, CHAR(13) + CHAR(10))
+            FROM Pengampu_Kelas pk
+            JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
+            WHERE 
+                pk.id_matkul = MAX(k.id_matkul) -- Mengambil id_matkul dari tabel Kelompok
+                AND pk.id_kelas IN (
+                    SELECT km.id_kelas 
+                    FROM Kelompok k_inner
+                    JOIN Kelas_Mahasiswa km ON k_inner.nim = km.nim
+                    WHERE k_inner.nomor_kelompok = k.nomor_kelompok -- Mencocokkan berdasarkan nomor_kelompok
+                )
+        ) AS dosenPengampuList
     FROM Sidang s
     INNER JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-    INNER JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-    INNER JOIN Mahasiswa m ON km.nim = m.nim
-    LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND k.jenis_sidang = 'TA'
+    INNER JOIN Mahasiswa m ON k.nim = m.nim
+    LEFT JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul
+    LEFT JOIN Bimbingan b ON k.id_kelompok = b.id_kelompok AND k.jenis_sidang = 'Tugas Akhir'
     LEFT JOIN Dosen d_pembimbing ON b.nomor_dosen = d_pembimbing.nomor_dosen
-    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang AND k.jenis_sidang = 'Semester'
-    LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
     WHERE " . implode(' AND ', $whereClauses) . "
-     AND NOT EXISTS (SELECT 1 FROM Jadwal j WHERE j.id_sidang = s.id_sidang)
-    -- PERBAIKAN: GROUP BY menggunakan k.jenis_sidang
-    GROUP BY s.id_sidang, s.id_kelompok, s.judul, k.jenis_sidang
-    ORDER BY s.id_sidang";
-
+        AND NOT EXISTS (SELECT 1 FROM Jadwal j WHERE j.id_sidang = s.id_sidang)
+    GROUP BY s.id_sidang, k.nomor_kelompok, s.judul
+    ORDER BY s.id_sidang, k.nomor_kelompok";
 
 $result = sqlsrv_query($conn, $query, $params);
+
 if ($result === false) {
     die(print_r(sqlsrv_errors(), true));
 }
 
 $data = [];
 while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-    $row['dosenPengampu'] = !empty($row['dosenPengampuList']) ? explode(', ', $row['dosenPengampuList']) : [];
+    $row['dosenPengampu'] = !empty($row['dosenPengampuList']) ? preg_split('/\r\n|\r|\n/', $row['dosenPengampuList']) : [];
     $data[] = $row;
 }
 
-// --- MODIFIKASI: Variabel untuk teks tombol dan header ---
+// --- Variabel untuk teks tombol dan header ---
 $tipeButtonText = 'Semua Tipe';
 if ($selectedTipe == 'TA') $tipeButtonText = 'Sidang TA';
 elseif ($selectedTipe == 'Semester') $tipeButtonText = 'Sidang Semester';
 
-// BARU: Teks untuk tombol filter prodi
 $prodiButtonText = 'Semua Prodi';
 if ($selectedProdi !== 'semua') {
     $prodiButtonText = htmlspecialchars($selectedProdi);
@@ -131,24 +137,21 @@ elseif ($selectedTipe == 'Semester') $dynamicHeaderText = 'Mata Kuliah';
 $dynamicDosenHeaderText = 'Pembimbing/Dosen';
 if ($selectedTipe == 'TA') $dynamicDosenHeaderText = 'Pembimbing';
 elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
-
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Penjadwalan Sidang</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Penjadwalan Sidang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="../../assets/css/aPenjadwalan.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-  <div id="NavSide">
+<div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
         <div class="NavSide__sidebar-brand">
             <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
@@ -186,24 +189,24 @@ elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
                     <span class="filter-label fw-semibold">Filter:</span>
                     <div class="dropdown me-2">
                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?= htmlspecialchars($tipeButtonText) ?>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?tipe=semua&status=<?= htmlspecialchars($selectedStatus) ?>">Semua Tipe</a></li>
-                            <li><a class="dropdown-item" href="?tipe=TA&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
-                            <li><a class="dropdown-item" href="?tipe=Semester&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang Semester</a></li>
-                        </ul>
+                           <?= htmlspecialchars($tipeButtonText) ?>
+                       </button>
+                       <ul class="dropdown-menu">
+                           <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= urlencode($selectedProdi) ?>">Semua Tipe</a></li>
+                           <li><a class="dropdown-item" href="?tipe=TA&prodi=<?= urlencode($selectedProdi) ?>">Sidang TA</a></li>
+                           <li><a class="dropdown-item" href="?tipe=Semester&prodi=<?= urlencode($selectedProdi) ?>">Sidang Semester</a></li>
+                       </ul>
                     </div>
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= htmlspecialchars($prodiButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
-                            <!-- MODIFIKASI: Tambahkan parameter tipe agar tidak ter-reset -->
                             <li><a class="dropdown-item" href="?tipe=<?= urlencode($selectedTipe) ?>&prodi=semua">Semua Prodi</a></li>
                             <?php foreach ($prodiList as $prodi): ?>
                                 <li><a class="dropdown-item" href="?tipe=<?= urlencode($selectedTipe) ?>&prodi=<?= urlencode($prodi) ?>"><?= htmlspecialchars($prodi) ?></a></li>
                             <?php endforeach; ?>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -225,11 +228,12 @@ elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
           <table class="table-admin-custom">
             <thead>
               <tr>
-                <th scope="col">Nomor</th>
-                <th scope="col">Kelompok</th>
-                <th scope="col"><?= htmlspecialchars($dynamicHeaderText) ?></th>
-                <th scope="col"><?= htmlspecialchars($dynamicDosenHeaderText) ?></th>
-                <th scope="col" style="text-align: center;">Aksi</th>
+                 <th scope="col">Nomor</th>
+                        <th scope="col">Kelompok</th>
+                        <th scope="col">Judul</th>
+                        <th scope="col">Mata Kuliah</th>
+                        <th scope="col">Pembimbing/Pengampu</th>
+                        <th scope="col" style="text-align: center;">Aksi</th>
               </tr>
             </thead>
             <tbody id="adminSidangContent">
@@ -241,45 +245,42 @@ elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
                 foreach ($data as $entry): 
                 ?>
                 <?php
-                    // Logika untuk menyiapkan data modal tetap sama, karena tombol aksi masih memerlukannya
                     $judul_or_matkul = 'N/A';
                     $pembimbing_or_pengampu = 'N/A';
                     $dosen_pengampu_json = '[]';
 
-                    if ($entry['tipeSidang'] == 'TA') {
+                    if ($entry['tipeSidang'] == 'Tugas Akhir') {
                         $judul_or_matkul = htmlspecialchars($entry['judulSidang'] ?? 'N/A');
                         $pembimbing_or_pengampu = htmlspecialchars($entry['pembimbing'] ?? 'N/A');
                     } elseif ($entry['tipeSidang'] == 'Semester') {
                        $judul_or_matkul = htmlspecialchars($entry['mataKuliah'] ?? 'N/A');
-                        $dosenListString = $entry['dosenPengampuList'] ?? '';
+                        $dosenListString = !empty($entry['dosenPengampuList']) ? implode("\n", preg_split('/\r\n|\r|\n/', $entry['dosenPengampuList'])) : '';
                         $pembimbing_or_pengampu = nl2br(htmlspecialchars($dosenListString));
-                        $dosenArray = !empty($dosenListString) ? preg_split('/\r\n|\r|\n/', $dosenListString) : [];
-                        $dosen_pengampu_json = htmlspecialchars(json_encode($dosenArray), ENT_QUOTES, 'UTF-8');
+                        $dosen_pengampu_json = htmlspecialchars(json_encode($entry['dosenPengampu']), ENT_QUOTES, 'UTF-8');
                     }
                     
-                    // Siapkan data-* attributes untuk dilempar ke modal Javascript
-                     $row_props_js = "data-id='".htmlspecialchars($entry['id'] ?? '')."'" 
-                                            . " data-kelompok='".htmlspecialchars($entry['id_kelompok'] ?? '')."'"
-                                            . " data-nama-list='".htmlspecialchars($entry['namaList'] ?? '')."'"
-                                            . " data-judul='". $judul_or_matkul ."'"
-                                            . " data-pembimbing='". $pembimbing_or_pengampu ."'"
-                                            . " data-prodi='".htmlspecialchars($entry['prodi'] ?? '')."'"
-                                            . " data-tipe-sidang='".htmlspecialchars($entry['tipeSidang'] ?? '')."'"
-                                            . " data-pengampu='".$dosen_pengampu_json."'";
-                            ?>
-                            <tr class="isiTabel" <?= $row_props_js ?>>
-                                <td data-label="Nomor"><?= $counter++ ?></td>
-                                <td data-label="Kelompok"><?= htmlspecialchars($entry['id_kelompok'] ?? 'N/A') ?></td>
-                                <td data-label="<?= $dynamicHeaderText ?>"><?= $judul_or_matkul ?></td>
-                                <td data-label="<?= $dynamicDosenHeaderText ?>"><?= $pembimbing_or_pengampu ?></td>
-                                <td data-label="Aksi" style="text-align: center;">
-                                    <button type="button" class="btn detail-btn" onclick='event.stopPropagation(); openJadwalModal(this.closest("tr"))'>
-                                        <i class="fa-solid fa-file-signature fs-5"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                    $row_props_js = "data-id='".htmlspecialchars($entry['id'] ?? '')."'" 
+                                    . " data-kelompok='".htmlspecialchars($entry['nomor_kelompok'] ?? '')."'"
+                                    . " data-nama-list='".htmlspecialchars($entry['namaList'] ?? '')."'"
+                                    . " data-judul='". $judul_or_matkul ."'"
+                                    . " data-pembimbing='". $pembimbing_or_pengampu ."'"
+                                    . " data-prodi='".htmlspecialchars($entry['prodi'] ?? '')."'"
+                                    . " data-tipe-sidang='".htmlspecialchars($entry['tipeSidang'] ?? '')."'"
+                                    . " data-pengampu='".$dosen_pengampu_json."'";
+                ?>
+                <tr class="isiTabel" <?= $row_props_js ?>>
+                    <td data-label="Nomor"><?= $counter++ ?></td>
+                    <td data-label="Kelompok"><?= htmlspecialchars($entry['nomor_kelompok'] ?? 'N/A') ?></td>
+                    <td data-label="<?= $dynamicHeaderText ?>"><?= $judul_or_matkul ?></td>
+                    <td data-label="<?= $dynamicDosenHeaderText ?>"><?= $pembimbing_or_pengampu ?></td>
+                    <td data-label="Aksi" style="text-align: center;">
+                        <button type="button" class="btn detail-btn" onclick='event.stopPropagation(); openJadwalModal(this.closest("tr"))'>
+                            <i class="fa-solid fa-file-signature fs-5"></i>
+                        </button>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
@@ -290,9 +291,9 @@ elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
             </nav>
         </div>
     </main>
-  </div>
-  
-  <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+</div>
+ 
+<div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header modal-header-custom">
@@ -307,130 +308,100 @@ elseif ($selectedTipe == 'Semester') $dynamicDosenHeaderText = 'Dosen Pengampu';
             </div>
         </div>
     </div>
-  </div> 
+</div> 
 
-  <!-- Modals for scheduling -->
-   
-  <div class="modal fade" id="penjadwalanSidangTAModal" aria-labelledby="penjadwalanSidangTAModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-          <div class="modal-content modal-content-custom-form">
-              <div class="modal-body">
-                  <h2>Penjadwalan Sidang TA</h2>
-                  <form id="formDalamModal-ta" novalidate>
-                        <input type="hidden" name="id_sidang" id="modal_id_sidang-ta">
-                        <input type="hidden" name="tipe_sidang" value="TA">
-                      <div class="form-container">
-                          <div class="form-group"><label for="modal_nim-ta">Kelompok</label><input type="text" id="modal_nim-ta" readonly /></div>
-                          <div class="form-group"><label for="modal_judul_sidang-ta">Judul Sidang</label><input type="text" id="modal_judul_sidang-ta" readonly /></div>
-                          <div class="form-group"><label for="modal_pembimbing-ta">Pembimbing</label><input type="text" id="modal_pembimbing-ta" readonly /></div>
-                          <div id="penguji-wrapper-ta">
+<div class="modal fade" id="penjadwalanSidangTAModal" aria-labelledby="penjadwalanSidangTAModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-content-custom-form">
+            <div class="modal-body">
+                <h2>Penjadwalan Sidang TA</h2>
+                <form id="formDalamModal-ta" novalidate>
+                    <input type="hidden" name="id_sidang" id="modal_id_sidang-ta">
+                    <input type="hidden" name="tipe_sidang" value="TA">
+                    <div class="form-container">
+                        <div class="form-group"><label for="modal_nim-ta">Kelompok</label><input type="text" id="modal_nim-ta" readonly /></div>
+                        <div class="form-group"><label for="modal_judul_sidang-ta">Judul Sidang</label><input type="text" id="modal_judul_sidang-ta" readonly /></div>
+                        <div class="form-group"><label for="modal_pembimbing-ta">Pembimbing</label><input type="text" id="modal_pembimbing-ta" readonly /></div>
+                        <div id="penguji-wrapper-ta">
                             <div class="form-group" id="penguji-form-ta-1">
                                 <label for="modal_penguji-ta-1">Penguji 1</label>
                                 <div class="input-with-buttons">
-                                <!-- STRUKTUR AUTOCOMPLETE BARU DI SINI -->
-                                <div class="autocomplete-container">
-                                <input type="text"
-                                        id="modal_penguji-ta-1"
-                                        name="penguji_nama[]"
-                                        placeholder="Ketik nama dosen penguji"
-                                        oninput="searchPenguji(this, 1)"
-                                        autocomplete="off">
-                                    <div class="autocomplete-dropdown" id="autocomplete_penguji_1"></div>
-                                </div>
-                                <!-- Akhir struktur autocomplete -->
-                                <div class="bobot-nilai-input-group">
-                                    <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-1')">-</button>
-                                    <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
-                                    <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-1')">+</button>
-                                </div>
-                                <div class="form-toggle-buttons">
-                                    <button type="button" onclick="addPenguji()">+</button>
-                                    <button type="button" onclick="removePenguji()">-</button>
+                                    <div class="autocomplete-container">
+                                        <input type="text" id="modal_penguji-ta-1" name="penguji_nama[]" placeholder="Ketik nama dosen penguji" oninput="searchPenguji(this, 1)" autocomplete="off">
+                                        <div class="autocomplete-dropdown" id="autocomplete_penguji_1"></div>
+                                    </div>
+                                    <div class="bobot-nilai-input-group">
+                                        <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-1')">-</button>
+                                        <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
+                                        <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-1')">+</button>
+                                    </div>
+                                    <div class="form-toggle-buttons">
+                                        <button type="button" onclick="addPenguji()">+</button>
+                                        <button type="button" onclick="removePenguji()">-</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="form-group"><label for="modal_prodi-ta">Prodi</label><input type="text" id="modal_prodi-ta" readonly /></div>
+                        <div class="form-group"><label for="modal_ruangan-ta">Ruangan</label><input type="text" id="modal_ruangan-ta" name="ruangan" /></div>
+                        <div class="form-group"><label for="modal_tanggal-ta">Tanggal</label><input type="date" id="modal_tanggal-ta" name="tanggal" /></div>
+                        <div class="form-group">
+                            <label for="modal_jam_awal-ta">Jam</label>
+                            <div class="time-input-range">
+                                <input type="time" id="modal_jam_awal-ta" name="jam_awal" /><span class="time-separator">-</span><input type="time" id="modal_jam_akhir-ta" name="jam_akhir" />
+                            </div>
+                        </div>
+                        <div class="form-error-message" id="form-error-ta"></div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
+                        </div>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-                          <div class="form-group"><label for="modal_prodi-ta">Prodi</label><input type="text" id="modal_prodi-ta" readonly /></div>
-                          <div class="form-group"><label for="modal_ruangan-ta">Ruangan</label><input type="text" id="modal_ruangan-ta" name="ruangan" /></div>
-                          <div class="form-group"><label for="modal_tanggal-ta">Tanggal</label><input type="date" id="modal_tanggal-ta" name="tanggal" /></div>
-                          <div class="form-group">
-                              <label for="modal_jam_awal-ta">Jam</label>
-                              <div class="time-input-range">
-                                  <input type="time" id="modal_jam_awal-ta" name="jam_awal" /><span class="time-separator">-</span><input type="time" id="modal_jam_akhir-ta" name="jam_akhir" />
-                              </div>
-                          </div>
-                          <div class="form-error-message" id="form-error-ta"></div>
-                          <div class="form-actions">
-                              <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
-                              <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
-                          </div>
-                      </div>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </div>
-  <div class="modal fade" id="penjadwalanSidangSemModal" aria-labelledby="penjadwalanSidangSemModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-          <div class="modal-content modal-content-custom-form">
-              <div class="modal-body">
-                  <h2>Penjadwalan Sidang Semester</h2>
-                  <form id="formDalamModal-sem" novalidate>
-                        <input type="hidden" name="id_sidang" id="modal_id_sidang-sem">
-                        <input type="hidden" name="tipe_sidang" value="Semester">
-                      <div class="form-container">
-                          <div class="form-group"><label for="modal_nim-sem">Kelompok</label><input type="text" id="modal_nim-sem" readonly /></div>
-                          <div class="form-group"><label for="modal_matkul-sem">Mata Kuliah</label><input type="text" id="modal_matkul-sem" readonly /></div>
-                          <div id="pengampu-wrapper-sem">
-                              <div class="form-group" id="pengampu-form-sem-1">
-                                  <label for="modal_pengampu-sem-1">Pengampu 1</label>
-                                  <div class="input-with-buttons">
-                                      <input type="text" id="modal_pengampu-sem-1" name="pengampu_nama[]" placeholder="Nama Pengampu 1" />
-                                      <div class="bobot-nilai-input-group">
-                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-1')">-</button>
-                                          <input type="number" id="modal_qty_pengampu-sem-1" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" />
-                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-1')">+</button>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div class="form-group" id="pengampu-form-sem-2">
-                                  <label for="modal_pengampu-sem-2">Pengampu 2</label>
-                                  <div class="input-with-buttons">
-                                      <input type="text" id="modal_pengampu-sem-2" name="pengampu_nama[]" placeholder="Nama Pengampu 2" />
-                                      <div class="bobot-nilai-input-group">
-                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-2')">-</button>
-                                          <input type="number" id="modal_qty_pengampu-sem-2" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" />
-                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-2')">+</button>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="form-group"><label for="modal_prodi-sem">Prodi</label><input type="text" id="modal_prodi-sem" readonly /></div>
-                          <div class="form-group"><label for="modal_ruangan-sem">Ruangan</label><input type="text" id="modal_ruangan-sem" name="ruangan" /></div>
-                          <div class="form-group"><label for="modal_tanggal-sem">Tanggal</label><input type="date" id="modal_tanggal-sem" name="tanggal" /></div>
-                          <div class="form-group">
-                              <label for="modal_jam_awal-sem">Jam</label>
-                              <div class="time-input-range">
-                                  <input type="time" id="modal_jam_awal-sem" name="jam_awal" /><span class="time-separator">-</span><input type="time" id="modal_jam_akhir-sem" name="jam_akhir" />
-                              </div>
-                          </div>
-                          <div class="form-error-message" id="form-error-sem"></div>
-                          <div class="form-actions">
-                              <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
-                              <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
-                          </div>
-                      </div>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </div>
+<div class="modal fade" id="penjadwalanSidangSemModal" aria-labelledby="penjadwalanSidangSemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content modal-content-custom-form">
+            <div class="modal-body">
+                <h2>Penjadwalan Sidang Semester</h2>
+                <form id="formDalamModal-sem" novalidate>
+                    <input type="hidden" name="id_sidang" id="modal_id_sidang-sem">
+                    <input type="hidden" name="tipe_sidang" value="Semester">
+                    <div class="form-container">
+                        <div class="form-group"><label for="modal_nim-sem">Kelompok</label><input type="text" id="modal_nim-sem" readonly /></div>
+                        <div class="form-group"><label for="modal_matkul-sem">Mata Kuliah</label><input type="text" id="modal_matkul-sem" readonly /></div>
+                        <div id="pengampu-wrapper-sem">
+                            </div>
+                        <div class="form-group"><label for="modal_prodi-sem">Prodi</label><input type="text" id="modal_prodi-sem" readonly /></div>
+                        <div class="form-group"><label for="modal_ruangan-sem">Ruangan</label><input type="text" id="modal_ruangan-sem" name="ruangan" /></div>
+                        <div class="form-group"><label for="modal_tanggal-sem">Tanggal</label><input type="date" id="modal_tanggal-sem" name="tanggal" /></div>
+                        <div class="form-group">
+                            <label for="modal_jam_awal-sem">Jam</label>
+                            <div class="time-input-range">
+                                <input type="time" id="modal_jam_awal-sem" name="jam_awal" /><span class="time-separator">-</span><input type="time" id="modal_jam_akhir-sem" name="jam_akhir" />
+                            </div>
+                        </div>
+                        <div class="form-error-message" id="form-error-sem"></div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="submit" class="btn btn-submit">Buat Penjadwalan</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
     const dosenData = <?php echo json_encode($allDosenList); ?>;
-  </script>
-<script src="../../assets/js/aPenjadwalan.js"></script>                 
+</script>
+<script src="../../assets/js/aPenjadwalan.js"></script>              
 </body>
 </html>

@@ -229,11 +229,15 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
             </ul>
         </div>
 
-        <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
+        </div>
+        
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
-                <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
+                <h2 class="text-heading text-black" style="font-weight: 700;">Detail Sidang - <?= htmlspecialchars($judul) ?></h2>
                 <div class="info-card">
                     <div class="section">
                         <?php if (!empty($dosenPembimbing)): ?>

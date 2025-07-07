@@ -74,7 +74,7 @@ $stmt_sidang = sqlsrv_query($conn, $sql_sidang, array($id_sidang));
         if ($stmt_sidang !== false) {
     $data_sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC);
     // PERBAIKAN: Cek dengan string 'TA'
-    if ($data_sidang && $data_sidang['jenis_sidang'] == 'TA') { 
+    if ($data_sidang && $data_sidang['jenis_sidang'] == 'Tugas Akhir') { 
                 
                 // Ambil daftar nomor dosen penguji lama untuk dihapus dari Penilaian
                 $penguji_lama_nos = [];
@@ -101,7 +101,7 @@ $stmt_sidang = sqlsrv_query($conn, $sql_sidang, array($id_sidang));
                 // Ambil daftar NIM mahasiswa dalam kelompok ini
                 $id_kelompok = $data_sidang['id_kelompok'];
                 $list_nim_mahasiswa = [];
-                $sql_get_nim = "SELECT nim FROM Kelompok_Mahasiswa WHERE id_kelompok = ?";
+                $sql_get_nim = "SELECT nim FROM Kelompok WHERE id_kelompok = ?";
                 $stmt_get_nim = sqlsrv_query($conn, $sql_get_nim, array($id_kelompok));
                 while($row = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)) {
                     $list_nim_mahasiswa[] = $row['nim'];

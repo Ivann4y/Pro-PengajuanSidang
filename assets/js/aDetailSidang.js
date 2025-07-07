@@ -40,6 +40,7 @@ function searchDosen(inputElement, index) {
     } else {
         dropdown.innerHTML = '<div class="autocomplete-item">Dosen tidak ditemukan</div>';
     }
+     dropdown.style.display = 'block';
 }
 // Mengisi input nama dosen penguji dari hasil autocomplete
 function selectDosen(namaDosen, index) {

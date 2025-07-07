@@ -70,7 +70,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id_
 // Filter setup for frontend
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$offset = ($currentPage - 1) * $rowsPerPage;
 
+
+$baseQuery = "
+    WITH SidangData AS (
+        SELECT DISTINCT
+            s.id_sidang,
+            s.id_kelompok,
+            s.judul,
+            d.nomor_dosen,
+            d.nama_dosen,
+            mk.nama_matkul,
+            CASE 
+                WHEN mk.nama_matkul = 'Tugas Akhir' THEN 0 
+                ELSE 1 
+            END AS jenis_sidang
+        FROM
+            Sidang s
+        JOIN
+            Bimbingan b ON s.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
+        JOIN
+            Dosen d ON b.nomor_dosen = d.nomor_dosen
+        LEFT JOIN
+            Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+        LEFT JOIN
+            MataKuliah mk ON ds.id_matkul = mk.id_matkul
+        WHERE
+            s.status_ajuan = 'Pending'
+    )
+";
+
+// Kumpulan kondisi WHERE dan parameternya
+$whereConditions = [];
+$params = [];
+
+// Kondisi dasar: Dosen yang login
+$whereConditions[] = "nomor_dosen = ?";
+array_push($params, $nomorDosen);
+
+// Terapkan kondisi filter
+if ($filter === 'TA') {
+    $whereConditions[] = "jenis_sidang = 0";
+} elseif ($filter === 'Semester') {
+    $whereConditions[] = "jenis_sidang = 1";
+}
+
+// Terapkan kondisi pencarian
+if (!empty($search)) {
+    $whereConditions[] = "(
+        CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR 
+        ISNULL(judul, '') LIKE ? OR 
+        ISNULL(nama_matkul, '') LIKE ?
+    )";
+    $likeParam = "%" . $search . "%";
+    array_push($params, $likeParam, $likeParam, $likeParam);
+}
+
+// Gabungkan semua kondisi menjadi satu string WHERE clause
+$whereClause = "WHERE " . implode(" AND ", $whereConditions);
+
+
+// --- QUERY UNTUK MENGHITUNG TOTAL DATA UNTUK PAGINASI ---
+$countSql = $baseQuery . "SELECT COUNT(*) as total FROM SidangData " . $whereClause;
+
+$countStmt = sqlsrv_query($conn, $countSql, $params);
+if ($countStmt === false) {
+    die("Error saat menghitung data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+$totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'];
+$totalPages = ceil($totalRecords / $rowsPerPage) ?: 1;
+
+// Sesuaikan halaman saat ini jika melebihi total halaman
+if ($currentPage > $totalPages) {
+    $currentPage = $totalPages;
+    $offset = ($currentPage - 1) * $rowsPerPage;
+}
+
+
+// --- QUERY UTAMA UNTUK MENGAMBIL DATA SESUAI HALAMAN ---
+$mainSql = $baseQuery . "
+    SELECT id_sidang, id_kelompok, judul, nama_dosen, nama_matkul, jenis_sidang 
+    FROM SidangData 
+    " . $whereClause . "
+    ORDER BY id_sidang DESC
+    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+";
+
+// Tambahkan parameter paginasi (offset, rowsPerPage) ke array parameter utama
+$mainParams = array_merge($params, [$offset, $rowsPerPage]);
+$result = sqlsrv_query($conn, $mainSql, $mainParams);
+
+if ($result === false) {
+    die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+
+// Set nomor awal untuk tabel
+$nomor = $offset + 1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -186,10 +282,38 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : '';
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="pengajuanTableBody">
-                            <tr>
-                                <td colspan="7" class="text-center" style="padding: 20px;">Memuat data...</td>
-                            </tr>
+                        <tbody>
+                            <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
+                                <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+                                    <?php
+                                    $jenisSidangTampilan = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
+                                    ?>
+                                    <tr class="isiTabel jadiBiru">
+                                        <td><?= $nomor++; ?></td>
+                                        <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
+                                        <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+
+                                        <td><?= $jenisSidangTampilan; ?></td>
+
+                                        <td style="text-align: center;">
+                                            <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
+                                            <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
+                                            <input type="hidden" name="tipe" value="<?= $jenisSidangTampilan; ?>">
+                                            <button type="submit" class="detail-btn">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </form>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
+                                </tr>
+                            <?php endif; ?>
+
                         </tbody>
                     </table>
                     <div class="pagination-container" id="paginationContainer" style="display: none;">

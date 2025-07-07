@@ -14,14 +14,13 @@ if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-// Get parameters dari URL
-$id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : 0;
-$jenis_sidang_url = isset($_GET['tipe']) ? $_GET['tipe'] : null;
-$nomorDosen = $_SESSION['user_data']['nomor_dosen'];
-
-if (!$id_sidang) {
-    die("Error: ID Sidang tidak valid.");
+if (!isset($_POST['id_sidang']) || empty($_POST['id_sidang'])) {
+    // If no ID is posted, we cannot proceed.
+    die("Error: ID Sidang tidak valid atau tidak diberikan.");
 }
+$id_sidang = (int)$_POST['id_sidang'];
+$jenis_sidang_url = isset($_POST['tipe']) ? $_POST['tipe'] : null;
+$nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
 // ------------------------------
 // Handle Download Dokumen
@@ -219,10 +218,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $authorized && $data_sidang['status
                     $doc_data = sqlsrv_fetch_array($stmt_check_doc, SQLSRV_FETCH_ASSOC);
                     ?>
                     <?php if (!empty($doc_data['dok_laporan'])) : ?>
-                        <a class="text-decoration-none base-tombol berkas-laporan"
-                            href="?id_sidang=<?= urlencode($id_sidang) ?>&tipe=<?= urlencode($jenis_sidang_url) ?>&download=main">
+                        <form action="dDetailPengajuan.php" method="POST" style="display: inline-block;">
+                        <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($id_sidang) ?>">
+                        <input type="hidden" name="tipe" value="<?= htmlspecialchars($jenis_sidang_url) ?>">
+                        <input type="hidden" name="download" value="main">
+                        <button type="submit" class="text-decoration-none base-tombol berkas-laporan" style="border: 1px solid #212529 !important;">
                             <i class="fa-solid fa-file-lines me-2"></i>Unduh Dokumen Laporan
-                        </a>
+                        </button>
+                    </form>
                     <?php else : ?>
                         <p class="text-muted">Tidak ada dokumen yang diunggah</p>
                     <?php endif; ?>
