@@ -82,6 +82,7 @@ $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
 // --- Query utama untuk mengambil data sidang ---
+// --- Query utama untuk mengambil data sidang ---
 $query = "SELECT DISTINCT
         s.id_sidang,
         s.judul,
@@ -93,21 +94,21 @@ $query = "SELECT DISTINCT
          WHERE ds.id_sidang = s.id_sidang) AS nama_matkul,
         CASE 
             WHEN k.jenis_sidang = 'Tugas Akhir' THEN
-                (SELECT d.nama_dosen
+                -- [DIPERBAIKI] Menggunakan STRING_AGG untuk menangani lebih dari satu pembimbing
+                (SELECT STRING_AGG(d.nama_dosen, ', ')
                  FROM Bimbingan b
                  JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
                  WHERE b.id_kelompok = s.id_kelompok AND b.isPembimbing = 0x01)
 
             WHEN k.jenis_sidang = 'Semester' THEN
-                -- INI BAGIAN YANG DIPERBAIKI
-                (SELECT STRING_AGG(d.nama_dosen, CHAR(13) + CHAR(10))
+                -- [DIPERBAIKI] Menyeragamkan pemisah menjadi koma spasi
+                (SELECT STRING_AGG(d.nama_dosen, ', ')
                  FROM Pengampu_Kelas pk
                  JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen
                  WHERE 
                     pk.id_matkul = (SELECT TOP 1 ds.id_matkul FROM Detail_Sidang ds WHERE ds.id_sidang = s.id_sidang)
-                    AND pk.id_kelas = (
-                        -- Subquery yang diperbaiki untuk mencari id_kelas
-                        SELECT TOP 1 k_mhs.id_kelas
+                    AND pk.id_kelas IN (
+                        SELECT k_mhs.id_kelas
                         FROM Kelompok klp
                         JOIN Mahasiswa mhs ON klp.nim = mhs.nim
                         JOIN Kelas_Mahasiswa k_mhs ON mhs.nim = k_mhs.nim
