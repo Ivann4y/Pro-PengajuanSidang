@@ -25,8 +25,9 @@ require "../../koneksi/koneksiAndrew.php";
 
 
 if (isset($_GET['id']) && is_numeric($_GET['id']) && isset($_GET['judul'])) {
-
+    
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    // INI JANGAN DI HAPUS
     $_SESSION['judul'] = $_GET['judul'];
 
     // Redirect ke halaman yang sama TAPI TANPA parameter GET
