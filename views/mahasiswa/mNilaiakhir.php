@@ -155,11 +155,12 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
         <!-- ... (Bagian Sidebar dan Topbar Anda tetap sama) ... -->
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand img "><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"></div>
+            <!-- CORRECTED CODE for mNilaiAkhir.php -->
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item "><a href="mdetailSidang.php"><span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span></a></li>
-                <li class="NavSide__sidebar-item"><a href="mPerbaikan.php"><span class="NavSide__sidebar-title fw-semibold">Perbaikan</span></a></li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><a href="mNilaiakhir.php"><span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span></a></li>
-                <li class="NavSide__sidebar-item"><a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold"> Kembali</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mdetailSidang.php"><span class="fw-semibold">Detail Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mPerbaikan.php"><span class="fw-semibold">Perbaikan</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="mNilaiakhir.php"><span class="fw-semibold">Nilai Akhir</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="fw-semibold">Kembali</span></a></li>
             </ul>
         </div>
         <div class="NavSide__topbar">
