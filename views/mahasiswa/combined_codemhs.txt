@@ -1,0 +1,3146 @@
+--- Combined Code from folder: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\views\mahasiswa ---
+
+
+================================================================================
+// File: download_document.php
+================================================================================
+
+<?php
+session_start();
+require "../../koneksi/koneksiAndrew.php"; // Adjust this path if your koneksi file is elsewhere
+
+if (isset($_GET['id_sidang']) && !empty($_GET['id_sidang'])) {
+    $id_sidang = $_GET['id_sidang'];
+
+    $sql = "SELECT dok_laporan, id_kelompok FROM Sidang WHERE id_sidang = ?";
+    $stmt = sqlsrv_prepare($conn, $sql, array(&$id_sidang));
+
+    if ($stmt === false) {
+        die("Terjadi kesalahan saat mempersiapkan query: " . print_r(sqlsrv_errors(), true));
+    }
+    if (!sqlsrv_execute($stmt)) {
+        die("Terjadi kesalahan saat mengeksekusi query: " . print_r(sqlsrv_errors(), true));
+    }
+
+    $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+
+    if ($row && !empty($row['dok_laporan'])) {
+        $file_content = $row['dok_laporan'];
+        $id_kelompok = $row['id_kelompok'];
+
+        // IMPORTANT: Set the correct MIME type based on your stored file.
+        // Assuming it's a ZIP file as per your original code.
+        // If it can be PDF, DOCX, etc., you'll need to store the actual MIME type in your DB.
+        $filename = "Dokumen_Laporan_Kelompok_" . htmlspecialchars($id_kelompok) . ".zip";
+        $file_mime_type = 'application/zip'; // Example: 'application/pdf', 'application/msword'
+
+        // Set HTTP headers for file download
+        header('Content-Type: ' . $file_mime_type);
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . strlen($file_content)); // Tell the browser the file size
+        echo $file_content; // Output the binary content
+        exit; // Stop further execution
+    } else {
+        echo "Dokumen tidak ditemukan atau kosong.";
+    }
+} else {
+    echo "ID Sidang tidak valid.";
+}
+sqlsrv_close($conn); // Close the database connection
+?>
+================================================================================
+// File: mBeranda.php
+================================================================================
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+    
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+if ($_SESSION['role'] !== 'mahasiswa') {
+    header("Location: ../../index.php");
+    exit();
+}
+
+$nim = $_SESSION['nim'];
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda Mahasiswa</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/mahasiswa-dashboard.css">
+</head>
+
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"></div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a></li>
+                <li class="NavSide__sidebar-item">
+                    <b></b>
+                    <b></b>
+                    <a href="mPengajuan.php">
+                        <span class="NavSide__sidebar-title fw-semibold">Pengajuan</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a></li>
+            </ul>
+        </div>
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+            <div class="header-icons"><a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;"><i class="bi bi-bell-fill"></i></a>
+                <div class="profile-icon"><a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;"><i class="bi bi-person-fill fs-5"></i></a></div>
+            </div>
+        </div>
+
+        <main class="NavSide__main-content" id="mBeranda">
+            <div class="dashboard-header">
+                <h2 class="page-title" style="color:#1F2937">Beranda - Mahasiswa</h2>
+                <div class="header-icons d-none d-md-flex"><a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <div class="profile-icon"><a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
+                </div>
+            </div>
+
+            <h1 class="welcome-text">Selamat Datang, <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?>!</h1>
+
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <a href="mSidang.php" style="text-decoration: none; color: inherit;">
+                                <div class="dashboard-card sidang-status-card w-100">
+                                    <div class="number">0</div>
+                                    <div class="text"><span class="title">Sidang</span><span class="description">Sedang Berlangsung</span></div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <a href="mPengajuan.php" style="text-decoration: none; color: inherit;">
+                                <div class="dashboard-card penilaian-status-card">
+                                    <div class="number">0</div>
+                                    <div class="text"><span class="title">Penilaian</span><span class="description">Menunggu untuk Dinilai</span></div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card content-card tanggungan-card">
+                        <h3 class="section-title">Tugas</h3>
+                        <!-- Tugas list will be rendered by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="dashboard-card calendar-card">
+                        <div class="section-title-container">
+                            <div class="calendar-nav">
+                                <i class="bi bi-chevron-left" id="prevMonth"></i>
+                                <h3 class="section-title" id="currentMonthYear"></h3>
+                                <i class="bi bi-chevron-right" id="nextMonth"></i>
+                            </div>
+                        </div>
+                        <table class="calendar" id="calendarTable">
+                            <thead>
+                                <tr>
+                                    <th>Min</th>
+                                    <th>Sen</th>
+                                    <th>Sel</th>
+                                    <th>Rab</th>
+                                    <th>Kam</th>
+                                    <th>Jum</th>
+                                    <th>Sab</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Calendar will be rendered by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="dashboard-card content-card sidang-mendatang-card">
+                        <h3 class="section-title">Sidang Mendatang</h3>
+                        <!-- Sidang mendatang will be rendered by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<!-- Modal exit -->
+    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color:#4B68FB;">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
+                </div>
+                <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
+                <div class="modal-footer justify-content-center border-0"><button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button></div>
+            </div>
+        </div>
+    </div>
+    <!-- Kelompok Modal -->
+    <div class="modal fade" id="kelompokModal" tabindex="-1" aria-labelledby="kelompokModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kelompokModalLabel">
+                        <i class="fas fa-users"></i> Daftar Kelompok Anda
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="kelompok-loading" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Memuat data kelompok...</p>
+                    </div>
+                    <div id="kelompok-content" style="display: none;">
+                        <!-- Kelompok data will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../../assets/js/mahasiswa-dashboard-ajax.js"></script>
+    <script src="../../assets/js/mPengajuan.js"></script>
+</body>
+
+</html>
+================================================================================
+// File: mdetailSidang.php
+================================================================================
+
+<?php
+include '../../control/mahasiswa/mdetailSidang_logic.php';
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Sidang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/mdetailsidang.css">
+</head>
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" />
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mdetailSidang.php">
+                        <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mPerbaikan.php">
+                        <span class="NavSide__sidebar-title fw-semibold">Perbaikan</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mNilaiakhir.php">
+                        <span class="NavSide__sidebar-title fw-semibold">Nilai Akhir</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php">
+                        <span class="NavSide__sidebar-title fw-semibold"> Kembali</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
+        </div>
+
+        <div id="page-content-wrapper">
+            <div class="NavSide__topbar"></div>
+
+            <main class="NavSide__main-content">
+                <h2>Detail Sidang -
+                    <?php
+                        if ($data_sidang['jenis_sidang'] === 'Tugas Akhir') {
+                            echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Tugas Akhir';
+                        } elseif ($data_sidang['jenis_sidang'] === 'Semester' && !empty($data_matkul)) {
+                            echo htmlspecialchars($data_matkul['nama_matkul']);
+                        }
+                    ?>
+                </h2>
+
+                <h2 class="fs-5 fw-semibold mb-0">
+                    Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok); ?>
+                </h2><br>
+
+                <div class="status-badge <?= $status_class ?>" id="statusBadge"><?= $status_text ?></div>
+
+                <div class="info-card">
+                    <div class="section">
+                        <?php if ($data_sidang['jenis_sidang'] === 'Semester'): ?>
+                            <div class="info-group">
+                                <div class="label-row">
+                                    <i class="fa-solid fa-book"></i>
+                                    <span class="fw-bold">Judul Mata Kuliah</span>
+                                </div>
+                                <div class="value-row">
+                                    <?= htmlspecialchars($data_matkul['nama_matkul'] ?? 'N/A') ?>
+                                </div>
+                            </div>
+                            <div class="spacer"></div>
+                            <div class="info-group">
+                                <div class="label-row">
+                                    <i class="fa-solid fa-user-group"></i>
+                                    <span class="fw-bold">Dosen Pengampu</span>
+                                </div>
+                                <div class="value-row">
+                                    <?= !empty($dosen_pengampu) ? implode('<br>', array_map('htmlspecialchars', $dosen_pengampu)) : '-' ?>
+                                </div>
+                            </div>
+                        <?php elseif ($data_sidang['jenis_sidang'] === 'Tugas Akhir'): ?>
+                            <div class="info-group">
+                                <div class="label-row">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                    <span class="fw-bold">Judul Sidang</span>
+                                </div>
+                                <div class="value-row">
+                                    <?= htmlspecialchars($data_sidang['judul']) ?>
+                                </div>
+                            </div>
+                            <div class="info-group">
+                                <div class="label-row">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                    <span class="fw-bold">Dosen Pembimbing</span>
+                                </div>
+                                <div class="value-row">
+                                    <?= htmlspecialchars($dosen_pembimbing) ?>
+                                </div>
+                            </div>
+                            <div class="info-group">
+                                <div class="label-row">
+                                    <i class="fa-solid fa-user-group"></i>
+                                    <span class="fw-bold">Dosen Penguji</span>
+                                </div>
+                                <div class="value-row">
+                                    <?= !empty($dosen_penguji) ? implode('<br>', array_map('htmlspecialchars', $dosen_penguji)) : '-' ?>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <p>Jenis sidang tidak dikenali.</p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="section">
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-door-open"></i>
+                                <span class="fw-bold">Ruangan</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($data_jadwal['ruang_sidang'] ?? 'Belum Dijadwalkan') ?>
+                            </div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <span class="fw-bold">Tanggal</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($tanggal_sidang_formatted) ?>
+                            </div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row">
+                                <i class="fa-solid fa-clock"></i>
+                                <span class="fw-bold">Jam</span>
+                            </div>
+                            <div class="value-row">
+                                <?= htmlspecialchars($jam_sidang_formatted) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h5>Dokumen Sidang</h5>
+                <div class="file-buttons-container d-flex flex-wrap">
+                    <?php if (!empty($dok_laporan)): ?>
+                        <a href="download_document.php?id_sidang=<?= htmlspecialchars($id_sidang) ?>" class="file-button">
+                            <i class="fa-solid fa-file-zipper"></i>
+                            Dokumen_Laporan_Kelompok_<?= htmlspecialchars($nomor_kelompok) ?>.zip </a>
+                    <?php else: ?>
+                        <p>Dokumen tidak tersedia.</p>
+                    <?php endif; ?>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript">
+      let menuToggle = document.querySelector(".NavSide__toggle");
+      let sidebar = document.getElementById("main-sidebar");
+
+      if (menuToggle && sidebar) {
+        menuToggle.onclick = function () {
+          menuToggle.classList.toggle("NavSide__toggle--active");
+          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+      }
+
+      let menuItems = document.querySelectorAll(".NavSide__sidebar-item");
+      if (menuItems.length > 0) {
+        menuItems.forEach(item => {
+          item.onclick = function (event) {
+            menuItems.forEach(innerItem => {
+              innerItem.classList.remove("NavSide__sidebar-item--active");
+            });
+            this.classList.add("NavSide__sidebar-item--active");
+          };
+        });
+      }
+    </script>
+</body>
+</html>
+================================================================================
+// File: mEditPengajuan.php
+================================================================================
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in and is mahasiswa
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || 
+    !isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: ../../index.php");
+    exit();
+}
+
+$nim_mahasiswa_logged_in = $_SESSION['nim'] ?? '';
+if (empty($nim_mahasiswa_logged_in)) {
+    die("Error: NIM mahasiswa tidak ditemukan dalam session. Silakan login kembali.");
+}
+
+// Get parameters from URL
+$nomor_kelompok = $_GET['nomor_kelompok'] ?? '';
+$tahun_ajaran = $_GET['tahun_ajaran'] ?? '';
+$jenis_sidang = $_GET['jenis_sidang'] ?? '';
+$id_matkul = $_GET['id_matkul'] ?? '';
+
+if (empty($nomor_kelompok) || empty($tahun_ajaran) || empty($jenis_sidang) || empty($id_matkul)) {
+    die("Error: Parameter tidak lengkap");
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mahasiswa - Edit Pengajuan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
+    <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div> 
+            </div>
+        </div>
+
+        <main class="NavSide__main-content" id="mEditPengajuan">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="dashboard-header">
+                        <h2 class="text-heading" style="color:black;">
+                            Edit Pengajuan Sidang
+                        </h2>
+                        <p class="text-subheading">Edit pengajuan untuk kelompok <?php echo htmlspecialchars($nomor_kelompok); ?></p>
+                    </div>
+                </div>
+
+                <!-- Alert Container -->
+                <div id="alert-container"></div>
+
+                <!-- Loading Spinner -->
+                <div id="loading-spinner" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Memuat data pengajuan...</p>
+                </div>
+
+                <!-- Edit Form -->
+                <div id="edit-form-container" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-edit"></i>
+                                Form Edit Pengajuan
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="edit-pengajuan-form">
+                                <input type="hidden" id="nomor-kelompok" value="<?php echo htmlspecialchars($nomor_kelompok); ?>">
+                                <input type="hidden" id="tahun-ajaran" value="<?php echo htmlspecialchars($tahun_ajaran); ?>">
+                                <input type="hidden" id="jenis-sidang" value="<?php echo htmlspecialchars($jenis_sidang); ?>">
+                                <input type="hidden" id="id-matkul" value="<?php echo htmlspecialchars($id_matkul); ?>">
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="judul" class="form-label">Judul Laporan <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="judul" name="judul" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="file" class="form-label">File Laporan <span class="text-danger">*</span></label>
+                                            <input type="file" class="form-control" id="file" name="file" accept=".pdf,.docx,.doc" required>
+                                            <div class="form-text">Format: PDF, DOCX, DOC (Maksimal 10MB)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="deskripsi" class="form-label">Deskripsi Singkat <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4" required></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Info Kelompok</label>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <p><strong>Nomor Kelompok:</strong><br><?php echo htmlspecialchars($nomor_kelompok); ?></p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <p><strong>Tahun Ajaran:</strong><br><?php echo htmlspecialchars($tahun_ajaran); ?></p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <p><strong>Jenis Sidang:</strong><br><?php echo htmlspecialchars($jenis_sidang); ?></p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <p><strong>Mata Kuliah:</strong><br><span id="nama-matkul-display">Loading...</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Anggota Kelompok</label>
+                                    <div id="anggota-list" class="border rounded p-2">
+                                        <!-- Anggota list will be populated here -->
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <a href="mPengajuan.php" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Kembali
+                                    </a>
+                                    <div>
+                                        <button type="button" class="btn btn-warning" onclick="saveDraft()">
+                                            <i class="fas fa-save"></i> Simpan Draft
+                                        </button>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-paper-plane"></i> Submit Final
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="logMBerandaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logMBerandaLabel">Konfirmasi Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <a href="../../logout.php" class="btn btn-primary">Ya, Keluar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Sidebar Toggle Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
+            
+            if (menuToggle) {
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
+        });
+    </script>
+    
+    <script>
+        // Load pengajuan data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPengajuanData();
+        });
+        
+        async function loadPengajuanData() {
+            const nomor_kelompok = document.getElementById('nomor-kelompok').value;
+            const tahun_ajaran = document.getElementById('tahun-ajaran').value;
+            const jenis_sidang = document.getElementById('jenis-sidang').value;
+            const id_matkul = document.getElementById('id-matkul').value;
+            
+            try {
+                const params = new URLSearchParams({
+                    nomor_kelompok: nomor_kelompok,
+                    tahun_ajaran: tahun_ajaran,
+                    jenis_sidang: jenis_sidang,
+                    id_matkul: id_matkul
+                });
+                
+                const response = await fetch(`../../control/get_pengajuan_kelompok.php?${params}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+                
+                populateForm(data);
+                
+            } catch (error) {
+                console.error('Error loading pengajuan data:', error);
+                showError('Gagal memuat data pengajuan');
+            }
+        }
+        
+        function populateForm(data) {
+            const { pengajuan, anggota, matkul_info, can_edit } = data;
+            
+            // Hide loading spinner and show form
+            document.getElementById('loading-spinner').style.display = 'none';
+            document.getElementById('edit-form-container').style.display = 'block';
+            
+            // Populate mata kuliah name
+            document.getElementById('nama-matkul-display').textContent = matkul_info?.nama_matkul || data.id_matkul;
+            
+            // Populate form fields if pengajuan exists
+            if (pengajuan) {
+                document.getElementById('judul').value = pengajuan.judul || '';
+                document.getElementById('deskripsi').value = pengajuan.deskripsi || '';
+            }
+            
+            // Populate anggota list
+            const anggotaList = document.getElementById('anggota-list');
+            anggotaList.innerHTML = anggota.map(ang => `
+                <div class="anggota-item d-flex justify-content-between align-items-center p-2 border-bottom">
+                    <span>${ang.nama} (${ang.nim})</span>
+                    ${ang.nim === pengajuan?.submitter_nim ? '<span class="badge badge-primary">Submitter</span>' : ''}
+                </div>
+            `).join('');
+            
+            // Disable form if cannot edit
+            if (!can_edit) {
+                document.getElementById('edit-pengajuan-form').querySelectorAll('input, textarea').forEach(field => {
+                    field.disabled = true;
+                });
+                document.querySelectorAll('button[type="submit"], button[onclick="saveDraft()"]').forEach(btn => {
+                    btn.disabled = true;
+                });
+                showError('Tidak dapat mengedit pengajuan ini');
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('edit-pengajuan-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await submitPengajuan();
+        });
+        
+        async function saveDraft() {
+            const formData = new FormData();
+            formData.append('nomor_kelompok', document.getElementById('nomor-kelompok').value);
+            formData.append('tahun_ajaran', document.getElementById('tahun-ajaran').value);
+            formData.append('jenis_sidang', document.getElementById('jenis-sidang').value);
+            formData.append('id_matkul', document.getElementById('id-matkul').value);
+            formData.append('judul', document.getElementById('judul').value);
+            formData.append('deskripsi', document.getElementById('deskripsi').value);
+            
+            const fileInput = document.getElementById('file');
+            if (fileInput.files[0]) {
+                // Upload file first if there's a new file
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', fileInput.files[0]);
+                
+                try {
+                    const uploadResponse = await fetch('../../upload_file.php', {
+                        method: 'POST',
+                        body: uploadFormData
+                    });
+                    
+                    const uploadResult = await uploadResponse.json();
+                    
+                    if (!uploadResult.success) {
+                        showError(uploadResult.error || 'Gagal upload file');
+                        return;
+                    }
+                    
+                    formData.append('file_path', uploadResult.file_path);
+                } catch (error) {
+                    showError('Gagal upload file');
+                    return;
+                }
+            }
+            
+            try {
+                const response = await fetch('../../control/save_pengajuan_draft.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Draft berhasil disimpan');
+                } else {
+                    showError(result.error || 'Gagal menyimpan draft');
+                }
+                
+            } catch (error) {
+                console.error('Error saving draft:', error);
+                showError('Gagal menyimpan draft');
+            }
+        }
+        
+        async function submitPengajuan() {
+            // Show confirmation dialog
+            if (!confirm('Apakah Anda yakin ingin submit pengajuan ini? Setelah submit, pengajuan tidak dapat diedit lagi.')) {
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('nomor_kelompok', document.getElementById('nomor-kelompok').value);
+            formData.append('tahun_ajaran', document.getElementById('tahun-ajaran').value);
+            formData.append('jenis_sidang', document.getElementById('jenis-sidang').value);
+            formData.append('id_matkul', document.getElementById('id-matkul').value);
+            formData.append('judul', document.getElementById('judul').value);
+            formData.append('deskripsi', document.getElementById('deskripsi').value);
+            
+            const fileInput = document.getElementById('file');
+            if (fileInput.files[0]) {
+                // Upload file first
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', fileInput.files[0]);
+                
+                try {
+                    const uploadResponse = await fetch('../../upload_file.php', {
+                        method: 'POST',
+                        body: uploadFormData
+                    });
+                    
+                    const uploadResult = await uploadResponse.json();
+                    
+                    if (!uploadResult.success) {
+                        showError(uploadResult.error || 'Gagal upload file');
+                        return;
+                    }
+                    
+                    formData.append('file_path', uploadResult.file_path);
+                } catch (error) {
+                    showError('Gagal upload file');
+                    return;
+                }
+            }
+            
+            try {
+                const response = await fetch('../../control/submit_pengajuan_final.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Pengajuan berhasil disubmit');
+                    setTimeout(() => {
+                        window.location.href = 'mPengajuan.php';
+                    }, 2000);
+                } else {
+                    showError(result.error || 'Gagal submit pengajuan');
+                }
+                
+            } catch (error) {
+                console.error('Error submitting pengajuan:', error);
+                showError('Gagal submit pengajuan');
+            }
+        }
+        
+        function showError(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            `;
+            
+            const container = document.getElementById('alert-container');
+            if (container) {
+                container.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+        }
+        
+        function showSuccess(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            `;
+            
+            const container = document.getElementById('alert-container');
+            if (container) {
+                container.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
+================================================================================
+// File: mLogin.php
+================================================================================
+
+<?php
+
+require "../../koneksi/koneksiAndrew.php";
+
+session_start();
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    header('Location: ../../index.php');
+    exit();
+}
+
+$role = "mahasiswa";
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Mahasiswa - Sistem Pengajuan Sidang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/button-styles.css">
+    <link rel="stylesheet" href="../../assets/css/login.css">
+
+  
+
+</head>
+
+<body>
+    <div class="fullscreen d-flex">
+        <div class="bgBiru d-flex flex-column justify-content-center align-items-center">
+            <img src="../../assets/img/awan.png" class="background-awan position-absolute"
+                style="object-fit: cover; z-index: 0; width: 60vw; height: 100vh;" alt="Background">
+            <div class="position-absolute"
+                style="top: 0; left: 0; width: 60vw; height: 100vh; background-color: rgba(0, 0, 100, 0.2); z-index: 1;">
+            </div>
+            <div class="row pt-5 text-white fs-2 fw-semibold text-center pt-5" style="z-index: 2;">
+                <label for="">Sistem Pengajuan Sidang</label>
+                <label for="">Politeknik Astra</label>
+            </div>
+            <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel"
+                data-bs-interval="2000" style="padding: 5% 10% 5% 10%;">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="../../assets/img/img6.png" class="imgPertama rounded-circle d-block mx-auto" alt="..."
+                            style="height: 50vh; width: 50vh;">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="../../assets/img/img2.png" class="imgKedua rounded-circle d-block mx-auto" alt="..."
+                            style="height: 50vh; width: 50vh;">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="../../assets/img/img5.png" class="imgKetiga rounded-circle d-block mx-auto" alt="..."
+                            style="height: 50vh; width: 50vh;">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="log row pt-5">
+            <?php
+            $error = $_GET['error'] ?? '';
+            ?>
+            <div class="col-md-7 d-flex justify-content-center align-items-center mt-5">
+                <!-- Mengecek autentikasi login -->
+                <form action="../../auth.php" method="POST" novalidate>
+                    <div class="text-center pt-5 mb-4">
+                        <h2><strong>Masuk Akun</strong></h2>
+                        <h2><strong>Mahasiswa</strong></h2>
+                    </div>
+                    <!-- Tanda input selain text -->
+                    <input type="hidden" name="role" value="<?= $role ?>">
+
+                    <div class="mb-3">
+                        <input type="text"
+                            class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                            id="username" name="username" placeholder="NIM"
+                            value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
+                        <?php if ($error === 'empty'): ?>
+                            <small class="text-danger">NIM dan Kata Sandi harus diisi!</small>
+                        <?php elseif ($error === '1'): ?>
+                            <small class="text-danger">NIM atau Kata Sandi salah!</small>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="password-wrap">
+                            <input type="text"
+                                class="form-control form-control-lg password-masked <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
+                                id="password" name="password" placeholder="Kata Sandi">
+                            <i class="bi bi-eye-slash-fill" id="togglePassword"></i>
+                        </div>
+                        <a href="#" class="float-end mt-1" onclick="toLupaPassword()"> Lupa kata sandi?</a>
+                    </div>
+                    <button type="submit" class="btnMasuk btn w-100 mt-5">Masuk</button>
+                </form>
+            </div>
+            <div class="back-button-container bottom-50">
+                <button type="submit" class="btn btn-kembali" onclick="kembaliKePilihRole()">
+                    <span class="icon-circle">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </span>
+                    Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+        crossorigin="anonymous"></script>
+    <script>
+        function toLupaPassword() {
+            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';
+        }
+
+        function kembaliKePilihRole() {
+            window.location.href = '../../index.php';
+        }
+
+        // --- TAMBAHKAN KODE INI ---
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function (e) {
+            // HANYA TOGGLE KELAS CSS, BUKAN ATRIBUT TYPE
+            password.classList.toggle('password-masked');
+
+            // Logika untuk menukar ikon mata tetap sama
+            this.classList.toggle('bi-eye-slash-fill');
+            this.classList.toggle('bi-eye-fill');
+        });
+        // --- BATAS KODE TAMBAHAN ---
+
+        // hide pw
+        // const input = document.getElementById('password');
+        // let realValue = '';
+
+        // input.addEventListener('input', (e) => {
+        //     const typedValue = e.target.value;
+
+        //     if (typedValue.length < realValue.length) {
+        //         realValue = realValue.slice(0, typedValue.length);
+        //     } else {
+        //         const newChar = typedValue.charAt(typedValue.length - 1);
+        //         realValue += newChar;
+        //     }
+
+        //     e.target.value = '•'.repeat(realValue.length);
+        // });
+    </script>
+</body>
+
+</html>
+================================================================================
+// File: mNilaiakhir.php
+================================================================================
+
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+$path_to_root = '../../';
+
+// 1. Cek login dan role
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda harus login sebagai mahasiswa untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit();
+}
+
+if (!isset($_SESSION['user_data']['nim'])) {
+    die("NIM mahasiswa tidak ditemukan di session. Silakan login kembali.");
+}
+
+$nim = $_SESSION['user_data']['nim'];
+
+require "../../koneksi/koneksiAndrew.php";
+
+// === 1. Ambil ID Sidang yang diikuti mahasiswa ===
+$sqlGetSidang = "SELECT TOP 1 id_sidang FROM Penilaian WHERE nim = ?";
+$stmtGetSidang = sqlsrv_query($conn, $sqlGetSidang, [$nim]);
+
+if (!$stmtGetSidang || !($row = sqlsrv_fetch_array($stmtGetSidang, SQLSRV_FETCH_ASSOC))) {
+    // Jika tidak ditemukan di Penilaian, artinya belum dinilai.
+    // Kita bisa hentikan atau tampilkan pesan 'belum dinilai'.
+    // Untuk sekarang, kita akan hentikan agar tidak ada error di query selanjutnya.
+    die("Data penilaian untuk Anda belum ditemukan. Mohon cek kembali nanti.");
+}
+$id_sidang = $row['id_sidang'];
+
+
+// === 2. Hitung Nilai Akhir MAHASISWA (Weighted Average) ===
+$sqlNilai = "
+    WITH NilaiPerDosen AS (
+        SELECT
+            (n_dokumen * 0.25 + n_presentasi * 0.25 + n_tanyajawab * 0.30 + n_proyek * 0.20) AS nilai_dosen,
+            bobot_penilaian
+        FROM Penilaian
+        WHERE id_sidang = ? AND nim = ?
+    )
+    SELECT
+        SUM(nilai_dosen * bobot_penilaian) / SUM(bobot_penilaian) AS nilai_akhir_weighted
+    FROM NilaiPerDosen;
+";
+
+$stmtNilai = sqlsrv_query($conn, $sqlNilai, [$id_sidang, $nim]);
+$nilaiAngka = null;
+$nilaiHuruf = 'N/A'; // Default value
+
+if ($stmtNilai && ($rowNilai = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC))) {
+    if (isset($rowNilai['nilai_akhir_weighted'])) {
+        $nilaiAngka = $rowNilai['nilai_akhir_weighted'];
+        
+        // Konversi ke nilai huruf
+        if ($nilaiAngka >= 85) $nilaiHuruf = 'A';
+        elseif ($nilaiAngka >= 75) $nilaiHuruf = 'B';
+        elseif ($nilaiAngka >= 65) $nilaiHuruf = 'C';
+        elseif ($nilaiAngka >= 50) $nilaiHuruf = 'D';
+        else $nilaiHuruf = 'E';
+    }
+}
+
+// === 3. Ambil Data Mahasiswa + Judul Sidang + Pembimbing ===
+$sqlDataSidang = "
+    SELECT 
+        m.nama_mhs, 
+        s.judul, 
+        d.nama_dosen AS dosen_pembimbing
+    FROM Mahasiswa m
+    LEFT JOIN Penilaian p ON m.nim = p.nim
+    LEFT JOIN Sidang s ON p.id_sidang = s.id_sidang
+    LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
+    LEFT JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
+    WHERE m.nim = ? AND s.id_sidang = ?
+";
+$stmtDataSidang = sqlsrv_query($conn, $sqlDataSidang, [$nim, $id_sidang]);
+$dataSidang = [
+    'nama' => $_SESSION['user_data']['nama_mhs'] ?? 'Nama Tidak Ditemukan',
+    'judul' => 'Judul Tidak Ditemukan',
+    'pembimbing' => 'Pembimbing Tidak Ditemukan'
+];
+
+if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FETCH_ASSOC))) {
+    $dataSidang['nama'] = $rowData['nama_mhs'];
+    $dataSidang['judul'] = $rowData['judul'] ?? 'Belum ada judul';
+    $dataSidang['pembimbing'] = $rowData['dosen_pembimbing'] ?? 'Belum ditentukan';
+}
+
+
+    $sqlCatatan = "
+        SELECT d.nama_dosen, ds.catatan_sidang
+        FROM Detail_Sidang ds
+        JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+        WHERE ds.id_sidang = ?
+        ORDER BY d.nama_dosen;
+    ";
+    $paramsCatatan = array($id_sidang);
+    $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
+
+    $catatanArray = [];
+    if ($stmtCatatan) {
+        while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
+            $catatan = trim($rowCatatan['catatan_sidang']);
+            if (!empty($catatan) && $catatan !== '-') {
+                $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
+            }
+        }
+        if (!empty($catatanArray)) {
+            $semuaCatatan = implode("\n\n", $catatanArray);
+        }
+    }
+?>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- === STYLESHEETS & FONTS === -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Google Fonts (These are fine) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet" />
+
+    <!-- === KOREKSI PATH CSS LOKAL ANDA DI SINI === -->
+    <!-- Path ke style.css utama (untuk layout sidebar) -->
+    <link rel="stylesheet" href="../../assets/css/style.css" /> 
+    
+    <!-- Path ke mNilaiakhir.css (untuk style spesifik halaman ini) -->
+    <link rel="stylesheet" href="../../assets/css/mNilaiakhir.css">
+
+    <!-- Path ke button-styles.css -->
+    <link rel="stylesheet" href="../../css/button-styles.css" />
+
+    <!-- Path ke extra/style.css (jika masih digunakan) -->
+    <link rel="stylesheet" href="../../extra/style.css" />
+    
+    <!-- Scripts (These are fine) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <title>Mahasiswa - Nilai Akhir</title>
+
+    
+</head>
+<body>
+    <div id="NavSide">
+        <!-- ... (Bagian Sidebar dan Topbar Anda tetap sama) ... -->
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand img "><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"></div>
+            <!-- CORRECTED CODE for mNilaiAkhir.php -->
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mdetailSidang.php"><span class="fw-semibold">Detail Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mPerbaikan.php"><span class="fw-semibold">Perbaikan</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="mNilaiakhir.php"><span class="fw-semibold">Nilai Akhir</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="fw-semibold">Kembali</span></a></li>
+            </ul>
+        </div>
+        <div class="NavSide__topbar">
+             <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+            <div class="header-icons"><i class="bi bi-bell-fill"></i><div class="profile-icon"><i class="bi bi-person-fill fs-5"></i></div></div>
+        </div>
+           <main class="NavSide__main-content">
+            <div class="container-fluid">
+                <div class="row mb-4 title-container"><div class="col-12"><h2 class="main-title">Detail Evaluasi - Sistem Pengajuan Sidang</h2></div></div>
+                
+                <div class="row mt-3 g-3">
+                    <div class="col-lg-6 d-flex">
+                    <div class="card flex-fill" id="carddataMahasiswa">
+                        <div class="card-body card-soft p-4">
+                        <h3 class="card-title text-dark mb-4 text-center py-2">Data Mahasiswa</h3>
+                        <div class="row">
+                            <div class="col-sm-6 text-black">
+                                <div class="info-group mb-5">
+                                    <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div>
+                                    <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($nim) ?></div>
+                                </div>
+                                <div class="info-group mb-3">
+                                    <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span></div>
+                                    <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataSidang['nama']) ?></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 text-black">
+                                <div class="info-group mb-5">
+                                    <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-book"></i><span class="fw-bold">Judul Proyek</span></div>
+                                    <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataSidang['judul']) ?></div>
+                                </div>
+                                <div class="info-group mb-3">
+                                    <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
+                                    <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataSidang['pembimbing']) ?></div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <div class="col-lg-6 d-flex">
+                        <div class="card flex-fill" id="cardNilai">
+                            <div class="card-body d-flex flex-column justify-content-center">
+                                <h3 class="card-title text-dark text-center">Nilai Mahasiswa</h3>
+                                <div class="d-flex justify-content-center align-items-center flex-grow-1">
+                                    <!-- PERBAIKAN: Menggunakan variabel $nilaiHuruf yang sudah dihitung -->
+                                    <input type="text" class="form-control text-dark" id="nilaiMahasiswa" value="<?= htmlspecialchars($nilaiHuruf) ?>" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4"> <!-- Tambahkan mt-4 untuk margin-top -->
+                    <div class="col-12">
+                        <div class="card h-100 mb-4" id="cardcatatan"> <!-- Tambahkan mb-4 untuk margin-bottom -->
+                            <div class="card-body px-4 py-4 d-flex flex-column">
+                                <h3 class="card-title text-black mb-3">Catatan Evaluasi</h3>
+                                <div id="catatan" class="form-control flex-grow-1" rows="8"><?= nl2br(htmlspecialchars($semuaCatatan)) ?></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+
+<script src="../../assets/js/mNilaiakhir.js"></script>
+</body>
+</html>
+================================================================================
+// File: mNotifikasi.php
+================================================================================
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+
+$nim_mahasiswa = $_SESSION['user_data']['username'];
+
+// Ambil notifikasi yang belum dibaca
+$query_unread = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL) ORDER BY waktu DESC";
+$stmt_unread = sqlsrv_query($conn, $query_unread, array($nim_mahasiswa));
+if (!$stmt_unread) {
+    die(print_r(sqlsrv_errors(), true));
+}
+$unread_notifications = [];
+while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+    $unread_notifications[] = $row;
+}
+
+// Ambil notifikasi yang sudah dibaca
+$query_read = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND status_baca = 1 ORDER BY waktu DESC";
+$stmt_read = sqlsrv_query($conn, $query_read, array($nim_mahasiswa));
+if (!$stmt_read) {
+    die(print_r(sqlsrv_errors(), true));
+}
+$read_notifications = [];
+while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
+    $read_notifications[] = $row;
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+   <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="../../extra/style.css">
+  <link rel="stylesheet" href="../../css/button-styles.css">
+  <link rel="stylesheet" href="../../assets/css/mNotifikasi.css">
+  
+  <title>Mahasiswa - Notifikasi</title>
+  <style>
+  
+  </style>
+</head>
+
+<body>
+   <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+        </div>
+
+      <main class="NavSide__main-content">
+        <div class="container-fluid">
+          <div class="row">
+            <h2 class="text-heading text-black">
+              <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)
+            </h2>
+          </div><br>
+          <div class="row align-items-center mb-3">
+            <div class="col">
+              <b>Notifikasi</b>
+            </div>
+            
+            <div class="col-auto ms-auto">
+              <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle " type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMBelumDibaca">
+                  Belum Dibaca
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#" id="ddMSudahDibaca" onclick="switchMNotifikasi();">Sudah Dibaca</a></li>
+                </ul>
+              </div>
+            </div>
+
+          </div><br>
+          <div class="row">
+            <div class="col-12">
+              <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Dari</th>
+                  <th scope="col">Pesan</th>
+                  <th scope="col">Waktu</th>
+                  <th scope="col">Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="BelumDibaca">
+                <?php if (empty($unread_notifications)): ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Tidak ada notifikasi belum dibaca.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($unread_notifications as $notif): ?>
+                        <tr class="isiTabel jadiBiru" data-id="<?php echo $notif['id_notifikasi']; ?>">
+                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
+                            <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
+                            <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
+                            <td>Belum Dibaca</td>
+                            <td><span onclick="bacaModal(this)">✔️</span></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+              </tbody>
+              <tbody id="SudahDibaca" style="display: none;">
+                <?php if (empty($read_notifications)): ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Tidak ada notifikasi yang sudah dibaca.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($read_notifications as $notif): ?>
+                        <tr class="isiTabel" data-id="<?php echo $notif['id_notifikasi']; ?>">
+                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
+                            <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
+                            <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
+                            <td>Sudah Dibaca</td>
+                            <td></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+    </main>
+    <!-- Modal Konfirmasi -->
+     <div class="modal fade" id="konfirmasiModalnotifikasi" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+      <div class="modal-header border-0 justify-content-center">
+                    <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                  </div>
+      <div class="modal-body">
+        <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah anda sudah yakin ingin mengubah status Terbaca?</p>
+        <div class="d-flex justify-content-between px-5">
+          <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="console.log('Tombol Iya diklik'); lanjutkanAksi()">Iya</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="modal fade" id="logABeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-heading-color">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
+                </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  
+    <script src="../../assets/js/mNotifikasi.js"></script>
+  
+</body>
+
+</html>
+================================================================================
+// File: mPengajuan.php
+================================================================================
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Cek login dan role
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || 
+    !isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: ../../index.php");
+    exit();
+}
+
+require_once '../../koneksi/koneksiAndrew.php';
+$nim = $_SESSION['user_data']['nim'];
+
+// Ambil semua kelompok yang diikuti mahasiswa
+$sql_kelompok = "SELECT DISTINCT nomor_kelompok, tahun_ajaran, jenis_sidang, id_matkul
+                 FROM Kelompok
+                 WHERE nim = ?";
+$stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, [$nim]);
+$kelompok_list = [];
+while ($row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
+    $kelompok_list[] = $row;
+}
+
+$drafts = [];
+$pendings = [];
+foreach ($kelompok_list as $kel) {
+    // Dapatkan id_kelompok (ambil satu saja per kelompok)
+    $sql_id = "SELECT TOP 1 id_kelompok FROM Kelompok WHERE nomor_kelompok = ? AND tahun_ajaran = ? AND jenis_sidang = ? AND id_matkul = ?";
+    $stmt_id = sqlsrv_query($conn, $sql_id, [$kel['nomor_kelompok'], $kel['tahun_ajaran'], $kel['jenis_sidang'], $kel['id_matkul']]);
+    $row_id = sqlsrv_fetch_array($stmt_id, SQLSRV_FETCH_ASSOC);
+    if (!$row_id) continue;
+    $id_kelompok = $row_id['id_kelompok'];
+
+    // Cek Sidang Draft
+    $sql_sidang = "SELECT * FROM Sidang WHERE id_kelompok = ? AND status_ajuan = 'Draft'";
+    $stmt_sidang = sqlsrv_query($conn, $sql_sidang, [$id_kelompok]);
+    if ($sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC)) {
+        $sidang['kelompok_info'] = $kel;
+        $drafts[] = $sidang;
+        continue;
+    }
+
+    // Cek Sidang Pending
+    $sql_sidang = "SELECT * FROM Sidang WHERE id_kelompok = ? AND status_ajuan = 'Pending'";
+    $stmt_sidang = sqlsrv_query($conn, $sql_sidang, [$id_kelompok]);
+    if ($sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC)) {
+        $sidang['kelompok_info'] = $kel;
+        $pendings[] = $sidang;
+    }
+}
+
+// Ambil jenis sidang yang pernah diikuti mahasiswa (untuk filter)
+$sql_jenis = "SELECT DISTINCT jenis_sidang FROM Kelompok WHERE nim = ?";
+$stmt_jenis = sqlsrv_query($conn, $sql_jenis, [$nim]);
+$jenis_sidang_list = [];
+while ($row = sqlsrv_fetch_array($stmt_jenis, SQLSRV_FETCH_ASSOC)) {
+    $jenis_sidang_list[] = $row['jenis_sidang'];
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mahasiswa - Pengajuan Sidang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
+    <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div> 
+            </div>
+        </div>
+
+        <main class="NavSide__main-content" id="mPengajuan">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="dashboard-header">
+                        <h2 class="text-heading" style="color:black;">
+                            <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)
+                        </h2>
+                        <p class="text-subheading">Kelola pengajuan sidang Anda</p>
+                    </div>
+                </div>
+
+                <!-- Alert Container -->
+                <div id="alert-container"></div>
+
+                <!-- Search and Filter Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="search-pengajuan" placeholder="Cari pengajuan...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filter-status">
+                            <option value="">Semua Status</option>
+                            <option value="Belum ada pengajuan">Belum ada pengajuan</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Pending">Menunggu Review</option>
+                            <option value="Disetujui">Disetujui</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="mTambahPengajuan.php" class="btn btn-success w-100">
+                            <i class="fas fa-plus"></i> Tambah Pengajuan
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="loading-spinner" class="text-center py-5" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Memuat data pengajuan...</p>
+                </div>
+
+                <!-- Pengajuan List Container -->
+                <div id="pengajuan-list">
+                    <!-- Draft Section -->
+                    <h4>Draft</h4>
+                    <?php if (empty($drafts)): ?>
+                        <div class="alert alert-info">Tidak ada draft pengajuan.</div>
+                    <?php else: ?>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Judul</th>
+                                    <th>Kelompok</th>
+                                    <th>Jenis Sidang</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($drafts as $d): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($d['judul'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($d['kelompok_info']['nomor_kelompok']) ?></td>
+                                    <td><?= htmlspecialchars($d['kelompok_info']['jenis_sidang']) ?></td>
+                                    <td><?= htmlspecialchars($d['kelompok_info']['id_matkul']) ?></td>
+                                    <td>
+                                        <a href="mEditPengajuan.php?nomor_kelompok=<?= urlencode($d['kelompok_info']['nomor_kelompok']) ?>&tahun_ajaran=<?= urlencode($d['kelompok_info']['tahun_ajaran']) ?>&jenis_sidang=<?= urlencode($d['kelompok_info']['jenis_sidang']) ?>&id_matkul=<?= urlencode($d['kelompok_info']['id_matkul']) ?>" class="btn btn-primary btn-sm">Edit Draft</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+
+                    <!-- Pending Section -->
+                    <h4>Pending</h4>
+                    <?php if (empty($pendings)): ?>
+                        <div class="alert alert-info">Tidak ada pengajuan pending.</div>
+                    <?php else: ?>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Judul</th>
+                                    <th>Kelompok</th>
+                                    <th>Jenis Sidang</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($pendings as $p): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($p['judul'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($p['kelompok_info']['nomor_kelompok']) ?></td>
+                                    <td><?= htmlspecialchars($p['kelompok_info']['jenis_sidang']) ?></td>
+                                    <td><?= htmlspecialchars($p['kelompok_info']['id_matkul']) ?></td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Pengajuan Detail Modal -->
+    <div class="modal fade" id="pengajuanDetailModal" tabindex="-1" aria-labelledby="pengajuanDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pengajuanDetailModalLabel">Detail Pengajuan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nomor Kelompok:</strong> <span id="modal-nomor-kelompok"></span></p>
+                            <p><strong>Tahun Ajaran:</strong> <span id="modal-tahun-ajaran"></span></p>
+                            <p><strong>Jenis Sidang:</strong> <span id="modal-jenis-sidang"></span></p>
+                            <p><strong>Mata Kuliah:</strong> <span id="modal-nama-matkul"></span></p>
+                            <p><strong>Status:</strong> <span id="modal-status"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Judul:</strong> <span id="modal-judul"></span></p>
+                            <p><strong>Deskripsi:</strong> <span id="modal-deskripsi"></span></p>
+                            <p><strong>Tanggal Pengajuan:</strong> <span id="modal-tanggal-pengajuan"></span></p>
+                            <p><strong>Submitter:</strong> <span id="modal-submitter"></span></p>
+                            <p><strong>File:</strong> <span id="modal-file"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6>Anggota Kelompok:</h6>
+                        <div id="modal-anggota-list" class="border rounded p-2">
+                            <!-- Anggota list will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal-action-buttons">
+                        <!-- Action buttons will be populated here -->
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="logMBerandaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logMBerandaLabel">Konfirmasi Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <a href="../../logout.php" class="btn btn-primary">Ya, Keluar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/mPengajuan.js"></script>
+    
+    <script>
+        // Sidebar Toggle Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
+            
+            if (menuToggle) {
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
+        });
+    </script>
+</body>
+</html>
+================================================================================
+// File: mPerbaikan.php
+================================================================================
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+$pesan = '';
+if (isset($_SESSION['pesan'])) {
+    $pesan = $_SESSION['pesan'];
+    unset($_SESSION['pesan']);
+}
+
+// Cek apakah ID sidang ada di dalam session.
+if (!isset($_SESSION['selected_sidang_id']) || !is_numeric($_SESSION['selected_sidang_id'])) {
+    die("Error: Tidak ada sidang yang dipilih. Silakan kembali ke halaman daftar sidang dan pilih salah satu.");
+}
+$id_sidang = (int) $_SESSION['selected_sidang_id'];
+
+// === LOGIKA FETCH DATA ===
+// === LOGIKA FETCH DATA ===
+$nama_mahasiswa = '';
+$status_revisi = '';
+$status_pengajuan = 'Belum Disetujui'; // Default value
+$catatan_list = [];
+
+// === FIX: Query untuk mengambil informasi dasar ===
+// Menggunakan JOIN yang benar: Sidang -> Kelompok -> Mahasiswa
+$query_info = "
+    SELECT TOP 1 ds.status_revisi, m.nama_mhs, s.status_ajuan
+    FROM Sidang s
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    JOIN Mahasiswa m ON k.nim = m.nim
+    WHERE s.id_sidang = ?
+";
+
+$params_info = array($id_sidang);
+$stmt_info = sqlsrv_query($conn, $query_info, $params_info);
+if ($stmt_info === false) {
+    die("Error saat menjalankan query info: <br><pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+$data_info = sqlsrv_fetch_array($stmt_info, SQLSRV_FETCH_ASSOC);
+
+if (!$data_info) {
+    die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan.");
+}
+
+$nama_mahasiswa = $data_info['nama_mhs'];
+
+// Set status pengajuan
+if (isset($data_info['status_ajuan'])) {
+    if (strtolower($data_info['status_ajuan']) == 'approved' || $data_info['status_ajuan'] == 1) {
+        $status_pengajuan = 'Disetujui';
+    } else {
+        $status_pengajuan = 'Belum Disetujui';
+    }
+}
+
+
+// === FIX: Menggunakan nilai varchar dari DB untuk status revisi ===
+$status_revisi_from_db = $data_info['status_revisi'];
+if (empty($status_revisi_from_db)) {
+    $status_revisi = 'Belum Ada Revisi';
+} else {
+    $status_revisi = $status_revisi_from_db; // e.g., 'Menunggu Persetujuan', 'Disetujui'
+}
+
+// Query untuk mengambil catatan perbaikan (sudah benar)
+$query_catatan = "
+    SELECT ds.catatan_sidang, d.nama_dosen
+    FROM Detail_Sidang ds
+    JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    WHERE ds.id_sidang = ? AND ds.catatan_sidang IS NOT NULL AND ds.catatan_sidang <> ''
+    ORDER BY d.nama_dosen ASC
+";
+$params_catatan = array($id_sidang);
+$stmt_catatan = sqlsrv_query($conn, $query_catatan, $params_catatan);
+if ($stmt_catatan === false) {
+    die("Error saat menjalankan query catatan: <br><pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+while ($row = sqlsrv_fetch_array($stmt_catatan, SQLSRV_FETCH_ASSOC)) {
+    $catatan_list[] = $row;
+}
+
+// === LOGIKA FILE UPLOAD ===
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
+        $file_asli = basename($_FILES["fileInput"]["name"]);
+        $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
+        $file_unik = 'revisi_' . $id_sidang . '_' . time() . '.' . $ekstensi_file;
+        
+        // Perbaikan: Gunakan path absolut yang benar
+        $folder_target = __DIR__ . "/uploads/";
+        if (!file_exists($folder_target)) {
+            mkdir($folder_target, 0755, true);
+        }
+        
+        $path_target = $folder_target . $file_unik;
+        // Simpan path relatif ke database untuk konsistensi
+        $path_relatif = "views/mahasiswa/uploads/" . $file_unik;
+        $ekstensi_diizinkan = array("pdf", "docx", "pptx", "zip");
+
+        if (!in_array($ekstensi_file, $ekstensi_diizinkan) || $_FILES["fileInput"]["size"] > 5242880) { // Max 5MB
+            $_SESSION['pesan'] = "Error: Format atau ukuran file tidak sesuai.";
+        } else {
+            if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
+                // Debug: Log informasi file
+                error_log("File uploaded successfully: " . $path_target);
+                error_log("File size: " . filesize($path_target));
+                
+                $query_update_dokumen = "UPDATE Detail_Sidang SET dok_revisi = ?, nama_file = ?, status_revisi = 'Pending' WHERE id_sidang = ?";
+                $params_update = array($path_relatif, $file_asli, $id_sidang);
+
+                // Debug: Log query dan parameter
+                error_log("Update query: " . $query_update_dokumen);
+                error_log("Parameters: " . print_r($params_update, true));
+                
+                $stmt_update = sqlsrv_query($conn, $query_update_dokumen, $params_update);
+
+                if ($stmt_update) {
+                    $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
+                    error_log("Database update successful");
+                } else {
+                    unlink($path_target);
+                    $errors = sqlsrv_errors();
+                    error_log("Database update error: " . print_r($errors, true));
+                    $_SESSION['pesan'] = "Error: Gagal menyimpan informasi file ke database. Error: " . ($errors ? $errors[0]['message'] : 'Unknown error');
+                }
+            } else {
+                error_log("Failed to move uploaded file from " . $_FILES["fileInput"]["tmp_name"] . " to " . $path_target);
+                $_SESSION['pesan'] = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
+            }
+        }
+        header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+        exit();
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Sidang & Perbaikan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/mPerbaikan.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+</head>
+
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand"><img src="../../assets/img/WhiteAstra.png" alt="Astra Logo" /></div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mdetailSidang.php"><span class="fw-semibold">Detail Pengajuan</span></a></li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="#"><span class="fw-semibold">Perbaikan</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mNilaiakhir.php"><span class="fw-semibold">Nilai Akhir</span></a></li>
+                <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="fw-semibold">Kembali</span></a></li>
+            </ul>
+        </div>
+        
+        <div id="page-content-wrapper">
+            <div class="NavSide__topbar">
+                <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+            </div>
+            <main class="NavSide__main-content">
+            <div
+                class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
+                <h1 class="fs-2">Detail Sidang - Sistem Pengajuan Sidang</h1>
+                <div class="d-flex flex-column align-items-start align-items-md-end">
+                    <span class="badge-custom status-belum-disetujui mb-2">Status Pengajuan :
+                        <?php echo htmlspecialchars($status_pengajuan); ?></span>
+                    <span
+                        class="badge-custom status-<?php echo strtolower(str_replace(' ', '-', $status_revisi)); ?>">Status
+                        Revisi : <?php echo htmlspecialchars($status_revisi); ?></span>
+                </div>
+            </div>
+            <h1 class="fs-4 fw-semibold mb-3">Catatan Perbaikan - <?php echo htmlspecialchars($nama_mahasiswa); ?></h1>
+            <div class="mt-4">
+                <?php if (empty($catatan_list)): ?>
+                    <div class="alert alert-info">Belum ada catatan perbaikan untuk sidang ini.</div>
+                <?php else: ?>
+                    <?php foreach ($catatan_list as $index => $catatan): ?>
+                        <div class="card-comment mb-3" data-bs-toggle="modal"
+                            data-bs-target="#modalDetail<?php echo $index; ?>">
+                            <strong><?php echo htmlspecialchars($catatan['nama_dosen']); ?> - Penguji</strong>
+                            <p class="mt-2 mb-0 text-truncate-2">
+                                <?php echo htmlspecialchars($catatan['catatan_sidang']); ?><span
+                                    class="text-selengkapnya">Selengkapnya...</span>
+                            </p>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <div class="revision-card mt-4">
+                <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
+                <form id="revisionForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST"
+                    enctype="multipart/form-data">
+                    <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
+                        <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i></div>
+                        <div id="selected-state" class="d-none"><i
+                                class="bi bi-file-earmark-text-fill fs-1 text-primary"></i></div>
+                        <p id="upload-prompt-text" class="text-muted mt-2">Unggah berkas revisi (.pdf, .docx, .pptx,
+                            .zip)</p>
+                    </label>
+                    <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
+                    <div class="text-center mt-2">
+                        <p id="fileNameDisplay" class="fw-bold mb-0"></p>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-custom-primary" id="openConfirmModalBtn"
+                            data-bs-toggle="modal" data-bs-target="#modalKonfirmasi" >Kirim</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <?php foreach ($catatan_list as $index => $catatan): ?>
+        <div class="modal fade" id="modalDetail<?php echo $index; ?>" tabindex="-1"
+            aria-labelledby="modalDetailLabel<?php echo $index; ?>" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title fs-5" id="modalDetailLabel<?php echo $index; ?>">Detail Catatan dari
+                            <?php echo htmlspecialchars($catatan['nama_dosen']); ?>
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p style="white-space: pre-wrap;"><?php echo htmlspecialchars($catatan['catatan_sidang']); ?></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+
+    <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalKonfirmasiLabel">Perhatian</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Apakah Anda sudah yakin ingin mengupload dokumen revisi ini?</p>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-tolak me-3" data-bs-dismiss="modal">Batalkan</button>
+                        <button type="button" class="btn btn-kirim me-3" id="confirmSubmitBtn">Lanjutkan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../assets/js/mPerbaikan.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <?php if (!empty($pesan)): ?>
+        <script>
+            Swal.fire({
+                title: '<?php echo stripos($pesan, "sukses") !== false ? "Berhasil" : "Error"; ?>',
+                text: '<?php echo addslashes(preg_replace('/^(Sukses|Error): /i', '', $pesan)); ?>',
+                icon: '<?php echo stripos($pesan, "sukses") !== false ? "success" : "error"; ?>',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4B68FB'
+            });
+        </script>
+    <?php endif; ?>
+</body>
+
+</html>
+================================================================================
+// File: mProfil.php
+================================================================================
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+require $path_to_root . "koneksi/koneksiAndrew.php";
+
+$user = $_SESSION['user_data'];
+$nim = $user['username'];
+$nama = $user['nama_mhs'];
+
+if ($user['prodi'] === 'TRPL') {
+    $prodi = 'Teknologi Rekayasa Perangkat Lunak (TRPL)';
+} elseif ($user['prodi'] === 'MI') {
+    $prodi = 'Manajemen Informatika (MI)';
+} elseif ($user['prodi'] === 'TRL') {
+    $prodi = 'Teknologi Rekayasa Logistik (TRL)';
+} elseif ($user['prodi'] === 'MO') {
+    $prodi = 'Mesin Otomotif (MO)';
+} else {
+    $prodi = 'Program Studi Tidak Diketahui';
+}
+
+$email = $user['email']; 
+$no_telepon = $user['no_telepon']; 
+
+if ($user['jenis_kelamin'] === 'L') {
+    $jk = 'Laki-laki';
+} elseif ($user['jenis_kelamin'] === 'P') {
+    $jk = 'Perempuan';
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahasiswa - Profil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/profil.css">
+</head>
+
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            
+            </ul>
+        </div>
+
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+        </div>
+
+        <main class="NavSide__main-content" id="mSidang">
+            <div class="container">
+                <div class="row">
+                    <h1>Profile</h1>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 profil-img">
+                        <img src="../../assets/img/img3-nobg.png" alt="">
+                    </div>
+                    <div class="col-md-6 data-all">
+                        <h2>Data Mahasiswa</h2>
+                        <div class="row allData">
+                            <div class="col-12">
+                                <p>NIM</p>
+                                <p class="value"><?= $nim ?></p>
+                            </div>
+                        </div>
+                        <div class="row allData">
+                            <div class="col-12">
+                                <p>Nama</p>
+                                <p class="value"><?= $nama ?></p>
+                            </div>
+                        </div>
+                        <div class="row allData">
+                            <div class="col-12">
+                                <p>Program Studi</p>
+                                <p class="value"><?= $prodi ?></p>
+                            </div>
+                        </div>
+                        <div class="row allData">
+                            <div class="col-12">
+                                <p>Email</p>
+                                <p class="value"><?= $email ?></p>
+                            </div>
+                        </div>
+                        <div class="row allData">
+                            <div class="col-12">
+                                <p>No. Telepon</p>
+                                <p class="value"><?= $no_telepon ?></p>
+                            </div>
+                        </div>
+                        <div class="row allData">
+                            <div class="col-12">
+                                <p>Jenis Kelamin</p>
+                                <p class="value"><?= $jk ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div style="background-color: rgb(67, 54, 240);">
+                                <div class="modal-header">
+                                    <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                                </div>
+                            </div>
+                            <div class="modal-body mx-auto">
+                                Apakah anda yakin ingin keluar?
+                            </div>
+                            <div class="modal-footer justify-content-center border-0">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar Toggle Logic 
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+
+        if (menuToggle) {
+            menuToggle.onclick = function() {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
+        }
+
+        // Sidebar Active Item Logic 
+        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        // for (let i = 0; i < listItems.length; i++) {
+        //     listItems[i].onclick = function(event) {
+        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
+        //             for (let j = 0; j < listItems.length; j++) {
+        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
+        //             }
+        //             this.classList.add("NavSide__sidebar-item--active");
+        //         }
+        //     };
+        // }
+    </script>
+    <script src="../../assets/js/main.js"></script>
+</body>
+
+</html>
+================================================================================
+// File: mSidang.php
+================================================================================
+
+<?php
+require_once '../../control/mahasiswa/mSidang_logic.php';
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahasiswa - Sidang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/msidang.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../extra/style.css">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons">
+                <i class="bi bi-bell-fill"></i>
+                <div class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+        </div>
+
+        <main class="NavSide__main-content" id="mSidang">
+            <div class="container-fluid"> 
+                <div class="row">
+                    <div class="dashboard-header">
+                        <h2 class="text-heading"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
+                        <div class="header-icons d-none d-md-flex">
+                            <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                            <div class="profile-icon">
+                                <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 d-flex align-items-center"> 
+                        <label for="ddMsidang" class="fw-semibold mb-0">Filter: </label>
+                        <div class="dropdown ms-2">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                <?php
+                                switch($filter) {
+                                    case 'ta':
+                                        echo "Sidang TA";
+                                        break;
+                                    case 'semester':
+                                        echo "Sidang Semester";
+                                        break;
+                                    default:
+                                        echo "Semua";
+                                }
+                                ?>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?filter=all&page=1">Semua</a></li>
+                                <li><a class="dropdown-item" href="?filter=ta&page=1">Sidang TA</a></li>
+                                <li><a class="dropdown-item" href="?filter=semester&page=1">Sidang Semester</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div><br><br>
+                <div class="row table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Judul</th>
+                                <th scope="col">Mata Kuliah</th>
+                                <th scope="col">Dosen Pembimbing</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            $counter = ($currentPage - 1) * $rowsPerPage + 1;
+                            foreach ($rows as $row): 
+                            ?>
+                                <tr class="isiTabel jadiBiru">
+                                    <td><?= $counter ?></td>
+                                    <td><?= htmlspecialchars($row['judul']) ?></td>
+                                    <td><?= htmlspecialchars($row['nama_matkul']) ?></td>
+                                    <td><?= htmlspecialchars($row['dosen']) ?></td>
+                                    <td>
+                                        <form action="mdetailSidang.php" method="POST" style="display: inline;">
+                                            <input type="hidden" name="id_sidang" value="<?= $row['id_sidang'] ?>">
+                                            <button type="submit" class="detail-btn" style="border: none; background: none; padding: 0; cursor: pointer;">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php 
+                            $counter++;
+                            endforeach; 
+                            ?>
+                        </tbody>
+                    </table>
+                    <div class="pagination-container">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <?php if ($totalPages > 1): ?>
+                                    <li class="page-item <?= $currentPage == 1 ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?filter=<?= $filter ?>&page=<?= $currentPage - 1 ?>" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="page-item <?= $i == $currentPage ? 'active' : '' ?>">
+                                            <a class="page-link" href="?filter=<?= $filter ?>&page=<?= $i ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    
+                                    <li class="page-item <?= $currentPage == $totalPages ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?filter=<?= $filter ?>&page=<?= $currentPage + 1 ?>" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color: rgb(67, 54, 240);">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
+                </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+
+        if (menuToggle) {
+            menuToggle.onclick = function() {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
+        }
+    </script>
+    <script src="../../assets/js/main.js"></script>
+</body>
+</html>
+================================================================================
+// File: mTambahPengajuan.php
+================================================================================
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$path_to_root = '../../';
+
+// 1. Cek jika pengguna BELUM login.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php"); 
+    exit(); 
+}
+
+// 2. Cek jika role pengguna BUKAN 'mahasiswa'.
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
+    header("Location: " . $path_to_root . "index.php");
+    exit(); 
+}
+
+include '../../koneksi/koneksiAndrew.php';
+$success_message = '';
+$error_message = '';
+
+
+// Ambil NIM dari sesi yang sudah login
+if (!isset($_SESSION['nim'])) {
+    // This should ideally never happen because of the checks above,
+    // but it's a good safeguard.
+    die("KESALAHAN FATAL: NIM pengguna tidak ditemukan di sesi. Silakan login kembali.");
+}
+
+// Gunakan variabel nim dari sesi yang sudah ada
+$nim_mahasiswa_logged_in = $_SESSION['nim'];
+
+// Tambahkan require_once ke file external
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
+
+// Menangani pengiriman form
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
+    // Mulai transaksi
+    sqlsrv_begin_transaction($conn);
+
+    try {
+        // LANGKAH 1: Buat ID Sidang baru secara manual
+        $next_id_sidang = 1;
+        $sql_id = "SELECT MAX(id_sidang) AS max_id FROM dbo.Sidang";
+        $stmt_id = sqlsrv_query($conn, $sql_id);
+        if ($stmt_id === false) {
+            throw new Exception("Gagal mendapatkan max ID: " . print_r(sqlsrv_errors(), true));
+        }
+        if ($row_id = sqlsrv_fetch_array($stmt_id, SQLSRV_FETCH_ASSOC)) {
+            $next_id_sidang = $row_id['max_id'] !== null ? $row_id['max_id'] + 1 : 1;
+        }
+        sqlsrv_free_stmt($stmt_id);
+
+        // LANGKAH 2: Cari ID Kelompok mahasiswa
+        $id_kelompok = $_POST['kelompok']; // Get selected group from form
+        // Validate student belongs to selected group
+        $sql_validate = "SELECT 1 FROM dbo.Kelompok 
+                         WHERE nim = ? AND id_kelompok = ?";
+        
+        $params_validate = [$nim_mahasiswa_logged_in, $id_kelompok];
+        $stmt_validate = sqlsrv_query($conn, $sql_validate, $params_validate);
+
+        // Check for query failure or if no rows were found
+        if ($stmt_validate === false) {
+            // This handles a catastrophic query failure
+            throw new Exception("Error saat memvalidasi keanggotaan kelompok: " . print_r(sqlsrv_errors(), true));
+        }
+        if (!sqlsrv_has_rows($stmt_validate)) {
+            // This specifically handles the case where the student is not in the selected group
+            throw new Exception("Validasi gagal: Anda tidak terdaftar dalam kelompok yang dipilih.");
+        }
+        sqlsrv_free_stmt($stmt_validate);   
+
+        // Validasi kelompok dan mata kuliah cocok
+        $sql_validasi_kelompok_matkul = "SELECT 1 FROM dbo.Kelompok WHERE id_kelompok = ? AND nim = ? AND id_matkul = ?";
+        $stmt_validasi = sqlsrv_query($conn, $sql_validasi_kelompok_matkul, [$id_kelompok, $nim_mahasiswa_logged_in, $id_matkul_terpilih]);
+        if ($stmt_validasi === false) {
+            throw new Exception('Gagal memvalidasi kelompok dan mata kuliah: ' . print_r(sqlsrv_errors(), true));
+        }
+        if (!sqlsrv_has_rows($stmt_validasi)) {
+            throw new Exception('Kelompok yang dipilih tidak sesuai dengan mata kuliah yang dipilih.');
+        }
+        sqlsrv_free_stmt($stmt_validasi);
+
+        // LANGKAH 3: Cari Dosen Pembimbing untuk relasi ke Detail_Sidang
+        $judul = trim($_POST['judul']);
+        $id_matkul_terpilih = $_POST['matkul'];
+        $aksi = $_POST['aksi'];
+        $status_ajuan = ($aksi == 'Kirim') ? 'Pending' : 'Draft';
+
+        if (empty($judul)) throw new Exception("Judul tidak boleh kosong.");
+        if (empty($id_matkul_terpilih)) throw new Exception("Mata kuliah harus dipilih.");
+
+        // First, get the name of the selected Mata Kuliah
+        $sql_get_matkul_name = "SELECT nama_matkul FROM dbo.MataKuliah WHERE id_matkul = ?";
+        $stmt_get_matkul_name = sqlsrv_query($conn, $sql_get_matkul_name, [$id_matkul_terpilih]);
+        if ($stmt_get_matkul_name === false) {
+            throw new Exception("Gagal mengambil nama mata kuliah: " . print_r(sqlsrv_errors(), true));
+        }
+        $nama_matkul_terpilih = '';
+        if ($row_matkul = sqlsrv_fetch_array($stmt_get_matkul_name, SQLSRV_FETCH_ASSOC)) {
+            $nama_matkul_terpilih = $row_matkul['nama_matkul'];
+        }
+        sqlsrv_free_stmt($stmt_get_matkul_name);
+
+        if (empty($nama_matkul_terpilih)) {
+            throw new Exception("Mata kuliah yang dipilih tidak valid.");
+        }
+
+        // --- NEW BUSINESS LOGIC IMPLEMENTATION ---
+        $nomor_dosen_pembimbing = null;
+        if ($nama_matkul_terpilih == 'Tugas Akhir') {
+            // This is a 'Tugas Akhir', so find the supervisor from the Bimbingan table
+            $sql_dosen = "SELECT nomor_dosen FROM dbo.Bimbingan WHERE id_kelompok = ? AND isPembimbing = 0x01";
+            $params_dosen = [$id_kelompok];
+        } else {
+            // This is a 'Sidang Semester', so find the lecturer from the Pengampu_Kelas table
+            // Note: This assumes one lecturer per subject. If there can be more, you might need to adjust.
+            $sql_dosen = "SELECT TOP 1 nomor_dosen FROM dbo.Pengampu_Kelas WHERE id_matkul = ?";
+            $params_dosen = [$id_matkul_terpilih];
+        }
+        
+        $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
+        if ($stmt_dosen && ($row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
+            $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
+        }
+        sqlsrv_free_stmt($stmt_dosen);
+
+        // Add a final check to ensure a lecturer was found, regardless of the type.
+        if ($nomor_dosen_pembimbing === null) {
+            throw new Exception("Dosen untuk mata kuliah/pembimbingan ini tidak dapat ditemukan. Silakan hubungi admin.");
+        }
+
+        // LANGKAH 4: Upload file ke folder dan simpan path + nama file
+        $dok_laporan_nama = null;
+        $dok_laporan_path = null;
+        if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
+            $file = $_FILES['DokumenSidang'];
+            $fileSize = $file['size'];
+            $allowedTypes = [
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/zip'
+            ];
+            $fileType = mime_content_type($file['tmp_name']);
+            if ($fileSize > 10 * 1024 * 1024) { // Batas 10MB
+                throw new Exception("Ukuran file melebihi 10MB.");
+            }
+            if (!in_array($fileType, $allowedTypes)) {
+                throw new Exception("Tipe file tidak diizinkan. Gunakan PDF, DOCX, PPTX, atau ZIP.");
+            }
+            // Nama file asli
+            $dok_laporan_nama = $file['name'];
+            // Nama file unik untuk disimpan di server
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $unique_name = 'laporan_' . uniqid() . '.' . $ext;
+            $dok_laporan_path = 'uploads/' . $unique_name;
+            $upload_path = __DIR__ . '/../../uploads/' . $unique_name;
+            if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
+                throw new Exception("Gagal menyimpan file ke server.");
+            }
+        } else {
+            throw new Exception("Gagal mengunggah file: " . ($_FILES['DokumenSidang']['error'] ? "Error " . $_FILES['DokumenSidang']['error'] : "Tidak ada file yang dipilih"));
+        }
+
+        // LANGKAH 6: INSERT PERTAMA KE TABEL 'Sidang'
+        $sql_sidang = "INSERT INTO dbo.Sidang (
+                        id_sidang, judul, waktu_pengumpulan, dok_laporan, 
+                        status_ajuan, id_kelompok
+                       ) 
+                       VALUES (?, ?, GETDATE(), ?, ?, ?)";
+        $params_sidang = [
+            $next_id_sidang,
+            $judul,
+            $dok_laporan_path, // Simpan path file
+            $status_ajuan,
+            // $jenis_sidang_bit, // This parameter is now removed
+            $id_kelompok
+        ];
+        $stmt_sidang = sqlsrv_prepare($conn, $sql_sidang, $params_sidang);
+        if ($stmt_sidang === false || !sqlsrv_execute($stmt_sidang)) {
+            throw new Exception("Gagal menyimpan ke tabel Sidang: " . print_r(sqlsrv_errors(), true));
+        }
+
+        // LANGKAH 7: INSERT KEDUA KE TABEL 'Detail_Sidang'
+        $sql_detail = "INSERT INTO dbo.Detail_Sidang (id_sidang, nomor_dosen, id_matkul, nama_file) 
+                       VALUES (?, ?, ?, ?)";
+        $params_detail = [$next_id_sidang, $nomor_dosen_pembimbing, $id_matkul_terpilih, $dok_laporan_nama];
+        $stmt_detail = sqlsrv_prepare($conn, $sql_detail, $params_detail);
+        if ($stmt_detail === false || !sqlsrv_execute($stmt_detail)) {
+            throw new Exception("Gagal menyimpan ke tabel Detail_Sidang: " . print_r(sqlsrv_errors(), true));
+        }
+
+        // Commit transaksi jika semua berhasil
+        sqlsrv_commit($conn);
+        $success_message = ($status_ajuan == 'Pending') ? 'Pengajuan Berhasil Dikirim!' : 'Pengajuan Berhasil Disimpan sebagai Draft!';
+
+        // Kirim notifikasi ke dosen pembimbing
+        $nama_mahasiswa = $_SESSION['user_data']['nama_mhs'] ?? $nim_mahasiswa_logged_in;
+        $nim_mahasiswa = $_SESSION['user_data']['username'] ?? $nim_mahasiswa_logged_in;
+        $pesan_notif = "Mahasiswa $nama_mahasiswa ($nim_mahasiswa) telah mengajukan sidang baru. Silakan cek pengajuan di sistem.";
+        kirimNotifikasi($nomor_dosen_pembimbing, $pesan_notif, $nim_mahasiswa, $conn);
+
+    } catch (Exception $e) {
+        // Rollback transaksi jika ada error
+        sqlsrv_rollback($conn);
+        //$error_message = "Error: " . $e->getMessage();
+        die("<pre>DEBUGGING: " . $e->getMessage() . "</pre>");
+    }
+
+    // Bebaskan sumber daya
+    if (isset($stmt_sidang)) sqlsrv_free_stmt($stmt_sidang);
+    if (isset($stmt_detail)) sqlsrv_free_stmt($stmt_detail);
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/css/mEditPengajuan.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../extra/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Tambah Pengajuan Sidang</title>
+    <style>
+        .file-selected {
+            background-color: #d1fae5 !important;
+            border: 1px solid #10b981 !important;
+        }
+        .file-name {
+            color: #047857;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="Logo AstraTech">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+        </div>
+
+        <main class="NavSide__main-content" id="mPengajuan">
+            <div class="container-fluid">
+                <div class="dashboard-header">
+                    <h2 class="text-heading"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
+                    <div class="header-icons d-none d-md-flex">
+                        <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                        <div class="profile-icon">
+                            <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mt-4 mb-3">Tambah Sidang</h5>
+                        <hr>
+                    </div>
+
+                    <form action="" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="aksi" id="formAksi" value="">
+
+                        <div class="mb-3">
+                            <label for="judul" class="form-label">Judul Sidang
+                                <span class="text-danger">* </span>
+                            </label>
+                            <input type="text" class="form-control" id="judul" name="judul" placeholder="Masukkan Judul Sidang" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="matkul" class="form-label">Mata Kuliah
+                                <span class="text-danger">* </span>
+                            </label>
+                            <select class="form-select" id="matkul" name="matkul" required>
+                                <option value="" selected disabled>Pilih Mata Kuliah</option>
+                                <?php
+                                $sql_matkul = "SELECT id_matkul, nama_matkul FROM dbo.MataKuliah ORDER BY nama_matkul ASC";
+                                $stmt_matkul = sqlsrv_query($conn, $sql_matkul);
+                                if ($stmt_matkul) {
+                                    while ($matkul_row = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC)) {
+                                        echo '<option value="' . htmlspecialchars($matkul_row['id_matkul']) . '">' . htmlspecialchars($matkul_row['nama_matkul']) . '</option>';
+                                    }
+                                } else {
+                                    echo '<option disabled>Error memuat mata kuliah</option>';
+                                }
+                                sqlsrv_free_stmt($stmt_matkul);
+                                ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="kelompok" class="form-label">Kelompok 
+                                <span class="text-danger">* </span>
+                            </label>
+                                                        <select class="form-select" id="kelompok" name="kelompok" required>
+                                <option value="" selected disabled>Pilih Kelompok</option>
+                                <?php
+                                // --- FIX: Use the correct table 'dbo.Kelompok' directly ---
+                                $sql_kelompok = "SELECT DISTINCT id_kelompok, nomor_kelompok 
+                                                 FROM dbo.Kelompok
+                                                 WHERE nim = ? 
+                                                 ORDER BY nomor_kelompok ASC";
+                                
+                                $params_kelompok = [$nim_mahasiswa_logged_in];
+                                $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
+                                
+                                if ($stmt_kelompok) {
+                                    if (!sqlsrv_has_rows($stmt_kelompok)) {
+                                        echo '<option disabled>Anda tidak terdaftar di kelompok manapun</option>';
+                                    } else {
+                                        while ($kelompok_row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
+                                            // Use id_kelompok for the value and nomor_kelompok for the display text
+                                            echo '<option value="' . htmlspecialchars($kelompok_row['id_kelompok']) . '">';
+                                            echo 'Kelompok ' . htmlspecialchars($kelompok_row['nomor_kelompok']);
+                                            echo '</option>';
+                                        }
+                                    }
+                                    sqlsrv_free_stmt($stmt_kelompok);
+                                } else {
+                                    // This will now correctly show the error message
+                                    echo '<option disabled>Error memuat kelompok</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="mb-4">
+                                <div class="p-4 rounded bg-light border text-start">
+                                    <h6 class="fw-bold text-dark">Dokumen Sidang
+                                        <span class="text-danger">* </span>
+                                    </h6>
+                                    <div id="DokumenSidangForm">
+                                        <label class="upload-box w-100 mt-3 text-center">
+                                            <input type="file" id="DokumenSidang" name="DokumenSidang" accept=".pdf,.docx,.pptx,.zip" hidden required />
+                                            <div class="upload-content">
+                                                <svg id="uploadIcon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#6c757d" class="bi bi-upload" viewBox="0 0 16 16">
+                                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v3.6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10.4a.5.5 0 0 1 1 0v3.6a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14V10.4a.5.5 0 0 1 .5-.5z"/>
+                                                    <path d="M7.646 1.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 3.207V10a.5.5 0 0 1-1 0V3.207L5.354 5.354a.5.5 0 1 1-.708-.708l3-3z"/>
+                                                </svg>
+                                                <p class="mt-2 text-muted small DokumenLabelText">Unggah file dengan format pdf, docx, pptx, dan zip</p>
+                                                <div id="fileNameDisplay" class="file-name mt-2"></div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bintangMerah">
+                                <p>* : wajib diisi</p>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="modalValidasi" tabindex="-1" aria-labelledby="modalValidasiLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+                                    <div class="modal-header border-0 justify-content-center">
+                                        <h4 class="modal-title fw-bold" id="modalValidasiLabel" style="font-size: 24px;">Perhatian</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah Anda yakin ingin mengajukan sidang?</p>
+                                        <div class="d-flex justify-content-between px-5">
+                                            <button type="button" class="btn btn-outline-danger custom-batal px-4 py-2 fw-semibold btn-tolak" data-bs-dismiss="modal">Batalkan</button>
+                                            <button type="button" class="btn btn-success px-4 py-2 fw-semibold btn-setujui" id="btnLanjutkan">Lanjutkan</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="button" class="btn btn-kembali" onclick="window.location.href='mPengajuan.php'">
+                                    <span class="icon-circle">
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                    </span>
+                                    Kembali
+                                </button>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" name="aksi" value="Simpan" class="btn btn-secondary" id="btnSimpan">Simpan</button>
+                                <button type="button" name="aksi" value="Kirim" class="btn-setuju" id="btnKirim" onclick="kirimNotifikasi($penerima, $pesan, $pengirim = null, $conn)">Kirim</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div style="background-color: rgb(67, 54, 240);">
+                                <div class="modal-header">
+                                    <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                                </div>
+                            </div>
+                            <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
+                            <div class="modal-footer justify-content-center border-0">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                                <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Menampilkan notifikasi dari PHP
+        <?php if (!empty($success_message)): ?>
+        Swal.fire({
+            title: 'Berhasil!',
+            text: '<?php echo addslashes($success_message); ?>',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4B68FB'
+        }).then(() => {
+            window.location.href = 'mPengajuan.php'; // Redirect ke halaman mahasiswa
+        });
+        <?php elseif (!empty($error_message)): ?>
+        Swal.fire({
+            title: 'Gagal!',
+            html: '<?php echo addslashes($error_message); ?>',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4B68FB'
+        });
+        <?php endif; ?>
+
+        // Logika Sidebar
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+        if (menuToggle) {
+            menuToggle.onclick = function() {
+                menuToggle.classList.toggle("NavSide__toggle--active");
+                sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+            };
+        }
+
+        // Penanganan unggahan file
+        const DokumenSidang = document.getElementById('DokumenSidang');
+        const uploadBox = document.querySelector('.upload-box');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const labelText = document.querySelector('.DokumenLabelText');
+
+        DokumenSidang.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileNameDisplay.textContent = this.files[0].name;
+                fileNameDisplay.style.display = 'block';
+                uploadIcon.style.display = 'none';
+                labelText.style.display = 'none';
+                uploadBox.classList.add('file-selected');
+            } else {
+                fileNameDisplay.textContent = '';
+                fileNameDisplay.style.display = 'none';
+                uploadIcon.style.display = 'block';
+                labelText.style.display = 'block';
+                uploadBox.classList.remove('file-selected');
+            }
+        });
+
+        // Validasi dan pengiriman form
+        const btnKirim = document.getElementById('btnKirim');
+        const btnSimpan = document.getElementById('btnSimpan');
+        const btnLanjutkan = document.getElementById('btnLanjutkan');
+        const form = document.querySelector('form');
+        const formAksi = document.getElementById('formAksi');
+
+        function validateForm() {
+            const judul = document.getElementById('judul').value;
+            const matkul = document.getElementById('matkul').value;
+            const laporan = document.getElementById('DokumenSidang').files.length;
+
+            if (judul.trim() === "") {
+                Swal.fire({ title: 'Judul tidak boleh kosong!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
+                return false;
+            }
+            if (matkul === "" || !matkul) {
+                Swal.fire({ title: 'Pilih mata kuliah!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
+                return false;
+            }
+            if (laporan === 0) {
+                Swal.fire({ title: 'Dokumen tidak boleh kosong!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
+                return false;
+            }
+            if (kelompok === "" || !kelompok) {
+            Swal.fire({ title: 'Pilih kelompok!', icon: 'error', confirmButtonText: 'OK', confirmButtonColor: '#4B68FB' });
+            return false;
+            }
+            return true;
+        
+            return true;
+        }
+
+        btnKirim.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (validateForm()) {
+                formAksi.value = 'Kirim';
+                const modalValidasi = new bootstrap.Modal(document.getElementById('modalValidasi'));
+                modalValidasi.show();
+            }
+        });
+
+        btnSimpan.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (validateForm()) {
+                formAksi.value = 'Simpan';
+                form.submit();
+            }
+        });
+
+        btnLanjutkan.addEventListener('click', function() {
+            form.submit();
+        });
+    </script>
+</body>
+</html>
