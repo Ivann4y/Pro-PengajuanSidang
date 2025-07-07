@@ -139,7 +139,7 @@ $dataMahasiswa = [
 $nilaiDetail = [ 'dokumen' => '-', 'presentasi' => '-', 'tanyajawab' => '-', 'proyek' => '-' ];
 $nilaiAkhirAngka = '-';
 $nilaiAkhirHuruf = '';
-$semuaCatatan = 'Tidak ada catatan.';
+// $semuaCatatan = 'Tidak ada catatan.';
 
 // Fungsi konversi nilai
 function getGrade($nilai) {
@@ -185,28 +185,28 @@ if ($current_nim && empty($error_message)) {
         }
     }
 
-    $sqlCatatan = "
-        SELECT d.nama_dosen, ds.catatan_sidang
-        FROM Detail_Sidang ds
-        JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-        WHERE ds.id_sidang = ?
-        ORDER BY d.nama_dosen;
-    ";
-    $paramsCatatan = array($id_sidang);
-    $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
+    // $sqlCatatan = "
+    //     SELECT d.nama_dosen, ds.catatan_sidang
+    //     FROM Detail_Sidang ds
+    //     JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    //     WHERE ds.id_sidang = ?
+    //     ORDER BY d.nama_dosen;
+    // ";
+    // $paramsCatatan = array($id_sidang);
+    // $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
 
-    $catatanArray = [];
-    if ($stmtCatatan) {
-        while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
-            $catatan = trim($rowCatatan['catatan_sidang']);
-            if (!empty($catatan) && $catatan !== '-') {
-                $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
-            }
-        }
-        if (!empty($catatanArray)) {
-            $semuaCatatan = implode("\n\n", $catatanArray);
-        }
-    }
+    // $catatanArray = [];
+    // if ($stmtCatatan) {
+    //     while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
+    //         $catatan = trim($rowCatatan['catatan_sidang']);
+    //         if (!empty($catatan) && $catatan !== '-') {
+    //             $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
+    //         }
+    //     }
+    //     if (!empty($catatanArray)) {
+    //         $semuaCatatan = implode("\n\n", $catatanArray);
+    //     }
+    // }
 }
 ?>
 
@@ -409,7 +409,7 @@ if ($current_nim && empty($error_message)) {
           </div>
 
           <!-- Kartu Catatan -->
-          <div class="row">
+          <!-- <div class="row">
             <div class="col-12">
               <div class="card h-100" id="cardcatatan">
                 <div class="card-body px-4 py-4 d-flex flex-column">
@@ -418,7 +418,7 @@ if ($current_nim && empty($error_message)) {
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
         <?php endif; ?>
       </div>
     </main>
