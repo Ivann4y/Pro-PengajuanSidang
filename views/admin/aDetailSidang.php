@@ -63,7 +63,7 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                         echo htmlspecialchars($data_sidang['judul']);
                     }
                     ?></h2>
-                <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['id_kelompok']); ?></p>
+                <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['nomor_kelompok']); ?></p>
 
                 <div class="status-badge">Status Pengajuan : <?php echo htmlspecialchars($data_sidang['status_sidang_text']); ?></div>
                 <div class="info-card">

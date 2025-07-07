@@ -56,17 +56,19 @@ $data_bobotPenilaian = [];
 
 
 $sql_utama = "SELECT 
-                s.id_sidang, s.judul, 
-                CASE 
-                    WHEN s.status_sidang = 1 THEN 'Disetujui'
-                    WHEN s.status_sidang = 0 THEN 'Ditolak'
-                    ELSE 'Menunggu'
-                END AS status_sidang_text, 
-                k.jenis_sidang,
-                s.id_kelompok
-              FROM Sidang s
-              JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-              WHERE s.id_sidang = ?";
+    s.id_sidang, 
+    s.judul, 
+    CASE 
+        WHEN s.status_sidang = 1 THEN 'Disetujui'
+        WHEN s.status_sidang = 0 THEN 'Ditolak'
+        ELSE 'Menunggu'
+    END AS status_sidang_text, 
+    k.jenis_sidang,
+    s.id_kelompok,
+    k.nomor_kelompok
+  FROM Sidang s
+  JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+  WHERE s.id_sidang = ?";
 $params_utama = array($id_sidang);
 $stmt_utama = sqlsrv_query($conn, $sql_utama, $params_utama);
 if ($stmt_utama === false) {
