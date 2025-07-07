@@ -38,9 +38,13 @@ require "../../koneksi/koneksiAndrew.php";
 // FUNGSI 3: AMBIL ID SIDANG DARI URL/SESSION
 // ==============================
 
-// Jika ada parameter id di URL (GET), simpan ke session dan redirect agar URL bersih
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+if (isset($_GET['id']) && is_numeric($_GET['id']) && isset($_GET['judul'])) {
+    
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    // INI JANGAN DI HAPUS
+    $_SESSION['judul'] = $_GET['judul'];
+
+    // Redirect ke halaman yang sama TAPI TANPA parameter GET
     header("Location: aDetailSidang.php");
     exit();
 }
