@@ -9,10 +9,11 @@ if ($conn === false) {
     die("Koneksi ke database gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-
+//parameter url session
 $id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : 0;
 $current_nim = isset($_GET['nim']) ? trim($_GET['nim']) : null;
 $error_message = '';
+
 
 $mahasiswa_list = []; 
 $nama_matkul = 'Data tidak ditemukan'; 
@@ -21,6 +22,7 @@ $id_kelompok = null;
 $id_matkul = null; 
 $jenis_sidang = null; 
 
+//redirect
 if (isset($_GET['id_sidang']) && is_numeric($_GET['id_sidang'])) {
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id_sidang'];
     $redirectUrl = 'aNilaiAkhir.php';
@@ -30,6 +32,7 @@ if (isset($_GET['id_sidang']) && is_numeric($_GET['id_sidang'])) {
     exit();
 }
 
+// ambil id sidang dari url session biar query jalan
 if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif'])) {
     $id_sidang = (int)$_SESSION['id_sidang_aktif'];
 } else {
@@ -51,6 +54,7 @@ if ($id_sidang > 0) {
                   LEFT JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang
                   WHERE s.id_sidang = ?";
 $stmt_detail = sqlsrv_query($conn, $sql_detail, array($id_sidang));
+
 
 if ($stmt_detail === false) {
   error_log("Query detail sidang gagal: " . print_r(sqlsrv_errors(), true));
@@ -139,7 +143,7 @@ $dataMahasiswa = [
 $nilaiDetail = [ 'dokumen' => '-', 'presentasi' => '-', 'tanyajawab' => '-', 'proyek' => '-' ];
 $nilaiAkhirAngka = '-';
 $nilaiAkhirHuruf = '';
-$semuaCatatan = 'Tidak ada catatan.';
+// $semuaCatatan = 'Tidak ada catatan.';
 
 // Fungsi konversi nilai
 function getGrade($nilai) {
@@ -185,28 +189,28 @@ if ($current_nim && empty($error_message)) {
         }
     }
 
-    $sqlCatatan = "
-        SELECT d.nama_dosen, ds.catatan_sidang
-        FROM Detail_Sidang ds
-        JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-        WHERE ds.id_sidang = ?
-        ORDER BY d.nama_dosen;
-    ";
-    $paramsCatatan = array($id_sidang);
-    $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
+    // $sqlCatatan = "
+    //     SELECT d.nama_dosen, ds.catatan_sidang
+    //     FROM Detail_Sidang ds
+    //     JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    //     WHERE ds.id_sidang = ?
+    //     ORDER BY d.nama_dosen;
+    // ";
+    // $paramsCatatan = array($id_sidang);
+    // $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
 
-    $catatanArray = [];
-    if ($stmtCatatan) {
-        while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
-            $catatan = trim($rowCatatan['catatan_sidang']);
-            if (!empty($catatan) && $catatan !== '-') {
-                $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
-            }
-        }
-        if (!empty($catatanArray)) {
-            $semuaCatatan = implode("\n\n", $catatanArray);
-        }
-    }
+    // $catatanArray = [];
+    // if ($stmtCatatan) {
+    //     while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
+    //         $catatan = trim($rowCatatan['catatan_sidang']);
+    //         if (!empty($catatan) && $catatan !== '-') {
+    //             $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
+    //         }
+    //     }
+    //     if (!empty($catatanArray)) {
+    //         $semuaCatatan = implode("\n\n", $catatanArray);
+    //     }
+    // }
 }
 ?>
 
@@ -276,6 +280,8 @@ if ($current_nim && empty($error_message)) {
       color: var(--primary-color) !important;
       border-bottom: 2px solid var(--primary-color) !important;
     }
+
+    
   </style>
 </head>
 <body>
@@ -363,23 +369,43 @@ if ($current_nim && empty($error_message)) {
         <?php else: ?>
           <div class="row align-items-stretch mb-2">
             <!-- Kartu Data Mahasiswa -->
-            <div class="col-lg-6 mb-4 d-flex">
+           <div class="col-lg-6 mb-4 d-flex">
               <div class="card flex-fill" id="carddataMahasiswa">
-                <div class="card-body px-4 py-4">
-                  <h3 class="card-title text-black mb-4 text-center py-2">Data Mahasiswa</h3>
-                  <div class="d-flex flex-column gap-4 px-4 py-2">
-                    <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nim']) ?></div></div>
-                    <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_mhs']) ?></div></div>
-                    <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_matkul']) ?></div></div>
-                    <div class="info-group"><div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div><div class="value-row text-secondary fw-bold ps-5"><?= htmlspecialchars($dataMahasiswa['nama_pembimbing']) ?></div></div>
+                  <div class="card-body px-4 py-4">
+                      <h3 class="card-title text-black mb-4 text-center py-2">Data Mahasiswa</h3>
+                      <div class="row px-3 py-3"> <div class="col-sm-6 text-black">
+                              <div class="info-group mb-5"> <div class="label-row d-flex align-items-center gap-2 mb-1">
+                                      <i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span>
+                                  </div>
+                                  <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataMahasiswa['nim']) ?></div>
+                              </div>
+                              <div class="info-group mb-5"> <div class="label-row d-flex align-items-center gap-2 mb-1">
+                                      <i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span>
+                                  </div>
+                                  <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataMahasiswa['nama_mhs']) ?></div>
+                              </div>
+                          </div>
+                          <div class="col-sm-6 text-black">
+                              <div class="info-group mb-5"> <div class="label-row d-flex align-items-center gap-2 mb-1">
+                                      <i class="fa-solid fa-book"></i><span class="fw-bold">Judul Proyek</span>
+                                  </div>
+                                  <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataMahasiswa['nama_matkul']) ?></div>
+                              </div>
+                              <div class="info-group mb-5"> <div class="label-row d-flex align-items-center gap-2 mb-1">
+                                      <i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span>
+                                  </div>
+                                  <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataMahasiswa['nama_pembimbing']) ?></div>
+                              </div>
+                          </div>
+                      </div>
                   </div>
-                </div>
               </div>
-            </div>
+          </div>
+
             <!-- Kartu Nilai Mahasiswa -->
             <div class="col-lg-6 mb-4 d-flex">
               <div class="card flex-fill" id="cardNilai">
-                <div class="card-body px-4 py-3 text-center d-flex flex-column justify-content-center">
+                <div class="card-body px-4 py-4 text-center d-flex flex-column justify-content-between">
                   <h3 class="card-title text-black mb-4 text-center py-2">Nilai Mahasiswa</h3>
                   <input 
                   type="text" 
@@ -391,9 +417,11 @@ if ($current_nim && empty($error_message)) {
               </div>
             </div>
           </div>
+
           <!-- Kartu Detail Penilaian -->
           <div class="row mb-4">
             <div class="col-12">
+              
               <div class="card h-100" id="carddetailPenilaian">
                 <div class="card-body px-4 py-4">
                   <h3 class="card-title text-black mb-3">Detail Penilaian</h3>
@@ -409,7 +437,7 @@ if ($current_nim && empty($error_message)) {
           </div>
 
           <!-- Kartu Catatan -->
-          <div class="row">
+          <!-- <div class="row">
             <div class="col-12">
               <div class="card h-100" id="cardcatatan">
                 <div class="card-body px-4 py-4 d-flex flex-column">
@@ -418,7 +446,7 @@ if ($current_nim && empty($error_message)) {
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
         <?php endif; ?>
       </div>
     </main>

@@ -55,28 +55,35 @@
 }
 
 /* ========================================================== */
-/* ===== GAYA SPESIFIK DESKTOP (Lebar > 768px) ============= */
+/* ===== GAYA SPESIFIK DESKTOP (Lebar > 768px) - DIPERBAIKI ===== */
 /* ========================================================== */
 @media screen and (min-width: 769px) {
-    /* MENGADOPSI GAYA .table-admin-custom */
     table {
+        /* [WAJIB] Membuat lebar kolom stabil dan tidak terpengaruh konten */
+        table-layout: fixed;
+        width: 100%;
         border-spacing: 0 10px;
         border-collapse: separate;
-        width: 100%;
     }
 
+    /* ===== DEFINISI KOLOM YANG KONSISTEN (TOTAL 100%) ===== */
     thead th {
         padding: 12px 15px;
-        text-align: left;
+        text-align: left; /* Default rata kiri */
+        vertical-align: middle;
     }
 
-    /* Penyesuaian lebar kolom untuk 5 kolom */
-    thead th:nth-child(1) { width: 5%; text-align: center; }
-    thead th:nth-child(2) { width: 15%; }
-    thead th:nth-child(3) { width: 45%; }
-    thead th:nth-child(4) { width: 25%; }
-    thead th:nth-child(5) { width: 10%; text-align: center; }
+    /* Definisikan lebar untuk SEMUA 6 kolom */
+    thead th:nth-child(1) { width: 5%; text-align: center; }  /* No */
+    thead th:nth-child(2) { width: 10%; } /* Kelompok */
+    thead th:nth-child(3) { width: 35%; } /* Judul */
+    thead th:nth-child(4) { width: 20%; } /* Mata Kuliah */
+    thead th:nth-child(5) { width: 20%; } /* Pengampu/Pembimbing */
+    thead th:nth-child(6) { width: 10%; text-align: center; } /* Aksi */
+    /* Total: 5 + 10 + 35 + 20 + 20 + 10 = 100% */
 
+
+    /* ===== GAYA BARIS DAN SEL (td) ===== */
     tr.isiTabel {
         background-color: #eaeef7;
         transition: background-color 0.3s ease, color 0.3s ease;
@@ -85,18 +92,25 @@
     tr.isiTabel td {
         padding: 15px 18px;
         vertical-align: middle;
+        text-align: left; /* Default rata kiri */
+    }
+    
+    /* Atur perataan untuk sel data agar sesuai header */
+    tr.isiTabel td:first-child,
+    tr.isiTabel td:last-child {
+        text-align: center;
     }
 
+    /* Gaya Radius Sudut */
     tr.isiTabel td:first-child {
         border-radius: 20px 0 0 20px;
     }
 
     tr.isiTabel td:last-child {
         border-radius: 0 20px 20px 0;
-        justify-content: center;
-        align-items: center;
     }
 
+    /* Efek Hover */
     tr.isiTabel:hover {
         background-color: #4b68fb;
         color: #ffffff;
@@ -110,6 +124,7 @@
     .detail-btn:hover {
         opacity: .7;
     }
+
     /* ===== CSS UNTUK PERAPIHAN TABEL ===== */
 
 /* 1. Atur padding dan alignment vertikal untuk semua sel */

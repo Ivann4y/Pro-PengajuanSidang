@@ -190,16 +190,16 @@ if (in_array('Ditolak', $statusList)) {
       <?php endforeach; ?>
 
 
-      <?php if (!empty($row['nama_file'])): ?>
+      <?php if (!empty($allRows[0]['dok_revisi'])): ?>
         <div class="revision-card shadow-sm">
           <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
           <div class="revision-cardUp">
             <div class="text-center mt-3">
-              <a href="../../uploads/<?= rawurlencode($row['nama_file']) ?>" download target="_blank" style="text-decoration:none">
+              <a href="../../<?= htmlspecialchars($allRows[0]['dok_revisi']) ?>" download="<?= htmlspecialchars($allRows[0]['nama_file']) ?>" target="_blank" style="text-decoration:none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16">
                   <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.707 0H9.293zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 10.5a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 12a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z" />
                 </svg>
-                <p class="text-center text-muted small mt-3"><b><?= htmlspecialchars($row['nama_file']) ?></b></p>
+                <p class="text-center text-muted small mt-3"><b><?= htmlspecialchars($allRows[0]['nama_file']) ?></b></p>
               </a>
             </div>
           </div>
@@ -212,10 +212,10 @@ if (in_array('Ditolak', $statusList)) {
           containerDiv.className = "d-flex justify-content-end mt-4";
 
           const downloadLink = document.createElement("a");
-          downloadLink.href = "<?= '../../uploads/' . rawurlencode($row['nama_file']) ?>";
+          downloadLink.href = "../../<?= htmlspecialchars($allRows[0]['dok_revisi']) ?>";
           downloadLink.className = "btn-custom-primaryUnd";
           downloadLink.id = "btnUnduh";
-          downloadLink.setAttribute("download", "<?= htmlspecialchars($row['nama_file']) ?>");
+          downloadLink.setAttribute("download", "<?= htmlspecialchars($allRows[0]['nama_file']) ?>");
           downloadLink.textContent = "Unduh";
 
           containerDiv.appendChild(downloadLink);
@@ -230,6 +230,7 @@ if (in_array('Ditolak', $statusList)) {
           </div>
         </div>
       <?php endif; ?>
+
 
       <div class="button-group-bottom mt-4">
         <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">

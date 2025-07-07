@@ -148,6 +148,22 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
     $jenis_sidang = $data_sidang['jenis_sidang'];
     $id_matkul = $data_sidang['id_matkul'];
 
+        // ==========================================================
+    // ===== [FIX] AMBIL NAMA MATA KULIAH DENGAN BENAR =====
+    // ==========================================================
+    $nama_matkul_sidang = 'Tidak ada mata kuliah'; // Nilai default
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul 
+                   FROM Detail_Sidang ds
+                   JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+                   WHERE ds.id_sidang = ?";
+    $stmt_matkul = sqlsrv_query($conn, $sql_matkul, [$id_sidang]);
+    if ($stmt_matkul && $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC)) {
+        $nama_matkul_sidang = $data_matkul['nama_matkul'];
+    }
+    // ==========================================================
+    // ===== AKHIR DARI [FIX] =====
+    // ==========================================================
+
     // ===============================================================================
     // ===== BAGIAN YANG DIUBAH (LOGIKA PENGAMBILAN MAHASISWA) =====
     // ===============================================================================
@@ -224,7 +240,7 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
                 while ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
                     // Dosen pengampu dianggap sebagai 'pembimbing' dan juga 'penguji' di halaman ini
                     $dosenPembimbing[] = $row['nama_dosen'];
-                    $dosenPenguji[] = $row['nama_dosen'];
+                    
                 }
             }
         }
@@ -238,6 +254,8 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
             $dosenPenguji[] = $row['nama_dosen'];
         }
     }
+
+   
     
     // --- Hilangkan duplikat jika ada nama yang sama ---
     $dosenPembimbing = array_unique($dosenPembimbing);
@@ -272,6 +290,9 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
         }
     }
 }
+
+// --- Query utama untuk mengambil data sidang ---
+
 
 // Pengecekan HANYA berdasarkan nilai mahasiswa yang bersangkutan, bukan catatan kelompok.
 $nilai_sudah_dikirim_dan_lengkap = false;
@@ -393,22 +414,31 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                                     <div class="label-row"> <i class="fa-solid fa-file-invoice"></i> <span class="fw-bold"> Judul Sidang</span></div>
                                     <div class="value-row"><?php echo htmlspecialchars($judul); ?></div>
                                 </div>
-                              <div class="info-group">
+<!-- Bagian Dosen Pembimbing/Pengampu (TETAP) -->
+<div class="info-group">
     <div class="label-row">
         <i class="fa-solid fa-user-tie"></i>
         <span class="fw-bold"><?php echo htmlspecialchars($labelPembimbing); ?></span>
     </div>
     <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
 </div>
-                                <div class="info-group">
-                                   <div class="label-row"><i class="fa-solid fa-id-card-clip"></i><span class="fw-bold">Dosen Penguji</span></div>
-                                    <div class="value-row"><?php echo $namaPenguji_html; ?></div>
-                                </div>
+
+<!-- Bagian Dosen Penguji (HANYA MUNCUL JIKA BUKAN SIDANG SEMESTER) -->
+<?php if ($jenis_sidang != 'Semester'): ?>
+<div class="info-group">
+   <div class="label-row"><i class="fa-solid fa-id-card-clip"></i><span class="fw-bold">Dosen Penguji</span></div>
+    <div class="value-row"><?php echo $namaPenguji_html; ?></div>
+</div>
+<?php endif; ?>
+
+
+
                             </div>
                             <div class="section">
-                                 <div class="info-group">
-                                    <div class="label-row"> <i class="fa-solid fa-user"></i>  <span class="fw-bold"> Nama Mahasiswa</span></div>
-                                    <div class="value-row"><?php echo htmlspecialchars($current_nama_mhs); ?></div>
+<div class="info-group">
+    <div class="label-row"> <i class="fa-solid fa-user"></i>  <span class="fw-bold"> Mata Kuliah </span></div>
+     <div><?= htmlspecialchars($nama_matkul_sidang) ?></div>
+
                                 </div>
                                 <div class="info-group">
                                     <div class="label-row"> <i class="fa-solid fa-door-open"></i>  <span class="fw-bold"> Ruangan</span></div>

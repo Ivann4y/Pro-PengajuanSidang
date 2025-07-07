@@ -43,6 +43,11 @@
   width: 100%;
   margin-left: 10px;
   margin-right: -10px;
+  min-height: 400px; /* Sesuaikan dengan tinggi card Data Mahasiswa */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Pusatkan konten vertikal */
+  padding: 25px;
 }
 
 /* Style untuk kartu data mahasiswa */
@@ -53,6 +58,11 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   margin-left: 10px;
+  min-height: 400px; /* Atur tinggi minimal */
+  padding: 25px; /* Tambah padding agar konten tidak terlalu dekat dengan border */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Pusatkan konten vertikal */
 }
 
 /* Memastikan kartu catatan memiliki lebar penuh */
@@ -72,8 +82,11 @@
 }
 
 /* Blok untuk styling responsif. Aturan di dalam sini hanya berlaku jika lebar layar 992px atau kurang. */
-@media (max-width: 992px) {
-  /* (Kosong, bisa diisi style untuk tablet atau mobile) */
+@media (max-width: 768px) {
+  #carddataMahasiswa,
+  #cardNilai {
+    min-height: auto; /* Kembalikan ke tinggi normal di mobile */
+  }
 }
 
 /* Style untuk input yang menampilkan nilai huruf (A, B, C, dll) */
