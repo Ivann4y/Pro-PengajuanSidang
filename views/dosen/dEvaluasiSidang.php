@@ -224,7 +224,7 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
                 while ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
                     // Dosen pengampu dianggap sebagai 'pembimbing' dan juga 'penguji' di halaman ini
                     $dosenPembimbing[] = $row['nama_dosen'];
-                    $dosenPenguji[] = $row['nama_dosen'];
+                    
                 }
             }
         }
@@ -393,17 +393,25 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                                     <div class="label-row"> <i class="fa-solid fa-file-invoice"></i> <span class="fw-bold"> Judul Sidang</span></div>
                                     <div class="value-row"><?php echo htmlspecialchars($judul); ?></div>
                                 </div>
-                              <div class="info-group">
+<!-- Bagian Dosen Pembimbing/Pengampu (TETAP) -->
+<div class="info-group">
     <div class="label-row">
         <i class="fa-solid fa-user-tie"></i>
         <span class="fw-bold"><?php echo htmlspecialchars($labelPembimbing); ?></span>
     </div>
     <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
 </div>
-                                <div class="info-group">
-                                   <div class="label-row"><i class="fa-solid fa-id-card-clip"></i><span class="fw-bold">Dosen Penguji</span></div>
-                                    <div class="value-row"><?php echo $namaPenguji_html; ?></div>
-                                </div>
+
+<!-- Bagian Dosen Penguji (HANYA MUNCUL JIKA BUKAN SIDANG SEMESTER) -->
+<?php if ($jenis_sidang != 'Semester'): ?>
+<div class="info-group">
+   <div class="label-row"><i class="fa-solid fa-id-card-clip"></i><span class="fw-bold">Dosen Penguji</span></div>
+    <div class="value-row"><?php echo $namaPenguji_html; ?></div>
+</div>
+<?php endif; ?>
+
+
+
                             </div>
                             <div class="section">
                                  <div class="info-group">
