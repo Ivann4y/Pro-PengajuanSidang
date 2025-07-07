@@ -63,7 +63,7 @@ if (isset($_POST['approve'])) {
     error_log("DEBUG: nomor_dosen = " . var_export($nomor_dosen, true));
 
     // Jika baris ada, lakukan update
-    $sql_update = "UPDATE Detail_Sidang SET status_revisi = 0x01 WHERE id_sidang = ? AND nomor_dosen = ?";
+    $sql_update = "UPDATE Detail_Sidang SET status_revisi = 'Disetujui' WHERE id_sidang = ? AND nomor_dosen = ?";
     $params_update = [$id_sidang, $nomor_dosen];
     $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
 

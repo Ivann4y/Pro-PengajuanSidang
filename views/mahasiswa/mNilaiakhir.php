@@ -89,28 +89,28 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
 }
 
 
-    $sqlCatatan = "
-        SELECT d.nama_dosen, ds.catatan_sidang
-        FROM Detail_Sidang ds
-        JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-        WHERE ds.id_sidang = ?
-        ORDER BY d.nama_dosen;
-    ";
-    $paramsCatatan = array($id_sidang);
-    $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
+    // $sqlCatatan = "
+    //     SELECT d.nama_dosen, ds.catatan_sidang
+    //     FROM Detail_Sidang ds
+    //     JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
+    //     WHERE ds.id_sidang = ?
+    //     ORDER BY d.nama_dosen;
+    // ";
+    // $paramsCatatan = array($id_sidang);
+    // $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
 
-    $catatanArray = [];
-    if ($stmtCatatan) {
-        while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
-            $catatan = trim($rowCatatan['catatan_sidang']);
-            if (!empty($catatan) && $catatan !== '-') {
-                $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
-            }
-        }
-        if (!empty($catatanArray)) {
-            $semuaCatatan = implode("\n\n", $catatanArray);
-        }
-    }
+    // $catatanArray = [];
+    // if ($stmtCatatan) {
+    //     while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
+    //         $catatan = trim($rowCatatan['catatan_sidang']);
+    //         if (!empty($catatan) && $catatan !== '-') {
+    //             $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
+    //         }
+    //     }
+    //     if (!empty($catatanArray)) {
+    //         $semuaCatatan = implode("\n\n", $catatanArray);
+    //     }
+    // }
 ?>
 
 
@@ -173,6 +173,7 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
                 
                 <div class="row mt-3 g-3">
                     <div class="col-lg-6 d-flex">
+                        
                     <div class="card flex-fill" id="carddataMahasiswa">
                         <div class="card-body card-soft p-4">
                         <h3 class="card-title text-dark mb-4 text-center py-2">Data Mahasiswa</h3>
@@ -205,18 +206,22 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
                     <div class="col-lg-6 d-flex">
                         <div class="card flex-fill" id="cardNilai">
                             <div class="card-body d-flex flex-column justify-content-center">
-                                <h3 class="card-title text-dark text-center">Nilai Mahasiswa</h3>
+                                <h3 class="card-title text-dark mb-4 text-center py-3">Nilai Mahasiswa</h3>
+                                
                                 <div class="d-flex justify-content-center align-items-center flex-grow-1">
                                     <!-- PERBAIKAN: Menggunakan variabel $nilaiHuruf yang sudah dihitung -->
                                     <input type="text" class="form-control text-dark" id="nilaiMahasiswa" value="<?= htmlspecialchars($nilaiHuruf) ?>" readonly />
+                                    
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row mt-4"> <!-- Tambahkan mt-4 untuk margin-top -->
+
+<!--                 
+                <div class="row mt-4">
                     <div class="col-12">
-                        <div class="card h-100 mb-4" id="cardcatatan"> <!-- Tambahkan mb-4 untuk margin-bottom -->
+                        <div class="card h-100 mb-4" id="cardcatatan"> 
                             <div class="card-body px-4 py-4 d-flex flex-column">
                                 <h3 class="card-title text-black mb-3">Catatan Evaluasi</h3>
                                 <div id="catatan" class="form-control flex-grow-1" rows="8"><?= nl2br(htmlspecialchars($semuaCatatan)) ?></div>
@@ -224,7 +229,7 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
                         </div>
                     </div>
                 </div>
-    
+     -->
 
 <script src="../../assets/js/mNilaiakhir.js"></script>
 </body>

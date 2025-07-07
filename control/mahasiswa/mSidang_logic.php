@@ -54,7 +54,7 @@ $rowsPerPage = 10;
 
 $countQuery = "SELECT COUNT(DISTINCT s.judul) AS total
 FROM Sidang s, Mahasiswa m, Kelompok k, Detail_Sidang ds, MataKuliah mk
-WHERE s.id_kelompok = k.id_kelompok AND ds.id_sidang = s.id_sidang AND mk.id_matkul = ds.id_matkul AND k.nomor_kelompok = (SELECT nomor_kelompok FROM Kelompok WHERE nim = ?) AND m.nim = ?";
+WHERE s.id_kelompok = k.id_kelompok AND ds.id_sidang = s.id_sidang AND mk.id_matkul = ds.id_matkul AND k.nomor_kelompok = (SELECT DISTINCT nomor_kelompok FROM Kelompok WHERE nim = ?) AND m.nim = ?";
 
 if ($filter === 'ta') {
     $countQuery .= " AND k.jenis_sidang = 'Tugas Akhir'";
