@@ -87,7 +87,7 @@ $status_ajuan = $data_sidang['status_ajuan'] ?? null;
 
 $status_text = '';
 $status_class = '';
-if ($status_ajuan === 0) {
+if ($status_ajuan === 'Pending') {
     $status_text = 'Status Pengajuan : Belum Disetujui';
     $status_class = 'belum-disetujui';
 } elseif ($status_ajuan === 'Approved') {
