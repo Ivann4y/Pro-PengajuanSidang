@@ -24,9 +24,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 require "../../koneksi/koneksiAndrew.php";
 
 
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+if (isset($_GET['id']) && is_numeric($_GET['id']) && isset($_GET['judul'])) {
 
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    $_SESSION['judul'] = $_GET['judul'];
 
     // Redirect ke halaman yang sama TAPI TANPA parameter GET
     header("Location: aDetailSidang.php");
