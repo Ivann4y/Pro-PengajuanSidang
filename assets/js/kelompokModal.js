@@ -1041,7 +1041,7 @@ function renderKelompokList(kelompokData) {
       )
     ) {
       pengajuanInfo =
-        `<span class='badge bg-warning text-dark'>Status Pengajuan: ${kelompok.pengajuan_status.status_ajuan}</span> ` +
+        `<span class='badge text-bg-success'>Status Pengajuan: ${kelompok.pengajuan_status.status_ajuan}</span> ` +
         `<br><small>Oleh: ${kelompok.pengajuan_status.nama_pengaju} (${kelompok.pengajuan_status.nim_pengaju})</small>`;
       locked = true;
     } else if (
