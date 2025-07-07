@@ -2,139 +2,19 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-if (!isset($_SESSION['nim'])) {
-    die("KESALAHAN FATAL: NIM pengguna tidak ditemukan di sesi. Silakan login kembali.");
+include '../../koneksi/koneksiAndrew.php';
+
+// Check if user is logged in and is mahasiswa
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || 
+    !isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
+    header("Location: ../../index.php");
+    exit();
 }
-$nim_mahasiswa_logged_in = $_SESSION['nim'];
-// Debug: Pastikan NIM tidak kosong
+
+$nim_mahasiswa_logged_in = $_SESSION['nim'] ?? '';
 if (empty($nim_mahasiswa_logged_in)) {
     die("Error: NIM mahasiswa tidak ditemukan dalam session. Silakan login kembali.");
-}
-
-$path_to_root = '../../';
-
-// 1. Cek jika pengguna BELUM login atau bukan mahasiswa.
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || !isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
-    $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php");
-    exit();
-}
-
-include '../../koneksi/koneksiAndrew.php';
-if ($conn === false) {
-    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
-}
-$success_message = '';
-$error_message = '';
-
-// Handle Delete Request
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_sidang']) && $_POST['delete_sidang'] === '1') {
-    $id_sidang_to_delete = $_POST['id_sidang'];
-
-    // Security check: Ensure the student is trying to delete their own draft
-    $checkQuery = "
-        SELECT COUNT(s.id_sidang) as total 
-        FROM dbo.Sidang s
-        JOIN dbo.Kelompok k ON s.id_kelompok = k.id_kelompok
-        WHERE s.id_sidang = ? 
-          AND k.nim = ?
-          AND s.status_ajuan = 'Draft'
-    ";
-    $checkParams = [$id_sidang_to_delete, $nim_mahasiswa_logged_in];
-    $checkStmt = sqlsrv_query($conn, $checkQuery, $checkParams);
-    $can_delete = sqlsrv_fetch_array($checkStmt, SQLSRV_FETCH_ASSOC)['total'] > 0;
-
-    if ($can_delete) {
-        sqlsrv_begin_transaction($conn);
-        try {
-            $sql_delete_detail = "DELETE FROM dbo.Detail_Sidang WHERE id_sidang = ?";
-            sqlsrv_query($conn, $sql_delete_detail, [$id_sidang_to_delete]);
-
-            $sql_delete_sidang = "DELETE FROM dbo.Sidang WHERE id_sidang = ?";
-            sqlsrv_query($conn, $sql_delete_sidang, [$id_sidang_to_delete]);
-            
-            sqlsrv_commit($conn);
-            $_SESSION['success_message'] = "Pengajuan draft berhasil dihapus.";
-
-        } catch (Exception $e) {
-            sqlsrv_rollback($conn);
-            $_SESSION['error_message'] = "Error saat menghapus data.";
-        }
-    } else {
-        $_SESSION['error_message'] = "Gagal menghapus: Anda tidak memiliki izin atau pengajuan bukan draft.";
-    }
-    
-    header("Location: mPengajuan.php?filter=" . urlencode($_GET['filter'] ?? 'Semua') . "&page=" . urlencode($_GET['page'] ?? 1));
-    exit();
-}
-
-// Pagination settings
-$rowsPerPage = 10;
-$page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $rowsPerPage;
-
-// Filter settings
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
-$filterClause = '';
-if ($filter === 'TA') {
-    $filterClause = " AND k.jenis_sidang = 'TA'";
-} elseif ($filter === 'Semester') {
-    $filterClause = " AND k.jenis_sidang = 'Semester'";
-}
-
-// PERBAIKAN: Query untuk menghitung total baris menjadi lebih aman dan mencari status 'Draft'
-$countQuery = "
-    SELECT COUNT(s.id_sidang) as total
-    FROM dbo.Sidang s
-    JOIN dbo.Kelompok k ON s.id_kelompok = k.id_kelompok
-    WHERE k.nim = ?
-        AND s.status_ajuan = 'Draft'
-        $filterClause
-";
-$params_count = [$nim_mahasiswa_logged_in];
-$countResult = sqlsrv_query($conn, $countQuery, $params_count);
-if ($countResult === false) {
-    die("Error pada query count: " . print_r(sqlsrv_errors(), true));
-}
-$totalRows = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
-$totalPages = ceil($totalRows / $rowsPerPage);
-
-if ($totalRows == 0) {
-    $dataSidang = [];
-} else {
-    // PERBAIKAN: Query utama menjadi lebih aman dan mencari status 'Draft'
-    $query = "
-        SELECT
-            s.id_sidang, s.judul, k.jenis_sidang,
-            ISNULL(m.nama_matkul, 'N/A') AS nama_matkul,
-            ISNULL(d.nama_dosen, 'Belum Ditentukan') AS nama_dosen
-        FROM dbo.Sidang AS s
-        JOIN dbo.Kelompok AS k ON s.id_kelompok = k.id_kelompok
-        LEFT JOIN dbo.Detail_Sidang AS ds ON s.id_sidang = ds.id_sidang   
-        LEFT JOIN dbo.MataKuliah AS m ON ds.id_matkul = m.id_matkul
-        LEFT JOIN dbo.Dosen AS d ON ds.nomor_dosen = d.nomor_dosen
-        WHERE k.nim = ?
-            AND s.status_ajuan = 'Draft'
-            $filterClause
-        ORDER BY s.id_sidang DESC
-        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-    ";
-    $params_main = [$nim_mahasiswa_logged_in, $offset, $rowsPerPage];
-    $result = sqlsrv_query($conn, $query, $params_main);
-    if ($result === false) {
-        die(print_r(sqlsrv_errors(), true));
-    }
-
-    $dataSidang = [];
-    while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-        $nama_matkul_display = ($row['jenis_sidang'] == 'TA') ? 'Tugas Akhir' : $row['nama_matkul'];
-        $dataSidang[] = [
-            "id_sidang" => $row['id_sidang'],
-            "judul" => $row['judul'],
-            "matkul" => $nama_matkul_display,
-            "dosen" => $row['nama_dosen'] ?? 'N/A'
-        ];
-    }
 }
 ?>
 
@@ -197,234 +77,138 @@ if ($totalRows == 0) {
             <div class="container-fluid">
                 <div class="row">
                     <div class="dashboard-header">
-                        <h2 class="text-heading" style="color:black;"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
-                        <div class="header-icons d-none d-md-flex">
-                            <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
-                            <div class="profile-icon">
-                                <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
-                            </div>
-                        </div>
+                        <h2 class="text-heading" style="color:black;">
+                            <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)
+                        </h2>
+                        <p class="text-subheading">Kelola pengajuan sidang Anda</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="d-flex flex-column">
-                    <div class="d-flex align-items-center gap-2">
-                        <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                <?php echo htmlspecialchars($filter === 'TA' ? 'Sidang TA' : ($filter === 'Semester' ? 'Sidang Semester' : 'Semua')); ?>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="?filter=Semua&page=1">Semua</a></li>
-                                <li><a class="dropdown-item" href="?filter=TA&page=1">Sidang TA</a></li>
-                                <li><a class="dropdown-item" href="?filter=Semester&page=1">Sidang Semester</a></li>
-                            </ul>
+                <!-- Alert Container -->
+                <div id="alert-container"></div>
+
+                <!-- Search and Filter Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="search-pengajuan" placeholder="Cari pengajuan...">
                         </div>
                     </div>
-                    <div class="mobile-add-button-container">
-                        <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filter-status">
+                            <option value="">Semua Status</option>
+                            <option value="Belum ada pengajuan">Belum ada pengajuan</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Pending">Menunggu Review</option>
+                            <option value="Disetujui">Disetujui</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
                     </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="table-responsive">
-                        <div class="action-column">
-                            <button class="tambah-sidang-btn" onclick="tambahData()">+ Tambah Sidang</button>
-                        </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th scope="col">No</th>
-                                    <th scope="col">Judul</th>
-                                    <th scope="col">Mata Kuliah</th>
-                                    <th scope="col">Dosen Pembimbing</th>
-                                    <th scope="col" class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mSidangTableBody">
-                                <?php if (empty($dataSidang)): ?>
-                                    <tr class="isiTabel">
-                                        <td colspan="5" class="text-center py-4">Tidak ada data untuk ditampilkan.</td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($dataSidang as $index => $sidang): ?>
-                                        <tr class="isiTabel jadiBiru">
-                                            <td><?php echo ($page - 1) * $rowsPerPage + $index + 1; ?></td>
-                                            <td><?php echo htmlspecialchars($sidang['judul']); ?></td>
-                                            <td><?php echo htmlspecialchars($sidang['matkul']); ?></td>
-                                            <td><?php echo htmlspecialchars($sidang['dosen']); ?></td>
-                                            <td class="text-center">
-                                            <!-- The form now wraps the container for proper submission -->
-                                            <form method="post" class="d-inline-block">
-                                                <!-- Hidden inputs stay inside the form -->
-                                                <input type="hidden" name="id_sidang" value="<?php echo $sidang['id_sidang']; ?>">
-                                                <input type="hidden" name="delete_sidang" value="">
-
-                                                <!-- Flex container for the buttons -->
-                                                <div class="d-flex justify-content-center align-items-center">
-                                                    <!-- EDIT BUTTON -->
-                                                    <button type="submit" formaction="mEditPengajuan.php" class="btn btn-link p-0" title="Edit Pengajuan">
-                                                        <i class="fa-solid fa-file-signature fs-5"></i>
-                                                    </button>
-
-                                                    <!-- DELETE BUTTON - with a margin-start class (ms-3) for spacing -->
-                                                    <button type="button" class="btn btn-link p-0 ms-3 delete-btn" title="Hapus Pengajuan">
-                                                        <i class="fa-solid fa-trash fs-5"></i>
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody> 
-                        </table>
-                        <div class="pagination-container">
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-center">
-                                    <?php if ($totalPages > 1): ?>
-                                        <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
-                                            <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page - 1; ?>" aria-label="Previous">
-                                                <span aria-hidden="true">«</span>
-                                            </a>
-                                        </li>
-
-                                        <?php
-                                        // Calculate page range
-                                        $startPage = max(1, $page - 1);
-                                        $endPage = min($totalPages, $page + 1);
-
-                                        if ($page <= 2) {
-                                            $endPage = min($totalPages, 3);
-                                        } elseif ($page >= $totalPages - 1) {
-                                            $startPage = max(1, $totalPages - 2);
-                                        }
-
-                                        // First page
-                                        if ($startPage > 1) {
-                                            echo "<li class='page-item'><a class='page-link' href='?filter=" . urlencode($filter) . "&page=1'>1</a></li>";
-                                            if ($startPage > 2) {
-                                                echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
-                                            }
-                                        }
-
-                                        // Page numbers
-                                        for ($i = $startPage; $i <= $endPage; $i++) {
-                                            echo "<li class='page-item " . ($i == $page ? 'active' : '') . "'>";
-                                            echo "<a class='page-link' href='?filter=" . urlencode($filter) . "&page=$i'>$i</a>";
-                                            echo "</li>";
-                                        }
-
-                                        // Last page
-                                        if ($endPage < $totalPages) {
-                                            if ($endPage < $totalPages - 1) {
-                                                echo "<li class='page-item disabled'><span class='page-link'>...</span></li>";
-                                            }
-                                            echo "<li class='page-item'><a class='page-link' href='?filter=" . urlencode($filter) . "&page=$totalPages'>$totalPages</a></li>";
-                                        }
-                                        ?>
-
-                                        <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
-                                            <a class="page-link" href="?filter=<?php echo urlencode($filter); ?>&page=<?php echo $page + 1; ?>" aria-label="Next">
-                                                <span aria-hidden="true">»</span>
-                                            </a>
-                                        </li>
-                                    <?php endif; ?>
-                                </ul>
-                            </nav>
-                        </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" onclick="loadPengajuanList()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div style="background-color: rgb(67, 54, 240);">
-                            <div class="modal-header">
-                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
-                            </div>
-                        </div>
-                        <div class="modal-body mx-auto">
-                            Apakah anda yakin ingin keluar?
-                        </div>
-                        <div class="modal-footer justify-content-center border-0">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
-                        </div>
+                <!-- Loading Spinner -->
+                <div id="loading-spinner" class="text-center py-5" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
+                    <p class="mt-2">Memuat data pengajuan...</p>
+                </div>
+
+                <!-- Pengajuan List Container -->
+                <div id="pengajuan-list">
+                    <!-- Data will be loaded here via AJAX -->
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Pengajuan Detail Modal -->
+    <div class="modal fade" id="pengajuanDetailModal" tabindex="-1" aria-labelledby="pengajuanDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pengajuanDetailModalLabel">Detail Pengajuan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nomor Kelompok:</strong> <span id="modal-nomor-kelompok"></span></p>
+                            <p><strong>Tahun Ajaran:</strong> <span id="modal-tahun-ajaran"></span></p>
+                            <p><strong>Jenis Sidang:</strong> <span id="modal-jenis-sidang"></span></p>
+                            <p><strong>Mata Kuliah:</strong> <span id="modal-nama-matkul"></span></p>
+                            <p><strong>Status:</strong> <span id="modal-status"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Judul:</strong> <span id="modal-judul"></span></p>
+                            <p><strong>Deskripsi:</strong> <span id="modal-deskripsi"></span></p>
+                            <p><strong>Tanggal Pengajuan:</strong> <span id="modal-tanggal-pengajuan"></span></p>
+                            <p><strong>Submitter:</strong> <span id="modal-submitter"></span></p>
+                            <p><strong>File:</strong> <span id="modal-file"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6>Anggota Kelompok:</h6>
+                        <div id="modal-anggota-list" class="border rounded p-2">
+                            <!-- Anggota list will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal-action-buttons">
+                        <!-- Action buttons will be populated here -->
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="logMBerandaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logMBerandaLabel">Konfirmasi Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <a href="../../logout.php" class="btn btn-primary">Ya, Keluar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/mPengajuan.js"></script>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Sidebar Toggle Logic
+        // Sidebar Toggle Logic
+        document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.querySelector(".NavSide__toggle");
             const sidebar = document.getElementById("main-sidebar");
-
+            
             if (menuToggle) {
-                menuToggle.onclick = function () {
+                menuToggle.onclick = function() {
                     menuToggle.classList.toggle("NavSide__toggle--active");
                     sidebar.classList.toggle("NavSide__sidebar--active-mobile");
                 };
             }
-
-            window.tambahData = function () {
-                window.location.href = 'mTambahPengajuan.php';
-            };
-            <?php if (isset($_SESSION['success_message'])): ?>
-            Swal.fire({
-                title: 'Berhasil!',
-                text: '<?php echo addslashes($_SESSION['success_message']); ?>',
-                icon: 'success',
-                confirmButtonColor: '#4B68FB'
-            });
-            <?php unset($_SESSION['success_message']); ?>
-            <?php endif; ?>
-
-            <?php if (isset($_SESSION['error_message'])): ?>
-            Swal.fire({
-                title: 'Gagal!',
-                text: '<?php echo addslashes($_SESSION['error_message']); ?>',
-                icon: 'error',
-                confirmButtonColor: '#4B68FB'
-            });
-            <?php unset($_SESSION['error_message']); ?>
-            <?php endif; ?>
-
-            // Handle delete button clicks
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function (event) {
-                    event.preventDefault(); 
-                    const form = this.closest('form'); 
-                    
-                    Swal.fire({
-                        title: 'Anda yakin?',
-                        text: "Pengajuan draft ini akan dihapus secara permanen!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Ya, hapus!',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Dynamically set the form for deletion
-                            form.action = ''; // Set action to submit to the current page
-                            form.querySelector('input[name="delete_sidang"]').value = '1'; // Activate the delete flag
-                            form.submit(); // Now submit the correctly configured form
-                        }
-                    });
-                });
-            });
         });
     </script>
 </body>

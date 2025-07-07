@@ -49,8 +49,15 @@ $nim = $_SESSION['nim'];
                 <li class="NavSide__sidebar-item">
                     <b></b>
                     <b></b>
-                    <a href="mPengajuan.php">
+                    <a href="mPengajuan_v2.php">
                         <span class="NavSide__sidebar-title fw-semibold">Pengajuan</span>
+                    </a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b>
+                    <b></b>
+                    <a href="#" onclick="showKelompokModal()">
+                        <span class="NavSide__sidebar-title fw-semibold">Kelompok</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a></li>
@@ -151,9 +158,38 @@ $nim = $_SESSION['nim'];
             </div>
         </div>
     </div>
+    <!-- Kelompok Modal -->
+    <div class="modal fade" id="kelompokModal" tabindex="-1" aria-labelledby="kelompokModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kelompokModalLabel">
+                        <i class="fas fa-users"></i> Daftar Kelompok Anda
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="kelompok-loading" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Memuat data kelompok...</p>
+                    </div>
+                    <div id="kelompok-content" style="display: none;">
+                        <!-- Kelompok data will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="../../assets/js/mahasiswa-dashboard-ajax.js"></script>
+    <script src="../../assets/js/mPengajuan_v2.js"></script>
 </body>
 
 </html>

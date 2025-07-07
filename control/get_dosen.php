@@ -3,7 +3,7 @@ include '../koneksi/koneksiAndrew.php';
 header('Content-Type: application/json');
 
 $data = [];
-$sql = "SELECT nomor_dosen, nama_dosen, prodi FROM Dosen ORDER BY nama_dosen ASC";
+$sql = "SELECT nomor_dosen, nama_dosen, prodi FROM dosen ORDER BY nama_dosen ASC";
 $result = sqlsrv_query($conn, $sql);
 
 if ($result === false) {

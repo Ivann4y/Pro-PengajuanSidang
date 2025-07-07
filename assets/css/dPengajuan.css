@@ -174,6 +174,27 @@ tr.jadiBiru:hover .detail-btn i {
   color: white;
 }
 
+/* Modal header actions */
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-header-actions .btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.modal-header-actions .btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.8);
+  color: white;
+}
+
 /* Modal tab styles */
 .modal-tab-container {
   display: flex;
@@ -276,6 +297,7 @@ tr.jadiBiru:hover .detail-btn i {
   align-items: center;
   gap: 10px;
   flex-grow: 1;
+  min-width: 0;
 }
 
 .anggota-input-group input {
@@ -288,9 +310,14 @@ tr.jadiBiru:hover .detail-btn i {
 }
 
 .anggota-nama-display {
-  flex-grow: 1;
-  height: 35px;
-  padding: 0 15px;
+  flex-shrink: 1;
+  min-width: 150px;
+  max-width: 250px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-height: 48px;
+  padding: 8px 15px;
   background-color: #f3f4f6;
   border: 1px solid #d1d5db;
   border-radius: 26px;
@@ -361,56 +388,85 @@ tr.jadiBiru:hover .detail-btn i {
 .kelompok-list-container {
   max-height: 400px;
   overflow-y: auto;
+  padding: 15px;
 }
 
 .kelompok-list-item {
   background-color: #f8f9fa;
-  border-radius: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
   padding: 15px;
-  margin-bottom: 10px;
-  border: 1px solid #e9ecef;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
 }
 
-.kelompok-list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+.kelompok-list-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kelompok-list-item.kelompok-locked {
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
 }
 
 .kelompok-list-title {
   font-weight: bold;
+  font-size: 1.1em;
   color: #333;
-  font-size: 16px;
+  margin-bottom: 5px;
 }
 
 .kelompok-list-prodi {
-  color: #6c757d;
-  font-size: 14px;
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 10px;
 }
 
 .kelompok-list-anggota {
-  color: #495057;
-  font-size: 14px;
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 10px;
 }
 
+.kelompok-list-pengajuan {
+  font-size: 0.85em;
+}
+
+/* Form section styles */
+.form-section-card {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.form-section-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 0.95em;
+}
+
+/* Input container for autocomplete */
 .input-container {
   position: relative;
   flex-grow: 1;
 }
 
-/* Autocomplete dropdown styles */
 .autocomplete-dropdown {
   position: absolute;
-  background: white;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
   border: 1px solid #ddd;
-  border-top: none;
-  z-index: 1000;
-  max-height: 150px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 250px;
   overflow-y: auto;
-  width: 100%;
-  border-radius: 0 0 5px 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: none;
 }
 
 .autocomplete-item {
@@ -420,126 +476,64 @@ tr.jadiBiru:hover .detail-btn i {
   transition: background-color 0.2s ease;
 }
 
-.autocomplete-item:hover {
-  background-color: #f8f9fa;
-}
-
 .autocomplete-item:last-child {
   border-bottom: none;
 }
 
-.autocomplete-item.selected {
-  background-color: #4b68fb;
-  color: white;
+.autocomplete-item:hover {
+  background-color: #f3f4f6;
 }
 
 .autocomplete-item .nim {
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: #4b68fb;
+  font-size: 14px;
 }
 
 .autocomplete-item .nama {
-  color: #666;
-  font-size: 0.9em;
+  color: #374151;
+  font-size: 13px;
+  margin-top: 2px;
+  word-break: break-word;
 }
 
-.autocomplete-item:hover .nim,
-.autocomplete-item:hover .nama,
-.autocomplete-item.selected .nim,
-.autocomplete-item.selected .nama {
-  color: inherit;
+.autocomplete-item mark {
+  background: transparent;
+  color: #fd7d7d;
+  font-weight: bold;
 }
 
-/* Error message styling */
+/* Modal backdrop fallback */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+}
+
+.modal-open {
+  overflow: hidden;
+}
+
+/* Error message styles */
 .error-message {
   color: #dc3545;
-  font-size: 0.95em;
-  margin-top: 4px;
-  margin-bottom: 0;
-  padding-left: 2px;
-  font-weight: 500;
-  display: block;
+  font-size: 0.875em;
+  margin-top: 0.25rem;
 }
 
-/* Highlight invalid input */
 .is-invalid {
   border-color: #dc3545 !important;
-  background-color: #fff0f3;
 }
 
-/* Card-like grouping for form sections */
-.form-section-card {
-  background: #fff;
-  border: 1px solid #e3e6f0;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-  margin-bottom: 1.5rem;
-  padding: 1.5rem 1.2rem;
-}
-.form-section-card .form-section-title {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  color: #4b68fb;
+.is-invalid:focus {
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
 }
 
-/* Add spacing between form groups */
-.kelompok-form-group,
-.anggota-form-group {
-  margin-bottom: 1.2rem;
-}
-
-/* Responsive tweaks for modal */
-@media (max-width: 600px) {
-  .form-section-card {
-    padding: 0.75rem 0.5rem;
-  }
-  .anggota-input-group,
-  .dosen-wrapper .anggota-input-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .anggota-nama-display {
-    margin-bottom: 0.5rem;
-    width: 100%;
-  }
-  .form-toggle-buttons {
-    margin-top: 0.5rem;
-    justify-content: center;
-    width: 100%;
-  }
-  .form-toggle-buttons button {
-    margin: 0 0.25rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  input[type="text"],
-  select {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-  }
-  .form-section-card {
-    padding: 0.75rem 0.5rem;
-  }
-  .kelompok-form-actions {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-}
-
-.form-section-title {
-  color: #4b68fb;
-  font-weight: 700;
-  font-size: 1.1rem;
-  margin-bottom: 0.75rem;
-}
-
-/* Responsive Modal Styles */
+/* Modal styles */
 @media (max-width: 768px) {
   .modal-dialog.modal-lg {
     margin: 0.5rem;
@@ -642,6 +636,16 @@ tr.jadiBiru:hover .detail-btn i {
   .kelompok-form-actions .btn {
     width: 100%;
     padding: 0.75rem;
+  }
+
+  .modal-header-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .modal-header-actions .btn-outline-light {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
   }
 }
 
@@ -907,4 +911,72 @@ tr.jadiBiru:hover .detail-btn i {
   table td:nth-child(4) {
     display: table-cell;
   }
+}
+
+/* Kelompok Filter Container */
+.kelompok-filter-container {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.kelompok-filter-container .form-check-input {
+  cursor: pointer;
+}
+
+.kelompok-filter-container .form-check-input:checked {
+  background-color: #4b68fb;
+  border-color: #4b68fb;
+}
+
+.kelompok-filter-container .form-check-label {
+  cursor: pointer;
+  font-weight: 500;
+  color: #495057;
+}
+
+.kelompok-filter-container .form-check-input:checked + .form-check-label {
+  color: #4b68fb;
+}
+
+/* Responsive filter container */
+@media (max-width: 768px) {
+  .kelompok-filter-container {
+    padding: 0.75rem;
+  }
+
+  .kelompok-filter-container .d-flex {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+
+  .kelompok-filter-container .form-check-inline {
+    margin-right: 0;
+  }
+}
+
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+.custom-select-wrapper select {
+  width: 100%;
+  padding-right: 2.5rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #f2f2f6;
+  border-radius: 2rem;
+  height: 35px;
+  font-size: 14px;
+}
+.custom-select-arrow {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1rem;
+  color: #6c757d;
 }
