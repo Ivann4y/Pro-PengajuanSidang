@@ -136,7 +136,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                 <td data-label="Aksi">
                        <div class="action-wrapper">  
                          <button type="button" class="btn detail-btn"  onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>&judul=<?= urlencode($row['judul']) ?>'">
-                             <i class="fa-solid fa-file-lines"></i>
+                             
                           <i class="fa-solid fa-file-signature"></i>
                          </button>
                       </div>

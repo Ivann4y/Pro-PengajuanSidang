@@ -259,7 +259,7 @@ function handleFormSubmit(event) {
 
     const formData = new FormData(form);
 
-    fetch('createPenjadwalan.php', {
+    fetch('../../control/admin/createPenjadwalan.php', {
         method: 'POST',
         body: formData
     })
