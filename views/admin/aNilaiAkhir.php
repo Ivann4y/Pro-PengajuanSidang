@@ -26,8 +26,7 @@ if (isset($_GET['id_sidang']) && is_numeric($_GET['id_sidang'])) {
     $redirectUrl = 'aNilaiAkhir.php';
     if (isset($_GET['nim'])) {
         $redirectUrl .= '?nim=' . urlencode($_GET['nim']);
-    }    header('Location: '
- . $redirectUrl);
+    }    header('Location: ' . $redirectUrl);
     exit();
 }
 
@@ -41,24 +40,37 @@ if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif
 
 // 3. PENGAMBILAN DETAIL SIDANG (ID KELOMPOK, JENIS, ID MATKUL)
 if ($id_sidang > 0) {
-    $sql_detail = "SELECT DISTINCT k.nomor_kelompok, k.id_kelompok, k.jenis_sidang, ds.id_matkul, s.judul
-                   FROM Sidang s, Detail_Sidang ds, Kelompok k
-                   WHERE s.id_sidang = ? AND s.id_sidang = ds.id_sidang AND s.id_kelompok = k.id_kelompok";
-    $stmt_detail = sqlsrv_query($conn, $sql_detail, array($id_sidang));
+  $sql_detail = "SELECT 
+                    k.nomor_kelompok, 
+                    k.id_kelompok, 
+                    k.jenis_sidang, 
+                    ds.id_matkul, 
+                    s.judul
+                  FROM Sidang s
+                  JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+                  LEFT JOIN Detail_Sidang ds ON ds.id_sidang = s.id_sidang
+                  WHERE s.id_sidang = ?";
+$stmt_detail = sqlsrv_query($conn, $sql_detail, array($id_sidang));
 
-    if ($stmt_detail && $detail = sqlsrv_fetch_array($stmt_detail, SQLSRV_FETCH_ASSOC)) {
-        $nomor_kelompok = $detail['nomor_kelompok'];
-        $id_kelompok = $detail['id_kelompok'];
-        $id_matkul = $detail['id_matkul'];
-        $jenis_sidang = $detail['jenis_sidang'];
-        $judul = $detail['judul'];
-    } else {
-        $error_message = "Data Sidang dengan ID: " . htmlspecialchars($id_sidang) . " tidak ditemukan.";
-        $id_sidang = 0; 
-    }
+if ($stmt_detail === false) {
+  error_log("Query detail sidang gagal: " . print_r(sqlsrv_errors(), true));
+  $error_message = "Terjadi kesalahan saat mengambil detail sidang. Mohon coba lagi.";
+  $id_sidang = 0;
 } else {
-    $error_message = "ID Sidang tidak valid atau tidak disediakan.";
+  $detail = sqlsrv_fetch_array($stmt_detail, SQLSRV_FETCH_ASSOC);
+  if ($detail) {
+      $nomor_kelompok = $detail['nomor_kelompok'];
+      $id_kelompok = $detail['id_kelompok'];
+      $id_matkul = $detail['id_matkul'];
+      $jenis_sidang = $detail['jenis_sidang'];
+      $judul = $detail['judul'];
+  } else {
+      $error_message = "Data Sidang dengan ID: " . htmlspecialchars($id_sidang ?? '') . " tidak ditemukan."; // Perbaikan: handle null
+      $id_sidang = 0;
+  }
 }
+}
+
 
 // 4. PENGAMBILAN DAFTAR MAHASISWA DALAM KELOMPOK
 if ($id_sidang) {
