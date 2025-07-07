@@ -24,15 +24,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 require "../../koneksi/koneksiAndrew.php";
 
 
-if (isset($_GET['id']) && is_numeric($_GET['id']) && isset($_GET['judul'])) {
-    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
-    $_SESSION['judul'] = $_GET['judul'];
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
-    // Redirect ke halaman dengan hanya parameter judul
-    header("Location: aDetailSidang.php?judul=" . urlencode($_GET['judul']));
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+
+    // Redirect ke halaman yang sama TAPI TANPA parameter GET
+    header("Location: aDetailSidang.php");
     exit();
 }
-
 
 if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif'])) {
     $id_sidang = (int)$_SESSION['id_sidang_aktif'];

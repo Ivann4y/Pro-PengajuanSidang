@@ -99,7 +99,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                 <table class="table-admin-custom">
                     <thead>
                         <tr>
-                            <th scope="col">Nomor</th>
+                            <th scope="col">No</th>
                             <th scope="col">Kelompok</th>
                             <th scope="col">Judul</th>
                             <th scope="col">Mata Kuliah</th>
