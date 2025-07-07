@@ -176,14 +176,14 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
                         
                     <div class="card flex-fill" id="carddataMahasiswa">
                         <div class="card-body card-soft p-4">
-                        <h3 class="card-title text-dark mb-4 text-center py-2">Data Mahasiswa</h3>
+                        <h3 class="card-title text-dark mb-4 text-center py-3">Data Mahasiswa</h3>
                         <div class="row">
                             <div class="col-sm-6 text-black">
                                 <div class="info-group mb-5">
                                     <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-id-card"></i><span class="fw-bold">NIM</span></div>
                                     <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($nim) ?></div>
                                 </div>
-                                <div class="info-group mb-3">
+                                <div class="info-group mb-5">
                                     <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user"></i><span class="fw-bold">Nama</span></div>
                                     <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataSidang['nama']) ?></div>
                                 </div>
@@ -193,7 +193,7 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
                                     <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-book"></i><span class="fw-bold">Judul Proyek</span></div>
                                     <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataSidang['judul']) ?></div>
                                 </div>
-                                <div class="info-group mb-3">
+                                <div class="info-group mb-5">
                                     <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
                                     <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataSidang['pembimbing']) ?></div>
                                 </div>
@@ -207,14 +207,17 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
                         <div class="card flex-fill" id="cardNilai">
                             <div class="card-body d-flex flex-column justify-content-center">
                                 <h3 class="card-title text-dark mb-4 text-center py-3">Nilai Mahasiswa</h3>
-                                
-                                <div class="d-flex justify-content-center align-items-center flex-grow-1">
-                                    <!-- PERBAIKAN: Menggunakan variabel $nilaiHuruf yang sudah dihitung -->
-                                    <input type="text" class="form-control text-dark" id="nilaiMahasiswa" value="<?= htmlspecialchars($nilaiHuruf) ?>" readonly />
-                                    
-                                </div>
+                                <div class="d-flex flex-column align-items-center justify-content-center flex-grow-2">
+                                <input type="text" class="form-control text-dark nilai-mahasiswa-display-mnilai" id="nilaiMahasiswa" value="<?= htmlspecialchars($nilaiHuruf) ?>" readonly />
+
+                                <p class="mt-3 fs-6 text-secondary fw-bold text-center">
+                                    <?php if ($nilaiAngka !== null) { // Pastikan nilai angka ada ?>
+                                        (Skor: <?= number_format($nilaiAngka, 2) ?>)
+                                    <?php } else { ?>
+                                        Belum dinilai
+                                    <?php } ?>
+                                </p>
                             </div>
-                        </div>
                     </div>
                 </div>
 

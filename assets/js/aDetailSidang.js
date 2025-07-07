@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.disabled = true;
             submitButton.textContent = 'Menyimpan...';
 
-            fetch('proses_ubah_jadwal.php', {
+            fetch('../../control/admin/proses_ubah_jadwal.php', {
                 method: 'POST',
                 body: formData
             })
@@ -275,7 +275,7 @@ function processDelete(idSidang) {
     formData.append('id_sidang', idSidang);
 
     // Kirim permintaan menggunakan Fetch API
-    fetch('proses_hapus_sidang.php', {
+    fetch('../../control/admin/proses_hapus_sidang.php', {
         method: 'POST',
         body: formData
     })
