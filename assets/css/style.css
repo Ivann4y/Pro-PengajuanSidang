@@ -384,12 +384,12 @@ body {
   }
 
   .text-heading {
-    font-size:30px;
+    font-size: 30px;
   }
 
   .text-heading-mobile {
     font-weight: 550;
-    
+
     margin: auto;
   }
 }

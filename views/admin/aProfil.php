@@ -20,7 +20,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 require $path_to_root . "koneksi/koneksiAndrew.php";
 
 $user = $_SESSION['user_data'];
-$nama = $user['nama_admin'];
+$nama = $user['nama'];
 $email = $user['email']; 
 $no_telepon = $user['no_telepon']; 
 ?>
