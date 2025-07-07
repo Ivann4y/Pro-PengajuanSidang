@@ -108,13 +108,14 @@ if (!$stmt) {
 
 while ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     $current_anggota[] = $row['nim'];
-    $id_kelompok_map[$row['nim']] = $row['id_kelompok'];
+    $id_kelompok_map[strval($row['nim'])] = $row['id_kelompok'];
+    error_log("Added to map: nim=" . strval($row['nim']) . ", id_kelompok={$row['id_kelompok']}");
 }
 error_log("Current anggota from database: " . json_encode($current_anggota));
 error_log("ID Kelompok map: " . json_encode($id_kelompok_map));
-// Convert anggota to integers for comparison
-    $anggota_int = $anggota;
-    $current_anggota_int = $current_anggota;
+// Convert anggota to strings for comparison (ensure consistent type)
+    $anggota_int = array_map('strval', $anggota);
+    $current_anggota_int = array_map('strval', $current_anggota);
     
     $to_add = array_diff($anggota_int, $current_anggota_int);
     $to_remove = array_diff($current_anggota_int, $anggota_int);
@@ -123,8 +124,17 @@ error_log("ID Kelompok map: " . json_encode($id_kelompok_map));
 error_log("Anggota to add: " . json_encode($to_add));
 error_log("Anggota to remove: " . json_encode($to_remove));
 error_log("Current anggota: " . json_encode($current_anggota));
-        error_log("Anggota: " . json_encode($anggota_int));
-        error_log("Current anggota: " . json_encode($current_anggota_int));
+error_log("Anggota: " . json_encode($anggota_int));
+error_log("Current anggota: " . json_encode($current_anggota_int));
+
+// Debug: Check if NIMs in to_remove exist in id_kelompok_map
+foreach ($to_remove as $nim_remove) {
+    if (!isset($id_kelompok_map[$nim_remove])) {
+        error_log("WARNING: NIM {$nim_remove} not found in id_kelompok_map!");
+    } else {
+        error_log("OK: NIM {$nim_remove} found in id_kelompok_map with id_kelompok {$id_kelompok_map[$nim_remove]}");
+    }
+}
 error_log("Processing edit for kelompok: {$nomor_kelompok}, tahun: {$tahun_ajaran}, jenis: {$jenis_sidang}, matkul: {$id_matkul}");
 
 // Log the edit operation summary
@@ -166,12 +176,22 @@ try {
     
     // Remove anggota
     foreach ($to_remove as $nim_remove) {
-        $id_kelompok = $id_kelompok_map[$nim_remove];
+        $id_kelompok = $id_kelompok_map[$nim_remove] ?? null;
+        
+        if (!$id_kelompok) {
+            error_log("ERROR: No id_kelompok found for removed anggota {$nim_remove}");
+            error_log("Available id_kelompok_map: " . json_encode($id_kelompok_map));
+            $success = false;
+            break;
+        }
+        
+        error_log("Removing anggota {$nim_remove} with id_kelompok {$id_kelompok}");
         
         // Delete Bimbingan hanya untuk Tugas Akhir
         if ($jenis_sidang === 'Tugas Akhir') {
             $sql = "DELETE FROM Bimbingan WHERE id_kelompok = ?";
             if (!sqlsrv_query($conn, $sql, [$id_kelompok])) { 
+                error_log("ERROR: Failed to delete Bimbingan for id_kelompok {$id_kelompok}");
                 $success = false; 
                 break; 
             }
@@ -182,9 +202,12 @@ try {
         
         $sql = "DELETE FROM Kelompok WHERE id_kelompok = ?";
         if (!sqlsrv_query($conn, $sql, [$id_kelompok])) { 
+            error_log("ERROR: Failed to delete Kelompok for id_kelompok {$id_kelompok}");
             $success = false; 
             break; 
         }
+        
+        error_log("Successfully deleted Kelompok for removed anggota {$nim_remove} with id_kelompok {$id_kelompok}");
     }
     
     // Validate all anggota (existing + new) in one query

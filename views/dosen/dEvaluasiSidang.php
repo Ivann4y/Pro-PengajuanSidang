@@ -11,27 +11,22 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     exit;
 }
 
-// Ambil NIM dari GET (sekali) lalu simpan ke session
-// Ganti blok ini
-if (isset($_GET['nim'])) {
-    $_SESSION['nim_aktif'] = $_GET['nim'];
+// Ambil ID sidang dari GET (sekali) lalu simpan ke session
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    // Hapus nim lama jika id sidang baru dipilih
+    unset($_SESSION['nim_aktif']); 
     header("Location: dEvaluasiSidang.php");
     exit;
 }
 
-
-if (isset($_GET['nim'])) {
+// Ambil NIM dari GET (sekali) lalu simpan ke session, lalu redirect untuk membersihkan URL
+if (isset($_GET['nim']) && (!isset($_SESSION['nim_aktif']) || $_SESSION['nim_aktif'] !== $_GET['nim'])) {
     $_SESSION['nim_aktif'] = $_GET['nim'];
     header("Location: dEvaluasiSidang.php");
     exit;
 }
-
-// Menjadi blok ini (Ini sudah benar, pertahankan)
-if (isset($_GET['nim'])) {
-    $_SESSION['nim_aktif'] = $_GET['nim'];
-    // Tidak ada redirect, biarkan script lanjut ke bawah
-}
-// ===================================================================================
+//=================================================================================
 // FIX: AMBIL ID SIDANG DARI SESSION SETELAH REDIRECT
 // ===================================================================================
 // Pastikan ID sidang ada di session sebelum melanjutkan
@@ -198,56 +193,56 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
         }
     }
 
-    // Ambil data dosen (pembimbing dan penguji)
-    $dosenPembimbing = [];
+    // Inisialisasi variabel
+    $dosenPembimbing = []; // Akan berisi nama Pembimbing atau Pengampu
     $dosenPenguji = [];
-    $labelPembimbing = "Dosen Pembimbing";
+    $labelPembimbing = "Dosen"; // Label default
 
     if (isset($jenis_sidang)) {
+        // --- Logika untuk Pembimbing TA atau Pengampu Semester ---
         if ($jenis_sidang == 'Tugas Akhir') {
             $labelPembimbing = "Dosen Pembimbing";
-            $sql_pembimbing = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
-            $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, array($id_kelompok));
-            if ($stmt_pembimbing) {
-                while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
+            // LOGIKA IDENTIK: Ambil nama dosen dari tabel Bimbingan berdasarkan id_kelompok.
+            $sql_dosen = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
+            $params_dosen = [$id_kelompok];
+            
+            $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
+            if ($stmt_dosen) {
+                while ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
                     $dosenPembimbing[] = $row['nama_dosen'];
                 }
             }
+
         } elseif ($jenis_sidang == 'Semester' && isset($id_matkul)) {
             $labelPembimbing = "Dosen Pengampu";
-            $sql_pengampu = "
-                SELECT d.nama_dosen 
-                FROM Dosen d
-                JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen
-                JOIN Kelas kls ON pk.id_kelas = kls.id_kelas
-                WHERE kls.id_matkul = ?";
+            // LOGIKA IDENTIK: Ambil nama dosen dari tabel Pengampu_Kelas berdasarkan id_matkul.
+            $sql_dosen = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
+            $params_dosen = [$id_matkul];
             
-        $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, array($id_matkul));
-        if ($stmt_pengampu) {
-            while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
-                $dosenPembimbing[] = $row['nama_dosen'];
-                $dosenPenguji[] = $row['nama_dosen'];
+            $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
+            if ($stmt_dosen) {
+                while ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
+                    // Dosen pengampu dianggap sebagai 'pembimbing' dan juga 'penguji' di halaman ini
+                    $dosenPembimbing[] = $row['nama_dosen'];
+                    $dosenPenguji[] = $row['nama_dosen'];
+                }
             }
         }
     }
-}
-// HILANGKAN DUPLIKAT DI KEDUA ARRAY
-if (!empty($dosenPembimbing)) {
-    $dosenPembimbing = array_unique($dosenPembimbing);
-}
-    // Ambil penguji dari penjadwalan
-    $sql_penguji_jadwal = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ? AND p.peran_dosen = 0";
-    $stmt_penguji_jadwal = sqlsrv_query($conn, $sql_penguji_jadwal, array($id_sidang));
+    
+    // --- Ambil Dosen Penguji tambahan dari tabel Penjadwalan (logika ini tetap) ---
+    $sql_penguji_jadwal = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ? AND p.peran_dosen = 0"; // peran 0 = penguji
+    $stmt_penguji_jadwal = sqlsrv_query($conn, $sql_penguji_jadwal, [$id_sidang]);
     if ($stmt_penguji_jadwal) {
         while ($row = sqlsrv_fetch_array($stmt_penguji_jadwal, SQLSRV_FETCH_ASSOC)) {
             $dosenPenguji[] = $row['nama_dosen'];
         }
     }
     
-    // Hilangkan duplikat
-    if (!empty($dosenPenguji)) {
-        $dosenPenguji = array_unique($dosenPenguji);
-    }
+    // --- Hilangkan duplikat jika ada nama yang sama ---
+    $dosenPembimbing = array_unique($dosenPembimbing);
+    $dosenPenguji = array_unique($dosenPenguji);
+    // 
     
     // Ambil jadwal
     $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang FROM Jadwal WHERE id_sidang = ?";
