@@ -1,82 +1,123 @@
 <?php
-// Letakkan ini di baris paling atas file
+// ==============================
+// FUNGSI 1: KONTROL SESI DAN AKSES
+// ==============================
+
+// Mulai session jika belum aktif
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
+// Path ke root aplikasi (untuk redirect)
 $path_to_root = '../../';
 
-// 1. Cek jika pengguna BELUM login.
+// Cek apakah user sudah login
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    // Arahkan ke halaman login utama di root
     header("Location: " . $path_to_root . "index.php"); 
     exit(); 
 }
 
-// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
+// Cek apakah user adalah admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
-    // Arahkan ke halaman login utama di root
     header("Location: " . $path_to_root . "index.php");
     exit(); 
 }
 
+// ==============================
+// FUNGSI 2: KONEKSI DATABASE
+// ==============================
+
+// Sertakan file koneksi ke database SQL Server
 require "../../koneksi/koneksiAndrew.php";
+
+// ==============================
+// FUNGSI 3: AMBIL DAFTAR DOSEN PENGUJI (untuk autocomplete JS)
+// ==============================
+
+// Siapkan array kosong untuk daftar dosen penguji
 $allDosenList = [];
+// Query untuk mengambil semua nama dosen yang bisa jadi penguji
 $queryAllDosen = "SELECT nama_dosen FROM Dosen WHERE isPenguji = 1 ORDER BY nama_dosen";
+// Jalankan query
 $resultAllDosen = sqlsrv_query($conn, $queryAllDosen);
+// Jika query berhasil, masukkan nama dosen ke array
 if ($resultAllDosen) {
     while ($row = sqlsrv_fetch_array($resultAllDosen, SQLSRV_FETCH_ASSOC)) {
         $allDosenList[] = ['nama' => $row['nama_dosen']];
     }
 }
 
-// --- Baca parameter filter dari URL ---
+// ==============================
+// FUNGSI 4: AMBIL FILTER DARI URL
+// ==============================
+
+// Ambil filter tipe sidang dari URL, default 'semua'
 $selectedTipe = $_GET['tipe'] ?? 'semua';
+// Ambil filter prodi dari URL, default 'semua'
 $selectedProdi = $_GET['prodi'] ?? 'semua';
 
-// --- Query untuk mengambil daftar prodi unik ---
+// ==============================
+// FUNGSI 5: AMBIL DAFTAR PRODI UNIK
+// ==============================
+
+// Siapkan array kosong untuk daftar prodi
 $prodiList = [];
+// Query untuk mengambil semua prodi unik
 $queryProdi = "SELECT DISTINCT prodi FROM Mahasiswa WHERE prodi IS NOT NULL ORDER BY prodi";
+// Jalankan query
 $resultProdi = sqlsrv_query($conn, $queryProdi);
+// Jika query berhasil, masukkan prodi ke array
 if ($resultProdi) {
     while ($row = sqlsrv_fetch_array($resultProdi, SQLSRV_FETCH_ASSOC)) {
         $prodiList[] = $row['prodi'];
     }
 }
 
-// --- Inisialisasi variabel untuk tampilan ---
+// ==============================
+// FUNGSI 6: INISIALISASI VARIABEL TAMPILAN
+// ==============================
+
+// Teks default untuk tombol filter tipe sidang
 $tipeButtonText = 'Semua Tipe';
 if ($selectedTipe == 'Tugas Akhir') $tipeButtonText = 'Sidang TA';
 elseif ($selectedTipe == 'Semester') $tipeButtonText = 'Sidang Semester';
 
+// Teks default untuk tombol filter prodi
 $prodiButtonText = 'Semua Prodi';
 if ($selectedProdi !== 'semua') {
+    // htmlspecialchars untuk keamanan output HTML
     $prodiButtonText = htmlspecialchars($selectedProdi);
 }
 
+// ==============================
+// FUNGSI 7: SIAPKAN QUERY UTAMA UNTUK DAFTAR SIDANG
+// ==============================
 
-// --- Query Utama ---
+// Siapkan array parameter dan where clause untuk query
 $params = [];
 $whereClauses = [];
 
+// Tambahkan filter status ajuan harus 'Approved'
 $whereClauses[] = "s.status_ajuan = 'Approved'";
+// Tambahkan filter tipe sidang jika dipilih
 if ($selectedTipe == 'Tugas Akhir') {
     $whereClauses[] = "k.jenis_sidang = 'Tugas Akhir'";
 } elseif ($selectedTipe == 'Semester') {
     $whereClauses[] = "k.jenis_sidang = 'Semester'";
 }
-
+// Tambahkan filter prodi jika dipilih
 if ($selectedProdi !== 'semua') {
     $whereClauses[] = "m_perwakilan.prodi = ?"; 
     $params[] = $selectedProdi;
 }
 
-// =========================================================================
-// PERBAIKAN UTAMA DI SINI: Subquery disesuaikan dengan struktur tabel yang benar
-// =========================================================================
+// ==============================
+// FUNGSI 8: QUERY UTAMA DAFTAR SIDANG YANG BELUM DIJADWALKAN
+// ==============================
+
+// Query utama untuk mengambil daftar sidang yang belum dijadwalkan
 $sql = "SELECT 
             s.id_sidang,
             s.id_kelompok,
@@ -102,27 +143,40 @@ $sql = "SELECT
         GROUP BY s.id_sidang, s.id_kelompok, s.judul, k.jenis_sidang, k.nim
         ORDER BY s.id_sidang";
 
+// ==============================
+// FUNGSI 9: EKSEKUSI QUERY DAN AMBIL DATA
+// ==============================
 
+// Jalankan query utama dengan parameter filter
 $result = sqlsrv_query($conn, $sql, $params);
 if ($result === false) {
+    // Jika query gagal, tampilkan error dan hentikan script
     die("Query gagal. Error: " . print_r(sqlsrv_errors(), true));
 }
 
+// Siapkan array kosong untuk menampung data hasil query
 $data = [];
+// Loop setiap baris hasil query, masukkan ke array $data
 while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
     $data[] = $row;
 }
-// --- MODIFIKASI: Variabel untuk teks tombol dan header ---
+
+// ==============================
+// FUNGSI 10: VARIABEL DINAMIS UNTUK TAMPILAN
+// ==============================
+
+// Teks dinamis untuk header tabel dan tombol, tergantung filter tipe sidang
 $tipeButtonText = 'Semua Tipe';
 if ($selectedTipe == 'Tugas Akhir') $tipeButtonText = 'Sidang TA';
 elseif ($selectedTipe == 'Semester') $tipeButtonText = 'Sidang Semester';
 
-// BARU: Teks untuk tombol filter prodi
+// Teks dinamis untuk tombol filter prodi
 $prodiButtonText = 'Semua Prodi';
 if ($selectedProdi !== 'semua') {
     $prodiButtonText = htmlspecialchars($selectedProdi);
 }
 
+// Teks dinamis untuk header kolom tabel
 $dynamicHeaderText = 'Judul/Mata Kuliah';
 if ($selectedTipe == 'Tugas Akhir') $dynamicHeaderText = 'Judul Sidang';
 elseif ($selectedTipe == 'Semester') $dynamicHeaderText = 'Mata Kuliah';
