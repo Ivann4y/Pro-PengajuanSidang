@@ -63,12 +63,12 @@ JOIN
 JOIN
     Sidang AS S ON K_sidang.id_kelompok = S.id_kelompok 
 WHERE
-    M.nim = ?;";
+    M.nim = ?";
 
 if ($filter === 'ta') {
-    $countQuery .= " AND k.jenis_sidang = 'Tugas Akhir'";
+    $countQuery .= " AND K_mhs.jenis_sidang = 'Tugas Akhir'";
 } elseif ($filter === 'semester') {
-    $countQuery .= " AND k.jenis_sidang = 'Semester'";
+    $countQuery .= " AND K_mhs.jenis_sidang = 'Semester'";
 }
 
 $countResult = sqlsrv_query($conn, $countQuery, array($nim_login));
@@ -100,7 +100,7 @@ $query = "SELECT DISTINCT S.id_sidang, S.judul, mk.nama_matkul, K_mhs.jenis_sida
             SELECT TOP 1 d2.nama_dosen 
             FROM Pengampu_Kelas pk2 
             JOIN Dosen d2 ON d2.nomor_dosen = pk2.nomor_dosen 
-            WHERE pk2.id_matkul = ds.id_matkul
+            JOIN MataKuliah mk1 ON pk2.id_matkul = mk1.id_matkul
         )
         ELSE NULL
     END AS nama_dosen
@@ -112,10 +112,8 @@ JOIN
     Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok 
 JOIN
     Sidang AS S ON K_sidang.id_kelompok = S.id_kelompok 
-JOIN
-	Detail_Sidang AS DS ON DS.id_sidang = S.id_sidang
 JOIN 
-	MataKuliah AS mk ON mk.id_matkul = DS.id_matkul
+	MataKuliah AS mk ON mk.id_matkul = K_mhs.id_matkul
 WHERE
     M.nim = ?";
 
@@ -125,7 +123,7 @@ if ($filter === 'ta') {
     $query .= " AND K_mhs.jenis_sidang = 'Semester'";
 }
 
-$query .= " GROUP BY S.id_sidang, S.judul, K_mhs.jenis_sidang, DS.id_matkul, mk.nama_matkul ORDER BY S.id_sidang";
+$query .= " GROUP BY S.id_sidang, S.judul, K_mhs.jenis_sidang, K_mhs.id_matkul, mk.nama_matkul ORDER BY S.id_sidang";
 
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
 
