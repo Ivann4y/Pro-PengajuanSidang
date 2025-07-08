@@ -84,7 +84,7 @@ $no_telepon = $user['no_telepon'];
                 </div>
                 <div class="row">
                     <div class="col-md-6 profil-img">
-                        <img src="../../assets/img/img3-nobg.png" alt="">
+                        <img src="../../assets/img/profil_default.jpg" alt="">
                     </div>
                     <div class="col-md-6 data-all">
                         <h2>Data admin</h2>
@@ -143,19 +143,6 @@ $no_telepon = $user['no_telepon'];
                 sidebar.classList.toggle("NavSide__sidebar--active-mobile");
             };
         }
-
-        // Sidebar Active Item Logic 
-        // let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-        // for (let i = 0; i < listItems.length; i++) {
-        //     listItems[i].onclick = function(event) {
-        //         if (!this.classList.contains("NavSide__sidebar-item--active")) {
-        //             for (let j = 0; j < listItems.length; j++) {
-        //                 listItems[j].classList.remove("NavSide__sidebar-item--active");
-        //             }
-        //             this.classList.add("NavSide__sidebar-item--active");
-        //         }
-        //     };
-        // }
     </script>
     <script src="../../assets/js/main.js"></script>
 </body>
