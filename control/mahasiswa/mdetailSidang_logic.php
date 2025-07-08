@@ -126,7 +126,7 @@ $id_kelompok = $data_sidang['id_kelompok'];
 $nomor_kelompok = $data_sidang['nomor_kelompok'];
 
 if (!empty($id_kelompok)) {
-    $sql_prodi = "SELECT m.prodi FROM Mahasiswa m JOIN Kelompok_Mahasiswa km ON m.nim = km.nim WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
+    $sql_prodi = "SELECT m.prodi FROM Mahasiswa m JOIN Kelompok km ON m.nim = km.nim WHERE km.id_kelompok = ? AND m.prodi IS NOT NULL";
     $stmt_prodi = sqlsrv_query($conn, $sql_prodi, array($id_kelompok));
     if ($stmt_prodi && $row_prodi = sqlsrv_fetch_array($stmt_prodi, SQLSRV_FETCH_ASSOC)) {
         $nama_prodi = $row_prodi['prodi'];
@@ -159,9 +159,11 @@ if ($jenis_sidang === 'Tugas Akhir') {
 
 } elseif ($jenis_sidang === 'Semester') {
     // Correctly get the Mata Kuliah for this specific sidang
-    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk
-                    JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul
-                    WHERE ds.id_sidang = ?";
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul 
+                    FROM MataKuliah mk
+                    JOIN Kelompok k ON mk.id_matkul = k.id_matkul
+                    JOIN Sidang AS s ON k.id_kelompok = s.id_kelompok
+                    WHERE s.id_sidang = ?";
     $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
 
     if ($stmt_matkul && $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC)) {
