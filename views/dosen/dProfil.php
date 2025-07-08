@@ -23,6 +23,7 @@ require $path_to_root . "koneksi/koneksiAndrew.php";
 $user = $_SESSION['user_data'];
 $nim = $user['nomor_dosen'];
 $nama = $user['nama_dosen'];
+$profil = $user['profil']; 
 
 if ($user['prodi'] === 'TRPL') {
     $prodi = 'Teknologi Rekayasa Perangkat Lunak (TRPL)';
@@ -106,7 +107,7 @@ if ($user['jenis_kelamin'] === 'L') {
                 </div>
                 <div class="row">
                     <div class="col-md-6 profil-img">
-                        <img src="../../assets/img/img3-nobg.png" alt="">
+                        <img src="../../<?= htmlspecialchars($profil) ?>" alt="">
                     </div>
                     <div class="col-md-6 data-all">
                         <h2>Data Dosen</h2>
