@@ -1289,51 +1289,59 @@ async function handleKelompokFormSubmit(event) {
     }
 
     if (result.success || result.status === "ok") {
-      alert(
-        result.message ||
-          (formMode === "edit"
-            ? "Kelompok berhasil diperbarui!"
-            : "Kelompok berhasil dibuat!")
-      );
-      resetKelompokForm();
-      if (
-        kelompokModalInstance &&
-        typeof kelompokModalInstance.hide === "function"
-      ) {
-        kelompokModalInstance.hide();
-      } else {
-        // Fallback: hide modal manually
-        const modalEl = document.getElementById("kelompokModal");
-        if (modalEl) {
-          modalEl.style.display = "none";
-          modalEl.classList.remove("show");
-          document.body.classList.remove("modal-open");
+      Swal.fire({
+        title: 'Sukses!',
+        text: result.message || (formMode === "edit" ? "Kelompok berhasil diperbarui!" : "Kelompok berhasil dibuat!"),
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      }).then(() => {
+        resetKelompokForm();
+        if (
+          kelompokModalInstance &&
+          typeof kelompokModalInstance.hide === "function"
+        ) {
+          kelompokModalInstance.hide();
+        } else {
+          // Fallback: hide modal manually
+          const modalEl = document.getElementById("kelompokModal");
+          if (modalEl) {
+            modalEl.style.display = "none";
+            modalEl.classList.remove("show");
+            document.body.classList.remove("modal-open");
+          }
         }
-      }
-      // Refresh both tabs with current filters
-      // Add a small delay to ensure database transaction is complete
-      console.log("Refreshing kelompok list after successful edit...");
-
-      // Clear any cached data first
-      window.allKelompokData = null;
-
-      // Force refresh with multiple attempts to ensure data is updated
-      setTimeout(() => {
-        loadKelompokList();
-        switchTab("daftar");
-      }, 500);
-
-      // Additional refresh after 1 second to ensure data is consistent
-      setTimeout(() => {
-        console.log("Second refresh attempt...");
-        loadKelompokList();
-      }, 1000);
+        // Refresh both tabs with current filters
+        // Add a small delay to ensure database transaction is complete
+        console.log("Refreshing kelompok list after successful edit...");
+        window.allKelompokData = null;
+        setTimeout(() => {
+          loadKelompokList();
+          switchTab("daftar");
+        }, 500);
+        setTimeout(() => {
+          console.log("Second refresh attempt...");
+          loadKelompokList();
+        }, 1000);
+      });
     } else {
-      alert("Error: " + (result.message || "Gagal memproses kelompok."));
+      Swal.fire({
+        title: 'Gagal',
+        text: result.message || "Gagal memproses kelompok.",
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      });
     }
   } catch (error) {
     console.error("Error processing kelompok:", error);
-    alert("Terjadi kesalahan saat memproses kelompok: " + error.message);
+    Swal.fire({
+      title: 'Terjadi Kesalahan',
+      text: error.message,
+      icon: 'error',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    });
   }
 }
 
@@ -1523,72 +1531,98 @@ window.deleteKelompok = async function (
   id_matkul,
   btn
 ) {
-  if (!confirm("Yakin ingin menghapus kelompok ini?")) return;
+  Swal.fire({
+    title: "Yakin ingin menghapus kelompok ini?",
+    text: "Tindakan ini tidak dapat dibatalkan!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#dc3545", // Bootstrap danger color
+    cancelButtonColor: "#6c757d",  // Bootstrap secondary color
+    confirmButtonText: "Ya, hapus!",
+    cancelButtonText: "Batal",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const data = {
+          nomor_kelompok: nomor_kelompok,
+          tahun_ajaran: tahun_ajaran,
+          jenis_sidang: jenis_sidang,
+          id_matkul: id_matkul,
+        };
 
-  try {
-    const data = {
-      nomor_kelompok: nomor_kelompok,
-      tahun_ajaran: tahun_ajaran,
-      jenis_sidang: jenis_sidang,
-      id_matkul: id_matkul,
-    };
+        const response = await fetch("../../control/kelompok_delete.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
-    const response = await fetch("../../control/kelompok_delete.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+        const responseText = await response.text();
+        console.log("Delete response:", responseText);
 
-    const responseText = await response.text();
-    console.log("Delete response:", responseText);
+        let result;
+        try {
+          result = JSON.parse(responseText);
+        } catch (parseError) {
+          // Fallback to text parsing if JSON fails
+          if (
+            responseText.includes("success") ||
+            responseText.includes("berhasil") ||
+            responseText.includes("ok")
+          ) {
+            result = { status: "ok", message: "Kelompok berhasil dihapus" };
+          } else {
+            result = { status: "error", message: "Gagal menghapus kelompok" };
+          }
+        }
 
-    let result;
-    try {
-      result = JSON.parse(responseText);
-    } catch (parseError) {
-      // Fallback to text parsing if JSON fails
-      if (
-        responseText.includes("success") ||
-        responseText.includes("berhasil") ||
-        responseText.includes("ok")
-      ) {
-        result = { status: "ok", message: "Kelompok berhasil dihapus" };
-      } else {
-        result = { status: "error", message: "Gagal menghapus kelompok" };
+        if (result.status === "ok") {
+          Swal.fire({
+            title: 'Sukses!',
+            text: 'Kelompok berhasil dihapus!',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4B68FB'
+          }).then(() => {
+            if (window.allKelompokData) {
+              window.allKelompokData = window.allKelompokData.filter(
+                (item) =>
+                  !(
+                    item.nomor_kelompok == nomor_kelompok &&
+                    item.tahun_ajaran == tahun_ajaran &&
+                    item.jenis_sidang == jenis_sidang &&
+                    item.id_matkul == id_matkul
+                  )
+              );
+              loadKelompokList();
+            }
+          });
+        } else {
+          Swal.fire({
+            title: 'Gagal',
+            text: result.message || 'Gagal menghapus kelompok',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#4B68FB'
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting kelompok:", error);
+        Swal.fire({
+          title: 'Terjadi Kesalahan',
+          text: error.message,
+          icon: 'error',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#4B68FB'
+        });
       }
     }
-
-    if (result.status === "ok") {
-      alert("Kelompok berhasil dihapus!");
-      // Refresh the list with current filters applied
-      if (window.allKelompokData) {
-        // Remove the deleted item from the stored data
-        window.allKelompokData = window.allKelompokData.filter(
-          (item) =>
-            !(
-              item.nomor_kelompok == nomor_kelompok &&
-              item.tahun_ajaran == tahun_ajaran &&
-              item.jenis_sidang == jenis_sidang &&
-              item.id_matkul == id_matkul
-            )
-        );
-        renderKelompokList(window.allKelompokData);
-      } else {
-        loadKelompokList(); // Fallback to reload all data
-      }
-    } else {
-      alert("Error: " + (result.message || "Gagal menghapus kelompok"));
-    }
-  } catch (error) {
-    console.error("Error deleting kelompok:", error);
-    alert("Terjadi kesalahan saat menghapus kelompok: " + error.message);
-  }
+  });
 };
 
 window.editKelompok = async function (
@@ -1653,7 +1687,13 @@ window.editKelompok = async function (
     }
   } catch (error) {
     console.error("Error loading kelompok for edit:", error);
-    alert("Gagal memuat data kelompok untuk diedit: " + error.message);
+    Swal.fire({
+      title: 'Terjadi Kesalahan',
+      text: error.message,
+      icon: 'error',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    });
   }
 };
 
@@ -1712,12 +1752,24 @@ async function populateEditForm(
       kelompokData = data.data;
       console.log("[DEBUG] kelompokData received:", kelompokData);
     } else {
-      alert("Gagal mengambil data kelompok: " + data.message);
+      Swal.fire({
+        title: 'Gagal',
+        text: data.message || "Gagal mengambil data kelompok",
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#4B68FB'
+      });
       return;
     }
   } catch (err) {
     console.error("[ERROR] Failed to fetch kelompok data:", err);
-    alert("Gagal mengambil data kelompok: " + err.message);
+    Swal.fire({
+      title: 'Terjadi Kesalahan',
+      text: err.message,
+      icon: 'error',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    });
     return;
   }
 
@@ -1933,4 +1985,11 @@ async function populatePembimbingData(
   } catch (error) {
     console.error("Error loading pembimbing data:", error);
   }
+}
+
+// Add SweetAlert2 import at the top if not present
+if (typeof Swal === 'undefined') {
+  var script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+  document.head.appendChild(script);
 }

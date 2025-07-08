@@ -150,19 +150,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item">
-                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
-                </li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-                </li>
-            </ul>
+            <li class="NavSide__sidebar-item">
+                <b></b>
+                <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                <b></b>
+            </li>
+            <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <b></b>
+                <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                <b></b>
+            </li>
+            <li class="NavSide__sidebar-item">
+                <b></b>
+                <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
+                <b></b>
+            </li>
+            <li class="NavSide__sidebar-item">
+                <b></b>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                <b></b>
+            </li>
+        </ul>
         </div>
         <div class="NavSide__topbar">
             <div class="NavSide__toggle">
