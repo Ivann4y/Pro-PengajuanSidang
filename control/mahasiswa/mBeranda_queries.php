@@ -38,13 +38,7 @@ switch ($action) {
                 AND k2.tahun_ajaran = k.tahun_ajaran
                 AND k2.id_matkul = k.id_matkul
             WHERE k2.nim = ?
-            AND s.status_sidang = 0x01
-            AND EXISTS (
-                SELECT 1
-                FROM Jadwal j
-                WHERE j.id_sidang = s.id_sidang
-                AND j.tanggal_sidang = CAST(GETDATE() AS DATE)
-            );
+            AND s.status_sidang = 0x01;
         ";
         $params = array($nim);
         $stmt = sqlsrv_query($conn, $sql, $params);
@@ -110,16 +104,16 @@ switch ($action) {
             JOIN Jadwal j ON j.id_sidang = s.id_sidang
             WHERE k2.nim = ?
             AND s.status_sidang = 0x01
-            AND j.tanggal_sidang >= DATEADD(DAY, 1, CAST(GETDATE() AS DATE))
+            AND j.tanggal_sidang > CAST(GETDATE() AS DATE)
             ORDER BY j.tanggal_sidang ASC;
         ";
         $params = array($nim);
         $stmt = sqlsrv_query($conn, $sql, $params);
         $sidang_mendatang = [];
         while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-            // Format the date to an ISO 8601 string, which is easily parsed by JavaScript's `new Date()`
+            // Format the date to Y-m-d format for JavaScript compatibility
             if ($row['tanggal_sidang'] instanceof DateTime) {
-                $row['tanggal_sidang'] = $row['tanggal_sidang']->format('Y-m-d\TH:i:s');
+                $row['tanggal_sidang'] = $row['tanggal_sidang']->format('Y-m-d');
             }
             $sidang_mendatang[] = $row;
         }

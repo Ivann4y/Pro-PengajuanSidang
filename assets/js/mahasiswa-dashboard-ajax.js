@@ -96,9 +96,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // SIDANG MENDATANG CARD & CALENDAR
-    const sidangDates = (dashboardData.sidang_mendatang || []).map(
-      (item) => item.tanggal_sidang.split("T")[0]
-    );
+    const sidangDates = (dashboardData.sidang_mendatang || []).map((item) => {
+      // Handle both formats: "Y-m-d\TH:i:s" and "Y-m-d"
+      const dateStr = item.tanggal_sidang;
+      if (dateStr.includes("T")) {
+        return dateStr.split("T")[0]; // Extract Y-m-d part
+      }
+      return dateStr; // Already in Y-m-d format
+    });
     const sidangData = dashboardData.sidang_mendatang || [];
 
     renderSidangMendatang(sidangData);
