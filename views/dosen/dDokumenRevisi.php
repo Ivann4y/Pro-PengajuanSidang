@@ -82,7 +82,7 @@ if (isset($_POST['approve'])) {
         echo json_encode([
             'status' => 'success',
             'message' => 'Dokumen revisi berhasil disetujui!',
-            'redirectUrl' => "dNilaiAkhir.php?id=" . $id_sidang
+            'redirectUrl' => "dNilaiAkhir.php?id_sidang=" . $id_sidang
         ]);
         exit;
     }
