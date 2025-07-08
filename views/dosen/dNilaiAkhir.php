@@ -4,8 +4,21 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$user_session = $_SESSION['user_data'];
-$loggedInNomorDosen = $user_session['nomor_dosen'];
+// --- Inisialisasi session id_sidang_aktif dan validasi dosen ---
+if (isset($_GET['id_sidang']) && is_numeric($_GET['id_sidang'])) {
+    $id_sidang = (int)$_GET['id_sidang'];
+    $_SESSION['id_sidang_aktif'] = $id_sidang;
+} elseif (isset($_SESSION['id_sidang_aktif'])) {
+    $id_sidang = (int)$_SESSION['id_sidang_aktif'];
+} else {
+    die("Error: ID sidang tidak valid atau tidak ditemukan.");
+}
+
+// Pastikan data user dan nomor_dosen ada di session
+if (!isset($_SESSION['user_data']['nomor_dosen'])) {
+    die("Error: Data dosen tidak ditemukan di session. Silakan login kembali.");
+}
+$loggedInNomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
 require_once "../../koneksi/koneksiAndrew.php"; 
 
@@ -13,7 +26,6 @@ if ($conn === false) {
     die("Koneksi ke database gagal: " . print_r(sqlsrv_errors(), true));
 }
 
-$id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : 0;
 $error_message = ''; 
 
 $mahasiswa = [];

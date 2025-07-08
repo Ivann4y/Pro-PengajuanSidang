@@ -1,5 +1,5 @@
 <?php
-include '../koneksi/koneksiAndrew.php';
+include '../../../koneksi/koneksiAndrew.php';
 header('Content-Type: application/json');
 
 $tahun_ajaran = $_GET['tahun_ajaran'] ?? date('Y');

@@ -1,4 +1,7 @@
 /* General styles for the page */
+.btn {
+    color:#4B68FB;
+}
        table {
             border-spacing: 0 10px;
             border-collapse: separate;

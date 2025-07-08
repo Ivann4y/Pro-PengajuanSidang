@@ -80,7 +80,7 @@ if (empty($nomor_kelompok) || empty($tahun_ajaran) || empty($jenis_sidang) || em
                     <i class="bi bi-person-fill fs-5"></i>
                 </div> 
             </div>
-        </div>
+        
 
         <main class="NavSide__main-content" id="mEditPengajuan">
             <div class="container-fluid">
@@ -185,6 +185,7 @@ if (empty($nomor_kelompok) || empty($tahun_ajaran) || empty($jenis_sidang) || em
                 </div>
             </div>
         </main>
+    </div>
     </div>
 
     <!-- Logout Modal -->

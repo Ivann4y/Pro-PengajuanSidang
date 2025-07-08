@@ -14,33 +14,51 @@ if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-if (!isset($_POST['id_sidang']) || empty($_POST['id_sidang'])) {
-    // If no ID is posted, we cannot proceed.
+$id_sidang = $_POST['id_sidang'] ?? $_GET['id_sidang'] ?? null;
+if (empty($id_sidang)) {
     die("Error: ID Sidang tidak valid atau tidak diberikan.");
 }
-$id_sidang = (int)$_POST['id_sidang'];
-$jenis_sidang_url = isset($_POST['tipe']) ? $_POST['tipe'] : null;
+$id_sidang = (int)$id_sidang;
+$jenis_sidang_url = $_POST['tipe'] ?? $_GET['tipe'] ?? null;
 $nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
+// [REPLACE THIS BLOCK]
 // ------------------------------
 // Handle Download Dokumen
 // ------------------------------
-if (isset($_GET['download']) && $_GET['download'] === 'main') {
-    $sql_download = "SELECT dok_laporan, judul FROM Sidang WHERE id_sidang = ?";
+if (isset($_POST['download']) && $_POST['download'] === 'main') {
+    // Join with Detail_Sidang to get the original filename
+    $sql_download = "SELECT s.dok_laporan, ds.nama_file 
+                     FROM Sidang s
+                     JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+                     WHERE s.id_sidang = ?";
     $stmt_download = sqlsrv_query($conn, $sql_download, [$id_sidang]);
+    
     if ($stmt_download && $row = sqlsrv_fetch_array($stmt_download, SQLSRV_FETCH_ASSOC)) {
         if (!empty($row['dok_laporan'])) {
-            $file_content = $row['dok_laporan'];
-            $filename = "Laporan_Sidang_{$id_sidang}.pdf"; // Default
-            // Detect file type
-            $magic_pdf = "\x25\x50\x44\x46"; // %PDF
-            $magic_zip = "\x50\x4b\x03\x04"; // PK..
-            if (substr($file_content, 0, 4) === $magic_pdf) $filename = "Laporan_Sidang_{$id_sidang}.pdf";
-            elseif (substr($file_content, 0, 4) === $magic_zip) $filename = "Laporan_Sidang_{$id_sidang}.zip";
-            else $filename = "Laporan_Sidang_{$id_sidang}.dat";
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
-            echo $file_content; exit;
+            $file_path_from_db = $row['dok_laporan']; // e.g., 'uploads/somefile.pdf'
+            $original_filename = $row['nama_file'] ?? basename($file_path_from_db);
+            
+            // Construct the full server path to the file
+            $full_file_path = __DIR__ . '/../../' . $file_path_from_db;
+            
+            if (file_exists($full_file_path)) {
+                // Set generic headers to force download for any file type
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename="' . $original_filename . '"');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($full_file_path));
+                
+                // Read the file and send it to the output buffer
+                flush(); // Flush system output buffer
+                readfile($full_file_path);
+                exit;
+            } else {
+                die("Error: File tidak ditemukan di server pada path: " . htmlspecialchars($full_file_path));
+            }
         }
         die("Dokumen tidak ditemukan di database.");
     } else {
@@ -52,32 +70,18 @@ if (isset($_GET['download']) && $_GET['download'] === 'main') {
 // Ambil detail sidang dan cek hak akses dosen
 // ------------------------------
 $sql_sidang = "
-SELECT s.id_sidang, s.id_kelompok, s.judul, s.jenis_sidang, s.status_ajuan, 
+SELECT s.id_sidang, s.id_kelompok, s.judul, k.jenis_sidang, s.status_ajuan, 
        mk.nama_matkul, k.nomor_kelompok, k.tahun_ajaran, k.id_matkul,
-       CASE WHEN s.jenis_sidang = 'Tugas Akhir' THEN 'TA' ELSE 'Semester' END AS label_sidang
+       CASE WHEN k.jenis_sidang = 'Tugas Akhir' THEN 'TA' ELSE 'Semester' END AS label_sidang
 FROM Sidang s
-JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul
+LEFT JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+LEFT JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul
 WHERE s.id_sidang = ?
 ";
 $stmt_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
 $data_sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC);
 if (!$data_sidang) die("Data sidang tidak ditemukan.");
 
-// --------- Cek otorisasi dosen ---------
-$authorized = false;
-if ($data_sidang['jenis_sidang'] === 'Tugas Akhir') {
-    // Cek apakah dosen adalah pembimbing kelompok ini
-    $sql_auth = "SELECT 1 FROM Bimbingan WHERE id_kelompok = ? AND nomor_dosen = ? AND isPembimbing = 1";
-    $stmt_auth = sqlsrv_query($conn, $sql_auth, [$data_sidang['id_kelompok'], $nomorDosen]);
-    if ($stmt_auth && sqlsrv_fetch_array($stmt_auth, SQLSRV_FETCH_NUMERIC)) $authorized = true;
-} else {
-    // Cek Pengampu_Kelas (hanya Pengampu mata kuliah tersebut di tahun ajaran ini)
-    $sql_auth = "SELECT 1 FROM Pengampu_Kelas WHERE nomor_dosen = ? AND id_matkul = ? AND tahun_ajaran = ?";
-    $stmt_auth = sqlsrv_query($conn, $sql_auth, [$nomorDosen, $data_sidang['id_matkul'], $data_sidang['tahun_ajaran']]);
-    if ($stmt_auth && sqlsrv_fetch_array($stmt_auth, SQLSRV_FETCH_NUMERIC)) $authorized = true;
-}
-if (!$authorized) die("Anda tidak berwenang melihat detail pengajuan ini.");
 
 // Ambil anggota kelompok
 $sql_anggota = "
@@ -105,7 +109,7 @@ if ($data_sidang['jenis_sidang'] === 'Tugas Akhir') {
 }
 
 // ------------- Approve / Reject -------------
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $authorized && $data_sidang['status_ajuan'] === 'Pending') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'Pending') {
     if (isset($_POST['approve'])) {
         $sql_update = "UPDATE Sidang SET status_ajuan = 'Approved' WHERE id_sidang = ?";
         sqlsrv_query($conn, $sql_update, [$id_sidang]);
@@ -146,19 +150,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $authorized && $data_sidang['status
                 <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
             </div>
             <ul class="NavSide__sidebar-nav">
-                <li class="NavSide__sidebar-item">
-                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
-                </li>
-                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
-                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
-                </li>
-                <li class="NavSide__sidebar-item">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
-                </li>
-            </ul>
+            <li class="NavSide__sidebar-item">
+                <b></b>
+                <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                <b></b>
+            </li>
+            <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                <b></b>
+                <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                <b></b>
+            </li>
+            <li class="NavSide__sidebar-item">
+                <b></b>
+                <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
+                <b></b>
+            </li>
+            <li class="NavSide__sidebar-item">
+                <b></b>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                <b></b>
+            </li>
+        </ul>
         </div>
         <div class="NavSide__topbar">
             <div class="NavSide__toggle">
@@ -231,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $authorized && $data_sidang['status
                     <?php endif; ?>
                 </div>
             </div>
-            <?php if ($authorized && $data_sidang['status_ajuan'] === 'Pending'): ?>
+            <?php if ($data_sidang['status_ajuan'] === 'Pending'): ?>
             <div class="action-buttons mt-4 d-flex justify-content-between align-items-center">
                 <a href="dPengajuan.php" class="btn btn-secondary btn-circle">
                     <i class="fa-solid fa-circle-arrow-left"></i>
@@ -240,10 +252,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $authorized && $data_sidang['status
                 <div>
                     <button type="button" class="btn btn-danger btn-circle me-2" id="btnTolakOpenModal">Tolak</button>
                     <form id="approveForm" method="POST" style="display: inline;">
-                        <button type="button" class="btn btn-success btn-circle" id="btnSetujuiOpenModal">Setujui</button>
-                    </form>
+                    <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($id_sidang) ?>">
+                    <button type="button" class="btn btn-success btn-circle" id="btnSetujuiOpenModal">Setujui</button>
+                </form>
                 </div>
-            </div>
+            </div>  
             <?php else: ?>
             <div class="mt-4">
                 <a href="dPengajuan.php" class="btn btn-secondary btn-circle">
@@ -281,7 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $authorized && $data_sidang['status
                             <div class="modal-body">
                                 <p class="mb-3 fw-semibold">Harap masukkan alasan penolakan pengajuan ini.</p>
                                 <textarea name="catatan" class="form-control" rows="4" placeholder="Ketik alasan di sini..."></textarea>
-                                <input type="hidden" name="reject" value="1">
+                                <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($id_sidang) ?>">
                             </div>
                             <div class="modal-footer border-0 justify-content-center gap-3">
                                 <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal">Batalkan</button>

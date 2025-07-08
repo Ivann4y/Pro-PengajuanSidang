@@ -81,6 +81,10 @@ thead th:nth-child(7) {
 .modal-header-custom {
   background-color: #4b68fb;
   color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
 }
 
 /* Saat baris di-hover, ubah warna ikon di tombol aksi */
@@ -168,6 +172,7 @@ tr.jadiBiru:hover .detail-btn i {
   transition: all 0.3s ease;
 }
 
+
 .kelompok-btn:hover {
   background-color: #3a5ce8;
   border-color: #3a5ce8;
@@ -179,6 +184,15 @@ tr.jadiBiru:hover .detail-btn i {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Ensure modal title doesn't interfere */
+.modal-header-custom .modal-title {
+  margin: 0;
+  flex-grow: 1;
+  margin-right: 1rem;
 }
 
 .modal-header-actions .btn-outline-light {
@@ -189,10 +203,22 @@ tr.jadiBiru:hover .detail-btn i {
   transition: all 0.3s ease;
 }
 
+
 .modal-header-actions .btn-outline-light:hover {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.8);
   color: white;
+}
+
+/* Ensure close button is properly positioned */
+.modal-header-actions .btn-close {
+  margin-left: 0.5rem;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.modal-header-actions .btn-close:hover {
+  opacity: 1;
 }
 
 /* Modal tab styles */
@@ -410,7 +436,7 @@ tr.jadiBiru:hover .detail-btn i {
 .kelompok-list-item {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
-  border-radius: 8px; 
+  border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
   transition: all 0.3s ease;
@@ -657,6 +683,7 @@ tr.jadiBiru:hover .detail-btn i {
   .modal-header-actions {
     flex-direction: column;
     gap: 0.25rem;
+    margin-left: 0;
   }
 
   .modal-header-actions .btn-outline-light {
