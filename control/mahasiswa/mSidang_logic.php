@@ -94,13 +94,13 @@ $query = "SELECT DISTINCT S.id_sidang, S.judul, mk.nama_matkul, K_mhs.jenis_sida
             SELECT d1.nama_dosen 
             FROM Penjadwalan p1 
             JOIN Dosen d1 ON d1.nomor_dosen = p1.nomor_dosen 
-            WHERE p1.id_sidang = s.id_sidang AND p1.peran_dosen = 1
+            WHERE p1.id_sidang = S.id_sidang AND p1.peran_dosen = 1
         )
         WHEN K_mhs.jenis_sidang = 'Semester' THEN (
-            SELECT TOP 1 d2.nama_dosen 
-            FROM Pengampu_Kelas pk2 
-            JOIN Dosen d2 ON d2.nomor_dosen = pk2.nomor_dosen 
-            JOIN MataKuliah mk1 ON pk2.id_matkul = mk1.id_matkul
+            SELECT TOP 1 d2.nama_dosen
+			FROM Pengampu_Kelas pk2
+			JOIN Dosen d2 ON d2.nomor_dosen = pk2.nomor_dosen
+			WHERE pk2.id_matkul = K_mhs.id_matkul
         )
         ELSE NULL
     END AS nama_dosen
