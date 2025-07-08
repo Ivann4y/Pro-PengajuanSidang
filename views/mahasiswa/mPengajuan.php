@@ -116,7 +116,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
 
         <main class="NavSide__main-content" id="mPengajuan">
             <div class="container-fluid">
-                <div class="dashboard-header">
+                    <div class="dashboard-header">
                     <h2 class="text-heading" style="color:black;">Pengajuan Sidang Anda</h2>
                 </div>
 
@@ -171,7 +171,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                                             }
                                             ?>
                                             <p class="mt-auto pt-2"><strong>Status:</strong> <span class="badge <?= $badge_class ?>"><?= htmlspecialchars($status) ?></span></p>
-                                        </div>
+                        </div>
                                         <div class="card-footer bg-white border-top-0 text-end pb-3">
                                             <?php
                                             $link = "mKelolaPengajuan.php?nomor_kelompok=" . urlencode($p['nomor_kelompok']) .
@@ -194,11 +194,11 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                                                     break;
                                             }
                                             ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
                         </div>
+                    </div>
+                </div>
+                            <?php endforeach; ?>
+                    </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -239,7 +239,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 });
             }
 
-            // Sidebar Toggle Logic
+        // Sidebar Toggle Logic
             const menuToggle = document.querySelector(".NavSide__toggle");
             const sidebar = document.getElementById("main-sidebar");
             

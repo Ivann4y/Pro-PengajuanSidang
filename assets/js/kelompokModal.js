@@ -130,7 +130,7 @@ async function fetchMahasiswaData() {
     const isEditMode = form?.dataset.mode === "edit";
 
     // Build URL with available parameters
-    let url = "../../control/get_mahasiswa.php?";
+    let url = "../../control/dosen/kelompok/get_mahasiswa.php?";
     const params = [];
 
     if (tahunAjaran)
@@ -333,7 +333,7 @@ function setupFormChangeListeners() {
 
 async function fetchDosenData() {
   try {
-    const response = await fetch("../../control/get_dosen.php");
+    const response = await fetch("../../control/dosen/kelompok/get_dosen.php");
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const responseText = await response.text();
@@ -402,7 +402,7 @@ async function setNextKelompokId() {
     }
 
     const response = await fetch(
-      `../../control/get_next_kelompok_id.php?tahun_ajaran=${tahunAjaranValue}&jenis_sidang=${jenisSidangValue}&id_matkul=${finalIdMatkul}`
+      `../../control/dosen/kelompok/get_next_kelompok_id.php?tahun_ajaran=${tahunAjaranValue}&jenis_sidang=${jenisSidangValue}&id_matkul=${finalIdMatkul}`
     );
     if (!response.ok) throw new Error("Failed to fetch next Kelompok ID");
 
@@ -937,7 +937,7 @@ async function loadKelompokList() {
     console.log("Fetching kelompok list with timestamp:", timestamp);
 
     const response = await fetch(
-      `../../control/get_kelompok_list.php?t=${timestamp}`
+      `../../control/dosen/kelompok/get_kelompok_list.php?t=${timestamp}`
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -1138,7 +1138,7 @@ async function fetchMataKuliah() {
 
   try {
     const response = await fetch(
-      `../../control/get_matkul_by_jenis.php?jenis_sidang=Semester&tahun_ajaran=${tahunAjaranValue}`
+      `../../control/dosen/kelompok/get_matkul_by_jenis.php?jenis_sidang=Semester&tahun_ajaran=${tahunAjaranValue}`
     );
 
     if (!response.ok) {
@@ -1215,9 +1215,9 @@ async function handleKelompokFormSubmit(event) {
   }
 
   try {
-    let url = "../../control/kelompok_create.php";
+    let url = "../../control/dosen/kelompok/kelompok_create.php";
     if (formMode === "edit") {
-      url = "../../control/kelompok_edit.php";
+      url = "../../control/dosen/kelompok/kelompok_edit.php";
       // Add edit mode parameters
       formData.append("nomor_kelompok", kelompokForm.dataset.nomor_kelompok);
       formData.append("tahun_ajaran", kelompokForm.dataset.tahun_ajaran);
@@ -1533,13 +1533,16 @@ window.deleteKelompok = async function (
       id_matkul: id_matkul,
     };
 
-    const response = await fetch("../../control/kelompok_delete.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      "../../control/dosen/kelompok/kelompok_delete.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -1606,7 +1609,7 @@ window.editKelompok = async function (
   try {
     // Fetch kelompok data for editing
     const response = await fetch(
-      `../../control/kelompok_read.php?nomor_kelompok=${nomor_kelompok}&tahun_ajaran=${tahun_ajaran}&jenis_sidang=${jenis_sidang}&id_matkul=${id_matkul}`
+      `../../control/dosen/kelompok/kelompok_read.php?nomor_kelompok=${nomor_kelompok}&tahun_ajaran=${tahun_ajaran}&jenis_sidang=${jenis_sidang}&id_matkul=${id_matkul}`
     );
 
     if (!response.ok) {
@@ -1703,7 +1706,7 @@ async function populateEditForm(
       id_matkul,
     });
     const response = await fetch(
-      `../../control/kelompok_read.php?${params.toString()}`
+      `../../control/dosen/kelompok/kelompok_read.php?${params.toString()}`
     );
     const data = await response.json();
     console.log("[DEBUG] Response from kelompok_read.php:", data);
@@ -1872,18 +1875,21 @@ async function populatePembimbingData(
     });
 
     // Fetch pembimbing data using POST
-    const response = await fetch("../../control/get_pembimbing.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        nomor_kelompok: nomor_kelompok,
-        tahun_ajaran: tahun_ajaran,
-        jenis_sidang: jenis_sidang,
-        id_matkul: id_matkul,
-      }),
-    });
+    const response = await fetch(
+      "../../control/dosen/kelompok/get_pembimbing.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nomor_kelompok: nomor_kelompok,
+          tahun_ajaran: tahun_ajaran,
+          jenis_sidang: jenis_sidang,
+          id_matkul: id_matkul,
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

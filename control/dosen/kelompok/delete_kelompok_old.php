@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../koneksi/koneksiAndrew.php';
+include '../../../koneksi/koneksiAndrew.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_kelompok'])) {
     $id_kelompok = $_POST['id_kelompok'];
