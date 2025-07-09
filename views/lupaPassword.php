@@ -5,7 +5,7 @@ $role = $_GET['role'] ?? 'guest';
 switch ($role) {
     case 'mahasiswa':
         $tableNama = 'Mahasiswa';
-        $emailKolom = 'email'; 
+        $emailKolom = 'email';
         $judul = 'Lupa Kata Sandi Mahasiswa';
         break;
     case 'dosen':
@@ -128,17 +128,17 @@ switch ($role) {
             let url = "";
 
             switch (role) {
-                case 'mahasiswa':
-                    url = 'mahasiswa/mLogin.php';
+                case "mahasiswa":
+                    url = "mahasiswa/mLogin.php";
                     break;
-                case 'dosen':
-                    url = 'dosen/dLogin.php';
+                case "dosen":
+                    url = "dosen/dLogin.php";
                     break;
-                case 'admin':
-                    url = 'admin/aLogin.php';
+                case "admin":
+                    url = "admin/aLogin.php";
                     break;
                 default:
-                    url = '../index.php'; // Atau halaman error
+                    url = "../index.php"; // Atau halaman error
             }
 
             window.location.href = url;

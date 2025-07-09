@@ -143,7 +143,7 @@ if ($row = sqlsrv_fetch_array($stmt_prodi, SQLSRV_FETCH_ASSOC)) {
 
 // Cek jenis sidang: jika TA, ambil dosen pembimbing & penguji
 if ($data_sidang['jenis_sidang'] == 'Tugas Akhir') { 
-    // Query untuk mengambil dosen pembimbing dan penguji sidang TA
+    // Query untuk mengambil dosen pembimbing dan penguji sidang TA beserta bobotnya
     $sql_dosen_terlibat = "SELECT 
             d.nama_dosen, 
             CAST(p.peran_dosen AS INT) AS peran_dosen,
@@ -155,59 +155,62 @@ if ($data_sidang['jenis_sidang'] == 'Tugas Akhir') {
         WHERE p.id_sidang = ?
     ";
     $stmt_dosen_terlibat = sqlsrv_query($conn, $sql_dosen_terlibat, array($id_sidang));
+    
     if ($stmt_dosen_terlibat) {
-        $dosen_penguji_data = []; 
+        $dosen_penguji_data = []; // Reset array
         // Loop setiap dosen yang terlibat
         while ($row = sqlsrv_fetch_array($stmt_dosen_terlibat, SQLSRV_FETCH_ASSOC)) {
             if ($row['peran_dosen'] == 1) { 
-                // Jika peran 1 = pembimbing
-                $dosen_pembimbing = $row; 
+                // Jika peran 1 = pembimbing, simpan seluruh data (termasuk bobot)
+                $dosen_pembimbing = $row; // $dosen_pembimbing sekarang berisi ['nama_dosen', 'peran_dosen', 'bobot']
             } elseif ($row['peran_dosen'] == 0) { 
-                // Jika peran 0 = penguji
+                // Jika peran 0 = penguji, tambahkan ke array data penguji
                 $dosen_penguji_data[] = [
                     'nama' => $row['nama_dosen'],
                     'bobot' => $row['bobot']
                 ];
-                $dosen_penguji[] = $row['nama_dosen'];
+                $dosen_penguji[] = $row['nama_dosen']; // Array ini tetap untuk tampilan sederhana
             }
         }
     }
-} elseif ($data_sidang['jenis_sidang'] == 'Semester') { 
-    // Jika sidang Semester, ambil data mata kuliah dan dosen pengampu
-    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul 
-                   FROM MataKuliah mk 
-                   JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul 
-                   WHERE ds.id_sidang = ?";
+} 
+elseif ($data_sidang['jenis_sidang'] == 'Semester') { 
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul, mk.id_matkul FROM MataKuliah mk JOIN Detail_Sidang ds ON mk.id_matkul = ds.id_matkul WHERE ds.id_sidang = ?";
     $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
-    if ($stmt_matkul) {
-        $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC);
-    }
+    $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC) ?: null;
+    
     if ($data_matkul) {
         $id_matkul = $data_matkul['id_matkul'];
         $id_kelompok = $data_sidang['id_kelompok']; 
+        
         // Query untuk mengambil dosen pengampu berdasarkan matkul dan kelas
-        $sql_pengampu = "SELECT d.nama_dosen 
+        $sql_pengampu = "SELECT d.nama_dosen, d.nomor_dosen 
             FROM Dosen d 
             JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen 
-            WHERE 
-                pk.id_matkul = ?
-               AND pk.id_kelas = (
+            WHERE pk.id_matkul = ? AND pk.id_kelas = (
                 SELECT TOP 1 k_mhs.id_kelas
                 FROM Kelompok klp
                 JOIN Mahasiswa mhs ON klp.nim = mhs.nim
                 JOIN Kelas_Mahasiswa k_mhs ON mhs.nim = k_mhs.nim
                 WHERE klp.id_kelompok = ?
-                )
-        ";
+            )";
         $params_pengampu = array($id_matkul, $id_kelompok);
         $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, $params_pengampu);
-        if ($stmt_pengampu === false) {
-            // Jika query gagal, tampilkan error
-            die("Error pada query pengampu: " . print_r(sqlsrv_errors(), true));
-        }
-        // Loop setiap dosen pengampu
-        while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
-            $dosen_pengampu[] = $row['nama_dosen'];
+
+        $dosen_pengampu_data = []; 
+        if ($stmt_pengampu) {
+            while ($row_pengampu = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
+                // Untuk setiap pengampu, cari bobotnya di tabel Penilaian
+                $sql_bobot = "SELECT TOP 1 bobot_penilaian FROM Penilaian WHERE id_sidang = ? AND nomor_dosen = ?";
+                $stmt_bobot = sqlsrv_query($conn, $sql_bobot, [$id_sidang, $row_pengampu['nomor_dosen']]);
+                $bobot_data = sqlsrv_fetch_array($stmt_bobot, SQLSRV_FETCH_ASSOC);
+
+                $dosen_pengampu_data[] = [
+                    'nama' => $row_pengampu['nama_dosen'],
+                    'bobot' => $bobot_data['bobot_penilaian'] ?? 0
+                ];
+                $dosen_pengampu[] = $row_pengampu['nama_dosen'];
+            }
         }
     }
 }

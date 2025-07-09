@@ -63,14 +63,6 @@ if (!$data_info) {
 
 $nama_mahasiswa = $data_info['nama_mhs'];
 
-// Set status pengajuan
-if (isset($data_info['status_ajuan'])) {
-    if (strtolower($data_info['status_ajuan']) == 'approved' || $data_info['status_ajuan'] == 1) {
-        $status_pengajuan = 'Disetujui';
-    } else {
-        $status_pengajuan = 'Belum Disetujui';
-    }
-}
 
 
 // === FIX: Menggunakan nilai varchar dari DB untuk status revisi ===
@@ -151,6 +143,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 }
+
+// Tambahan: Query detail sidang agar $data_sidang tidak undefined
+$data_sidang = null;
+$data_matkul = null;
+$sql_utama = "SELECT s.id_sidang, s.judul, CAST(k.jenis_sidang AS VARCHAR(20)) AS jenis_sidang, s.id_kelompok, s.dok_laporan, s.status_ajuan, k.nomor_kelompok FROM Sidang s JOIN Kelompok k ON s.id_kelompok = k.id_kelompok WHERE s.id_sidang = ?";
+$stmt_utama = sqlsrv_prepare($conn, $sql_utama, array(&$id_sidang));
+if ($stmt_utama && sqlsrv_execute($stmt_utama)) {
+    $data_sidang = sqlsrv_fetch_array($stmt_utama, SQLSRV_FETCH_ASSOC);
+    if ($data_sidang && $data_sidang['jenis_sidang'] === 'Semester') {
+        $sql_matkul = "SELECT TOP 1 mk.nama_matkul FROM MataKuliah mk JOIN Kelompok k ON mk.id_matkul = k.id_matkul JOIN Sidang AS s ON k.id_kelompok = s.id_kelompok WHERE s.id_sidang = ?";
+        $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
+        if ($stmt_matkul) {
+            $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC);
+        }
+    }
+    // Ambil nomor kelompok setelah $data_sidang berhasil diisi
+    $nomor_kelompok = isset($data_sidang['nomor_kelompok']) ? $data_sidang['nomor_kelompok'] : '-';
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -186,16 +196,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <main class="NavSide__main-content">
             <div
                 class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
-                <h1 class="fs-2">Detail Sidang - Sistem Pengajuan Sidang</h1>
+                <h2>Detail Sidang -
+                    <?php
+                        if (isset($data_sidang['jenis_sidang']) && $data_sidang['jenis_sidang'] === 'Tugas Akhir') {
+                            echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Tugas Akhir';
+                        } elseif (isset($data_sidang['jenis_sidang']) && $data_sidang['jenis_sidang'] === 'Semester' && !empty($data_matkul)) {
+                            echo htmlspecialchars($data_matkul['nama_matkul']);
+                        }
+                    ?>
+                </h2>
                 <div class="d-flex flex-column align-items-start align-items-md-end">
-                    <span class="badge-custom status-belum-disetujui mb-2">Status Pengajuan :
-                        <?php echo htmlspecialchars($status_pengajuan); ?></span>
                     <span
                         class="badge-custom status-<?php echo strtolower(str_replace(' ', '-', $status_revisi)); ?>">Status
                         Revisi : <?php echo htmlspecialchars($status_revisi); ?></span>
                 </div>
             </div>
-            <h1 class="fs-4 fw-semibold mb-3">Catatan Perbaikan - <?php echo htmlspecialchars($nama_mahasiswa); ?></h1>
+            <h1 class="fs-4 fw-semibold mb-3">Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok); ?></h1>
             <div class="mt-4">
                 <?php if (empty($catatan_list)): ?>
                     <div class="alert alert-info">Belum ada catatan perbaikan untuk sidang ini.</div>
