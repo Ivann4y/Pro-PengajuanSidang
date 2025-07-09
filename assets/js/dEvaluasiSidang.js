@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     syncInputs('nilaiPenyampaian', 'nilaiPenyampaian_v');
     syncInputs('nilaiProyek', 'nilaiProyek_v');
 
+ 
     // --- LOGIKA UNTUK TOGGLE SIDEBAR ---
     const menuToggle = document.querySelector(".NavSide__toggle");
     const sidebar = document.getElementById("main-sidebar");
@@ -50,74 +51,91 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // --- LOGIKA UNTUK PROSES PENGIRIMAN FORM ---
+    // =================================================================
+    // === LOGIKA UTAMA UNTUK TOMBOL KIRIM YANG PROAKTIF ===
+    // =================================================================
+
+    // 1. Definisikan semua elemen yang diperlukan untuk validasi
     const btnKirim = document.getElementById('btnKirim');
     const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
+    
+    // Pastikan kita punya tombol sebelum melanjutkan
+    if (!btnKirim) {
+        console.warn('Tombol dengan ID "btnKirim" tidak ditemukan. Fungsi tombol pasif tidak akan berjalan.');
+        return; // Hentikan eksekusi script jika tombol tidak ada
+    }
 
-    // Hanya tambahkan event listener jika tombol "Kirim" ada di halaman
-    if (btnKirim && confirmationKirimModalElement) {
+    // Kumpulkan semua input yang wajib diisi.
+    // PENTING: Nama input (n_dokumen, n_presentasi, dll.) harus sesuai dengan atribut 'name' di HTML Anda.
+    const requiredInputs = [
+        document.querySelector('input[name="n_dokumen"]'),
+        document.querySelector('input[name="n_presentasi"]'),
+        document.querySelector('input[name="n_tanyajawab"]'),
+        document.querySelector('input[name="n_proyek"]'),
+        document.getElementById('catatanEvaluasi')
+    ]
+
+    /**
+     * Fungsi utama untuk memeriksa semua input dan mengaktifkan/menonaktifkan tombol "Kirim".
+     */
+    function updateKirimButtonState() {
+        // Cek apakah SEMUA input yang wajib diisi memiliki nilai (tidak kosong)
+        const isFormValid = requiredInputs.every(input => input.value.trim() !== '');
+
+        if (isFormValid) {
+            // Jika valid, buat tombol menjadi AKTIF
+            btnKirim.classList.remove('btn-passive');
+            btnKirim.title = 'Klik untuk mengirim evaluasi';
+        } else {
+            // Jika tidak valid, buat tombol menjadi PASIF
+            btnKirim.classList.add('btn-passive');
+            btnKirim.title = 'Harap lengkapi semua kolom nilai dan catatan evaluasi';
+        }
+    }
+
+    // 2. Tambahkan event listener ke setiap input yang wajib diisi agar tombol diperbarui secara real-time
+    requiredInputs.forEach(input => {
+        input.addEventListener('input', updateKirimButtonState);
+    });
+
+    // 3. Atur status awal tombol saat halaman pertama kali dimuat
+    // Ini penting jika form sudah terisi data dari database
+    updateKirimButtonState();
+
+    // 4. Modifikasi event klik pada tombol "Kirim"
+    // Event ini sekarang hanya akan berjalan jika tombol dalam keadaan aktif
+// ... (di dalam DOMContentLoaded)
+    if (confirmationKirimModalElement && btnKirim) {
         btnKirim.addEventListener('click', function() {
-            
-            // Ambil nilai input saat tombol diklik
-            const nilaiLaporan = document.getElementsByName('nilaiLaporan')[0].value;
-            const materiPresentasi = document.getElementsByName('materiPresentasi')[0].value;
-            const nilaiPenyampaian = document.getElementsByName('nilaiPenyampaian')[0].value;
-            const nilaiProyek = document.getElementsByName('nilaiProyek')[0].value;
-            const catatanEvaluasi = document.getElementById('catatanEvaluasi').value;
-
-            // Sembunyikan pesan error sebelumnya
-            document.getElementById('nilaiSidangErrorMessage').style.display = 'none';
-            document.getElementById('catatanEvaluasiErrorMessage').style.display = 'none';
-
-            let isValid = true;
-
-            // Validasi apakah semua input nilai dan catatan sudah diisi
-            if ([nilaiLaporan, materiPresentasi, nilaiPenyampaian, nilaiProyek].some(val => val.trim() === '')) {
-                document.getElementById('nilaiSidangErrorMessage').style.display = 'block';
-                isValid = false;
-            }
-            if (catatanEvaluasi.trim() === '') {
-                document.getElementById('catatanEvaluasiErrorMessage').style.display = 'block';
-                isValid = false;
-            }
-
-            // Tampilkan peringatan jika tidak valid, atau tampilkan modal konfirmasi jika valid
-            if (!isValid) {
-                Swal.fire({
-                    title: 'Harap mengisi semua kolom nilai dan catatan!',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                });
-            } else {
+            // Cek sekali lagi jika tombol tidak disabled sebelum membuka modal
+            if (!this.disabled) { 
                 const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
                 confirmationKirimModal.show();
             }
         });
 
-        // Event listener untuk tombol konfirmasi di dalam modal
+        // Event listener untuk tombol konfirmasi di dalam modal (sudah ada di HTML Anda)
         const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
         if (btnKonfirmasiKirim) {
             btnKonfirmasiKirim.addEventListener('click', function() {
-                const modalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
-                if (modalInstance) {
-                    modalInstance.hide();
-                }
-                // Tampilkan notifikasi sukses lalu submit form
-                Swal.fire({
-                    title: 'Evaluasi Sidang Berhasil Dikirim!',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => {
-                    document.getElementById('evaluasiForm').submit();
-                });
+                document.getElementById('evaluasiForm').submit();
             });
         }
     }
 
 
+    // --- VALIDASI INPUT: HANYA ANGKA 0-100 (opsional, bisa digabung) ---
+    document.querySelectorAll('.input-nilai').forEach(function(input) {
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 1 && this.value.startsWith('0')) {
+                this.value = this.value.replace(/^0+/, '');
+            }
+            if (parseInt(this.value, 10) > 100) {
+                this.value = '100';
+            }
+        });
+    });
 
-    
 });
-
+        
