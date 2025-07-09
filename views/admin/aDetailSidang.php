@@ -163,7 +163,19 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                                         <?php if ($data_sidang['jenis_sidang'] == 'Tugas Akhir'): ?>
                                             <div class="form-group">
                                                 <label>Pembimbing</label>
-                                                <p><?php echo htmlspecialchars($dosen_pembimbing['nama_dosen'] ?? 'Belum ada'); ?></p>
+                                                <div class="input-with-buttons">
+                                                <p style="flex-grow: 1; margin: 0;"><?php echo htmlspecialchars($dosen_pembimbing['nama_dosen'] ?? 'Belum ada'); ?></p>
+                                                <div class="input-with-percent">
+                                                    <input type="number" 
+                                                        name="pembimbing_bobot" 
+                                                        class="form-control-bobot" 
+                                                        min="0" 
+                                                        placeholder="Bobot" 
+                                                        value="<?php echo htmlspecialchars($dosen_pembimbing['bobot'] ?? '0'); ?>"
+                                                        oninput="cleanNumberInput(this); validateTotalWeightRealtime();">
+                                                    <span class="percent-sign">%</span>
+                                                </div>
+                                            </div>
                                             </div>
                                             <hr>
                                             <div id="penguji-wrapper">
@@ -203,12 +215,25 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                                         <?php if ($data_sidang['jenis_sidang'] == 'Semester'): ?>
                                             <hr>
                                             <div id="pengampu-wrapper">
-                                                <?php if (!empty($dosen_pengampu)): ?>
-                                                    <?php foreach ($dosen_pengampu as $index => $nama_pengampu): ?>
+                                                <?php if (!empty($dosen_pengampu_data)):  ?>
+                                                    <?php foreach ($dosen_pengampu_data as $index => $pengampu):  ?>
                                                         <div class="form-group">
-                                                            <label>Pengampu <?php echo $index + 1; ?></label>
-                                                            <p><?php echo htmlspecialchars($nama_pengampu); ?></p>
+                                                        <label>Pengampu <?php echo $index + 1; ?></label>
+                                                        <div class="input-with-buttons">
+                                                            <p style="flex-grow: 1; margin: 0;"><?php echo htmlspecialchars($pengampu['nama']); ?></p>
+                                                            <!-- Input bobot untuk setiap pengampu -->
+                                                            <div class="input-with-percent">
+                                                                <input type="number" 
+                                                                    name="pengampu_bobot[]" 
+                                                                    class="form-control-bobot" 
+                                                                    min="0" 
+                                                                    placeholder="Bobot" 
+                                                                    value="<?php echo htmlspecialchars($pengampu['bobot'] ?? '0'); ?>"
+                                                                    oninput="cleanNumberInput(this); validateTotalWeightRealtime();">
+                                                                <span class="percent-sign">%</span>
+                                                            </div>
                                                         </div>
+                                                    </div>
                                                     <?php endforeach; ?>
                                                 <?php else: ?>
                                                     <p>Tidak ada dosen pengampu terdaftar.</p>
@@ -234,7 +259,7 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                                                 <input type="time" id="modal_jam_akhir" name="jam_akhir" value="<?php echo !empty($data_jadwal['jam_selesai']) ? $data_jadwal['jam_selesai']->format('H:i') : ''; ?>">
                                             </div>
                                         </div>
-
+                                        <div class="realtime-validation-message" id="realtime-validation-detail"></div>
                                         <div id="form-error" style="color: red; margin-bottom: 10px;"></div>
                                         <div class="form-actions">
                                             <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>

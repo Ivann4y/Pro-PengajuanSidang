@@ -1,5 +1,43 @@
     @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
+    .input-with-percent {
+    position: relative;
+    display: flex; /* Untuk memastikan input mengisi ruang */
+    align-items: center;
+}
+
+/* Atur posisi simbol % */
+.input-with-percent .percent-sign {
+    position: absolute;
+    right: 12px; /* Jarak dari sisi kanan input */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888; /* Warna agar tidak terlalu mencolok */
+    pointer-events: none; /* Penting! Agar simbol tidak bisa diklik */
+    font-size: 14px; /* Sesuaikan ukuran font jika perlu */
+}
+
+/* Beri ruang di dalam input agar teks tidak menimpa simbol % */
+.input-with-percent .bobot-input-new {
+    /* Tambahkan padding di sisi kanan selebar ruang untuk simbol % */
+    padding-right: 25px !important; /* !important mungkin diperlukan untuk menimpa gaya lain */
+    
+    /* Pastikan lebar input tetap responsif */
+    width: 100%;
+}
+/* FILE: assets/css/aPenjadwalan.css */
+
+.realtime-validation-message {
+    color: #dc3545; /* Warna merah "danger" dari Bootstrap */
+    font-size: 0.875em; /* Ukuran font kecil */
+    font-weight: 500;
+    text-align: right; /* Rata kanan agar dekat dengan input bobot */
+    min-height: 1.2em; /* Mencegah layout "melompat" saat pesan muncul/hilang */
+    margin-top: -10px; /* Sedikit naik ke atas */
+    margin-bottom: 10px;
+    padding-right: 15px;
+}
+
     * {
         margin: 0;
         padding: 0;
