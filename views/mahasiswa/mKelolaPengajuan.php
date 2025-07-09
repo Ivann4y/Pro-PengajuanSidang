@@ -29,6 +29,7 @@ if (!$nomor_kelompok || !$tahun_ajaran || !$jenis_sidang || !$id_matkul) {
 $sql_id = "SELECT TOP 1 id_kelompok FROM Kelompok WHERE nomor_kelompok = ? AND tahun_ajaran = ? AND jenis_sidang = ? AND id_matkul = ? AND nim = ?";
 $stmt_id = sqlsrv_query($conn, $sql_id, [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul, $nim_mahasiswa_logged_in]);
 $row_id = sqlsrv_fetch_array($stmt_id, SQLSRV_FETCH_ASSOC);
+
 if (!$row_id) {
     die('Error: Anda tidak terdaftar sebagai anggota kelompok ini atau parameter tidak valid.');
 }
@@ -234,6 +235,7 @@ $is_editable = (is_null($status_ajuan) || $status_ajuan === 'Draft');
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/mKelolaPengajuan.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 </head>
 
