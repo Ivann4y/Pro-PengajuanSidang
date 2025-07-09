@@ -55,104 +55,59 @@
 }
 
 /* ========================================================== */
-/* ===== GAYA SPESIFIK DESKTOP (Lebar > 768px) - DIPERBAIKI ===== */
+/* ===== GAYA SPESIFIK DESKTOP (Lebar > 768px) ============== */
 /* ========================================================== */
 @media screen and (min-width: 769px) {
+    /* [PENTING] Memberi tahu container tabel agar bisa di-scroll horizontal jika terlalu sempit */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
     table {
-        /* [WAJIB] Membuat lebar kolom stabil dan tidak terpengaruh konten */
         table-layout: fixed;
         width: 100%;
         border-spacing: 0 10px;
         border-collapse: separate;
+        /* [ANTISIPASI] Memberi lebar minimum agar tidak hancur saat di-minimize */
+        min-width: 800px;
     }
 
-    /* ===== DEFINISI KOLOM YANG KONSISTEN (TOTAL 100%) ===== */
-    thead th {
+    thead th, tr.isiTabel td {
         padding: 12px 15px;
-        text-align: left; /* Default rata kiri */
         vertical-align: middle;
+        text-align: left;
+        /* [ANTISIPASI] Memaksa teks panjang untuk patah kata agar tidak merusak layout */
+        word-break: break-word;
     }
 
     /* Definisikan lebar untuk SEMUA 6 kolom */
-    thead th:nth-child(1) { width: 5%; text-align: center; }  /* No */
-    thead th:nth-child(2) { width: 10%; } /* Kelompok */
-    thead th:nth-child(3) { width: 35%; } /* Judul */
-    thead th:nth-child(4) { width: 20%; } /* Mata Kuliah */
-    thead th:nth-child(5) { width: 20%; } /* Pengampu/Pembimbing */
-    thead th:nth-child(6) { width: 10%; text-align: center; } /* Aksi */
-    /* Total: 5 + 10 + 35 + 20 + 20 + 10 = 100% */
+    thead th:nth-child(1) { width: 10%; }
+    thead th:nth-child(2) { width: 20%; }
+    thead th:nth-child(3) { width: 35%; }
+    thead th:nth-child(4) { width: 20%; }
+    thead th:nth-child(5) { width: 35%; }
+    thead th:nth-child(6) { width: 10%; }
 
+    /* Atur perataan untuk kolom No dan Aksi */
+    thead th:nth-child(1), tr.isiTabel td:nth-child(1),
+    thead th:nth-child(6), tr.isiTabel td:nth-child(6) {
+        text-align: center;
+    }
 
-    /* ===== GAYA BARIS DAN SEL (td) ===== */
     tr.isiTabel {
         background-color: #eaeef7;
         transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    tr.isiTabel td {
-        padding: 15px 18px;
-        vertical-align: middle;
-        text-align: left; /* Default rata kiri */
-    }
-    
-    /* Atur perataan untuk sel data agar sesuai header */
-    tr.isiTabel td:first-child,
-    tr.isiTabel td:last-child {
-        text-align: center;
-    }
+    tr.isiTabel td:first-child { border-radius: 20px 0 0 20px; }
+    tr.isiTabel td:last-child { border-radius: 0 20px 20px 0; }
 
-    /* Gaya Radius Sudut */
-    tr.isiTabel td:first-child {
-        border-radius: 20px 0 0 20px;
-    }
-
-    tr.isiTabel td:last-child {
-        border-radius: 0 20px 20px 0;
-    }
-
-    /* Efek Hover */
     tr.isiTabel:hover {
         background-color: #4b68fb;
         color: #ffffff;
     }
-
-    tr.isiTabel:hover .detail-btn {
-        color: #ffffff;
-        opacity: 1;
-    }
-
-    .detail-btn:hover {
-        opacity: .7;
-        color : #ffffff;
-    }
-
-    /* ===== CSS UNTUK PERAPIHAN TABEL ===== */
-
-/* 1. Atur padding dan alignment vertikal untuk semua sel */
-table th, table td {
-    padding: 12px 15px; /* Memberi jarak di dalam sel */
-    vertical-align: middle; /* Membuat konten berada di tengah secara vertikal */
-}
-
-/* 2. Atur alignment default untuk header dan data menjadi rata kiri */
-table th, table td {
-    text-align: left;
-}
-
-/* 3. Buat pengecualian untuk kolom "No" dan "Aksi" agar berada di tengah */
-/* Kolom pertama (No) */
-table th:first-child,
-table td:first-child {
-    text-align: center;
-    width: 5%; /* Beri lebar agar tidak terlalu besar */
-}
-
-/* Kolom terakhir (Aksi) */
-table th:last-child,
-table td:last-child {
-    text-align: center;
-    width: 10%; /* Beri lebar agar tidak terlalu besar */
-}
+    tr.isiTabel:hover .detail-btn { color: #ffffff; }
+    .detail-btn:hover { opacity: .7; }
 }
 
 /* ========================================================== */
@@ -215,11 +170,11 @@ table td:last-child {
         margin-left: 0 !important;
         margin-top: 15px;
     }
-        tr.isiTabel:hover .detail-btn {
-        color: #ffffff;
-        opacity: 1;
-    }
     .container-fluid>.row:first-child>div {
         flex-wrap: wrap;
+    }
+            tr.isiTabel:hover .detail-btn {
+        color: #ffffff;
+        opacity: 1;
     }
 }
