@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
     $dokumen_revisi = $data_revisi['dok_revisi'] ?? null;
 
+
     if ($approve_action && $dokumen_revisi) {
         // Pastikan entri untuk dosen ini ada
         $check_sql = "SELECT id_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
@@ -358,17 +359,30 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                                 <div class="value-row"><?php echo htmlspecialchars($nomor_kelompok ?: '-'); ?></div>
                             </div>
                             <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-users"></i><span class="fw-bold">Anggota Kelompok</span></div>
+                                <div class="value-row">
+                                    <?php if (!empty($mahasiswa)): ?>
+                                        <?php foreach ($mahasiswa as $mhs): ?>
+                                            <?= htmlspecialchars($mhs['nama_mhs']) ?><br>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <em>Belum ada anggota</em>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <div class="info-group">
                                 <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
                                 <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'Belum ada judul'; ?></div>
                             </div>
 
-                               <div class="info-group">
-                                    <div class="label-row">
-                                        <i class="fa-solid fa-user-tie"></i>
-                                        <span class="fw-bold"><?php echo htmlspecialchars($labelPembimbing); ?></span>
-                                    </div>
-                                    <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
+                            <div class="info-group">
+                                <div class="label-row">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                    <span class="fw-bold"><?php echo htmlspecialchars($labelPembimbing); ?></span>
                                 </div>
+                                <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
+                            </div>
 
                             <!-- Bagian Dosen Penguji (HANYA MUNCUL JIKA BUKAN SIDANG SEMESTER) -->
                             <?php if ($jenis_sidang != 'Semester'): ?>
@@ -382,7 +396,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                         <div class="section">
                             <div class="info-group">
                                 <div class="label-row"> <i class="fa-solid fa-user"></i><span class="fw-bold"> Mata Kuliah </span></div>
-                                <div class ="value-row"><?php echo htmlspecialchars($nama_matkul_sidang) ?></div>
+                                <div class="value-row"><?php echo htmlspecialchars($nama_matkul_sidang) ?></div>
 
                             </div>
                             <div class="info-group">
@@ -405,14 +419,15 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     <h3>Dokumen Revisi</h3>
                     <div class="file-buttons-container d-flex flex-wrap">
                         <?php if (!empty($data_revisi['dok_revisi'])): ?>
-                            <a href="../../uploadtesting/<?= $namaFileRevisi ?>" class="file-button" download>
+                            <a href="../../uploads/<?= $dokumen_revisi ?>" class="file-button" download>
                                 <i class="fa-solid fa-file-zipper"></i>
-                                <?= htmlspecialchars(basename($namaFileRevisi)) ?>
+                                <?= htmlspecialchars(basename($dokumen_revisi)) ?>
                             </a>
                         <?php else: ?>
                             <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>
                         <?php endif; ?>
                     </div>
+
 
                     <div class="button-group-bottom" id="grup-aksi-dokumen">
                         <div class="button-group">

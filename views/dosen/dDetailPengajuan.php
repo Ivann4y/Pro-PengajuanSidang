@@ -30,7 +30,7 @@ if (isset($_POST['download']) && $_POST['download'] === 'main') {
     // Join with Detail_Sidang to get the original filename
     $sql_download = "SELECT s.dok_laporan, ds.nama_file 
                      FROM Sidang s
-                     JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+                     LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
                      WHERE s.id_sidang = ?";
     $stmt_download = sqlsrv_query($conn, $sql_download, [$id_sidang]);
     
@@ -82,6 +82,7 @@ $stmt_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
 $data_sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC);
 if (!$data_sidang) die("Data sidang tidak ditemukan.");
 
+$judul = $data_sidang['judul'];
 
 // Ambil anggota kelompok
 $sql_anggota = "
@@ -179,9 +180,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             </div>
         </div>
         <main class="NavSide__main-content" id="dPengajuan">
-            <h2 class="mb-4">Detail Pengajuan</h2>
+            <h2 class="text-heading text-black" style="font-weight: 700;">Detail Pengajuan - <?= htmlspecialchars($judul) ?></h2>
             <div class="card mb-3 info-pengajuan">
-                <h5 class="fw-semibold section">Informasi Pengajuan</h5>
+                <h5 class="fw-bold section">Informasi Pengajuan</h5>
                 <div class="row mt-2">
                     <div class="col-md-6 section">
                         <p class="mb-1 fw-bold">ID Kelompok</p>
