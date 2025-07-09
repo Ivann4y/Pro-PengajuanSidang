@@ -110,6 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         if (empty($id_matkul_terpilih)) {
             throw new Exception("Mata kuliah harus dipilih.");
         }
+        
+        if (empty($id_kelompok)) {
+            throw new Exception("Id kelompok harus dipilih.");
+        }
 
         // Tentukan jenis sidang
         $sql_get_matkul_name = "SELECT nama_matkul FROM dbo.MataKuliah WHERE id_matkul = ?";
