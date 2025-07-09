@@ -24,9 +24,6 @@ $role = "mahasiswa";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/button-styles.css">
     <link rel="stylesheet" href="../../assets/css/login.css">
-
-  
-
 </head>
 
 <body>
@@ -118,49 +115,13 @@ $role = "mahasiswa";
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script>
         function toLupaPassword() {
-            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';
+            window.location.href = "../../views/lupaPassword.php?role=<?= $role ?>";
         }
-
-        function kembaliKePilihRole() {
-            window.location.href = '../../index.php';
-        }
-
-        // --- TAMBAHKAN KODE INI ---
-        const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-
-        togglePassword.addEventListener('click', function (e) {
-            // HANYA TOGGLE KELAS CSS, BUKAN ATRIBUT TYPE
-            password.classList.toggle('password-masked');
-
-            // Logika untuk menukar ikon mata tetap sama
-            this.classList.toggle('bi-eye-slash-fill');
-            this.classList.toggle('bi-eye-fill');
-        });
-        // --- BATAS KODE TAMBAHAN ---
-
-        // hide pw
-        // const input = document.getElementById('password');
-        // let realValue = '';
-
-        // input.addEventListener('input', (e) => {
-        //     const typedValue = e.target.value;
-
-        //     if (typedValue.length < realValue.length) {
-        //         realValue = realValue.slice(0, typedValue.length);
-        //     } else {
-        //         const newChar = typedValue.charAt(typedValue.length - 1);
-        //         realValue += newChar;
-        //     }
-
-        //     e.target.value = '•'.repeat(realValue.length);
-        // });
     </script>
+    <script src="../../assets/js/login.js"></script>
 </body>
 
 </html>

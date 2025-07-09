@@ -309,6 +309,16 @@ body {
 .info-card:hover .section i {
   color: white;
 }
+.realtime-validation-message {
+    color: #dc3545; /* Warna merah "danger" */
+    font-size: 0.875em;
+    font-weight: 500;
+    text-align: right;
+    min-height: 1.2em; /* Mencegah layout "melompat" */
+    margin-top: -5px;
+    margin-bottom: 15px;
+    padding-right: 15px;
+}
 
 .btn-ubah {
   background-color: #4b68fb;

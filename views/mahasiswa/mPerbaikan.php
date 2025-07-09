@@ -32,51 +32,53 @@ if (!isset($_SESSION['selected_sidang_id']) || !is_numeric($_SESSION['selected_s
 }
 $id_sidang = (int) $_SESSION['selected_sidang_id'];
 
-
+// === LOGIKA FETCH DATA ===
 // === LOGIKA FETCH DATA ===
 $nama_mahasiswa = '';
 $status_revisi = '';
-$status_pengajuan = 'Belum Disetujui';
+$status_pengajuan = 'Belum Disetujui'; // Default value
 $catatan_list = [];
 
-// Query untuk mengambil informasi dasar
+// === FIX: Query untuk mengambil informasi dasar ===
+// Menggunakan JOIN yang benar: Sidang -> Kelompok -> Mahasiswa
 $query_info = "
-    SELECT TOP 1 ds.status_revisi, m.nama_mhs
-    FROM Detail_Sidang ds
-    JOIN Sidang s ON ds.id_sidang = s.id_sidang
-    JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
-    JOIN Mahasiswa m ON km.nim = m.nim
-    WHERE ds.id_sidang = ?
+    SELECT TOP 1 ds.status_revisi, m.nama_mhs, s.status_ajuan
+    FROM Sidang s
+    LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    JOIN Mahasiswa m ON k.nim = m.nim
+    WHERE s.id_sidang = ?
 ";
+
 $params_info = array($id_sidang);
 $stmt_info = sqlsrv_query($conn, $query_info, $params_info);
 if ($stmt_info === false) {
     die("Error saat menjalankan query info: <br><pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 $data_info = sqlsrv_fetch_array($stmt_info, SQLSRV_FETCH_ASSOC);
+
 if (!$data_info) {
     die("Error: Data sidang dengan ID " . htmlspecialchars($id_sidang) . " tidak ditemukan.");
 }
-$nama_mahasiswa = $data_info['nama_mhs'];
-$status_revisi = $data_info['status_revisi'];
 
-// Perbaikan: Konversi nilai binary ke string yang sesuai
-if ($status_revisi === null || $status_revisi === '') {
+$nama_mahasiswa = $data_info['nama_mhs'];
+
+
+
+// === FIX: Menggunakan nilai varchar dari DB untuk status revisi ===
+$status_revisi_from_db = $data_info['status_revisi'];
+if (empty($status_revisi_from_db)) {
     $status_revisi = 'Belum Ada Revisi';
-} elseif ($status_revisi === 0x00 || $status_revisi === 0) {
-    $status_revisi = 'Menunggu Persetujuan';
-} elseif ($status_revisi === 0x01 || $status_revisi === 1) {
-    $status_revisi = 'Disetujui';
 } else {
-    $status_revisi = 'Status Tidak Diketahui';
+    $status_revisi = $status_revisi_from_db; // e.g., 'Menunggu Persetujuan', 'Disetujui'
 }
 
-// Query untuk mengambil catatan perbaikan
+// Query untuk mengambil catatan perbaikan (sudah benar)
 $query_catatan = "
     SELECT ds.catatan_sidang, d.nama_dosen
     FROM Detail_Sidang ds
     JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-    WHERE ds.id_sidang = ?
+    WHERE ds.id_sidang = ? AND ds.catatan_sidang IS NOT NULL AND ds.catatan_sidang <> ''
     ORDER BY d.nama_dosen ASC
 ";
 $params_catatan = array($id_sidang);
@@ -114,9 +116,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 error_log("File uploaded successfully: " . $path_target);
                 error_log("File size: " . filesize($path_target));
                 
-                $file_content = file_get_contents($path_target);
-                $params_update = array($file_content, $id_sidang);
-                
+                $query_update_dokumen = "UPDATE Detail_Sidang SET dok_revisi = ?, nama_file = ?, status_revisi = 'Pending' WHERE id_sidang = ?";
+                $params_update = array($path_relatif, $file_asli, $id_sidang);
+
                 // Debug: Log query dan parameter
                 error_log("Update query: " . $query_update_dokumen);
                 error_log("Parameters: " . print_r($params_update, true));
@@ -140,6 +142,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
         exit();
     }
+}
+
+// Tambahan: Query detail sidang agar $data_sidang tidak undefined
+$data_sidang = null;
+$data_matkul = null;
+$sql_utama = "SELECT s.id_sidang, s.judul, CAST(k.jenis_sidang AS VARCHAR(20)) AS jenis_sidang, s.id_kelompok, s.dok_laporan, s.status_ajuan, k.nomor_kelompok FROM Sidang s JOIN Kelompok k ON s.id_kelompok = k.id_kelompok WHERE s.id_sidang = ?";
+$stmt_utama = sqlsrv_prepare($conn, $sql_utama, array(&$id_sidang));
+if ($stmt_utama && sqlsrv_execute($stmt_utama)) {
+    $data_sidang = sqlsrv_fetch_array($stmt_utama, SQLSRV_FETCH_ASSOC);
+    if ($data_sidang && $data_sidang['jenis_sidang'] === 'Semester') {
+        $sql_matkul = "SELECT TOP 1 mk.nama_matkul FROM MataKuliah mk JOIN Kelompok k ON mk.id_matkul = k.id_matkul JOIN Sidang AS s ON k.id_kelompok = s.id_kelompok WHERE s.id_sidang = ?";
+        $stmt_matkul = sqlsrv_query($conn, $sql_matkul, array($id_sidang));
+        if ($stmt_matkul) {
+            $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC);
+        }
+    }
+    // Ambil nomor kelompok setelah $data_sidang berhasil diisi
+    $nomor_kelompok = isset($data_sidang['nomor_kelompok']) ? $data_sidang['nomor_kelompok'] : '-';
 }
 ?>
 <!DOCTYPE html>
@@ -176,16 +196,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <main class="NavSide__main-content">
             <div
                 class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
-                <h1 class="fs-2">Detail Sidang - Sistem Pengajuan Sidang</h1>
+                <h2>Detail Sidang -
+                    <?php
+                        if (isset($data_sidang['jenis_sidang']) && $data_sidang['jenis_sidang'] === 'Tugas Akhir') {
+                            echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Tugas Akhir';
+                        } elseif (isset($data_sidang['jenis_sidang']) && $data_sidang['jenis_sidang'] === 'Semester' && !empty($data_matkul)) {
+                            echo htmlspecialchars($data_matkul['nama_matkul']);
+                        }
+                    ?>
+                </h2>
                 <div class="d-flex flex-column align-items-start align-items-md-end">
-                    <span class="badge-custom status-belum-disetujui mb-2">Status Pengajuan :
-                        <?php echo htmlspecialchars($status_pengajuan); ?></span>
                     <span
                         class="badge-custom status-<?php echo strtolower(str_replace(' ', '-', $status_revisi)); ?>">Status
                         Revisi : <?php echo htmlspecialchars($status_revisi); ?></span>
                 </div>
             </div>
-            <h1 class="fs-4 fw-semibold mb-3">Catatan Perbaikan - <?php echo htmlspecialchars($nama_mahasiswa); ?></h1>
+            <h1 class="fs-4 fw-semibold mb-3">Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok); ?></h1>
             <div class="mt-4">
                 <?php if (empty($catatan_list)): ?>
                     <div class="alert alert-info">Belum ada catatan perbaikan untuk sidang ini.</div>

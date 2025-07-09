@@ -4,8 +4,6 @@ if ($_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit();
 }
-
-// Pastikan data user dan nomor_dosen ada di session
 if (!isset($_SESSION['user_data']['nomor_dosen'])) {
     die("Error: Data dosen tidak ditemukan di session. Silakan login kembali.");
 }
@@ -16,58 +14,130 @@ if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-// --- KONFIGURASI UNTUK PAGINASI, PENCARIAN, DAN FILTER ---
-$rowsPerPage = 10;
+// Handle Accept/Reject Action via POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id_sidang'])) {
+    $id_sidang = (int)$_POST['id_sidang'];
+    $action = $_POST['action'];
+    $newStatus = $action === 'accept' ? 'Approved' : ($action === 'reject' ? 'Rejected' : null);
+
+    if (!$newStatus) {
+        echo json_encode(['success' => false, 'message' => 'Aksi tidak valid.']);
+        exit();
+    }
+
+    // --- Fetch Sidang info ---
+    $sql = "SELECT s.id_sidang, s.id_kelompok, k.jenis_sidang, k.id_matkul, k.tahun_ajaran
+            FROM Sidang s
+            JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+            WHERE s.id_sidang = ?";
+    $stmt = sqlsrv_query($conn, $sql, [$id_sidang]);
+    $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+
+    if (!$sidang) {
+        echo json_encode(['success' => false, 'message' => 'Sidang tidak ditemukan.']);
+        exit();
+    }
+
+    // --- Authorization check ---
+    $authorized = false;
+    if ($sidang['jenis_sidang'] === 'Tugas Akhir') {
+        $sqlAuth = "SELECT 1 FROM Bimbingan WHERE id_kelompok = ? AND nomor_dosen = ? AND isPembimbing = 1";
+        $stmtAuth = sqlsrv_query($conn, $sqlAuth, [$sidang['id_kelompok'], $nomorDosen]);
+        $authorized = sqlsrv_fetch($stmtAuth) !== false;
+    } elseif ($sidang['jenis_sidang'] === 'Semester') {
+        $sqlAuth = "SELECT 1 FROM Pengampu_Kelas WHERE id_matkul = ? AND tahun_ajaran = ? AND nomor_dosen = ?";
+        $stmtAuth = sqlsrv_query($conn, $sqlAuth, [$sidang['id_matkul'], $sidang['tahun_ajaran'], $nomorDosen]);
+        $authorized = sqlsrv_fetch($stmtAuth) !== false;
+    }
+
+    if (!$authorized) {
+        echo json_encode(['success' => false, 'message' => 'Anda tidak berhak mengubah status pengajuan ini.']);
+        exit();
+    }
+
+    // --- Update status_ajuan ---
+    $updateSql = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
+    $updateStmt = sqlsrv_query($conn, $updateSql, [$newStatus, $id_sidang]);
+    if ($updateStmt === false) {
+        echo json_encode(['success' => false, 'message' => 'Gagal mengubah status.']);
+        exit();
+    }
+    echo json_encode(['success' => true, 'message' => 'Status pengajuan berhasil diubah.']);
+    exit();
+}
+
+// --- GET: Show the page ---
+// Pagination setup
+$rowsPerPage = 10; // Number of records per page
 $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+// Filter setup for frontend
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$offset = ($currentPage - 1) * $rowsPerPage;
+$offset = max(0, ($currentPage - 1) * $rowsPerPage);
 
 
-$baseQuery = "
-    WITH SidangData AS (
-        SELECT DISTINCT
-            s.id_sidang,
-            s.id_kelompok,
-            s.judul,
-            s.jenis_sidang,
-            d.nomor_dosen,
-            d.nama_dosen,
-            mk.nama_matkul
-        FROM
-            Sidang s
-        JOIN
-            Bimbingan b ON s.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
-        JOIN
-            Dosen d ON b.nomor_dosen = d.nomor_dosen
-        LEFT JOIN
-            Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-        LEFT JOIN
-            MataKuliah mk ON ds.id_matkul = mk.id_matkul
-        WHERE
-            s.status_ajuan = 0
-    )
+// [REVISED and CORRECTED QUERY]
+// [REVISED and CORRECTED QUERY]
+// --- [REVISED AND CORRECTED QUERY LOGIC] ---
+
+// Step 1: Define the core query that gets all pending data without any filtering by the logged-in user.
+// This will be used as a base for both counting and fetching data.
+$querySource = "
+(
+    SELECT
+        s.id_sidang,
+        ku.id_kelompok, 
+        ku.nomor_kelompok,
+        s.judul,
+        mk.nama_matkul,
+        ku.jenis_sidang AS tipe_sidang_text,
+        
+        -- Use STRING_AGG to get all authorized lecturer names for display
+        CASE
+            WHEN ku.jenis_sidang = 'Tugas Akhir' THEN
+                (SELECT STRING_AGG(d.nama_dosen, ', ') FROM Bimbingan b JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ku.id_kelompok AND b.isPembimbing = 1)
+            ELSE
+                (SELECT STRING_AGG(d.nama_dosen, ', ') FROM Pengampu_Kelas pk JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen WHERE pk.id_matkul = ku.id_matkul)
+        END AS nama_dosen,
+        
+        -- Get a comma-separated list of lecturer numbers to use for filtering
+        CASE
+            WHEN ku.jenis_sidang = 'Tugas Akhir' THEN
+                (SELECT STRING_AGG(CAST(b.nomor_dosen AS VARCHAR), ',') FROM Bimbingan b WHERE b.id_kelompok = ku.id_kelompok AND b.isPembimbing = 1)
+            ELSE
+                (SELECT STRING_AGG(CAST(pk.nomor_dosen AS VARCHAR), ',') FROM Pengampu_Kelas pk WHERE pk.id_matkul = ku.id_matkul)
+        END AS list_nomor_dosen
+    FROM
+        Sidang s
+    JOIN 
+        (SELECT DISTINCT id_kelompok, nomor_kelompok, tahun_ajaran, jenis_sidang, id_matkul FROM dbo.Kelompok) AS ku ON s.id_kelompok = ku.id_kelompok
+    JOIN 
+        MataKuliah mk ON ku.id_matkul = mk.id_matkul
+    WHERE
+        s.status_ajuan = 'Pending'
+) AS FullDataSet
 ";
 
-// Kumpulan kondisi WHERE dan parameternya
+// Step 2: Build the WHERE clause and parameters dynamically.
 $whereConditions = [];
 $params = [];
 
-// Kondisi dasar: Dosen yang login
-$whereConditions[] = "nomor_dosen = ?";
-array_push($params, $nomorDosen);
+// Kondisi dasar: Dosen yang login (check if their number is in the comma-separated list)
+$whereConditions[] = "list_nomor_dosen LIKE ?";
+array_push($params, '%' . $nomorDosen . '%');
 
 // Terapkan kondisi filter
 if ($filter === 'TA') {
-    $whereConditions[] = "jenis_sidang = 0";
+    $whereConditions[] = "tipe_sidang_text = 'Tugas Akhir'";
 } elseif ($filter === 'Semester') {
-    $whereConditions[] = "jenis_sidang = 1";
+    $whereConditions[] = "tipe_sidang_text = 'Semester'";
 }
 
 // Terapkan kondisi pencarian
 if (!empty($search)) {
     $whereConditions[] = "(
-        CAST(id_kelompok AS VARCHAR(255)) LIKE ? OR 
+        CAST(nomor_kelompok AS VARCHAR(255)) LIKE ? OR 
         ISNULL(judul, '') LIKE ? OR 
         ISNULL(nama_matkul, '') LIKE ?
     )";
@@ -75,35 +145,28 @@ if (!empty($search)) {
     array_push($params, $likeParam, $likeParam, $likeParam);
 }
 
-// Gabungkan semua kondisi menjadi satu string WHERE clause
+// Gabungkan semua kondisi menjadi satu string
 $whereClause = "WHERE " . implode(" AND ", $whereConditions);
 
-
-// --- QUERY UNTUK MENGHITUNG TOTAL DATA UNTUK PAGINASI ---
-$countSql = $baseQuery . "SELECT COUNT(*) as total FROM SidangData " . $whereClause;
-
+// Step 3: Build and execute the COUNT query.
+$countSql = "SELECT COUNT(*) as total FROM " . $querySource . " " . $whereClause;
 $countStmt = sqlsrv_query($conn, $countSql, $params);
 if ($countStmt === false) {
     die("Error saat menghitung data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
-$totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'];
-$totalPages = ceil($totalRecords / $rowsPerPage) ?: 1;
+$totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
+$totalPages = ($rowsPerPage > 0) ? ceil($totalRecords / $rowsPerPage) : 1;
 
-// Sesuaikan halaman saat ini jika melebihi total halaman
-if ($currentPage > $totalPages) {
+// Adjust current page if it's out of bounds
+if ($totalPages > 0 && $currentPage > $totalPages) {
     $currentPage = $totalPages;
-    $offset = ($currentPage - 1) * $rowsPerPage;
+    $offset = max(0, ($currentPage - 1) * $rowsPerPage);
 }
 
-
-// --- QUERY UTAMA UNTUK MENGAMBIL DATA SESUAI HALAMAN ---
-$mainSql = $baseQuery . "
-    SELECT id_sidang, id_kelompok, judul, nama_dosen, nama_matkul, jenis_sidang 
-    FROM SidangData 
-    " . $whereClause . "
-    ORDER BY id_sidang DESC
-    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-";
+// Step 4: Build and execute the MAIN data query with pagination.
+$mainSql = "SELECT * FROM " . $querySource . " " . $whereClause . "
+            ORDER BY id_sidang DESC
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
 // Tambahkan parameter paginasi (offset, rowsPerPage) ke array parameter utama
 $mainParams = array_merge($params, [$offset, $rowsPerPage]);
@@ -114,7 +177,7 @@ if ($result === false) {
 }
 
 // Set nomor awal untuk tabel
-$nomor = $offset + 1;
+$nomor = max(1, $offset + 1);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -127,10 +190,11 @@ $nomor = $offset + 1;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dPengajuan.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Dosen - Pengajuan</title>
 </head>
 
@@ -186,8 +250,7 @@ $nomor = $offset + 1;
                 </div>
             </div>
             <div class="container-fluid">
-                <div class="row">
-                </div><br><br>
+                <div class="row"></div><br><br>
                 <div class="row">
                     <div class="d-flex align-items-center gap-2 mb-4">
                         <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
@@ -205,11 +268,10 @@ $nomor = $offset + 1;
                                 <li><a class="dropdown-item" href="?filter=Semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
                             </ul>
                         </div>
-                        <form method="GET" action="" class="search-input-group ms-auto d-flex align-items-center">
-                            <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+                        <div class="search-input-group ms-auto d-flex align-items-center">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" name="search" class="form-control" placeholder="Cari Kelompok, Judul, Matkul..." value="<?= htmlspecialchars($search) ?>">
-                        </form>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Cari Kelompok, Judul, Matkul..." value="<?= htmlspecialchars($search) ?>">
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-2">
@@ -224,67 +286,49 @@ $nomor = $offset + 1;
                         <thead>
                             <tr>
                                 <th scope="col">No</th>
-                                <th scope="col">Kelompok</th>
+                                <th scope="col">Nomor Kelompok</th>
                                 <th scope="col">Judul</th>
                                 <th scope="col">Mata Kuliah</th>
-                                <th scope="col">Dosen Pembimbing</th>
+                                <th scope="col">Dosen Pembimbing / Pengampu</th>
                                 <th scope="col">Jenis Sidang</th>
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
-                                <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
-                                    <?php
-                                    $jenisSidangTampilan = '';
-
-                                    // Cek apakah mata kuliahnya adalah 'Tugas Akhir'
-                                    if (isset($row['nama_matkul']) && $row['nama_matkul'] === 'Tugas Akhir') {
-                                        $jenisSidangTampilan = 'TA';
-                                    } else {
-                                        $jenisSidangTampilan = ($row['jenis_sidang'] == 0) ? 'TA' : 'Semester';
-                                    }
-                                    ?>
-                                    <tr class="isiTabel jadiBiru">
-                                        <td><?= $nomor++; ?></td>
-                                        <td><?= htmlspecialchars($row['id_kelompok']); ?></td>
-                                        <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
-                                        <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
-
-                                        <td><?= $jenisSidangTampilan; ?></td>
-
-                                        <td style="text-align: center;">
-                                            <button class="detail-btn" onclick="goToDetail('<?= $row['id_sidang']; ?>', '<?= $jenisSidangTampilan; ?>')">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
+                        <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
+                            <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+                                <?php
+                                // [FIX] Check against the correct column name and value
+                                $jenisSidangTampilan = ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester';
+                                ?>
+                                <tr class="isiTabel jadiBiru">
+                                    <td><?= $nomor++; ?></td>
+                                    <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td> <!-- [FIX] Use the correct column for group number -->
+                                    <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                                    <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
+                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td> <!-- This will now show all lecturers -->
+                                    <td><?= $jenisSidangTampilan; ?></td>
+                                    <td style="text-align: center;">
+                                        <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
+                                        <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
+                                        <input type="hidden" name="tipe" value="<?= $jenisSidangTampilan; ?>">
+                                        <button type="submit" class="detail-btn">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </form>
+                                    </td>
                                 </tr>
-                            <?php endif; ?>
-
-                        </tbody>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
                     </table>
-                    <div class="pagination-container">
+                    <div class="pagination-container" id="paginationContainer" style="display: none;">
                         <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center">
-                                <?php if ($totalPages > 1): ?>
-                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-                                        <a class="page-link" href="?page=<?= $currentPage - 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">«</a>
-                                    </li>
-                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                        <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
-                                            <a class="page-link" href="?page=<?= $i ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>"><?= $i ?></a>
-                                        </li>
-                                    <?php endfor; ?>
-                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-                                        <a class="page-link" href="?page=<?= $currentPage + 1 ?>&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">»</a>
-                                    </li>
-                                <?php endif; ?>
+                            <ul class="pagination justify-content-center" id="paginationList">
                             </ul>
                         </nav>
                     </div>
@@ -311,61 +355,86 @@ $nomor = $offset + 1;
                 </div>
             </div>
 
+            <!-- ===================== Kelompok Modal ===================== -->
             <div class="modal fade" id="kelompokModal" tabindex="-1" aria-labelledby="kelompokModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered ">
                     <div class="modal-content">
                         <div class="modal-header modal-header-custom">
                             <h5 class="modal-title" id="kelompokModalLabel">Kelompok Mahasiswa</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="modal-header-actions">
+                                <button type="button" class="btn btn-outline-light btn-sm me-2" id="newKelompokBtn" onclick="resetToCreateMode()" style="display: none;">
+                                    <i class="bi bi-plus-circle me-1"></i>Kelompok Baru
+                                </button>
+                                <button type="button" class="btn-close btn-close-white" onclick="closeKelompokModal()" aria-label="Close"></button>
+                            </div>
                         </div>
                         <div class="modal-body">
                             <div class="modal-tab-container">
-                                <button class="modal-tab active" onclick="switchTab('tambah')">Tambah Kelompok</button>
+                                <button class="modal-tab active" id="tambah-tab-btn" onclick="switchTab('tambah')">Tambah Kelompok</button>
                                 <button class="modal-tab" onclick="switchTab('daftar')">Daftar Kelompok</button>
                             </div>
                             <div id="tambah-tab" class="modal-tab-content active">
                                 <div class="kelompok-form-container">
-                                    <form id="kelompokForm">
-                                        <div class="kelompok-form-group"> <label for="kelompok_id">ID Kelompok:</label>
-                                            <input type="text" id="kelompok_id" name="kelompok_id" readonly />
+                                    <form id="kelompokForm" autocomplete="off">
+                                        <!-- ID Kelompok -->
+                                        <div class="kelompok-form-group">
+                                            <label for="nomor_kelompok">Nomor Kelompok:</label>
+                                            <input type="text" id="nomor_kelompok" name="nomor_kelompok" readonly />
                                         </div>
+
+                                        <!-- Tahun Ajaran -->
+                                        <div class="kelompok-form-group">
+                                            <label for="tahun_ajaran">Tahun Ajaran:</label>
+                                            <input type="text" id="tahun_ajaran" name="tahun_ajaran" value="<?= date('Y') ?>" readonly />
+                                        </div>
+
+                                        <!-- Prodi -->
                                         <div class="kelompok-form-group">
                                             <label for="kelompok_prodi">Prodi:</label>
-                                            <select id="kelompok_prodi" name="kelompok_prodi" onchange="filterMahasiswaByProdi()">
-                                                <option value="">Pilih Prodi</option>
-                                                <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
-                                                <option value="Manajemen Informatika">Manajemen Informatika</option>
-                                            </select>
-                                        </div>
-                                        <!-- Dosen Pembimbing Input (Multiple) -->
-                                        <div class="form-section-card">
-                                            <div class="form-section-title">Dosen Pembimbing <span class="text-muted">(Opsional)</span></div>
-                                            <div class="dosen-wrapper" id="dosen-wrapper">
-                                                <div class="anggota-form-group" id="dosen-form-1">
-                                                    <label for="dosen_pembimbing_1">Dosen Pembimbing 1:</label>
-                                                    <div class="anggota-input-group">
-                                                        <div class="input-container">
-                                                            <input type="text" id="dosen_pembimbing_1" name="dosen_pembimbing[]" placeholder="Masukkan NIP atau nama dosen" autocomplete="off" oninput="searchDosen(this, 1)" />
-                                                            <div class="autocomplete-dropdown" id="autocomplete_dosen_1" style="display: none;"></div>
-                                                        </div>
-                                                        <div class="anggota-nama-display" id="dosen_nama_display_1">Nama akan muncul otomatis</div>
-                                                        <div class="form-toggle-buttons">
-                                                            <button type="button" onclick="addDosen()">+</button>
-                                                            <button type="button" onclick="removeDosen()" style="display: none;">-</button>
-                                                        </div>
-                                                    </div>
-                                                    <input type="hidden" id="dosen_nomor_hidden_1" name="dosen_nomor_hidden[]" />
-                                                </div>
+                                            <div class="custom-select-wrapper">
+                                                <select id="kelompok_prodi" name="kelompok_prodi" onchange="filterMahasiswaByProdi()">
+                                                    <option value="">Pilih Prodi</option>
+                                                    <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+                                                    <option value="Manajemen Informatika">Manajemen Informatika</option>
+                                                </select>
+                                                <i class="bi bi-caret-down-fill custom-select-arrow"></i>
                                             </div>
                                         </div>
+
+                                        <!-- Jenis Sidang -->
+                                        <div class="kelompok-form-group">
+                                            <label for="jenis_sidang">Jenis Sidang:</label>
+                                            <div class="custom-select-wrapper">
+                                                <select id="jenis_sidang" name="jenis_sidang" required>
+                                                    <option value="">Pilih Jenis Sidang</option>
+                                                    <option value="Tugas Akhir">Tugas Akhir</option>
+                                                    <option value="Semester">Semester</option>
+                                                </select>
+                                                <i class="bi bi-caret-down-fill custom-select-arrow"></i>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mata Kuliah (Shown only if Semester) -->
+                                        <div class="kelompok-form-group" id="matkul-group" style="display:none;">
+                                            <label for="id_matkul">Mata Kuliah:</label>
+                                            <select id="id_matkul" name="id_matkul"></select>
+                                        </div>
+
+                                        <!-- Dosen Pembimbing (shown only if Tugas Akhir) -->
+                                        <div class="form-section-card" id="dosen-wrapper-group" style="display:none;">
+                                            <div class="form-section-title">Dosen Pembimbing <span class="text-muted">(Opsional - Anda otomatis menjadi pembimbing)</span></div>
+                                            <div class="dosen-wrapper" id="dosen-wrapper"></div>
+                                        </div>
+
+                                        <!-- Anggota Mahasiswa -->
                                         <div class="form-section-card">
                                             <div class="form-section-title">Anggota Mahasiswa</div>
                                             <div class="anggota-wrapper" id="anggota-wrapper">
                                                 <div class="anggota-form-group" id="anggota-form-1">
-                                                    <label for="anggota_nim_1">Mahasiswa 1:</label>
+                                                    <label for="anggota_1">Anggota 1:</label>
                                                     <div class="anggota-input-group">
                                                         <div class="input-container">
-                                                            <input type="text" id="anggota_nim_1" name="anggota_nim[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" />
+                                                            <input type="text" id="anggota_1" name="anggota[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" />
                                                             <div class="autocomplete-dropdown" id="autocomplete_1" style="display: none;"></div>
                                                         </div>
                                                         <div class="anggota-nama-display" id="anggota_nama_1">Nama akan muncul otomatis</div>
@@ -378,18 +447,35 @@ $nomor = $offset + 1;
                                             </div>
                                         </div>
                                         <div class="kelompok-form-actions modal-footer border-0">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                                            <button type="button" class="btn btn-danger" onclick="closeKelompokModal()">Batalkan</button>
                                             <button type="submit" class="btn btn-success">Simpan</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                             <div id="daftar-tab" class="modal-tab-content">
+                                <!-- Filter Toggles -->
+                                <div class="kelompok-filter-container mb-3">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="filter-semester" value="Semester" checked>
+                                            <label class="form-check-label" for="filter-semester">
+                                                Semester
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="filter-tugas-akhir" value="Tugas Akhir" checked>
+                                            <label class="form-check-label" for="filter-tugas-akhir">
+                                                Tugas Akhir
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="kelompok-list-container" id="kelompok-list-container">
                                     <p class="text-center text-muted">Memuat daftar kelompok...</p>
                                 </div>
                                 <div class="kelompok-form-actions modal-footer justify-content-center border-0">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                                    <button type="button" class="btn btn-danger" onclick="closeKelompokModal()">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -407,9 +493,133 @@ $nomor = $offset + 1;
             menuToggle.classList.toggle("NavSide__toggle--active");
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
+
+        // Global variables
+        let currentFilter = '<?= $filter ?>';
+        let currentSearch = '<?= $search ?>';
+        let allPengajuanData = [];
+        let filteredPengajuanData = [];
+
+        // Load pengajuan data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPengajuanData();
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            currentSearch = e.target.value;
+            filterPengajuanData();
+        });
+
+        // Load pengajuan data from API
+        async function loadPengajuanData() {
+            try {
+                const response = await fetch('../../control/get_pengajuan_pending.php');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    allPengajuanData = result.data;
+                    filterPengajuanData();
+                } else {
+                    showError('Gagal memuat data pengajuan: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error loading pengajuan data:', error);
+                showError('Terjadi kesalahan saat memuat data');
+            }
+        }
+
+        // Filter pengajuan data based on current filter and search
+        function filterPengajuanData() {
+            filteredPengajuanData = allPengajuanData.filter(item => {
+                // Filter by jenis sidang
+                if (currentFilter === 'TA' && item.jenis_sidang !== 'Tugas Akhir') return false;
+                if (currentFilter === 'Semester' && item.jenis_sidang !== 'Semester') return false;
+                
+                // Filter by search term
+                if (currentSearch) {
+                    const searchTerm = currentSearch.toLowerCase();
+                    const nomorKelompok = item.nomor_kelompok.toLowerCase();
+                    const judul = (item.judul || '').toLowerCase();
+                    const namaMatkul = (item.nama_matkul || '').toLowerCase();
+                    
+                    if (!nomorKelompok.includes(searchTerm) && 
+                        !judul.includes(searchTerm) && 
+                        !namaMatkul.includes(searchTerm)) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            renderPengajuanTable();
+        }
+
+        // Render pengajuan table
+        function renderPengajuanTable() {
+            const tbody = document.getElementById('pengajuanTableBody');
+            
+            if (filteredPengajuanData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>';
+                document.getElementById('paginationContainer').style.display = 'none';
+                return;
+            }
+            
+            let html = '';
+            filteredPengajuanData.forEach((item, index) => {
+                const jenisSidangTampilan = item.jenis_sidang === 'Tugas Akhir' ? 'TA' : 'Semester';
+                const pembimbingText = item.pembimbing && item.pembimbing.length > 0 
+                    ? item.pembimbing.map(p => p.nama_dosen).join(', ')
+                    : 'N/A';
+                
+                html += `
+                    <tr class="isiTabel jadiBiru">
+                        <td>${index + 1}</td>
+                        <td>${escapeHtml(item.nomor_kelompok)}</td>
+                        <td>${escapeHtml(item.judul || 'N/A')}</td>
+                        <td>${escapeHtml(item.nama_matkul || 'N/A')}</td>
+                        <td>${escapeHtml(pembimbingText)}</td>
+                        <td>${jenisSidangTampilan}</td>
+                        <td style="text-align: center;">
+                            <button class="detail-btn" onclick="goToDetail('${item.id_sidang}', '${jenisSidangTampilan}')">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            document.getElementById('paginationContainer').style.display = 'none'; // No pagination for now
+        }
+
+        // Utility function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Show error message
+        function showError(message) {
+            const tbody = document.getElementById('pengajuanTableBody');
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger" style="padding: 20px;">${escapeHtml(message)}</td></tr>`;
+        }
+
+        // Go to detail page
+        function goToDetail(id_sidang, jenisSidang) {
+            window.location.href = `dDetailPengajuan.php?id_sidang=${id_sidang}&jenis=${jenisSidang}`;
+        }
+
+        // Refresh data (can be called after status changes)
+        function refreshPengajuanData() {
+            loadPengajuanData();
+        }
     </script>
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
 </body>
 
 </html>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

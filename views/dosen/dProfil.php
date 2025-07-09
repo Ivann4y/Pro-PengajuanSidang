@@ -23,6 +23,7 @@ require $path_to_root . "koneksi/koneksiAndrew.php";
 $user = $_SESSION['user_data'];
 $nim = $user['nomor_dosen'];
 $nama = $user['nama_dosen'];
+$profil = $user['profil']; 
 
 if ($user['prodi'] === 'TRPL') {
     $prodi = 'Teknologi Rekayasa Perangkat Lunak (TRPL)';
@@ -51,7 +52,7 @@ if ($user['jenis_kelamin'] === 'L') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahasiswa - Profil</title>
+    <title>Dosen - Profil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
@@ -106,7 +107,7 @@ if ($user['jenis_kelamin'] === 'L') {
                 </div>
                 <div class="row">
                     <div class="col-md-6 profil-img">
-                        <img src="../../assets/img/img3-nobg.png" alt="">
+                        <img src="../../<?= htmlspecialchars($profil) ?>" alt="">
                     </div>
                     <div class="col-md-6 data-all">
                         <h2>Data Dosen</h2>

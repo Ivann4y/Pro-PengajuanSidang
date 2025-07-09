@@ -3,33 +3,32 @@ if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
 
-// Tentukan path ke root directory. Untuk file di dalam /views/admin/, path ini sudah benar.
 $path_to_root = '../../';
 
-// 1. Cek jika pengguna BELUM login.
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
   $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-  // Arahkan ke halaman login utama di root
   header("Location: " . $path_to_root . "index.php");
   exit();
 }
 
-// 2. PERUBAHAN: Cek jika role pengguna BUKAN 'admin'.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
-  // Arahkan ke halaman login utama di root
   header("Location: " . $path_to_root . "index.php");
   exit();
 }
 
 require "../../koneksi/koneksiAndrew.php";
 
-if (!isset($_SESSION['id_sidang_aktif']) || !is_numeric($_SESSION['id_sidang_aktif'])) {
+if (
+  !isset($_SESSION['id_sidang_aktif']) || !is_numeric($_SESSION['id_sidang_aktif']) ||
+  !isset($_SESSION['judul']) || empty($_SESSION['judul'])
+) {
   $_SESSION['error_message'] = "Sidang tidak ditemukan atau belum dipilih.";
   header("Location: aDaftarSidang.php");
   exit();
 }
 
+$judulSidang = $_SESSION['judul'];
 $id_sidang = (int) $_SESSION['id_sidang_aktif'];
 
 $sql = "
@@ -39,6 +38,7 @@ $sql = "
     ds.catatan_sidang,
     ds.status_revisi,
     ds.dok_revisi,
+    ds.nama_file,
     p.peran_dosen
 FROM Detail_Sidang ds
 JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
@@ -49,13 +49,28 @@ WHERE ds.id_sidang = ?
 $params = [$id_sidang];
 $stmt = sqlsrv_query($conn, $sql, $params);
 
-$sqlStatus = "SELECT status_ajuan FROM Sidang WHERE id_sidang = ?";
-$stmtStatus = sqlsrv_query($conn, $sqlStatus, [$id_sidang]);
-$rowStatus = sqlsrv_fetch_array($stmtStatus, SQLSRV_FETCH_ASSOC);
+$statusList = [];
 
-$status_ajuan_binary = unpack("C", $rowStatus['status_ajuan'])[1];
-$status_ajuan_global = ($status_ajuan_binary === 1) ? "Disetujui" : "Pending";
-$badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
+while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+  $statusList[] = $row['status_revisi'];
+  $allRows[] = $row; // simpan baris-baris untuk ditampilkan nanti
+}
+
+// Reset ulang pointer untuk looping nanti
+sqlsrv_free_stmt($stmt);
+
+// Hitung status global
+if (in_array('Ditolak', $statusList)) {
+  $statusRevisiGlobal = "Ditolak";
+  $badgeClass = "badge-danger";
+} elseif (in_array('Pending', $statusList)) {
+  $statusRevisiGlobal = "Belum Disetujui";
+  $badgeClass = "badge-warning";
+} else {
+  $statusRevisiGlobal = "Disetujui";
+  $badgeClass = "badge-success";
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -78,8 +93,6 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
 </head>
 
 <body>
-
-
   <div id="NavSide">
     <div id="main-sidebar" class="NavSide__sidebar">
       <div class="NavSide__sidebar-brand">
@@ -138,88 +151,86 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
     </div>
     <main class="NavSide__main-content">
 
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h2 class="text-heading text-black mb-5" style="font-weight: 700;">Detail Evaluasi - Sistem Evaluasi Sidang</h2>
-          <h5 class="mt-5">Catatan Perbaikan</h5>
-        </div>
+      <div>
+        <h2 class="judul text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= $judulSidang ?></h2>
+      </div>
+      <div class="d-flex justify-content-between mt-2">
+        <h5>Catatan Perbaikan</h5>
         <span class="badge-custom <?= $badgeClass ?>">
-          Status Revisi : <?= $status_ajuan_global ?>
+          Status Revisi : <?= $statusRevisiGlobal ?>
         </span>
       </div>
 
-      <?php while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)): ?>
-        <?php $statusRevisi = unpack("C", $row['status_revisi'])[1]; ?>
+      <?php foreach ($allRows as $row): ?>
         <?php $peranDosen = unpack("C", $row['peran_dosen'])[1]; ?>
-        <div class="card-comment mt-4" data-bs-toggle="modal" data-bs-target="#modalDetail">
+        <?php
+        $catatanFull = $row['catatan_sidang'];
+        $catatanPreview = strlen($catatanFull) > 50 ? substr($catatanFull, 0, 50) . '...' : $catatanFull;
+        ?>
+        <div class="card-comment mt-4" data-bs-toggle="modal"
+          data-bs-target="#modalDetail"
+          data-catatan="<?= htmlspecialchars($catatanFull, ENT_QUOTES) ?>">
           <h6 class="card-h">
             <?= htmlspecialchars($row['nama_dosen']) ?>
             - <?= ($peranDosen == 1 ? 'Pembimbing' : 'Penguji') ?>
           </h6>
+
           <p class="mt-2 mb-0 text-truncate-2">
-            <?= htmlspecialchars($row['catatan_sidang']) ?>
+            <?= htmlspecialchars($catatanPreview) ?>
           </p>
-          <div class="approved-badge">
-            <?= ($statusRevisi == 0) ? 'Telah Menyetujui' : 'Belum Disetujui' ?>
+
+          <?php if ($row['status_revisi'] === 'Pending'): ?>
+            <div class="badge-statusDosen badge-warning"><?= $row['status_revisi'] ?></div>
+          <?php elseif ($row['status_revisi'] === 'Disetujui'): ?>
+            <div class="badge-statusDosen badge-success"><?= $row['status_revisi'] ?></div>
+          <?php elseif ($row['status_revisi'] === 'Ditolak'): ?>
+            <div class="badge-statusDosen badge-danger"><?= $row['status_revisi'] ?></div>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
+
+
+      <?php if (!empty($allRows[0]['dok_revisi'])): ?>
+        <div class="revision-card shadow-sm">
+          <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
+          <div class="revision-cardUp">
+            <div class="text-center mt-3">
+              <a href="../../<?= htmlspecialchars($allRows[0]['dok_revisi']) ?>" download="<?= htmlspecialchars($allRows[0]['nama_file']) ?>" target="_blank" style="text-decoration:none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16">
+                  <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.707 0H9.293zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 10.5a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 12a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z" />
+                </svg>
+                <p class="text-center text-muted small mt-3"><b><?= htmlspecialchars($allRows[0]['nama_file']) ?></b></p>
+              </a>
+            </div>
           </div>
         </div>
-      <?php endwhile; ?>
 
+        <div id="downloadContainer"></div>
 
+        <script>
+          const containerDiv = document.createElement("div");
+          containerDiv.className = "d-flex justify-content-end mt-4";
 
-      <!-- <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-        <h6 class="card-h">Yosep Setiawan, S.Kom, M.Kom - Penguji</h6>
-        <p class="mt-2 mb-0 text-truncate-2">
-          Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
-        </p>
-        <div class="approved-badge">Telah Menyetujui</div>
-      </div>
+          const downloadLink = document.createElement("a");
+          downloadLink.href = "../../<?= htmlspecialchars($allRows[0]['dok_revisi']) ?>";
+          downloadLink.className = "btn-custom-primaryUnd";
+          downloadLink.id = "btnUnduh";
+          downloadLink.setAttribute("download", "<?= htmlspecialchars($allRows[0]['nama_file']) ?>");
+          downloadLink.textContent = "Unduh";
 
-      <div class="card-comment" data-bs-toggle="modal" data-bs-target="#modalDetail">
-        <h6 class="card-h">Yosep Setiawan, S.Kom, M.Kom - Penguji</h6>
-        <p class="mt-2 mb-0 text-truncate-2">
-          Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik...
-        </p>
-        <div class="approved-badge">Telah Menyetujui</div>
-      </div> -->
+          containerDiv.appendChild(downloadLink);
+          document.getElementById("downloadContainer").appendChild(containerDiv);
+        </script>
 
-      <?php
-      // File dummy seolah-olah hasil upload
-      $namaFileRevisi = "Memo Internal 26 Juni 2025 Anniversary TRPL.pdf";
-      ?>
-      <div class="revision-card shadow-sm">
-        <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
-        <div class="revision-cardUp">
-          
-          <div class="text-center mt-3">
-            <a href="../../uploads/<?= rawurlencode($namaFileRevisi) ?>" download target="_blank" style="text-decoration:none">
-              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#8d99ae" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16">
-                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.707 0H9.293zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 10.5a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4.5 12a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z" />
-                <p class="text-center text-muted small mt-3"><b><?= $namaFileRevisi ?></b></p>
-              </svg>
-            </a>
+      <?php else: ?>
+        <div class="revision-card shadow-sm">
+          <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
+          <div class="revision-cardUp text-center">
+            <p class="text-muted mt-3">Belum ada dokumen revisi yang diunggah.</p>
           </div>
         </div>
-      </div>
+      <?php endif; ?>
 
-      <br />
-      <!-- HTML kosong -->
-      <div id="downloadContainer"></div>
-
-      <script>
-        const containerDiv = document.createElement("div");
-        containerDiv.className = "d-flex justify-content-end mt-4";
-
-        const downloadLink = document.createElement("a");
-        downloadLink.href = "<?= '../../uploads/' . rawurlencode($namaFileRevisi) ?>";
-        downloadLink.className = "btn-custom-primaryUnd";
-        downloadLink.id = "btnUnduh";
-        downloadLink.setAttribute("download", "<?= $namaFileRevisi ?>");
-        downloadLink.textContent = "Unduh";
-
-        containerDiv.appendChild(downloadLink);
-        document.getElementById("downloadContainer").appendChild(containerDiv);
-      </script>
 
       <div class="button-group-bottom mt-4">
         <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
@@ -238,14 +249,7 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <div class="modal-body pt-3 pb-2">
-              <p>
-                Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik,
-                termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali penggunaan bahasa.
-                Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa ilmiah yang baku dan konsisten.
-                Pastikan seluruh bagian dokumen mengikuti format penulisan yang telah ditentukan oleh panduan akademik,
-                termasuk margin, jenis huruf, ukuran font, dan penomoran halaman. Periksa kembali penggunaan bahasa.
-                Hindari kesalahan ejaan, tanda baca, dan kalimat yang kurang efektif. Gunakan bahasa ilmiah yang baku dan konsisten.
-              </p>
+              <p id="modalCatatanText"></p>
             </div>
             <div class="modal-footer border-0 justify-content-end">
               <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
@@ -256,6 +260,15 @@ $badgeClass = ($status_ajuan_binary === 1) ? 'badge-success' : 'badge-warning';
 
     </main>
   </div>
+
+  <script>
+    const modalDetail = document.getElementById('modalDetail');
+    modalDetail.addEventListener('show.bs.modal', function(event) {
+      const trigger = event.relatedTarget;
+      const fullCatatan = trigger.getAttribute('data-catatan');
+      document.getElementById('modalCatatanText').textContent = fullCatatan;
+    });
+  </script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>

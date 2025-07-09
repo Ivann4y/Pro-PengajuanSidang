@@ -1,0 +1,206 @@
+/* mKelolaPengajuan.css - Custom style for Mahasiswa Kelola Pengajuan page */
+
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  background: #f6f8fa;
+  color: #222;
+  margin: 0;
+}
+
+.NavSide__main-content {
+  padding: 32px 0 32px 0;
+  margin: 0 auto;
+  max-width: 900px;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.card {
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(44, 62, 80, 0.08);
+  border: none;
+  margin-bottom: 32px;
+  background: #fff;
+}
+
+.card-header {
+  background: #f0f4fa;
+  border-radius: 18px 18px 0 0;
+  border-bottom: 1px solid #e3e8ee;
+  padding: 18px 24px;
+}
+
+.card-body {
+  padding: 24px;
+}
+
+h2.text-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2a3b5d;
+}
+
+h5,
+h6 {
+  color: #2a3b5d;
+  font-weight: 600;
+}
+
+ul.list-unstyled {
+  margin: 0;
+  padding: 0 0 0 8px;
+}
+
+ul.list-unstyled li {
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #2a3b5d;
+}
+
+.form-control,
+.form-select {
+  border-radius: 10px;
+  border: 1px solid #cfd8dc;
+  font-size: 1rem;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: #f9fbfd;
+  transition: border-color 0.2s;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: #4b68fb;
+  box-shadow: 0 0 0 2px #e3eaff;
+}
+
+.upload-box {
+  background: #f0f4fa;
+  border: 2px dashed #b0b8c1;
+  border-radius: 14px;
+  padding: 36px 18px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
+}
+.upload-box:hover,
+.upload-box.file-selected {
+  border-color: #4b68fb;
+  background: #eaf1ff;
+}
+.upload-content {
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.file-name {
+  color: #4b68fb;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 10px 22px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  
+}
+.inline-btn {
+  display: inline-block;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+.btn-success {
+  background: #4b68fb;
+  border: none;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background: #3651c9;
+  color: #fff;
+}
+.btn-info {
+  background: #e3eaff;
+  color: #4b68fb;
+  border: none;
+}
+.btn-info:hover {
+  background: #c7d7ff;
+  color: #2a3b5d;
+}
+.btn-secondary {
+  background: #b0b8c1;
+  color: #fff;
+  border: none;
+  align-content: center;
+}
+.btn-secondary:hover {
+  background: #8a929a;
+  color: #fff;
+}
+
+.alert {
+  border-radius: 10px;
+  font-size: 1rem;
+  margin-bottom: 18px;
+}
+.alert-danger {
+  background: #ffeaea;
+  color: #c0392b;
+  border: 1px solid #f5c6cb;
+}
+.alert-success {
+  background: #eafaf1;
+  color: #218838;
+  border: 1px solid #b7e4c7;
+}
+.alert-warning {
+  background: #fffbe6;
+  color: #b8860b;
+  border: 1px solid #ffeeba;
+}
+
+hr {
+  border-top: 1px solid #e3e8ee;
+  margin: 24px 0;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .NavSide__main-content {
+    max-width: 98vw;
+    padding: 18px 0 18px 0;
+  }
+  .card-body {
+    padding: 16px;
+  }
+}
+@media (max-width: 600px) {
+  .NavSide__main-content {
+    padding: 8px 0 8px 0;
+  }
+  .dashboard-header {
+    margin-bottom: 12px;
+  }
+  .card {
+    margin-bottom: 18px;
+  }
+  .card-header,
+  .card-body {
+    padding: 12px;
+  }
+  h2.text-heading {
+    font-size: 1.2rem;
+  }
+}

@@ -1,111 +1,8 @@
 <?php
 session_start();
 require_once '../koneksi/koneksiAndrew.php';
-
-$success = '';
-$errorType = '';
-$judul = '';
-$token = $_GET['token'] ?? '';
-$role = ''; // Akan diisi dari tabel password_resets jika token valid
-
-// Validasi token di database
-$reset = null;
-if ($token) {
-  $stmt = sqlsrv_query($conn, "SELECT * FROM password_resets WHERE token=? AND used=0", [$token]);
-    $reset = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
-
-// Logika untuk menentukan tanggal kadaluarsa token 
-if ($reset) {
-     $role = $reset['role']; // role dari database, BUKAN dari GET/POST
-
-    // Mapping table dan kolom berdasarkan role
-    switch ($role) {
-        case 'mahasiswa':
-            $tableNama = 'Mahasiswa';
-            $emailKolom = 'email';
-            break;
-        case 'dosen':
-            $tableNama = 'Dosen';
-            $emailKolom = 'email';
-            break;
-        case 'admin':
-            $tableNama = 'Admin';
-            $emailKolom = 'email';
-            break;
-        default:
-            // Jika role tidak valid, anggap token tidak valid
-            $reset = null;
-    }
-
-    date_default_timezone_set('Asia/Jakarta');
-    $now = date('Y-m-d H:i:s');
-    $expires_at = $reset['expires_at'];
-    if ($expires_at instanceof DateTime) {
-        $expires_at = $expires_at->format('Y-m-d H:i:s');
-    }
-    // Bandingkan sebagai string
-    if ($expires_at > $now) {
-        $role = $reset['role'];
-    } else {
-        $reset = null;
-    }
-}
-}
-
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
-    $newPassword = $_POST['newPassword'] ?? '';
-    $confirmPassword = $_POST['confirmPassword'] ?? '';
-    
-    // $tableNama = $_POST['tableNama'] ?? $_GET['tableNama'] ?? '';
-    // $emailKolom = $_POST['emailKolom'] ?? $_GET['emailKolom'] ?? 'email';
-   
-
-    // Validasi jika password kosong
-    if (empty($newPassword) || empty($confirmPassword)) {
-        header("Location: inputPasswordBaru.php?token=$token&error=empty");
-        exit;
-    } elseif (strlen($newPassword) < 8) {
-        header("Location: inputPasswordBaru.php?token=$token&error=short");
-        exit;
-    } elseif ($newPassword !== $confirmPassword) {
-        header("Location: inputPasswordBaru.php?token=$token&error=mismatch");
-        exit;
-    } else {
-        // Hash password baru dan update ke database
-        $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-        sqlsrv_query($conn, "UPDATE [dbo].[$tableNama] SET password_hash=? WHERE [$emailKolom]=? AND role=?", [$hash, $reset['email'], $reset['role']]);
-        sqlsrv_query($conn, "UPDATE password_resets SET used=1 WHERE token=?", [$token]);
-         // Hapus semua reset password yang sudah digunakan atau kadaluarsa
-       sqlsrv_query($conn, "DELETE FROM password_resets WHERE (used=1 OR expires_at < GETDATE()) AND email=?", [$reset['email']]);
-        $success = "Kata sandi berhasil diubah!";
-     
-       
-    }
-}
-
-// ...HTML... Jika token tidak valid atau sudah kadaluarsa, tampilkan pesan error
-// if (!$reset) {
-//     echo ' <div class="token-alert">
-//         <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
-//         Token tidak valid atau sudah kadaluarsa.
-//     </div>';
-// }
-
-// Cek pesan sukses/error
-if (isset($_GET['success'])) {
-    $success = "Kata sandi berhasil diubah!";
-}
-$errorType = $_GET['error'] ?? '';
-
-// Judul berdasarkan role
-switch ($role) {
-    case 'mahasiswa': $judul = 'Ubah Kata Sandi Mahasiswa'; break;
-    case 'dosen': $judul = 'Ubah Kata Sandi Dosen'; break;
-    case 'admin': $judul = 'Ubah Kata Sandi Admin'; break;
-    default: $judul = 'Ubah Kata Sandi'; break;
-}
+include '../control/inputPasswordBaru_queries.php';
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -118,270 +15,7 @@ switch ($role) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            min-width: 100vw;
-            overflow: hidden;
-        }
-
-        .fullscreen {
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-        }
-
-        .bgBiru {
-            background-color: #4B68FB;
-            width: 60%;
-            height: 100vh;
-        }
-
-        .right-column-wrapper {
-            width: 40%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .log {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-top: 5vh;
-        }
-
-        .log form {
-            width: 25vw;
-        }
-
-        .button-container {
-            padding-left: 2vw;
-            padding-bottom: 3vh;
-        }
-
-        img {
-            object-fit: cover;
-        }
-
-        input {
-            border-radius: 50%;
-            border: 1px solid #D9D9D9;
-            background-color: #F5F5F5;
-            color: #626262;
-        }
-
-        .carousel-item {
-            height: 50vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-
-        #carouselExampleAutoplaying .carousel-control-prev,
-        #carouselExampleAutoplaying .carousel-control-next {
-            opacity: 0;
-            pointer-events: none;
-            transition: 300ms;
-        }
-
-        #carouselExampleAutoplaying:hover .carousel-control-prev,
-        #carouselExampleAutoplaying:hover .carousel-control-next {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .btnKirim:hover {
-            background-color: white;
-            color: green;
-            stroke: green;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 45px;
-            text-decoration: none;
-            font-family: "Poppins", sans-serif;
-            color: white;
-            /* Default text color for all buttons */
-        }
-
-        .btn-kembali {
-            background-color: #4B68FB;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 45px;
-        }
-
-        .btn-kembali:hover {
-            position: relative;
-            background-color: white;
-            color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-kembali:hover .icon-circle {
-            background-color: #4B68FB;
-        }
-
-        .btn-kembali .icon-circle i {
-            color: #4B68FB;
-        }
-
-        .btn-kembali:hover .icon-circle i {
-            color: white;
-        }
-
-        .btn-setujui {
-            background-color: #4fd382;
-            color: white;
-            /* Changed from black to white */
-        }
-
-        .btn-setujui:hover {
-            background-color: #3ab070;
-            color: white;
-            /* Already white, no change needed */
-            transform: translateY(-2px);
-        }
-
-        /* Style Alert */
-        .token-alert {
-            margin: 24px 0 0 0;
-            padding: 18px 24px;
-            background: #ffeaea;
-            color: #b71c1c;
-            border: 1.5px solid #f5c2c7;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            max-width: 600px;
-            box-shadow: 0 2px 8px rgba(183,28,28,0.04);
-        }
-        .token-alert .icon {
-            font-size: 1.5rem;
-            color: #b71c1c;
-        }
-
-        /* RESPONSIVE DESIGN */
-@media (max-width: 991.98px) {
-    .fullscreen {
-        flex-direction: column;
-        height: auto;
-        min-height: 100vh;
-    }
-    .bgBiru, .right-column-wrapper {
-        width: 100%;
-        height: auto;
-        min-height: 300px;
-    }
-    .bgBiru {
-        min-height: 250px;
-        height: 40vh;
-    }
-    .right-column-wrapper {
-        min-height: 350px;
-        padding: 24px 0;
-    }
-    .log form {
-        width: 90vw;
-        max-width: 400px;
-    }
-    
-    .shadow-rectangle {
-       display: none; /* Hide the shadow rectangle on smaller screens */
-    }
-
-    .carousel{
-        display: none; /* Hide the carousel on smaller screens */
-    }
-
-    .bgBiru img {
-       display: none; /* Hide the background image on smaller screens */
-    }
-}
-
-@media (max-width: 600px) {
-    .fullscreen {
-        flex-direction: column;
-        height: auto;
-    }
-    .bgBiru, .right-column-wrapper {
-        width: 100%;
-        min-width: 0;
-        min-height: 200px;
-        height: auto;
-    }
-    .bgBiru {
-        min-height: 120px;
-        height: 30vh;
-    }
-    .right-column-wrapper {
-        min-height: 300px;
-        padding: 16px 0;
-    }
-    .log form {
-        width: 98vw;
-        max-width: 98vw;
-        min-width: 0;
-        padding: 0 8px;
-    }
-    .token-alert {
-        max-width: 98vw;
-        font-size: 1rem;
-        padding: 12px 8px;
-    }
-    .button-container {
-        flex-direction: column;
-        gap: 8px;
-        align-items: stretch;
-    }
-}
-
-        
-    </style>
+    <link rel="stylesheet" href="../assets/css/inputPasswordBaru.css">
 </head>
 
 <body>
@@ -425,82 +59,71 @@ switch ($role) {
             <div class="log">
                 <?php if ($reset): ?>
                     <form action="inputPasswordBaru.php?token=<?= htmlspecialchars($token) ?>" method="POST">
-                    <div class="text-center pt-5 mb-4">
-                        <h2 class="fs-2 fw-bold"><?= $judul ?></h2>
-                        <?php if (!empty($success)): ?>
-                            <div class="alert alert-success mt-3">
-                                <?= $success ?>
+                        <div class="text-center pt-5 mb-4">
+                            <h2 class="fs-2 fw-bold"><?= $judul ?></h2>
+                            <?php if (!empty($success)): ?>
+                                <div class="alert alert-success mt-3">
+                                    <?= $success ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
+
+                        <div class="mb-3">
+                            <label for="newPassword">Masukkan Kata Sandi Baru</label>
+                            <div class="password-wrap">
+                                <input type="password"
+                                    id="newPassword"
+                                    class="form-control form-control-lg <?= in_array($errorType, ['empty', 'short']) ? 'border border-danger' : 'border border-dark' ?>"
+                                    name="newPassword">
+                                <i class="bi bi-eye-slash-fill toggle-password" id="toggleNewPassword"></i>
                             </div>
-                        <?php endif; ?>
-                    </div>
-                  
-                    <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
+                            <?php if ($errorType === 'empty'): ?>
+                                <div class="text-danger">Kata sandi tidak boleh kosong.</div>
+                            <?php elseif ($errorType === 'short'): ?>
+                                <div class="text-danger">Kata sandi minimal 8 karakter.</div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword">Konfirmasi Kata Sandi Baru</label>
+                            <div class="password-wrap">
+                                <input type="password"
+                                    id="confirmPassword"
+                                    class="form-control form-control-lg <?= in_array($errorType, ['empty', 'mismatch']) ? 'border border-danger' : 'border border-dark' ?>"
+                                    name="confirmPassword">
+                                <i class="bi bi-eye-slash-fill toggle-password" id="toggleConfirmPassword"></i>
+                            </div>
+                            <?php if ($errorType === 'empty'): ?>
+                                <div class="text-danger">Konfirmasi kata sandi tidak boleh kosong.</div>
+                            <?php elseif ($errorType === 'mismatch'): ?>
+                                <div class="text-danger">Kata sandi dan konfirmasi tidak cocok.</div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-setujui" id="btnKirim">
+                                Kirim
+                            </button>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="">Masukkan Kata Sandi Baru</label>
-                        <input type="password"
-                            class="form-control form-control-lg <?= in_array($errorType, ['empty', 'short']) ? 'border border-danger' : 'border border-dark' ?>"
-                            name="newPassword">
-                        <?php if ($errorType === 'empty'): ?>
-                            <div class="text-danger">Kata sandi tidak boleh kosong.</div>
-                        <?php elseif ($errorType === 'short'): ?>
-                            <div class="text-danger">Kata sandi minimal 8 karakter.</div>
-                        <?php endif; ?>
-                    </div>
+                        <div class="button-container d-flex justify-content-start gap-3 mt-4" style="padding-left:0;">
+                            <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
+                                <span class="icon-circle">
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                </span>
+                                Kembali
+                            </button>
+                        </div>
+                    </form>
+                <?php endif; ?>
 
-                    <div class="mb-3">
-                        <label for="">Konfirmasi Kata Sandi Baru</label>
-                        <input type="password"
-                            class="form-control form-control-lg <?= in_array($errorType, ['empty', 'mismatch']) ? 'border border-danger' : 'border border-dark' ?>"
-                            name="confirmPassword">
-                        <?php if ($errorType === 'empty'): ?>
-                            <div class="text-danger">Konfirmasi kata sandi tidak boleh kosong.</div>
-                        <?php elseif ($errorType === 'mismatch'): ?>
-                            <div class="text-danger">Kata sandi dan konfirmasi tidak cocok.</div>
-                        <?php endif; ?>
+                <?php if (!$reset): ?>
+                    <div class="token-alert">
+                        <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                        Token tidak valid atau sudah kadaluarsa.
                     </div>
-                    <div class="button-container d-flex justify-content-end gap-3 mt-4">
-                 
-                   <button type="submit" class="btn btn-setujui" id="btnKirim">
-                            Kirim
-                  </button>
-        
-             </div>
-                <div class="button-container d-flex justify-content-end gap-3 mt-4">
-                 <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
-                    <span class="icon-circle">
-                <i class="fa-solid fa-arrow-left"></i>
-                  </span>
-                        Kembali
-                      </button>
-                  
-        
-             </div>
+                <?php endif; ?>
             </div>
-            
-
-            <!-- <div class="button-container d-flex justify-content-between">
-              
-                <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
-                    <span class="icon-circle">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </span>
-                    Kembali
-                </button>
-            
-            </div> -->
-
-            </form>
-            <?php endif; ?>
-
-            <!-- Jika token tidak valid atau sudah kadaluarsa -->
-            <?php if (!$reset): ?>    
-            <div class="token-alert">
-             <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
-                Token tidak valid atau sudah kadaluarsa.
-             </div>
-            <?php endif; ?>
-
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
@@ -511,6 +134,7 @@ switch ($role) {
             }, 2000);
         </script>
     <?php endif; ?>
+    <script src="../assets/js/inputPasswordBaru.js"></script>
     <script>
         function kembaliKeLupaPassword() {
             window.location.href = `lupaPassword.php?role=<?= htmlspecialchars($role) ?>`;

@@ -1,157 +1,273 @@
 <?php
-error_log("=== TEST LOG === PHP logging aktif.");
-?>
-
-<?php
 session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
-// ===================================================================================
-// BAGIAN 0: PENANGANAN REQUEST POST (APPROVE) SECARA EKSKLUSIF
-// ===================================================================================
-if (isset($_POST['approve'])) {
-    // Set header untuk memberitahu browser bahwa ini adalah respon JSON
-    header('Content-Type: application/json');
-
-    $id_sidang = $_POST['id_sidang'] ?? 0;
-    $nomor_dosen = isset($_SESSION['user_data']['nomor_dosen'])
-        ? (string)$_SESSION['user_data']['nomor_dosen']
-        : null;
-
-    // Validasi input
-    if (!$nomor_dosen || !$id_sidang) {
-        echo json_encode(['status' => 'error', 'message' => 'Sesi tidak valid atau ID Sidang tidak ditemukan. Silakan login ulang.']);
-        exit;
-    }
-
-    error_log("=== DEBUG SIDANG ===");
-    error_log("ID SIDANG: " . var_export($id_sidang, true));
-    error_log("NOMOR DOSEN dari SESSION: " . var_export($_SESSION['user_data']['nomor_dosen'] ?? 'TIDAK ADA', true));
-
-
-    // Cek dulu apakah baris yang akan diupdate memang ada untuk dosen ini
-    $check_sql = "SELECT id_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-    $params_check = [(int)$id_sidang, $nomor_dosen];
-    $stmt_check = sqlsrv_query($conn, $check_sql, $params_check);
-
-    // Jika query check gagal atau tidak mengembalikan baris
-    if ($stmt_check === false) {
-        error_log("❌ QUERY CHECK GAGAL:");
-        error_log(print_r(sqlsrv_errors(), true));
-        echo json_encode([
-            'status' => 'error',
-            'message' => "Query gagal dijalankan. Silakan cek log."
-        ]);
-        exit;
-    }
-
-    $fetched = sqlsrv_fetch($stmt_check);
-    if (!$fetched) {
-        error_log("⚠️ QUERY BERHASIL, tapi tidak ditemukan baris cocok.");
-        error_log("Diperiksa: id_sidang = " . var_export($id_sidang, true));
-        error_log("Diperiksa: nomor_dosen = " . var_export($nomor_dosen, true));
-
-        echo json_encode([
-            'status' => 'error',
-            'message' => "Gagal menyetujui. Tidak ditemukan data revisi yang terhubung dengan akun Anda untuk sidang ini."
-        ]);
-        exit;
-    }
-
-
-    error_log("DEBUG: id_sidang = $id_sidang");
-    error_log("DEBUG: nomor_dosen = " . var_export($nomor_dosen, true));
-
-    // Jika baris ada, lakukan update
-    $sql_update = "UPDATE Detail_Sidang SET status_revisi = 0x01 WHERE id_sidang = ? AND nomor_dosen = ?";
-    $params_update = [$id_sidang, $nomor_dosen];
-    $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
-
-  $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
-
-if ($stmt_update === false) {
-    error_log("❌ UPDATE GAGAL:");
-    error_log(print_r(sqlsrv_errors(), true));
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Terjadi kesalahan saat memperbarui status revisi.'
-    ]);
+// Ambil ID sidang dari GET (sekali) lalu simpan ke session
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    // Hapus nim lama jika id sidang baru dipilih
+    unset($_SESSION['nim_aktif']);
+    header("Location: dDokumenRevisi.php");
     exit;
-} else {
-    error_log("✅ UPDATE SUKSES: status_revisi harusnya jadi 0x01");
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Dokumen revisi berhasil disetujui!',
-        'redirectUrl' => "dNilaiAkhir.php?id=" . $id_sidang
-    ]);
+}
+
+// Ambil ID sidang dari GET (sekali) lalu simpan ke session
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
+    // Hapus nim lama jika id sidang baru dipilih
+    unset($_SESSION['nim_aktif']);
+    header("Location: dDokumenRevisi.php");
     exit;
-
-}
 }
 
+// Ambil NIM dari GET (sekali) lalu simpan ke session, lalu redirect untuk membersihkan URL
+if (isset($_GET['nim']) && (!isset($_SESSION['nim_aktif']) || $_SESSION['nim_aktif'] !== $_GET['nim'])) {
+    $_SESSION['nim_aktif'] = $_GET['nim'];
+    header("Location: dDokumenRevisi.php");
+    exit;
+}
+//=================================================================================
+// FIX: AMBIL ID SIDANG DARI SESSION SETELAH REDIRECT
+// ===================================================================================
+// Pastikan ID sidang ada di session sebelum melanjutkan
+if (!isset($_SESSION['id_sidang_aktif'])) {
+    // Jika tidak ada, hentikan eksekusi atau redirect ke halaman daftar
+    die("Sesi sidang tidak ditemukan. Silakan kembali ke daftar sidang dan pilih kembali.");
+}
+// Tetapkan variabel $id_sidang dari session agar bisa digunakan di seluruh skrip
+$id_sidang = $_SESSION['id_sidang_aktif'];
+// ===================================================================================
 
 
 // ===================================================================================
-// BAGIAN 1: INISIALISASI HALAMAN (GET REQUEST)
+// SIMULASI DOSEN LOGIN (GANTI DENGAN SESSION ASLI NANTI)
 // ===================================================================================
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Error: ID Sidang tidak valid.");
-}
-$id_sidang = (int)$_GET['id'];
 
-// Pastikan data user dan nomor_dosen ada di session
 if (!isset($_SESSION['user_data']['nomor_dosen'])) {
-    die("Error: Data dosen tidak ditemukan di session. Silakan login kembali.");
+    die("Akses ditolak.");
 }
-$nomorDosen = $_SESSION['user_data']['nomor_dosen'];
+$nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
+
+// ===================================================================================
+// BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
+// ===================================================================================
+// ===================================================================================
+// BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
+// ===================================================================================
+// ===================================================================================
+// BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
+// ===================================================================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json'); // karena dipanggil dari fetch
+
+    $nim_post = $_POST['nim'] ?? '';
+    $approve_action = isset($_POST['approve']) ? true : false;
+
+    // Ambil dokumen revisi
+    $sql_revisi = "SELECT dok_revisi FROM Detail_Sidang WHERE id_sidang = ? AND nim = ?";
+    $stmt_revisi = sqlsrv_query($conn, [$id_sidang, $nim_post]);
+    $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
+    $dokumen_revisi = $data_revisi['dok_revisi'] ?? null;
+
+
+    if ($approve_action && $dokumen_revisi) {
+        // Pastikan entri untuk dosen ini ada
+        $check_sql = "SELECT id_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
+        $params_check = [$id_sidang, $nomor_dosen_login];
+        $stmt_check = sqlsrv_query($conn, $check_sql, $params_check);
+
+        if ($stmt_check && sqlsrv_has_rows($stmt_check)) {
+            // Update status_revisi dosen ini
+            $sql_update = "UPDATE Detail_Sidang SET status_revisi = 'Disetujui' WHERE id_sidang = ? AND nomor_dosen = ?";
+            $params_update = [$id_sidang, $nomor_dosen_login];
+            $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
+
+            // Cek apakah SEMUA dosen sudah menyetujui
+            $sql_cek_all = "SELECT COUNT(*) AS total, SUM(CASE WHEN status_revisi = 'Disetujui' THEN 1 ELSE 0 END) AS disetujui 
+                            FROM Detail_Sidang WHERE id_sidang = ?";
+            $stmt_cek_all = sqlsrv_query($conn, [$id_sidang]);
+            $result_all = sqlsrv_fetch_array($stmt_cek_all, SQLSRV_FETCH_ASSOC);
+
+            if ($result_all && $result_all['total'] == $result_all['disetujui']) {
+                $sql_set_sidang = "UPDATE Sidang SET status_revisi = 1 WHERE id_sidang = ?";
+                sqlsrv_query($conn, [$id_sidang]);
+            }
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Dokumen revisi disetujui.',
+                'redirectUrl' => 'dNilaiAkhir.php?id_sidang=' . $id_sidang
+            ]);
+            exit;
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Data sidang untuk dosen ini tidak ditemukan.'
+            ]);
+            exit;
+        }
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Tidak dapat menyetujui. Dokumen revisi belum ada atau data tidak lengkap.'
+        ]);
+        exit;
+    }
+}
+
+
+// ===================================================================================
+// BAGIAN 3: PENGAMBILAN DATA UNTUK DITAMPILKAN DI HALAMAN
+// ===================================================================================
 
 // Variabel default
-$judul = 'Belum ada judul';
-$ruangan = 'Belum Dijadwalkan';
-$tanggal_formatted = 'Belum Dijadwalkan';
-$jam = 'Belum Dijadwalkan';
+$id_kelompok = null;
+$nim = 'Data tidak ditemukan';
+$ruangan = '-';
+$tanggal_formatted = '-';
+$jam = '-';
 $dosenPembimbing = [];
 $dosenPenguji = [];
-$dosen_pengampu = []; // Variabel untuk dosen pengampu
+$mahasiswa = [];
+$current_nim = '';
 
-// ===================================================================================
-// BAGIAN 2: PENGAMBILAN DATA (TIDAK DIUBAH)
-// ===================================================================================
-$sql_sidang = "SELECT judul, id_kelompok FROM Sidang WHERE id_sidang = ?";
+// Inisialisasi variabel yang akan diambil dari query
+$jenis_sidang = null;
+$id_matkul = null;
+$nomor_kelompok = null; // Tambahkan variabel ini
+
+// Ambil data sidang utama, tambahkan jenis_sidang dan id_matkul dari tabel Kelompok
+$sql_sidang = "
+    SELECT 
+        s.judul, 
+        k.nomor_kelompok, 
+        k.id_kelompok, 
+        k.jenis_sidang, 
+        k.id_matkul 
+    FROM Sidang s 
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok 
+    WHERE s.id_sidang = ?";
+
 $result_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
-if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
-    // 1. Selalu ambil Judul
-    $judul = $data_sidang['judul'];
-    $id_kelompok = $data_sidang['id_kelompok'];
 
-    // Ambil Dosen Pembimbing (jika ada kelompok)
-    if ($id_kelompok) {
-        $sql_pembimbing = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Bimbingan] b JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND d.isPembimbing = 0x01";
-        $stmt_pembimbing = sqlsrv_query($conn, $sql_pembimbing, [$id_kelompok]);
-        if ($stmt_pembimbing) {
-            while ($row = sqlsrv_fetch_array($stmt_pembimbing, SQLSRV_FETCH_ASSOC)) {
-                $dosenPembimbing[] = $row['nama_dosen'];
+if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
+    $judul = $data_sidang['judul'];
+    $nomor_kelompok = $data_sidang['nomor_kelompok']; // Ambil nomor kelompok
+    $id_kelompok = $data_sidang['id_kelompok'];
+    $jenis_sidang = $data_sidang['jenis_sidang'];
+    $id_matkul = $data_sidang['id_matkul'];
+
+    // ==========================================================
+    // ===== [FIX] AMBIL NAMA MATA KULIAH DENGAN BENAR =====
+    // ==========================================================
+    $nama_matkul_sidang = 'Tidak ada mata kuliah'; // Nilai default
+    $sql_matkul = "SELECT TOP 1 mk.nama_matkul 
+                   FROM Detail_Sidang ds
+                   JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
+                   WHERE ds.id_sidang = ?";
+    $stmt_matkul = sqlsrv_query($conn, $sql_matkul, [$id_sidang]);
+    if ($stmt_matkul && $data_matkul = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC)) {
+        $nama_matkul_sidang = $data_matkul['nama_matkul'];
+    }
+    // ==========================================================
+    // ===== AKHIR DARI [FIX] =====
+    // ==========================================================
+
+    // ===============================================================================
+    // ===== BAGIAN YANG DIUBAH (LOGIKA PENGAMBILAN MAHASISWA) =====
+    // ===============================================================================
+    // Logika ini disamakan dengan file dNilaiAkhir.php, yaitu mengambil mahasiswa
+    // dari tabel 'Kelompok' berdasarkan 'nomor_kelompok'.
+    if (isset($nomor_kelompok)) {
+        $sql_mhs = "SELECT DISTINCT k.nim, m.nama_mhs
+                    FROM Kelompok k
+                    JOIN Mahasiswa m ON k.nim = m.nim
+                    WHERE k.nomor_kelompok = ?
+                    ORDER BY k.nim ASC";
+
+        $stmt_mhs = sqlsrv_query($conn, $sql_mhs, array($nomor_kelompok));
+
+        if ($stmt_mhs) {
+            while ($row_mhs = sqlsrv_fetch_array($stmt_mhs, SQLSRV_FETCH_ASSOC)) {
+                $mahasiswa[] = $row_mhs;
+            }
+        } else {
+            // Opsional: Tambahkan penanganan error jika query gagal
+            error_log("Query mahasiswa gagal: " . print_r(sqlsrv_errors(), true));
+        }
+    }
+    // ===============================================================================
+    // ===== AKHIR BAGIAN YANG DIUBAH =====
+    // ===============================================================================
+
+
+    // Menentukan mahasiswa yang sedang aktif (dari SESSION atau default mahasiswa pertama)
+    if (isset($_SESSION['nim_aktif']) && in_array($_SESSION['nim_aktif'], array_column($mahasiswa, 'nim'))) {
+        $current_nim = $_SESSION['nim_aktif'];
+    } elseif (!empty($mahasiswa)) {
+        $current_nim = $mahasiswa[0]['nim'];
+        $_SESSION['nim_aktif'] = $current_nim;
+    }
+
+
+    // Mendapatkan nama mahasiswa yang sedang aktif untuk ditampilkan
+    foreach ($mahasiswa as $mhs) {
+        if ($mhs['nim'] == $current_nim) {
+            $current_nama_mhs = $mhs['nama_mhs'];
+            break;
+        }
+    }
+
+    // Inisialisasi variabel
+    $dosenPembimbing = []; // Akan berisi nama Pembimbing atau Pengampu
+    $dosenPenguji = [];
+    $labelPembimbing = "Dosen"; // Label default
+
+    if (isset($jenis_sidang)) {
+        // --- Logika untuk Pembimbing TA atau Pengampu Semester ---
+        if ($jenis_sidang == 'Tugas Akhir') {
+            $labelPembimbing = "Dosen Pembimbing";
+            // LOGIKA IDENTIK: Ambil nama dosen dari tabel Bimbingan berdasarkan id_kelompok.
+            $sql_dosen = "SELECT d.nama_dosen FROM Dosen d JOIN Bimbingan b ON d.nomor_dosen = b.nomor_dosen WHERE b.id_kelompok = ?";
+            $params_dosen = [$id_kelompok];
+
+            $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
+            if ($stmt_dosen) {
+                while ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
+                    $dosenPembimbing[] = $row['nama_dosen'];
+                }
+            }
+        } elseif ($jenis_sidang == 'Semester' && isset($id_matkul)) {
+            $labelPembimbing = "Dosen Pengampu";
+            // LOGIKA IDENTIK: Ambil nama dosen dari tabel Pengampu_Kelas berdasarkan id_matkul.
+            $sql_dosen = "SELECT d.nama_dosen FROM Dosen d JOIN Pengampu_Kelas pk ON d.nomor_dosen = pk.nomor_dosen WHERE pk.id_matkul = ?";
+            $params_dosen = [$id_matkul];
+
+            $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
+            if ($stmt_dosen) {
+                while ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
+                    // Dosen pengampu dianggap sebagai 'pembimbing' dan juga 'penguji' di halaman ini
+                    $dosenPembimbing[] = $row['nama_dosen'];
+                }
             }
         }
     }
 
-    // Ambil Dosen Penguji
-    $sql_penguji = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPenguji = 0x01";
-    $stmt_penguji = sqlsrv_query($conn, $sql_penguji, [$id_sidang]);
-    if ($stmt_penguji) {
-        while ($row = sqlsrv_fetch_array($stmt_penguji, SQLSRV_FETCH_ASSOC)) {
+    // --- Ambil Dosen Penguji tambahan dari tabel Penjadwalan (logika ini tetap) ---
+    $sql_penguji_jadwal = "SELECT d.nama_dosen FROM Dosen d JOIN Penjadwalan p ON d.nomor_dosen = p.nomor_dosen WHERE p.id_sidang = ? AND p.peran_dosen = 0"; // peran 0 = penguji
+    $stmt_penguji_jadwal = sqlsrv_query($conn, $sql_penguji_jadwal, [$id_sidang]);
+    if ($stmt_penguji_jadwal) {
+        while ($row = sqlsrv_fetch_array($stmt_penguji_jadwal, SQLSRV_FETCH_ASSOC)) {
             $dosenPenguji[] = $row['nama_dosen'];
         }
     }
 
-    // Ambil Dosen Pengampu jika ada (ditambahkan sebagai fallback)
-    $sql_pengampu = "SELECT DISTINCT d.nama_dosen FROM [dbo].[Penjadwalan] p JOIN [dbo].[Dosen] d ON p.nomor_dosen = d.nomor_dosen WHERE p.id_sidang = ? AND d.isPengampu = 0x01";
-    $stmt_pengampu = sqlsrv_query($conn, $sql_pengampu, [$id_sidang]);
-    if ($stmt_pengampu) {
-        while ($row = sqlsrv_fetch_array($stmt_pengampu, SQLSRV_FETCH_ASSOC)) {
-            $dosen_pengampu[] = $row['nama_dosen'];
-        }
-    }
+
+
+    // --- Hilangkan duplikat jika ada nama yang sama ---
+    $dosenPembimbing = array_unique($dosenPembimbing);
+    $dosenPenguji = array_unique($dosenPenguji);
+    // 
 
     // Ambil jadwal
     $sql_jadwal = "SELECT ruang_sidang, tanggal_sidang, jam_sidang FROM Jadwal WHERE id_sidang = ?";
@@ -166,13 +282,12 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
     }
 }
 
-// Ambil dokumen revisi
-$sql_revisi = "SELECT dok_revisi FROM Detail_Sidang WHERE id_sidang = ?";
-$stmt_revisi = sqlsrv_query($conn, $sql_revisi, [$id_sidang]);
-$data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
-$namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ada revisi
+$namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
+$namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
 
 ?>
+
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -186,6 +301,7 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../css/button-styles.css">
+    <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for pop-up notifications -->
 
@@ -200,19 +316,19 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dEvaluasiSidang.php?id=<?= $id_sidang ?>">
+                    <a href="dEvaluasiSidang.php?id=<?= htmlspecialchars($id_sidang) ?>">
                         <span class="fw-semibold NavSide__sidebar-title">Evaluasi</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
-                    <a href="dDokumenRevisi.php?id=<?= $id_sidang ?>">
+                    <a href="dDokumenRevisi.php">
                         <span class="fw-semibold">Dokumen</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="dNilaiAkhir.php?id=<?= $id_sidang ?>">
+                    <a href="dNilaiAkhir.php?id_sidang=<?= htmlspecialchars($id_sidang) ?>">
                         <span class="fw-semibold NavSide__sidebar-title">Nilai Akhir</span>
                     </a>
                 </li>
@@ -225,93 +341,104 @@ $namaFileRevisi = "dokumen_dummy_revisi.zip"; // Nama file default jika tidak ad
             </ul>
         </div>
 
-        <div class="NavSide__topbar">
-            <div class="NavSide__toggle">
-                <i class="bi bi-list open"></i>
-                <i class="bi bi-x-lg close"></i>
-            </div>
+        <div class="NavSide__toggle">
+            <i class="bi bi-list open"></i>
+            <i class="bi bi-x-lg close"></i>
         </div>
 
-        <main class="NavSide__main-content">
-            <h2>Detail Sidang - Sistem Pengajuan Sidang</h2>
-            <div class="info-card">
-                <div class="section">
-                    <?php if (!empty($dosenPembimbing)): ?>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
-                            <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'Belum ada judul'; ?></div>
+        <div id="page-content-wrapper">
+            <div class="NavSide__topbar"></div>
+            <main class="NavSide__main-content">
+                <h2 class="text-heading text-black" style="font-weight: 700;">Detail Sidang - <?= htmlspecialchars($judul) ?></h2>
+                <form id="dokumenRevisiForm" method="POST" action="dDokumenRevisi.php">
+                    <input type="hidden" name="nim" value="<?= htmlspecialchars($current_nim) ?>">
+                    <div class="info-card">
+                        <div class="section">
+                            <div class="info-group">
+                                <div class="label-row"> <i class="fa-solid fa-id-card"></i> <span class="fw-bold"> Kelompok</span></div>
+                                <div class="value-row"><?php echo htmlspecialchars($nomor_kelompok ?: '-'); ?></div>
+                            </div>
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-users"></i><span class="fw-bold">Anggota Kelompok</span></div>
+                                <div class="value-row">
+                                    <?php if (!empty($mahasiswa)): ?>
+                                        <?php foreach ($mahasiswa as $mhs): ?>
+                                            <?= htmlspecialchars($mhs['nama_mhs']) ?><br>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <em>Belum ada anggota</em>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
+                                <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'Belum ada judul'; ?></div>
+                            </div>
+
+                            <div class="info-group">
+                                <div class="label-row">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                    <span class="fw-bold"><?php echo htmlspecialchars($labelPembimbing); ?></span>
+                                </div>
+                                <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
+                            </div>
+
+                            <!-- Bagian Dosen Penguji (HANYA MUNCUL JIKA BUKAN SIDANG SEMESTER) -->
+                            <?php if ($jenis_sidang != 'Semester'): ?>
+                                <div class="info-group">
+                                    <div class="label-row"><i class="fa-solid fa-id-card-clip"></i><span class="fw-bold">Dosen Penguji</span></div>
+                                    <div class="value-row"><?php echo $namaPenguji_html; ?></div>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-user-tie"></i><span class="fw-bold">Dosen Pembimbing</span></div>
-                            <div class="value-row">
-                                <?php echo implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)); ?>
+                        <div class="section">
+                            <div class="info-group">
+                                <div class="label-row"> <i class="fa-solid fa-user"></i><span class="fw-bold"> Mata Kuliah </span></div>
+                                <div class="value-row"><?php echo htmlspecialchars($nama_matkul_sidang) ?></div>
+
+                            </div>
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-door-open"></i><span class="fw-bold">Ruangan</span></div>
+                                <div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div>
+                            </div>
+
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-calendar-days"></i><span class="fw-bold">Tanggal</span></div>
+                                <div class="value-row"><?php echo htmlspecialchars($tanggal_formatted); ?></div>
+                            </div>
+
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-clock"></i><span class="fw-bold">Jam</span></div>
+                                <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
                             </div>
                         </div>
-
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Penguji</span></div>
-                            <div class="value-row">
-                                <?php echo !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan'; ?>
-                            </div>
-                        </div>
-
-                    <?php elseif (!empty($dosen_pengampu)): ?>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div>
-                            <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'N/A'; ?></div>
-                        </div>
-
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-user-group"></i><span class="fw-bold">Dosen Pengampu</span></div>
-                            <div class="value-row">
-                                <?php echo implode('<br>', array_map('htmlspecialchars', $dosen_pengampu)); ?>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <p class="info-item">Data sidang tidak lengkap atau tidak dikenali.</p>
-                    <?php endif; ?>
-                </div>
-
-                <div class="section">
-                    <div class="info-group">
-                        <div class="label-row"><i class="fa-solid fa-door-open"></i><span class="fw-bold">Ruangan</span></div>
-                        <div class="value-row"><?php echo htmlspecialchars($ruangan); ?></div>
                     </div>
 
-                    <div class="info-group">
-                        <div class="label-row"><i class="fa-solid fa-calendar-days"></i><span class="fw-bold">Tanggal</span></div>
-                        <div class="value-row"><?php echo htmlspecialchars($tanggal_formatted); ?></div>
+                    <h3>Dokumen Revisi</h3>
+                    <div class="file-buttons-container d-flex flex-wrap">
+                        <?php if (!empty($data_revisi['dok_revisi'])): ?>
+                            <a href="../../uploads/<?= $dokumen_revisi ?>" class="file-button" download>
+                                <i class="fa-solid fa-file-zipper"></i>
+                                <?= htmlspecialchars(basename($dokumen_revisi)) ?>
+                            </a>
+                        <?php else: ?>
+                            <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>
+                        <?php endif; ?>
                     </div>
 
-                    <div class="info-group">
-                        <div class="label-row"><i class="fa-solid fa-clock"></i><span class="fw-bold">Jam</span></div>
-                        <div class="value-row"><?php echo htmlspecialchars($jam); ?></div>
+
+                    <div class="button-group-bottom" id="grup-aksi-dokumen">
+                        <div class="button-group">
+                            <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
+                            <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <h5>Dokumen Revisi</h5>
-            <div class="file-buttons-container d-flex flex-wrap">
-                <?php if (!empty($data_revisi['dok_revisi'])): ?>
-                    <a href="../../uploadtesting/<?= $namaFileRevisi ?>" class="file-button" download>
-                        <i class="fa-solid fa-file-zipper"></i>
-                        <?= htmlspecialchars(basename($namaFileRevisi)) ?>
-                    </a>
-                <?php else: ?>
-                    <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>
-                <?php endif; ?>
-            </div>
-
-            <div class="button-group-bottom" id="grup-aksi-dokumen">
-                <div class="button-group">
-                    <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
-                    <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
-                </div>
-            </div>
-        </main>
+                </form>
+            </main>
+        </div>
     </div>
-
     <!-- Modal Konfirmasi -->
     <div class="modal fade" id="confirmationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

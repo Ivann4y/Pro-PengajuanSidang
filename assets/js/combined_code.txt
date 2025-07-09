@@ -1,0 +1,4618 @@
+--- Combined Code from folder: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\js ---
+
+
+================================================================================
+// File: aDaftarSidang.js
+================================================================================
+
+// Jalankan kode setelah seluruh DOM dimuat 
+document.addEventListener('DOMContentLoaded', function () {
+   // Ambil elemen toggle sidebar dan sidebar utama
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
+    // Ambil kontainer ikon desktop dan mobile
+            const desktopIconsContainer = document.getElementById('desktop-icons-container');
+            const mobileIconsContainer = document.getElementById('mobile-icons-container');
+            if (desktopIconsContainer) {
+              // Ambil elemen ikon header
+              const headerIcons = desktopIconsContainer.querySelector('.header-icons');
+               // Fungsi untuk memindahkan ikon header ke desktop/mobile sesuai lebar layar
+                function handleIconPlacement() {
+                  if (window.innerWidth <= 992) {
+                      // Jika mobile, pindahkan ikon ke mobile container
+                    if (mobileIconsContainer && !mobileIconsContainer.contains(headerIcons)) mobileIconsContainer.appendChild(headerIcons);
+                    // Jika desktop, pindahkan ikon ke desktop container
+                    } else { if (!desktopIconsContainer.contains(headerIcons)) desktopIconsContainer.appendChild(headerIcons); }
+              }
+              // Event klik untuk toggle sidebar di mobile
+                if (menuToggle && sidebar) {
+                  menuToggle.onclick = () => {
+                      
+                        menuToggle.classList.toggle("NavSide__toggle--active");
+                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                    };
+              }
+               // Jalankan penempatan ikon saat pertama kali load
+              handleIconPlacement();
+                // Jalankan ulang saat window di-resize
+                window.addEventListener('resize', handleIconPlacement);
+            }
+});
+ // Jalankan kode search filter tabel setelah DOM siap
+document.addEventListener('DOMContentLoaded', function () {
+  // Ambil input search dan semua baris tabel
+  const searchInput = document.getElementById('searchInput');
+  const tableRows = document.querySelectorAll('.table-admin-custom tbody tr.isiTabel');
+  // Event saat input search berubah
+  searchInput.addEventListener('input', function() {
+    const keyword = searchInput.value.toLowerCase();
+    // Loop setiap baris, tampilkan jika cocok dengan keyword
+    tableRows.forEach(row => {
+      const rowText = row.innerText.toLowerCase();
+      row.style.display = rowText.includes(keyword) ? '' : 'none';
+    });
+  });
+});
+================================================================================
+// File: aDetailSidang.js
+================================================================================
+
+// Membuka modal penjadwalan dan mereset form di dalamnya
+function openModal() {
+    document.getElementById('formDalamModal').reset();
+    document.getElementById('form-error').textContent = '';
+    var myModal = new bootstrap.Modal(document.getElementById('penjadwalanSidangModal'), {
+        keyboard: false
+    });
+    myModal.show();
+}
+// Fungsi autocomplete pencarian dosen penguji
+function searchDosen(inputElement, index) {
+    const query = inputElement.value.toLowerCase().trim();
+    const dropdown = document.getElementById(`autocomplete_penguji_${index}`);
+
+    if (query.length < 1) {
+        dropdown.style.display = 'none';
+        return;
+    }
+
+    // Filter dosen berdasarkan input
+    const filteredDosen = dosenData.filter(dosen =>
+        dosen.nama.toLowerCase().includes(query)
+    );
+
+    dropdown.innerHTML = ''; 
+
+    if (filteredDosen.length > 0) {
+        filteredDosen.forEach(dosen => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            item.textContent = dosen.nama;
+            // Pilih dosen saat diklik
+            item.addEventListener('click', () => {
+                selectDosen(dosen.nama, index);
+            });
+            
+            dropdown.appendChild(item);
+        });
+        dropdown.style.display = 'block';
+    } else {
+        dropdown.innerHTML = '<div class="autocomplete-item">Dosen tidak ditemukan</div>';
+    }
+     dropdown.style.display = 'block';
+}
+// Mengisi input nama dosen penguji dari hasil autocomplete
+function selectDosen(namaDosen, index) {
+    const inputElement = document.getElementById(`modal_penguji${index}`);
+    const dropdown = document.getElementById(`autocomplete_penguji_${index}`);
+    
+    inputElement.value = namaDosen;
+    dropdown.style.display = 'none';
+}
+// Menambah field penguji baru pada form
+function addPenguji() {
+    const wrapper = document.getElementById('penguji-wrapper');
+    const newPengujiDiv = document.createElement('div');
+    newPengujiDiv.className = 'form-group';
+    
+    const newIndex = wrapper.children.length + 1;
+    newPengujiDiv.id = `penguji-form-${newIndex}`;
+
+    newPengujiDiv.innerHTML = `
+        <label for="modal_penguji${newIndex}">Penguji ${newIndex}</label>
+        <div class="input-with-buttons">
+            <div class="autocomplete-container">
+                <input type="text"
+                       id="modal_penguji${newIndex}"
+                       name="penguji_nama[]"
+                       placeholder="Ketik nama dosen penguji"
+                       oninput="searchDosen(this, ${newIndex})"
+                       autocomplete="off">
+                <div class="autocomplete-dropdown" id="autocomplete_penguji_${newIndex}" style="display: none;"></div>
+            </div>
+            <div class="input-with-percent">
+                <input type="number" name="penguji_bobot[]" class="form-control-bobot" min="0" placeholder="Bobot">
+                <span class="percent-sign">%</span>
+            </div>
+        </div>
+    `;
+    wrapper.appendChild(newPengujiDiv);
+}
+// Menghapus field penguji terakhir pada form
+function removePenguji() {
+    const wrapper = document.getElementById('penguji-wrapper');
+    if (wrapper.children.length > 1) {
+        wrapper.lastElementChild.remove();
+    } else {
+        // Jika hanya satu, kosongkan saja inputnya
+        const lastForm = wrapper.firstElementChild;
+        if (lastForm) {
+            const inputNama = lastForm.querySelector('input[name="penguji_nama[]"]');
+            const inputBobot = lastForm.querySelector('input[name="penguji_bobot[]"]');
+            if (inputNama) inputNama.value = '';
+            if (inputBobot) inputBobot.value = '';
+        }
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener untuk toggle sidebar di mobile
+    let menuToggle = document.querySelector(".NavSide__toggle");
+    let sidebar = document.getElementById("main-sidebar");
+
+    if (menuToggle && sidebar) {
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+    }
+    
+    // Event listener untuk menutup dropdown autocomplete saat klik di luar
+    document.addEventListener('click', function(event) {
+        setTimeout(() => {
+            const allDropdowns = document.querySelectorAll('.autocomplete-dropdown');
+            allDropdowns.forEach(dropdown => {
+                const container = dropdown.closest('.autocomplete-container');
+                if (container && !container.contains(document.activeElement)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        }, 150);
+    });
+
+    // Event listener untuk submit form penjadwalan (dengan validasi)
+    const form = document.getElementById('formDalamModal');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Cegah submit default
+
+            const errorBox = document.getElementById("form-error");
+            errorBox.textContent = ""; 
+            
+            let isValid = true;
+            let errorMessage = "";
+
+            const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
+            
+             // Validasi khusus untuk sidang TA
+            if (isSidangTA) {
+                const namaDosenList = [];
+                pengujiInputs.forEach(input => {
+                    const nama = input.value.trim();
+                    if (nama !== "") {
+                        namaDosenList.push(nama);
+                    }
+                });
+                // Cek duplikasi nama dosen penguji
+                const uniqueNamaDosen = new Set(namaDosenList);
+                if (uniqueNamaDosen.size < namaDosenList.length) {
+                    errorMessage = "Tidak boleh ada nama dosen penguji yang sama.";
+                    isValid = false;
+                }
+                // Validasi nama dosen harus ada di daftar dosenData
+                pengujiInputs.forEach((input, index) => {
+                    const namaDosenValid = dosenData.some(dosen => dosen.nama === input.value.trim());
+                    if (isValid && input.value.trim() === "") {
+                        errorMessage = `Nama penguji ${index + 1} tidak boleh kosong!`;
+                        isValid = false;
+                    } else if (isValid && !namaDosenValid && input.value.trim() !== '') {
+                        errorMessage = `Nama dosen '${input.value}' tidak valid. Harap pilih dari daftar.`;
+                        isValid = false;
+                    }
+                });
+            }
+            // Validasi ruangan, tanggal, jam
+            const ruangan = document.getElementById("modal_ruangan").value.trim();
+            const tanggal = document.getElementById("modal_tanggal").value;
+            const jamAwal = document.getElementById("modal_jam_awal").value;
+            const jamAkhir = document.getElementById("modal_jam_akhir").value;
+
+            if (isValid && ruangan === "") {
+                errorMessage = "Ruangan harus diisi!";
+                isValid = false;
+            } else if (isValid && tanggal === "") {
+                errorMessage = "Tanggal harus dipilih!";
+                isValid = false;
+            } else if (isValid && (jamAwal === "" || jamAkhir === "")) {
+                errorMessage = "Jam awal dan jam akhir harus diisi!";
+                isValid = false;
+            } else if (isValid && jamAkhir <= jamAwal) {
+                errorMessage = "Jam akhir harus setelah jam awal!";
+                isValid = false;
+            }
+            // Jika validasi gagal, tampilkan pesan error
+            if (!isValid) {
+                errorBox.textContent = errorMessage;
+                return;
+            }
+            // Submit form dengan AJAX (fetch)
+            const formData = new FormData(this);
+            const submitButton = this.querySelector('button[type="submit"]');
+            
+            submitButton.disabled = true;
+            submitButton.textContent = 'Menyimpan...';
+
+            fetch('proses_ubah_jadwal.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+                .then(data => {
+                // Tutup modal jika berhasil
+                var myModalEl = document.getElementById('penjadwalanSidangModal');
+                var modal = bootstrap.Modal.getInstance(myModalEl);
+                if (modal) { modal.hide(); }
+
+                if (data.status === 'success') {
+                    Swal.fire({
+                        // Tampilkan notifikasi sukses dan reload halaman
+                        title: 'Berhasil!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#4B68FB'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); 
+                        }
+                    });
+                } else {
+                    // Tampilkan notifikasi gagal
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#ff5f5f'
+                    });
+                }
+            })
+                .catch(error => {
+                // Tampilkan error jika fetch gagal
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Terjadi kesalahan saat menghubungi server.',
+                    icon: 'error'
+                });
+            })
+                .finally(() => {
+                // Aktifkan kembali tombol submit
+                submitButton.disabled = false;
+                submitButton.textContent = 'Ubah Penjadwalan';
+            });
+        });
+    }
+});
+// Menampilkan konfirmasi hapus sidang dengan SweetAlert
+function confirmDelete(idSidang) {
+    Swal.fire({
+        title: 'Anda Yakin?',
+        text: "Data sidang ini dan semua jadwal terkait akan dihapus permanen. Aksi ini tidak dapat dibatalkan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Jika pengguna menekan "Ya, Hapus!", panggil fungsi untuk proses penghapusan
+            processDelete(idSidang);
+        }
+    });
+}
+
+
+ //Mengirim permintaan penghapusan ke server.
+ //@param {number} idSidang - ID sidang yang akan dihapus.
+ 
+function processDelete(idSidang) {
+    // Buat objek FormData untuk mengirim ID
+    const formData = new FormData();
+    formData.append('id_sidang', idSidang);
+
+    // Kirim permintaan menggunakan Fetch API
+    fetch('proses_hapus_sidang.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Jika sukses, tampilkan notifikasi dan redirect ke daftar sidang
+            Swal.fire({
+                title: 'Dihapus!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Arahkan pengguna kembali ke halaman daftar sidang
+                window.location.href = 'aDaftarSidang.php';
+            });
+        } else {
+            // Jika gagal, tampilkan pesan error
+            Swal.fire({
+                title: 'Gagal!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'Coba Lagi'
+            });
+        }
+    })
+        .catch(error => {
+        // Tampilkan error jika fetch gagal
+        console.error('Error:', error);
+        Swal.fire('Error Jaringan', 'Tidak dapat terhubung ke server.', 'error');
+    });
+}
+================================================================================
+// File: admin-dashboard.js
+================================================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+  // =========================
+  // Sidebar Toggle Logic
+  // =========================
+  let menuToggle = document.querySelector(".NavSide__toggle");
+  let sidebar = document.getElementById("main-sidebar");
+
+  // Toggle sidebar untuk mobile
+  menuToggle.onclick = function () {
+    menuToggle.classList.toggle("NavSide__toggle--active");
+    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+  };
+
+  // =========================
+  // Load All Dashboard Data
+  // =========================
+
+  // Initialize data variables
+  let sidangData = [];
+  let sidangDates = [];
+
+  // Load all dashboard data from single endpoint
+  fetch("../../control/aBeranda_data.php")
+    .then((response) => response.json())
+    .then((data) => {
+      // Set sidang data for calendar
+      sidangData = data.sidang_mendatang || [];
+      sidangDates = sidangData.map((item) => item.tanggal_sidang);
+
+      // Update UI with all data
+      renderCalendar();
+      renderSidangMendatang(sidangData);
+      renderAngkaJumlahPengajuan(data.jumlah_pengajuan || 0);
+      renderAngkaJumlahPenjadwalan(data.jumlah_penjadwalan || 0);
+      renderTugas(data.tugas_penjadwalan || []);
+    })
+    .catch((error) => {
+      console.error("Error loading dashboard data:", error);
+    });
+
+  // =========================
+  // Kalender Interaktif
+  // =========================
+
+  // Ambil elemen kalender
+  const calendarTableBody = document.querySelector("#calendarTable tbody");
+  const currentMonthYearHeader = document.getElementById("currentMonthYear");
+  const prevMonthBtn = document.getElementById("prevMonth");
+  const nextMonthBtn = document.getElementById("nextMonth");
+
+  // Tanggal hari ini dan tanggal aktif
+  let currentDate = new Date();
+  let activeDate = new Date();
+
+  // Nama-nama bulan dalam bahasa Indonesia
+  const monthNames = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+
+  // Fungsi untuk merender kalender
+  function renderCalendar() {
+    calendarTableBody.innerHTML = "";
+    currentMonthYearHeader.textContent = `${
+      monthNames[activeDate.getMonth()]
+    } ${activeDate.getFullYear()}`;
+
+    const year = activeDate.getFullYear();
+    const month = activeDate.getMonth();
+
+    // Hari pertama dalam bulan (0 = Minggu)
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    // Jumlah hari dalam bulan
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    let date = 1;
+    // Render 6 baris (minggu)
+    for (let i = 0; i < 6; i++) {
+      const row = document.createElement("tr");
+
+      // Render 7 kolom (hari)
+      for (let j = 0; j < 7; j++) {
+        const cell = document.createElement("td");
+        // Kosongkan sel sebelum tanggal 1
+        if (i === 0 && j < firstDayOfMonth) {
+          cell.innerHTML = "";
+        } else if (date > daysInMonth) {
+          // Kosongkan sel setelah akhir bulan
+          cell.innerHTML = "";
+        } else {
+          // Isi tanggal
+          const daySpan = document.createElement("span");
+          daySpan.classList.add("calendar-day");
+          daySpan.textContent = date;
+
+          // Format tanggal untuk pencocokan (YYYY-MM-DD)
+          const thisDate = new Date(year, month, date);
+          const dateStr = [
+            thisDate.getFullYear(),
+            String(thisDate.getMonth() + 1).padStart(2, "0"),
+            String(thisDate.getDate()).padStart(2, "0"),
+          ].join("-");
+
+          // Tandai hari ini
+          if (
+            date === currentDate.getDate() &&
+            month === currentDate.getMonth() &&
+            year === currentDate.getFullYear()
+          ) {
+            daySpan.classList.add("current-day");
+          }
+
+          // Tandai tanggal yang ada sidang
+          if (sidangDates.includes(dateStr)) {
+            daySpan.classList.add("has-sidang");
+          }
+
+          cell.appendChild(daySpan);
+          date++;
+        }
+        row.appendChild(cell);
+      }
+      calendarTableBody.appendChild(row);
+    }
+  }
+
+  //Generate item card sidang mendatang dari data...
+  function renderSidangMendatang(data) {
+    const sidangContainer = document.querySelector(".sidang-mendatang-card");
+    // Hapus semua .item lama, kecuali judul
+    sidangContainer.querySelectorAll(".item").forEach((e) => e.remove());
+
+    // jika tidak ada sidang mendatang
+    if (!data.length) {
+      const p = document.createElement("p");
+      p.className = "text-center text-muted mt-3";
+      p.textContent = "Tidak ada sidang yang dijadwalkan.";
+      sidangContainer.appendChild(p);
+      return;
+    }
+
+    data.forEach((item) => {
+      const tgl = new Date(item.tanggal_sidang);
+      const day = String(tgl.getDate()).padStart(2, "0");
+      const month = tgl.toLocaleString("default", { month: "short" });
+
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+                <div class="date-bubble">
+                    <span class="day">${day}</span>
+                    <span class="month">${month}</span>
+                </div>
+                <span class="info">${item.judul}</span>
+                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+            `;
+      // Jika ada link_detail, jadikan clickable
+      if (item.link_detail) {
+        const a = document.createElement("a");
+        a.href = item.link_detail;
+        a.style.textDecoration = "none";
+        a.style.color = "inherit";
+        a.appendChild(div);
+        sidangContainer.appendChild(a);
+      } else {
+        sidangContainer.appendChild(div);
+      }
+    });
+  }
+
+  // Render angka jumlah pengajuan
+  function renderAngkaJumlahPengajuan(jumlah) {
+    const card = document.querySelector(".pengajuan-status-card");
+    if (!card) return;
+    // Cari elemen .number di dalam card
+    let numberDiv = card.querySelector(".number");
+    if (!numberDiv) {
+      // Jika belum ada, buat baru
+      numberDiv = document.createElement("div");
+      numberDiv.className = "number";
+      // Sisipkan di awal card
+      card.insertBefore(numberDiv, card.firstChild);
+    }
+    numberDiv.textContent = jumlah;
+  }
+
+  function renderAngkaJumlahPenjadwalan(jumlah) {
+    const card = document.querySelector(".penjadwalan-status-card");
+    if (!card) return;
+    // Cari elemen .number di dalam card
+    let numberDiv = card.querySelector(".number");
+    if (!numberDiv) {
+      // Jika belum ada, buat baru
+      numberDiv = document.createElement("div");
+      numberDiv.className = "number";
+      // Sisipkan di awal card
+      card.insertBefore(numberDiv, card.firstChild);
+    }
+    numberDiv.textContent = jumlah;
+  }
+
+  // Render tugas item penjadwalan
+  function renderTugas(data) {
+    const tugasContainer = document.querySelector(".tugas-card");
+    // Jika tidak ada tugas card, skip rendering
+    if (!tugasContainer) return;
+
+    // Hapus semua tugas-item lama, kecuali judul
+    tugasContainer.querySelectorAll(".tugas-item").forEach((e) => e.remove());
+
+    if (!data.length) {
+      const p = document.createElement("p");
+      p.className = "text-center text-muted mt-3";
+      p.textContent = "Tidak ada tugas penjadwalan.";
+      tugasContainer.appendChild(p);
+      return;
+    }
+
+    data.forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "tugas-item";
+      div.textContent = "Belum terjadwal " + item.judul;
+      tugasContainer.appendChild(div);
+    });
+  }
+
+  // Navigasi bulan sebelumnya
+  prevMonthBtn.addEventListener("click", () => {
+    activeDate.setMonth(activeDate.getMonth() - 1);
+    activeDate.setDate(1);
+    renderCalendar();
+  });
+
+  // Navigasi bulan berikutnya
+  nextMonthBtn.addEventListener("click", () => {
+    activeDate.setMonth(activeDate.getMonth() + 1);
+    activeDate.setDate(1);
+    renderCalendar();
+  });
+
+  // Render kalender saat halaman dimuat
+  renderCalendar();
+});
+
+================================================================================
+// File: aPenjadwalan.js
+================================================================================
+
+// ==========================================================================
+// BAGIAN 1: FUNGSI GLOBAL & INSTANCE MODAL
+// ==========================================================================
+
+let taModalInstance, semModalInstance;
+let pengujiCount = 0;
+
+/**
+ * Fungsi utama untuk membuka modal penjadwalan.
+ * @param {HTMLElement} rowElement - Elemen <tr> dari baris yang diklik.
+ */
+function openJadwalModal(rowElement) {
+    const tipeSidang = rowElement.dataset.tipeSidang;
+
+<<<<<<< HEAD
+    if (tipeSidang === 'Tugas Akhir') { // Disesuaikan dengan nilai dari DB
+=======
+    if (tipeSidang === 'Tugas Akhir') {
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+        if (!taModalInstance) {
+            taModalInstance = new bootstrap.Modal(document.getElementById('penjadwalanSidangTAModal'));
+        }
+        resetAndPopulateTAModal(rowElement);
+        taModalInstance.show();
+    } else if (tipeSidang === 'Semester') {
+        if (!semModalInstance) {
+            semModalInstance = new bootstrap.Modal(document.getElementById('penjadwalanSidangSemModal'));
+        }
+        populateSemModal(rowElement);
+        semModalInstance.show();
+    }
+}
+
+/**
+ * Mengisi data ke modal Sidang TA dan mereset field.
+ * @param {HTMLElement} el - Elemen <tr> dari baris yang diklik.
+ */
+function resetAndPopulateTAModal(el) {
+    const formTA = document.getElementById('formDalamModal-ta');
+    formTA.reset();
+    document.getElementById('modal_id_sidang-ta').value = el.dataset.id || '';
+
+    document.getElementById('modal_nim-ta').value = el.dataset.kelompok || '';
+    document.getElementById('modal_judul_sidang-ta').value = el.dataset.judul || '';
+    document.getElementById('modal_pembimbing-ta').value = el.dataset.pembimbing || '';
+    document.getElementById('modal_prodi-ta').value = el.dataset.prodi || '';
+    document.getElementById('form-error-ta').textContent = '';
+
+    const wrapper = document.getElementById('penguji-wrapper-ta');
+    wrapper.innerHTML = '';
+    pengujiCount = 0;
+
+    addPenguji();
+}
+
+/**
+ * Mengisi data ke modal Sidang Semester.
+ * @param {HTMLElement} el - Elemen <tr> dari baris yang diklik.
+ */
+function populateSemModal(el) {
+    const formSem = document.getElementById('formDalamModal-sem');
+    formSem.reset();
+    document.getElementById('modal_id_sidang-sem').value = el.dataset.id || '';
+
+    document.getElementById('modal_nim-sem').value = el.dataset.kelompok || '';
+    document.getElementById('modal_matkul-sem').value = el.dataset.judul || '';
+    document.getElementById('modal_prodi-sem').value = el.dataset.prodi || '';
+    document.getElementById('form-error-sem').textContent = '';
+
+    const pengampuWrapper = document.getElementById('pengampu-wrapper-sem');
+    pengampuWrapper.innerHTML = '';
+    try {
+        const pengampuList = JSON.parse(el.dataset.pengampu || '[]');
+        if (pengampuList.length > 0) {
+            pengampuList.forEach((nama, index) => {
+                if (!nama) return;
+                const pengampuIndex = index + 1;
+                const pengampuHtml = `
+                    <div class="form-group" id="pengampu-form-sem-${pengampuIndex}">
+                        <label for="modal_pengampu-sem-${pengampuIndex}">Pengampu ${pengampuIndex}</label>
+                        <div class="input-with-buttons">
+                            <input type="text" id="modal_pengampu-sem-${pengampuIndex}" name="pengampu_nama[]" value="${nama}" readonly />
+                            <div class="bobot-nilai-input-group">
+                                <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-${pengampuIndex}')">-</button>
+                                <input type="number" id="modal_qty_pengampu-sem-${pengampuIndex}" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" />
+                                <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-${pengampuIndex}')">+</button>
+                            </div>
+                        </div>
+                    </div>`;
+                pengampuWrapper.insertAdjacentHTML('beforeend', pengampuHtml);
+            });
+        }
+    } catch (e) {
+        console.error("Gagal memproses data pengampu:", e);
+    }
+}
+
+/**
+ * Menambah field input penguji baru.
+ */
+function addPenguji() {
+    pengujiCount++;
+    const wrapper = document.getElementById('penguji-wrapper-ta');
+    const div = document.createElement('div');
+    div.className = 'form-group';
+    div.id = `penguji-form-ta-${pengujiCount}`;
+    
+    div.innerHTML = `
+        <label for="modal_penguji-ta-${pengujiCount}">Penguji ${pengujiCount}</label>
+        <div class="input-with-buttons">
+            <div class="autocomplete-container">
+                <input type="text"
+                       id="modal_penguji-ta-${pengujiCount}"
+                       name="penguji_nama[]"
+                       placeholder="Ketik nama dosen penguji"
+                       oninput="searchPenguji(this, ${pengujiCount})"
+                       autocomplete="off">
+                <div class="autocomplete-dropdown" id="autocomplete_penguji_${pengujiCount}"></div>
+            </div>
+            <div class="bobot-nilai-input-group">
+                <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-${pengujiCount}')">-</button>
+                <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" />
+                <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-${pengujiCount}')">+</button>
+            </div>
+            <div class="form-toggle-buttons">
+                <button type="button" onclick="addPenguji()">+</button>
+                <button type="button" onclick="removePenguji()">-</button>
+            </div>
+        </div>`;
+    wrapper.appendChild(div);
+    updateToggleButtonsVisibility();
+}
+
+/**
+ * Menghapus field input penguji terakhir.
+ */
+function removePenguji() {
+    if (pengujiCount > 1) {
+        document.getElementById(`penguji-form-ta-${pengujiCount}`).remove();
+        pengujiCount--;
+        updateToggleButtonsVisibility();
+    }
+}
+
+/**
+ * Mengatur visibilitas tombol tambah/kurang penguji.
+ */
+function updateToggleButtonsVisibility() {
+    const allToggleButtons = document.querySelectorAll('#penguji-wrapper-ta .form-toggle-buttons');
+    allToggleButtons.forEach(group => group.style.display = 'none');
+
+    if (allToggleButtons.length > 0) {
+        const lastGroup = allToggleButtons[allToggleButtons.length - 1];
+        lastGroup.style.display = 'inline-flex';
+
+        const removeButton = lastGroup.querySelector('button[onclick="removePenguji()"]');
+        if (removeButton) {
+            removeButton.style.display = (pengujiCount > 1) ? 'block' : 'none';
+        }
+    }
+}
+
+/**
+ * Mencari dosen untuk dropdown autocomplete.
+ */
+function searchPenguji(inputElement, index) {
+    const query = inputElement.value.toLowerCase().trim();
+    const dropdown = document.getElementById(`autocomplete_penguji_${index}`);
+
+    if (query.length < 1) {
+        dropdown.style.display = 'none';
+        return;
+    }
+
+    const filteredDosen = dosenData.filter(dosen =>
+        dosen.nama.toLowerCase().includes(query)
+    );
+
+    dropdown.innerHTML = '';
+    if (filteredDosen.length > 0) {
+        filteredDosen.forEach(dosen => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            item.textContent = dosen.nama;
+            item.onclick = () => selectPenguji(dosen.nama, index);
+            dropdown.appendChild(item);
+        });
+    } else {
+        dropdown.innerHTML = '<div class="autocomplete-item no-results">Dosen tidak ditemukan</div>';
+    }
+    dropdown.style.display = 'block';
+}
+
+/**
+ * Memilih dosen dari dropdown dan mengisi input.
+ */
+function selectPenguji(namaDosen, index) {
+    document.getElementById(`modal_penguji-ta-${index}`).value = namaDosen;
+    document.getElementById(`autocomplete_penguji_${index}`).style.display = 'none';
+}
+
+/**
+ * Menambah nilai pada input bobot.
+ */
+function incrementValue(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) input.value = parseInt(input.value, 10) + 1;
+}
+
+/**
+ * Mengurangi nilai pada input bobot.
+ */
+function decrementValue(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        let val = parseInt(input.value, 10);
+        if (val > (parseInt(input.min, 10) || 0)) {
+            input.value = val - 1;
+        }
+    }
+}
+
+/**
+ * Menangani pengiriman data dari form modal.
+ */
+// --- GANTI SELURUH FUNGSI INI ---
+function handleFormSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+<<<<<<< HEAD
+    const modalType = form.id.includes('-ta') ? 'TA' : 'Semester';
+    const errorBox = document.getElementById(`form-error-${modalType.toLowerCase()}`);
+
+    if (!validateForm(modalType)) return;
+
+=======
+    const modalType = form.elements['tipe_sidang'].value; // Ambil tipe dari input hidden
+
+    // Validasi form terlebih dahulu
+    if (!validateForm(modalType)) {
+        return; // Hentikan jika tidak valid
+    }
+    
+    // Dapatkan elemen yang benar setelah validasi
+    const modalSuffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
+    const errorBox = document.getElementById(`form-error-${modalSuffix}`);
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    // Lanjutkan dengan proses submit
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengirim...';
+    errorBox.textContent = '';
+
+    const formData = new FormData(form);
+
+    fetch('createPenjadwalan.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const modalToHide = modalType === 'Tugas Akhir' ? taModalInstance : semModalInstance;
+            if (modalToHide) modalToHide.hide();
+            
+            Swal.fire({
+                title: 'Berhasil!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => location.reload());
+
+        } else {
+<<<<<<< HEAD
+            errorBox.textContent = data.message || 'Terjadi kesalahan.';
+=======
+            errorBox.textContent = data.message || 'Terjadi kesalahan yang tidak diketahui.';
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+            Swal.fire({
+                title: 'Gagal!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'Coba Lagi'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Fetch Error:', error);
+        errorBox.textContent = 'Tidak dapat terhubung ke server.';
+        Swal.fire({
+            title: 'Koneksi Gagal',
+            text: 'Tidak dapat mengirim data ke server.',
+<<<<<<< HEAD
+            icon: 'error',
+            confirmButtonText: 'Tutup'
+=======
+            icon: 'error'
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+        });
+    })
+    .finally(() => {
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Buat Penjadwalan';
+    });
+}
+
+/**
+ * Validasi form sebelum dikirim.
+<<<<<<< HEAD
+=======
+ * @param {string} modalType - 'Tugas Akhir' atau 'Semester'.
+ * @returns {boolean} - True jika valid, false jika tidak.
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+ */
+// --- GANTI SELURUH FUNGSI INI JUGA ---
+function validateForm(modalType) {
+    // Logika untuk mendapatkan suffix sudah benar sekarang
+    const suffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
+    const errorBox = document.getElementById(`form-error-${suffix}`);
+
+    // Pastikan errorBox ada sebelum melanjutkan
+    if (!errorBox) {
+        console.error(`Elemen error dengan ID 'form-error-${suffix}' tidak ditemukan!`);
+        return false;
+    }
+    errorBox.textContent = '';
+    
+    const fieldsToValidate = [
+        { id: `modal_ruangan-${suffix}`, message: 'Ruangan harus diisi.' },
+        { id: `modal_tanggal-${suffix}`, message: 'Tanggal harus dipilih.' },
+        { id: `modal_jam_awal-${suffix}`, message: 'Jam awal harus diisi.' },
+        { id: `modal_jam_akhir-${suffix}`, message: 'Jam akhir harus diisi.' }
+    ];
+
+    for (const field of fieldsToValidate) {
+        const element = document.getElementById(field.id);
+        if (!element || element.value.trim() === '') {
+            errorBox.textContent = field.message;
+            return false;
+        }
+    }
+    
+<<<<<<< HEAD
+    const jamAwal = document.getElementById(`modal_jam_awal${suffix}`).value;
+    const jamAkhir = document.getElementById(`modal_jam_akhir${suffix}`).value;
+=======
+    // Validasi jam
+    const jamAwal = document.getElementById(`modal_jam_awal-${suffix}`).value;
+    const jamAkhir = document.getElementById(`modal_jam_akhir-${suffix}`).value;
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+    if (jamAkhir <= jamAwal) {
+        errorBox.textContent = 'Jam akhir harus setelah jam awal.';
+        return false;
+    }
+    
+<<<<<<< HEAD
+    if (modalType === 'TA') {
+        const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
+=======
+    // Validasi dosen/penguji
+    if (modalType === 'Tugas Akhir') {
+        const pengujiInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="penguji_nama[]"]');
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+        const namaPengujiList = [];
+
+        for (let i = 0; i < pengujiInputs.length; i++) {
+            const input = pengujiInputs[i];
+            const nama = input.value.trim();
+
+            if (nama === '') {
+                errorBox.textContent = `Nama Penguji ${i + 1} harus diisi.`;
+                return false;
+            }
+            
+            const isDosenValid = dosenData.some(dosen => dosen.nama === nama);
+            if (!isDosenValid) {
+                errorBox.textContent = `Nama dosen '${nama}' tidak valid. Harap pilih dari daftar.`;
+                return false;
+            }
+            namaPengujiList.push(nama);
+        }
+<<<<<<< HEAD
+        
+=======
+
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+        const uniqueNama = new Set(namaPengujiList);
+        if (uniqueNama.size < namaPengujiList.length) {
+            errorBox.textContent = 'Tidak boleh ada nama dosen penguji yang sama.';
+            return false;
+        }
+<<<<<<< HEAD
+=======
+    } else { // Validasi untuk Sidang Semester
+        const pengampuInputs = document.querySelectorAll('#penjadwalanSidangSemModal input[name="pengampu_nama[]"]');
+        for (let i = 0; i < pengampuInputs.length; i++) {
+            if (pengampuInputs[i].value.trim() === '') {
+                errorBox.textContent = `Nama Pengampu ${i + 1} harus diisi.`;
+                return false;
+            }
+        }
+>>>>>>> 629d08b649ea6d05905b6b489010451e2b805a4a
+    }
+    return true;
+}
+
+// ==========================================================================
+// BAGIAN 2: SCRIPT YANG BERJALAN SETELAH HALAMAN SIAP (DOMContentLoaded)
+// ==========================================================================
+document.addEventListener("DOMContentLoaded", function () {
+    
+    // ==========================================================
+    // == BAGIAN BARU: LOGIKA UNTUK RESPONSIVE LAYOUT ==
+    // ==========================================================
+    const sidebar = document.getElementById('main-sidebar');
+    const toggleButton = document.querySelector('.NavSide__toggle');
+    const desktopIconsContainer = document.getElementById('desktop-icons-container');
+    const topbar = document.querySelector('.NavSide__topbar');
+    const headerIcons = desktopIconsContainer ? desktopIconsContainer.querySelector('.header-icons') : null;
+
+    // 1. Logika untuk Toggle Sidebar
+    if (toggleButton && sidebar) {
+        toggleButton.addEventListener('click', function() {
+            sidebar.classList.toggle('NavSide__sidebar--active-mobile');
+            this.classList.toggle('NavSide__toggle--active');
+        });
+    }
+    
+    // 2. Logika untuk Memindahkan Ikon
+    if (topbar && headerIcons) {
+        function handleResponsiveIcons() {
+            if (window.innerWidth <= 992) {
+                if (!topbar.contains(headerIcons)) {
+                    topbar.appendChild(headerIcons);
+                }
+            } else {
+                if (desktopIconsContainer && !desktopIconsContainer.contains(headerIcons)) {
+                    desktopIconsContainer.appendChild(headerIcons);
+                }
+            }
+        }
+        handleResponsiveIcons();
+        window.addEventListener('resize', handleResponsiveIcons);
+    }
+    
+    // --- (KODE ASLI ANDA MULAI DARI SINI) ---
+
+    // --- PASANG EVENT LISTENER KE FORM MODAL ---
+    document.getElementById('formDalamModal-ta')?.addEventListener('submit', handleFormSubmit);
+    document.getElementById('formDalamModal-sem')?.addEventListener('submit', handleFormSubmit);
+
+    // --- MENUTUP DROPDOWN SAAT KLIK DI LUAR ---
+    document.addEventListener('click', function(event) {
+        const allDropdowns = document.querySelectorAll('.autocomplete-dropdown');
+        const clickedInsideContainer = event.target.closest('.autocomplete-container');
+        
+        // Sembunyikan semua dropdown KECUALI yang sedang aktif
+        allDropdowns.forEach(dropdown => {
+            const container = dropdown.closest('.autocomplete-container');
+            if (container !== clickedInsideContainer) {
+                dropdown.style.display = 'none';
+            }
+        });
+    });
+
+    // --- LOGIKA PENCARIAN DAN PAGINASI TABEL UTAMA ---
+    const searchInput = document.querySelector('.search-input-group .form-control');
+    const tableBody = document.getElementById('adminSidangContent');
+    const paginationControls = document.getElementById('pagination-controls');
+    const noDataRow = document.querySelector('.no-results-row');
+    const rowsPerPage = 10;
+    let allRows = []; // Akan diisi dengan baris tabel yang ada
+
+    function initializeTableLogic() {
+        allRows = Array.from(tableBody.querySelectorAll('tr.isiTabel'));
+        if (allRows.length > 0) {
+            renderTable();
+        } else if(noDataRow) {
+            noDataRow.style.display = ''; // Tampilkan jika tidak ada data sama sekali
+            if(paginationControls) paginationControls.innerHTML = ''; // Kosongkan paginasi
+        }
+    }
+
+    function renderTable() {
+        const searchText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const filteredRows = allRows.filter(row => {
+            // Mengambil dari data-attributes untuk pencarian yang lebih akurat
+            const namaList = (row.dataset.namaList || '').toLowerCase();
+            const judul = (row.dataset.judul || '').toLowerCase();
+            const pembimbing = (row.dataset.pembimbing || '').toLowerCase();
+
+            return namaList.includes(searchText) || 
+                   judul.includes(searchText) || 
+                   pembimbing.includes(searchText);
+        });
+        
+        if (noDataRow) {
+            // Tampilkan "no data" hanya jika tidak ada baris setelah filter
+            noDataRow.style.display = filteredRows.length === 0 ? '' : 'none';
+        }
+        
+        setupPagination(filteredRows);
+        displayPage(1, filteredRows);
+    }
+
+    function displayPage(page, rows) {
+        // Sembunyikan SEMUA baris yang ada di DOM terlebih dahulu
+        tableBody.querySelectorAll('tr.isiTabel').forEach(row => row.style.display = 'none');
+        
+        const startIndex = (page - 1) * rowsPerPage;
+        const paginatedRows = rows.slice(startIndex, startIndex + rowsPerPage);
+        
+        // Tampilkan hanya baris yang terpaginasi
+        paginatedRows.forEach(row => row.style.display = '');
+
+        updatePaginationButtons(rows.length, page);
+    }
+
+    function setupPagination(rows) {
+        if (!paginationControls) return;
+        paginationControls.innerHTML = '';
+        const pageCount = Math.ceil(rows.length / rowsPerPage);
+        if (pageCount <= 1) return;
+
+        const createPageItem = (content, pageNum, isDisabled = false) => {
+            const li = document.createElement('li');
+            li.className = `page-item ${isDisabled ? 'disabled' : ''}`;
+            li.innerHTML = `<a class="page-link" href="#">${content}</a>`;
+            if (!isDisabled) {
+                li.addEventListener('click', e => { e.preventDefault(); displayPage(pageNum, rows); });
+            }
+            return li;
+        };
+        
+        const currentPage = 1; // Selalu mulai dari halaman 1 saat setup
+        paginationControls.appendChild(createPageItem('«', currentPage - 1, currentPage === 1));
+        
+        for (let i = 1; i <= pageCount; i++) {
+            const item = createPageItem(i, i);
+            if (i === currentPage) item.classList.add('active');
+            paginationControls.appendChild(item);
+        }
+        
+        paginationControls.appendChild(createPageItem('»', currentPage + 1, currentPage === pageCount));
+    }
+    
+    function updatePaginationButtons(totalRows, currentPage) {
+        if (!paginationControls) return;
+        const pageCount = Math.ceil(totalRows / rowsPerPage);
+        const pageItems = paginationControls.querySelectorAll('.page-item');
+        
+        pageItems.forEach(item => {
+            const link = item.querySelector('.page-link');
+            const content = link.innerHTML;
+            item.classList.remove('active', 'disabled');
+
+            if (content === '«') {
+                if (currentPage === 1) item.classList.add('disabled');
+                link.onclick = (e) => { e.preventDefault(); if(currentPage > 1) displayPage(currentPage - 1, allRows.filter(r => r.style.display !== 'none')); };
+            } else if (content === '»') {
+                if (currentPage === pageCount) item.classList.add('disabled');
+                link.onclick = (e) => { e.preventDefault(); if(currentPage < pageCount) displayPage(currentPage + 1, allRows.filter(r => r.style.display !== 'none')); };
+            } else {
+                const pageNum = parseInt(content);
+                if (pageNum === currentPage) {
+                    item.classList.add('active');
+                }
+            }
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', renderTable);
+    }
+    
+    // Inisialisasi awal tabel
+    initializeTableLogic();
+});
+================================================================================
+// File: dashboard.js
+================================================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+  // =========================
+  // Sidebar Toggle Logic
+  // =========================
+  let menuToggle = document.querySelector(".NavSide__toggle");
+  let sidebar = document.getElementById("main-sidebar");
+
+  // Toggle sidebar untuk mobile
+  menuToggle.onclick = function () {
+    menuToggle.classList.toggle("NavSide__toggle--active");
+    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+  };
+
+  // =========================
+  // Kalender Interaktif
+  // =========================
+
+  // Fetch data sidang mendatang dari PHP
+  let sidangData = [];
+  let sidangDates = [];
+  fetch("../../control/admin/aBeranda_queries.php?action=sidang_mendatang")
+    .then((response) => response.json())
+    .then((data) => {
+      sidangData = data;
+      sidangDates = data.map((item) => item.tanggal_sidang);
+      renderCalendar();
+      renderSidangMendatang(data);
+    });
+
+  // Ambil elemen kalender
+  const calendarTableBody = document.querySelector("#calendarTable tbody");
+  const currentMonthYearHeader = document.getElementById("currentMonthYear");
+  const prevMonthBtn = document.getElementById("prevMonth");
+  const nextMonthBtn = document.getElementById("nextMonth");
+
+  // Tanggal hari ini dan tanggal aktif
+  let currentDate = new Date();
+  let activeDate = new Date();
+
+  // Nama-nama bulan dalam bahasa Indonesia
+  const monthNames = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
+
+  // Fungsi untuk merender kalender
+  function renderCalendar() {
+    calendarTableBody.innerHTML = "";
+    currentMonthYearHeader.textContent = `${
+      monthNames[activeDate.getMonth()]
+    } ${activeDate.getFullYear()}`;
+
+    const year = activeDate.getFullYear();
+    const month = activeDate.getMonth();
+
+    // Hari pertama dalam bulan (0 = Minggu)
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    // Jumlah hari dalam bulan
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    let date = 1;
+    // Render 6 baris (minggu)
+    for (let i = 0; i < 6; i++) {
+      const row = document.createElement("tr");
+
+      // Render 7 kolom (hari)
+      for (let j = 0; j < 7; j++) {
+        const cell = document.createElement("td");
+        // Kosongkan sel sebelum tanggal 1
+        if (i === 0 && j < firstDayOfMonth) {
+          cell.innerHTML = "";
+        } else if (date > daysInMonth) {
+          // Kosongkan sel setelah akhir bulan
+          cell.innerHTML = "";
+        } else {
+          // Isi tanggal
+          const daySpan = document.createElement("span");
+          daySpan.classList.add("calendar-day");
+          daySpan.textContent = date;
+
+          // Format tanggal untuk pencocokan (YYYY-MM-DD)
+          const thisDate = new Date(year, month, date);
+          const dateStr = [
+            thisDate.getFullYear(),
+            String(thisDate.getMonth() + 1).padStart(2, "0"),
+            String(thisDate.getDate()).padStart(2, "0"),
+          ].join("-");
+
+          // Tandai hari ini
+          if (
+            date === currentDate.getDate() &&
+            month === currentDate.getMonth() &&
+            year === currentDate.getFullYear()
+          ) {
+            daySpan.classList.add("current-day");
+          }
+
+          // Tandai tanggal yang ada sidang
+          if (sidangDates.includes(dateStr)) {
+            daySpan.classList.add("has-sidang");
+          }
+
+          cell.appendChild(daySpan);
+          date++;
+        }
+        row.appendChild(cell);
+      }
+      calendarTableBody.appendChild(row);
+    }
+  }
+
+  //Generate item card sidang mendatang dari data...
+  function renderSidangMendatang(data) {
+    const sidangContainer = document.querySelector(".sidang-mendatang-card");
+    // Hapus semua .item lama, kecuali judul
+    sidangContainer.querySelectorAll(".item").forEach((e) => e.remove());
+
+    // jika tidak ada sidang mendatang
+    if (!data.length) {
+      const p = document.createElement("p");
+      p.className = "text-center text-muted mt-3";
+      p.textContent = "Tidak ada sidang yang dijadwalkan.";
+      sidangContainer.appendChild(p);
+      return;
+    }
+
+    data.forEach((item) => {
+      const tgl = new Date(item.tanggal_sidang);
+      const day = String(tgl.getDate()).padStart(2, "0");
+      const month = tgl.toLocaleString("default", { month: "short" });
+
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+                <div class="date-bubble">
+                    <span class="day">${day}</span>
+                    <span class="month">${month}</span>
+                </div>
+                <span class="info">${item.judul}</span>
+                <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+            `;
+      // Jika ada link_detail, jadikan clickable
+      if (item.link_detail) {
+        const a = document.createElement("a");
+        a.href = item.link_detail;
+        a.style.textDecoration = "none";
+        a.style.color = "inherit";
+        a.appendChild(div);
+        sidangContainer.appendChild(a);
+      } else {
+        sidangContainer.appendChild(div);
+      }
+    });
+  }
+  fetch("../../control/admin/aBeranda_queries.php?action=pengajuan")
+    .then((response) => response.json())
+    .then((result) => {
+      // result.data adalah array judul sidang yang perlu aksi pengajuannya
+      renderAngkaJumlahPengajuan(result.jumlah_pengajuan_perlu_aksi);
+    });
+
+  // Render angka jumlah pengajuan
+  function renderAngkaJumlahPengajuan(jumlah) {
+    const card = document.querySelector(".pengajuan-status-card");
+    if (!card) return;
+    // Cari elemen .number di dalam card
+    let numberDiv = card.querySelector(".number");
+    if (!numberDiv) {
+      // Jika belum ada, buat baru
+      numberDiv = document.createElement("div");
+      numberDiv.className = "number";
+      // Sisipkan di awal card
+      card.insertBefore(numberDiv, card.firstChild);
+    }
+    numberDiv.textContent = jumlah;
+  }
+
+  fetch("../../control/admin/aBeranda_queries.php?action=penjadwalan")
+    .then((response) => response.json())
+    .then((result) => {
+      // result.data adalah array judul sidang yang belum terjadwal
+      renderTugas(result.data);
+      renderAngkaJumlahPenjadwalan(result.jumlah);
+    });
+
+  function renderAngkaJumlahPenjadwalan(jumlah) {
+    const card = document.querySelector(".penjadwalan-status-card");
+    if (!card) return;
+    // Cari elemen .number di dalam card
+    let numberDiv = card.querySelector(".number");
+    if (!numberDiv) {
+      // Jika belum ada, buat baru
+      numberDiv = document.createElement("div");
+      numberDiv.className = "number";
+      // Sisipkan di awal card
+      card.insertBefore(numberDiv, card.firstChild);
+    }
+    numberDiv.textContent = jumlah;
+  }
+
+  // Render tugas item penjadwalan
+  function renderTugas(data) {
+    const tugasContainer = document.querySelector(".tugas-card");
+    // Jika tidak ada tugas card, skip rendering
+    if (!tugasContainer) return;
+
+    // Hapus semua tugas-item lama, kecuali judul
+    tugasContainer.querySelectorAll(".tugas-item").forEach((e) => e.remove());
+
+    if (!data.length) {
+      const p = document.createElement("p");
+      p.className = "text-center text-muted mt-3";
+      p.textContent = "Tidak ada tugas penjadwalan.";
+      tugasContainer.appendChild(p);
+      return;
+    }
+
+    data.forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "tugas-item";
+      div.textContent = "Belum terjadwal " + item.judul;
+      tugasContainer.appendChild(div);
+    });
+  }
+
+  // Navigasi bulan sebelumnya
+  prevMonthBtn.addEventListener("click", () => {
+    activeDate.setMonth(activeDate.getMonth() - 1);
+    activeDate.setDate(1);
+    renderCalendar();
+  });
+
+  // Navigasi bulan berikutnya
+  nextMonthBtn.addEventListener("click", () => {
+    activeDate.setMonth(activeDate.getMonth() + 1);
+    activeDate.setDate(1);
+    renderCalendar();
+  });
+
+  // Render kalender saat halaman dimuat
+  renderCalendar();
+});
+
+================================================================================
+// File: dDaftarSidang.js
+================================================================================
+
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+================================================================================
+// File: dEvaluasiSidang.js
+================================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- FUNGSI UTILITAS UNTUK SINKRONISASI INPUT NILAI ---
+    // Menyinkronkan nilai antara input untuk tampilan desktop dan mobile
+    function syncInputs(name1, name2) {
+        const input1 = document.getElementsByName(name1)[0];
+        const input2 = document.getElementsByName(name2)[0];
+        
+        if (input1 && input2) {
+            input1.addEventListener('input', () => {
+                if (document.activeElement !== input2) input2.value = input1.value;
+            });
+            input2.addEventListener('input', () => {
+                if (document.activeElement !== input1) input1.value = input2.value;
+            });
+        }
+    }
+
+    // --- VALIDASI INPUT: HANYA ANGKA 0-100 ---
+    document.querySelectorAll('.input-nilai').forEach(function(input) {
+        input.addEventListener('input', function() {
+            // Hanya izinkan angka
+            this.value = this.value.replace(/[^0-9]/g, '');
+            // Batasi maksimal 3 digit
+            if (this.value.length > 3) this.value = this.value.slice(0, 3);
+            // Hapus leading zero jika angka lebih dari 1 digit (misal: 09 menjadi 9)
+            if (this.value.length > 1 && this.value.startsWith('0')) {
+                this.value = this.value.replace(/^0+/, '');
+            }
+            // Batasi nilai maksimal 100
+            if (parseInt(this.value, 10) > 100) {
+                this.value = '100';
+            }
+        });
+    });
+
+    // --- PANGGIL FUNGSI SINKRONISASI UNTUK SETIAP PASANGAN INPUT ---
+    syncInputs('nilaiLaporan', 'nilaiLaporan_v');
+    syncInputs('materiPresentasi', 'materiPresentasi_v');
+    syncInputs('nilaiPenyampaian', 'nilaiPenyampaian_v');
+    syncInputs('nilaiProyek', 'nilaiProyek_v');
+
+    // --- LOGIKA UNTUK TOGGLE SIDEBAR ---
+    const menuToggle = document.querySelector(".NavSide__toggle");
+    const sidebar = document.getElementById("main-sidebar");
+    if (menuToggle && sidebar) {
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+    }
+
+    // --- LOGIKA UNTUK PROSES PENGIRIMAN FORM ---
+    const btnKirim = document.getElementById('btnKirim');
+    const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
+
+    // Hanya tambahkan event listener jika tombol "Kirim" ada di halaman
+    if (btnKirim && confirmationKirimModalElement) {
+        btnKirim.addEventListener('click', function() {
+            
+            // Ambil nilai input saat tombol diklik
+            const nilaiLaporan = document.getElementsByName('nilaiLaporan')[0].value;
+            const materiPresentasi = document.getElementsByName('materiPresentasi')[0].value;
+            const nilaiPenyampaian = document.getElementsByName('nilaiPenyampaian')[0].value;
+            const nilaiProyek = document.getElementsByName('nilaiProyek')[0].value;
+            const catatanEvaluasi = document.getElementById('catatanEvaluasi').value;
+
+            // Sembunyikan pesan error sebelumnya
+            document.getElementById('nilaiSidangErrorMessage').style.display = 'none';
+            document.getElementById('catatanEvaluasiErrorMessage').style.display = 'none';
+
+            let isValid = true;
+
+            // Validasi apakah semua input nilai dan catatan sudah diisi
+            if ([nilaiLaporan, materiPresentasi, nilaiPenyampaian, nilaiProyek].some(val => val.trim() === '')) {
+                document.getElementById('nilaiSidangErrorMessage').style.display = 'block';
+                isValid = false;
+            }
+            if (catatanEvaluasi.trim() === '') {
+                document.getElementById('catatanEvaluasiErrorMessage').style.display = 'block';
+                isValid = false;
+            }
+
+            // Tampilkan peringatan jika tidak valid, atau tampilkan modal konfirmasi jika valid
+            if (!isValid) {
+                Swal.fire({
+                    title: 'Harap mengisi semua kolom nilai dan catatan!',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4B68FB'
+                });
+            } else {
+                const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
+                confirmationKirimModal.show();
+            }
+        });
+
+        // Event listener untuk tombol konfirmasi di dalam modal
+        const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
+        if (btnKonfirmasiKirim) {
+            btnKonfirmasiKirim.addEventListener('click', function() {
+                const modalInstance = bootstrap.Modal.getInstance(confirmationKirimModalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+                // Tampilkan notifikasi sukses lalu submit form
+                Swal.fire({
+                    title: 'Evaluasi Sidang Berhasil Dikirim!',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    document.getElementById('evaluasiForm').submit();
+                });
+            });
+        }
+    }
+
+
+
+    
+});
+
+
+================================================================================
+// File: dNilaiAkhir.js
+================================================================================
+
+// Menjalankan skrip setelah seluruh konten halaman HTML (DOM) selesai dimuat.
+document.addEventListener('DOMContentLoaded', function () {
+  
+  // -- INISIALISASI MODAL KONFIRMASI AWAL --
+  // Mencari modal dengan ID 'konfirmasiModal' dan langsung menampilkannya saat halaman dimuat.
+  // Modal ini kemungkinan bertanya kepada pengguna apakah mereka ingin mengisi nilai secara otomatis.
+  const modal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
+  modal.show();
+
+   // -- INISIALISASI TOOLTIP BOOTSTRAP --
+  // Mencari semua elemen yang memiliki atribut 'data-bs-toggle="tooltip"' untuk mengaktifkan fungsionalitas tooltip dari Bootstrap.
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+    // -- LOGIKA UNTUK TOGGLE SIDEBAR (NAVIGASI SAMPING) --
+  const menuToggle = document.querySelector(".NavSide__toggle"); // Tombol untuk membuka/menutup sidebar di tampilan mobile.
+  const sidebar = document.getElementById("main-sidebar");// Elemen sidebar itu sendiri.
+  if (menuToggle && sidebar) {
+      // Menambahkan event listener 'onclick' pada tombol toggle.
+    menuToggle.onclick = function() {
+          // Menambah atau menghapus kelas 'NavSide__sidebar--active-mobile' pada sidebar untuk menampilkannya/menyembunyikannya.
+      sidebar.classList.toggle("NavSide__sidebar--active-mobile"); 
+        // Menambah atau menghapus kelas 'NavSide__toggle--active' pada tombol itu sendiri (misalnya untuk mengubah ikon hamburger menjadi 'X').
+        menuToggle.classList.toggle("NavSide__toggle--active"); 
+    };
+  }
+  
+  // -- LOGIKA UNTUK ITEM SIDEBAR YANG AKTIF --
+  // Mengambil semua item menu di dalam sidebar.
+  const listItems = document.querySelectorAll(".NavSide__sidebar-item");
+  listItems.forEach(item => {
+     // Menambahkan event 'onclick' pada setiap item menu.
+    item.onclick = function () {
+      // Pertama, hapus kelas 'NavSide__sidebar-item--active' dari semua item menu.
+      listItems.forEach(li => li.classList.remove("NavSide__sidebar-item--active"));
+       // Kemudian, tambahkan kelas tersebut hanya pada item yang baru saja diklik.
+      this.classList.add("NavSide__sidebar-item--active");
+    };
+  });
+   // -- LOGIKA UNTUK INPUT NILAI --
+  // Mengambil semua elemen input yang memiliki kelas 'input-nilai'.
+  const detailInputs = document.querySelectorAll('.input-nilai');
+  
+  detailInputs.forEach(function (input) {
+      // Setiap kali ada perubahan pada input, panggil fungsi untuk menghitung rata-rata.
+    input.addEventListener('input', hitungRataRataDanSetNilai);
+     // 2. Hapus angka nol di depan jika angka lebih dari satu digit (misal: '090' menjadi '90').
+    input.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      if (this.value.length > 1 && this.value.startsWith('0')) {
+        this.value = this.value.replace(/^0+/, '');
+      }
+        // 3. Batasi nilai maksimal menjadi 100.
+      if (parseInt(this.value, 10) > 100) {
+        this.value = '100';
+      }
+    });
+  });
+  // -- SINKRONISASI INPUT --
+  // Memastikan pasangan input selalu memiliki nilai yang sama. Berguna jika ada input yang sama untuk tampilan desktop dan mobile.
+  syncInputs('nilaiLaporan', 'nilaiLaporan_v');
+  syncInputs('MateriPresentasi', 'MateriPresentasi_v');
+  syncInputs('Penyampaian', 'Penyampaian_v');
+  syncInputs('NilaiProyek', 'NilaiProyek_v');
+
+}); 
+/**
+ * Fungsi untuk menampilkan tooltip 'pensil' secara manual.
+ * Tooltip ini akan muncul selama 5 detik untuk memberi petunjuk kepada pengguna.
+ */
+function showTooltipPensil() {
+  const tooltipTrigger = document.querySelector('[data-bs-toggle="tooltip"]');
+  if (tooltipTrigger) {
+    const tooltipInstance = bootstrap.Tooltip.getInstance(tooltipTrigger) || new bootstrap.Tooltip(tooltipTrigger);
+    tooltipInstance.show();
+    setTimeout(() => tooltipInstance.hide(), 5000);
+  }
+}
+/**
+ * Fungsi utilitas untuk menyinkronkan nilai antara dua input.
+ * @param {string} name1 - Atribut 'name' dari input pertama.
+ * @param {string} name2 - Atribut 'name' dari input kedua.
+ */
+function syncInputs(name1, name2) {
+  const input1 = document.getElementsByName(name1)[0];
+  const input2 = document.getElementsByName(name2)[0];
+  if (input1 && input2) {
+     // Jika input1 diubah, perbarui nilai input2.
+    input1.addEventListener('input', () => { input2.value = input1.value; });
+     // Jika input2 diubah, perbarui nilai input1.
+    input2.addEventListener('input', () => { input1.value = input2.value; });
+  }
+}
+/**
+ * Fungsi untuk mengarahkan pengguna ke halaman 'dDaftarSidang.php'.
+ */
+function pindahKeHalamanDaftarSidang() {
+  window.location.href = "dDaftarSidang.php";
+}
+/**
+ * Fungsi untuk membuka modal konfirmasi secara manual.
+ */
+function bukaKonfirmasiModal() {
+  const modal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
+  modal.show();
+}
+/**
+ * Fungsi yang dijalankan ketika pengguna memilih untuk menutup modal konfirmasi awal
+ * tanpa mengisi nilai secara otomatis.
+ */
+function TutupKonfirmasiModal() {
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  // Setelah modal ditutup, tunggu 300ms, lalu fokuskan kursor ke input nilai akhir
+  // dan tampilkan tooltip pensil sebagai petunjuk.
+  setTimeout(() => {
+    const input = document.getElementById("nilaiMahasiswa");
+    input.focus();
+    showTooltipPensil();
+  }, 300);
+}
+/**
+ * Fungsi untuk mengisi semua form nilai dengan data contoh secara otomatis.
+ * Biasanya dipanggil dari tombol 'Ya' pada modal konfirmasi awal.
+ */
+function isiNilaiAkhir() {
+  document.getElementsByName("nilaiLaporan")[0].value = "90";
+  document.getElementsByName("nilaiLaporan_v")[0].value = "90";
+  document.getElementsByName("MateriPresentasi")[0].value = "85";
+  document.getElementsByName("MateriPresentasi_v")[0].value = "85";
+  document.getElementsByName("Penyampaian")[0].value = "88";
+  document.getElementsByName("Penyampaian_v")[0].value = "88";
+  document.getElementsByName("NilaiProyek")[0].value = "92";
+  document.getElementsByName("NilaiProyek_v")[0].value = "92";
+ // Memanggil fungsi hitung untuk mengkalkulasi nilai akhir (huruf).
+  hitungRataRataDanSetNilai(); 
+ // Menutup modal dan menampilkan tooltip pensil.
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+  modal.hide();
+  showTooltipPensil();
+}
+/**
+ * Fungsi utama untuk menghitung nilai rata-rata dari empat komponen nilai
+ * dan mengonversinya menjadi nilai huruf (A, B, C, D, E).
+ */
+function hitungRataRataDanSetNilai() {
+  // Mengambil elemen input dari setiap komponen nilai.
+  const nilaiLaporanEl = document.getElementsByName("nilaiLaporan")[0];
+  const materiPresentasiEl = document.getElementsByName("MateriPresentasi")[0];
+  const penyampaianEl = document.getElementsByName("Penyampaian")[0];
+  const nilaiProyekEl = document.getElementsByName("NilaiProyek")[0];
+  // Jika salah satu input kosong, kosongkan nilai akhir dan hentikan fungsi.
+  const inputs = [
+    nilaiLaporanEl.value,
+    materiPresentasiEl.value,
+    penyampaianEl.value,
+    nilaiProyekEl.value
+  ];
+  if (inputs.some(val => val === "")) {
+    document.getElementById("nilaiMahasiswa").value = ""; 
+    return;
+  }
+    // Mengubah nilai string dari input menjadi angka (float).
+  const nilaiLaporan = parseFloat(nilaiLaporanEl.value);
+  const materiPresentasi = parseFloat(materiPresentasiEl.value);
+  const penyampaian = parseFloat(penyampaianEl.value);
+  const nilaiProyek = parseFloat(nilaiProyekEl.value);
+   // Menghitung rata-rata dari keempat nilai.
+  const rataRata = (nilaiLaporan + materiPresentasi + penyampaian + nilaiProyek) / 4;
+ // Menentukan nilai huruf berdasarkan rentang nilai rata-rata.
+  let nilaiHuruf = "";
+  if (rataRata >= 85) { nilaiHuruf = "A"; } 
+  else if (rataRata >= 70) { nilaiHuruf = "B"; } 
+  else if (rataRata >= 60) { nilaiHuruf = "C"; } 
+  else if (rataRata >= 40) { nilaiHuruf = "D"; } 
+  else { nilaiHuruf = "E"; }
+   // Menetapkan nilai huruf yang sudah dihitung ke dalam input 'nilaiMahasiswa'.
+  document.getElementById("nilaiMahasiswa").value = nilaiHuruf;
+}
+/**
+ * Fungsi untuk menampilkan modal konfirmasi sebelum mengirim nilai akhir.
+ */
+function bukaKonfirmasiModalKirim() {
+  const modal = new bootstrap.Modal(document.getElementById('konfirmasiModalKirim'));
+  modal.show();
+}
+/**
+ * Fungsi yang dijalankan saat pengguna mengonfirmasi pengiriman nilai.
+ * Menggunakan SweetAlert2 untuk menampilkan notifikasi.
+ */
+function kirimNilaiAkhir() {
+  const modal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModalKirim'));
+  // Mengambil semua nilai yang akan dikirim.
+  const nilaiMahasiswa = document.getElementById("nilaiMahasiswa").value;
+  const nilaiLaporan = document.getElementsByName("nilaiLaporan")[0].value;
+  const materiPresentasi = document.getElementsByName("MateriPresentasi")[0].value;
+  const penyampaian = document.getElementsByName("Penyampaian")[0].value;
+  const nilaiProyek = document.getElementsByName("NilaiProyek")[0].value;
+  // Validasi: Pastikan semua kolom nilai sudah terisi.
+  if (nilaiMahasiswa === "" || nilaiLaporan === "" || materiPresentasi === "" || penyampaian === "" || nilaiProyek === "") {
+     // Jika ada yang kosong, tampilkan pesan error dengan SweetAlert.
+    Swal.fire({
+      title: 'Semua nilai harus diisi sebelum mengirim!',
+      icon: 'error',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    }).then(() => {
+      if(modal) modal.hide(); // Tutup modal konfirmasi setelah menampilkan error.
+    });
+  } else {
+    // Jika semua nilai terisi, tutup modal dan tampilkan pesan sukses.
+     // NOTE: Kode ini hanya menampilkan notifikasi, belum ada logika pengiriman data ke server (misalnya via fetch atau AJAX).
+    if(modal) modal.hide();
+    Swal.fire({
+      title: 'Nilai akhir telah dikirim.',
+      icon: 'success',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#4B68FB'
+    });
+  }
+}
+================================================================================
+// File: dosen-dashboard-ajax.js
+================================================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Sidebar toggle logic
+  let menuToggle = document.querySelector(".NavSide__toggle");
+  let sidebar = document.getElementById("main-sidebar");
+  menuToggle.onclick = function () {
+    menuToggle.classList.toggle("NavSide__toggle--active");
+    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+  };
+
+  // Initialize dashboard data
+  let dashboardData = {
+    pengajuan: 0,
+    perbaikan: 0,
+    penilaian: 0,
+    sidang_mendatang: [],
+  };
+
+  // Function to load all dashboard data
+  async function loadDashboardData() {
+    try {
+      // Load pengajuan count
+      const pengajuanResponse = await fetch(
+        "../../control/dosen/dBeranda_queries.php?action=pengajuan"
+      );
+      const pengajuanData = await pengajuanResponse.json();
+      if (pengajuanData.total !== undefined) {
+        dashboardData.pengajuan = pengajuanData.total;
+      }
+
+      // Load perbaikan count
+      const perbaikanResponse = await fetch(
+        "../../control/dosen/dBeranda_queries.php?action=perbaikan"
+      );
+      const perbaikanData = await perbaikanResponse.json();
+      if (perbaikanData.total !== undefined) {
+        dashboardData.perbaikan = perbaikanData.total;
+      }
+
+      // Load penilaian count
+      const penilaianResponse = await fetch(
+        "../../control/dosen/dBeranda_queries.php?action=penilaian"
+      );
+      const penilaianData = await penilaianResponse.json();
+      if (penilaianData.total !== undefined) {
+        dashboardData.penilaian = penilaianData.total;
+      }
+
+      // Load sidang mendatang
+      const sidangMendatangResponse = await fetch(
+        "../../control/dosen/dBeranda_queries.php?action=sidang_mendatang"
+      );
+      const sidangMendatangData = await sidangMendatangResponse.json();
+      if (sidangMendatangData.sidang_mendatang !== undefined) {
+        dashboardData.sidang_mendatang = sidangMendatangData.sidang_mendatang;
+      }
+
+      // Update UI with loaded data
+      updateDashboardUI();
+    } catch (error) {
+      console.error("Error loading dashboard data:", error);
+    }
+  }
+
+  // Function to update UI with dashboard data
+  function updateDashboardUI() {
+    // Update pengajuan card
+    const pengajuanCard = document.querySelector(".card-pengajuan .number");
+    if (pengajuanCard) {
+      pengajuanCard.textContent = dashboardData.pengajuan ?? 0;
+    }
+
+    // Update perbaikan card
+    const perbaikanCard = document.querySelector(".card-perbaikan .number");
+    if (perbaikanCard) {
+      perbaikanCard.textContent = dashboardData.perbaikan ?? 0;
+    }
+
+    // Update penilaian card
+    const penilaianCard = document.querySelector(".card-penilaian .number");
+    if (penilaianCard) {
+      penilaianCard.textContent = dashboardData.penilaian ?? 0;
+    }
+
+    // Update sidang mendatang and calendar
+    let sidangDates = (dashboardData.sidang_mendatang || []).map(
+      (item) => item.tanggal_sidang
+    );
+    let sidangData = dashboardData.sidang_mendatang || [];
+
+    // Calendar functionality
+    const calendarTableBody = document.querySelector("#calendarTable tbody");
+    const currentMonthYearHeader = document.getElementById("currentMonthYear");
+    const prevMonthBtn = document.getElementById("prevMonth");
+    const nextMonthBtn = document.getElementById("nextMonth");
+    let currentDate = new Date();
+    let activeDate = new Date();
+    const monthNames = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    function renderCalendar() {
+      calendarTableBody.innerHTML = "";
+      currentMonthYearHeader.textContent = `${
+        monthNames[activeDate.getMonth()]
+      } ${activeDate.getFullYear()}`;
+      const year = activeDate.getFullYear();
+      const month = activeDate.getMonth();
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      let date = 1;
+      for (let i = 0; i < 6; i++) {
+        const row = document.createElement("tr");
+        for (let j = 0; j < 7; j++) {
+          const cell = document.createElement("td");
+          if (i === 0 && j < firstDayOfMonth) {
+            cell.innerHTML = "";
+          } else if (date > daysInMonth) {
+            cell.innerHTML = "";
+          } else {
+            const daySpan = document.createElement("span");
+            daySpan.classList.add("calendar-day");
+            daySpan.textContent = date;
+            const thisDate = new Date(year, month, date);
+            const dateStr = [
+              thisDate.getFullYear(),
+              String(thisDate.getMonth() + 1).padStart(2, "0"),
+              String(thisDate.getDate()).padStart(2, "0"),
+            ].join("-");
+            if (
+              date === currentDate.getDate() &&
+              month === currentDate.getMonth() &&
+              year === currentDate.getFullYear()
+            ) {
+              daySpan.classList.add("current-day");
+            }
+            if (sidangDates.includes(dateStr)) {
+              daySpan.classList.add("has-sidang");
+            }
+            cell.appendChild(daySpan);
+            date++;
+          }
+          row.appendChild(cell);
+        }
+        calendarTableBody.appendChild(row);
+      }
+    }
+
+    function renderSidangMendatang(data) {
+      const sidangContainer = document.querySelector(".sidang-mendatang-card");
+      if (!sidangContainer) return;
+
+      sidangContainer
+        .querySelectorAll(".item, .text-muted")
+        .forEach((e) => e.remove());
+      if (!data.length) {
+        const p = document.createElement("p");
+        p.className = "text-center text-muted mt-3";
+        p.textContent = "Tidak ada sidang yang dijadwalkan.";
+        sidangContainer.appendChild(p);
+        return;
+      }
+      data.forEach((item) => {
+        const tgl = new Date(item.tanggal_sidang);
+        const day = String(tgl.getDate()).padStart(2, "0");
+        const month = tgl.toLocaleString("default", { month: "short" });
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+                    <div class="date-bubble">
+                        <span class="day">${day}</span>
+                        <span class="month">${month}</span>
+                    </div>
+                    <span class="info">${item.judul}</span>
+                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                `;
+        const a = document.createElement("a");
+        a.href = `dDetailPengajuan.php?id_sidang=${item.id_sidang}`;
+        a.style.textDecoration = "none";
+        a.style.color = "inherit";
+        a.appendChild(div);
+        sidangContainer.appendChild(a);
+      });
+    }
+
+    // Render calendar and sidang mendatang
+    renderSidangMendatang(sidangData);
+    renderCalendar();
+
+    // Calendar navigation
+    if (prevMonthBtn) {
+      prevMonthBtn.addEventListener("click", () => {
+        activeDate.setMonth(activeDate.getMonth() - 1);
+        activeDate.setDate(1);
+        renderCalendar();
+      });
+    }
+    if (nextMonthBtn) {
+      nextMonthBtn.addEventListener("click", () => {
+        activeDate.setMonth(activeDate.getMonth() + 1);
+        activeDate.setDate(1);
+        renderCalendar();
+      });
+    }
+  }
+
+  // Load dashboard data when page loads
+  loadDashboardData();
+});
+
+================================================================================
+// File: kelompokModal.js
+================================================================================
+
+let kelompokModalInstance;
+let anggotaCount = 1;
+let currentProdi = "";
+let mahasiswaData = [];
+let kelompokData = [];
+let dosenData = [];
+let matkulData = [];
+let dosenCount = 1;
+let selectedMahasiswa = {};
+
+document.addEventListener("DOMContentLoaded", function () {
+  const kelompokModalEl = document.getElementById("kelompokModal");
+  const jenisSidang = document.getElementById("jenis_sidang");
+  const matkulGroup = document.getElementById("matkul-group");
+  const idMatkul = document.getElementById("id_matkul");
+  const dosenWrapperGroup = document.getElementById("dosen-wrapper-group");
+
+  if (kelompokModalEl) {
+    try {
+      if (typeof bootstrap !== "undefined" && bootstrap.Modal) {
+        kelompokModalInstance = new bootstrap.Modal(kelompokModalEl, {
+          backdrop: true,
+          keyboard: true,
+          focus: true,
+        });
+      } else {
+        console.error("Bootstrap Modal is not available");
+        // Fallback: create a simple modal-like behavior
+        kelompokModalInstance = {
+          show: () => (kelompokModalEl.style.display = "block"),
+          hide: () => (kelompokModalEl.style.display = "none"),
+        };
+      }
+      kelompokModalEl.addEventListener("hidden.bs.modal", function () {
+        // Only reset if not already handled by closeKelompokModal
+        if (!window.modalClosedByFunction) {
+          resetKelompokForm();
+        }
+        window.modalClosedByFunction = false;
+      });
+    } catch (error) {
+      console.error("Error initializing modal:", error);
+    }
+  }
+
+  const kelompokForm = document.getElementById("kelompokForm");
+  if (kelompokForm) {
+    kelompokForm.addEventListener("submit", handleKelompokFormSubmit);
+  }
+
+  if (jenisSidang) {
+    jenisSidang.addEventListener("change", function () {
+      if (jenisSidang.value === "Semester") {
+        showMatkulField(true);
+        fetchMataKuliah();
+        showPembimbingField(false);
+        resetDosenInputs();
+      } else if (jenisSidang.value === "Tugas Akhir") {
+        showMatkulField(false);
+        showPembimbingField(true);
+        resetDosenInputs();
+      } else {
+        showMatkulField(false);
+        showPembimbingField(false);
+        resetDosenInputs();
+      }
+      // Update kelompok ID when jenis sidang changes
+      setNextKelompokId();
+    });
+  }
+
+  fetchMahasiswaData();
+  fetchDosenData();
+  updateToggleButtonsVisibility();
+});
+
+function showMatkulField(show) {
+  const matkulGroup = document.getElementById("matkul-group");
+  const idMatkul = document.getElementById("id_matkul");
+  if (matkulGroup) matkulGroup.style.display = show ? "block" : "none";
+  if (idMatkul) idMatkul.required = !!show;
+  if (!show && idMatkul) idMatkul.value = "";
+}
+
+function showPembimbingField(show) {
+  const dosenWrapperGroup = document.getElementById("dosen-wrapper-group");
+  if (dosenWrapperGroup)
+    dosenWrapperGroup.style.display = show ? "block" : "none";
+}
+
+function handleJenisSidangChange() {
+  const jenisSidang = document.getElementById("jenis_sidang");
+  const matkulGroup = document.getElementById("matkul-group");
+  const dosenWrapperGroup = document.getElementById("dosen-wrapper-group");
+
+  if (jenisSidang.value === "Semester") {
+    showMatkulField(true);
+    showPembimbingField(false);
+    // Fetch mata kuliah for Semester
+    fetchMataKuliah();
+  } else if (jenisSidang.value === "Tugas Akhir") {
+    showMatkulField(false);
+    showPembimbingField(true);
+    // Set id_matkul to 2006 for Tugas Akhir
+    const idMatkul = document.getElementById("id_matkul");
+    if (idMatkul) {
+      idMatkul.value = "2006";
+    }
+  } else {
+    showMatkulField(false);
+    showPembimbingField(false);
+  }
+
+  // Update next kelompok ID when jenis sidang changes
+  setNextKelompokId();
+}
+
+async function fetchMahasiswaData() {
+  try {
+    const tahunAjaran = document.getElementById("tahun_ajaran")?.value || "";
+    const jenisSidang = document.getElementById("jenis_sidang")?.value || "";
+    const prodi = document.getElementById("kelompok_prodi")?.value || "";
+    let idMatkul = document.getElementById("id_matkul")?.value || "";
+
+    // For Tugas Akhir, use fixed matkul ID
+    if (jenisSidang === "Tugas Akhir") idMatkul = "2006";
+
+    // Check if we're in edit mode
+    const form = document.getElementById("kelompokForm");
+    const isEditMode = form?.dataset.mode === "edit";
+
+    // Build URL with available parameters
+    let url = "../../control/get_mahasiswa.php?";
+    const params = [];
+
+    if (tahunAjaran)
+      params.push(`tahun_ajaran=${encodeURIComponent(tahunAjaran)}`);
+    if (jenisSidang)
+      params.push(`jenis_sidang=${encodeURIComponent(jenisSidang)}`);
+    if (idMatkul) params.push(`id_matkul=${encodeURIComponent(idMatkul)}`);
+    if (prodi) params.push(`prodi=${encodeURIComponent(prodi)}`);
+
+    // Add edit mode parameters if in edit mode
+    if (isEditMode) {
+      params.push(`edit_mode=true`);
+      params.push(
+        `current_nomor_kelompok=${encodeURIComponent(
+          form.dataset.nomor_kelompok || ""
+        )}`
+      );
+      params.push(
+        `current_tahun_ajaran=${encodeURIComponent(
+          form.dataset.tahun_ajaran || ""
+        )}`
+      );
+      params.push(
+        `current_jenis_sidang=${encodeURIComponent(
+          form.dataset.jenis_sidang || ""
+        )}`
+      );
+      params.push(
+        `current_id_matkul=${encodeURIComponent(form.dataset.id_matkul || "")}`
+      );
+    }
+
+    url += params.join("&");
+
+    console.log("Fetching mahasiswa data with URL:", url);
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const responseText = await response.text();
+    try {
+      mahasiswaData = JSON.parse(responseText);
+      console.log(`Loaded ${mahasiswaData.length} available students`);
+
+      // Update availability indicator
+      updateAvailabilityIndicator();
+    } catch (parseError) {
+      console.error("JSON Parse Error for mahasiswa data:", parseError);
+      console.error("Response text:", responseText);
+      mahasiswaData = []; // Fallback to empty array
+      updateAvailabilityIndicator();
+    }
+  } catch (error) {
+    console.error("Error fetching mahasiswa data:", error);
+    mahasiswaData = []; // Fallback to empty array
+    updateAvailabilityIndicator();
+    alert("Gagal memuat data mahasiswa untuk autocomplete.");
+  }
+}
+
+// Function to update availability indicator
+function updateAvailabilityIndicator() {
+  const indicator = document.getElementById("mahasiswa-availability");
+  if (!indicator) return;
+
+  const count = mahasiswaData.length;
+  const prodi = document.getElementById("kelompok_prodi")?.value || "";
+
+  if (count === 0) {
+    indicator.innerHTML =
+      '<span style="color: #dc3545;">⚠️ Tidak ada mahasiswa yang tersedia</span>';
+  } else if (count <= 5) {
+    indicator.innerHTML = `<span style="color: #ffc107;">⚠️ Hanya ${count} mahasiswa tersedia</span>`;
+  } else {
+    indicator.innerHTML = `<span style="color: #28a745;">✓ ${count} mahasiswa tersedia</span>`;
+  }
+
+  // Add TRPL alias information if applicable
+  if (prodi && isRPLProdi(prodi)) {
+    const trplCount = mahasiswaData.filter(
+      (mhs) => mhs.prodi && mhs.prodi.toLowerCase().includes("trpl")
+    ).length;
+    const rplCount = mahasiswaData.filter(
+      (mhs) =>
+        mhs.prodi &&
+        mhs.prodi.toLowerCase().includes("rekayasa perangkat lunak")
+    ).length;
+
+    if (trplCount > 0 || rplCount > 0) {
+      const aliasInfo = [];
+      if (trplCount > 0) aliasInfo.push(`${trplCount} TRPL`);
+      if (rplCount > 0) aliasInfo.push(`${rplCount} RPL`);
+
+      indicator.innerHTML += `<br><small style="color: #6c757d;">📋 Termasuk: ${aliasInfo.join(
+        ", "
+      )}</small>`;
+    }
+  }
+}
+
+// Helper function to check if prodi is RPL-related
+function isRPLProdi(prodi) {
+  const rplAliases = [
+    "rekayasa perangkat lunak",
+    "trpl",
+    "rpl",
+    "teknologi rekayasa perangkat lunak",
+  ];
+  return rplAliases.includes(prodi.toLowerCase().trim());
+}
+
+// Function to refresh mahasiswa data when form parameters change
+async function refreshMahasiswaData() {
+  // Check if we're in edit mode
+  const form = document.getElementById("kelompokForm");
+  const isEditMode = form?.dataset.mode === "edit";
+
+  // Store current anggota data if in edit mode
+  let currentAnggotaData = [];
+  if (isEditMode) {
+    const anggotaInputs = document.querySelectorAll('input[name="anggota[]"]');
+    const anggotaNamaDisplays = document.querySelectorAll(
+      '[id^="anggota_nama_"]'
+    );
+
+    anggotaInputs.forEach((input, index) => {
+      if (input.value.trim() && anggotaNamaDisplays[index]) {
+        currentAnggotaData.push({
+          nim: input.value.trim(),
+          nama: anggotaNamaDisplays[index].textContent,
+          index: index + 1,
+        });
+      }
+    });
+  }
+
+  await fetchMahasiswaData();
+
+  // Clear selected mahasiswa tracking since available students may have changed
+  selectedMahasiswa = {};
+
+  if (isEditMode && currentAnggotaData.length > 0) {
+    // In edit mode, restore the anggota data
+    currentAnggotaData.forEach((anggota, index) => {
+      if (index > 0) {
+        addAnggota(); // Add new anggota field for additional students
+      }
+
+      const anggotaIndex = index + 1;
+      const nimInput = document.getElementById(`anggota_${anggotaIndex}`);
+      const namaDisplay = document.getElementById(
+        `anggota_nama_${anggotaIndex}`
+      );
+
+      if (nimInput && namaDisplay) {
+        nimInput.value = anggota.nim;
+        namaDisplay.textContent = anggota.nama;
+
+        // Mark this student as selected
+        selectedMahasiswa[anggotaIndex] = {
+          nim: anggota.nim,
+          nama: anggota.nama,
+          prodi: "", // We'll get this from the fetched data if needed
+        };
+      }
+    });
+
+    // Update anggota count
+    anggotaCount = currentAnggotaData.length;
+  } else {
+    // Clear all anggota inputs since the available students may have changed
+    resetAnggotaInputs();
+  }
+
+  // Update availability indicator
+  updateToggleButtonsVisibility();
+}
+
+// Add event listeners for form parameter changes
+function setupFormChangeListeners() {
+  const tahunAjaranSelect = document.getElementById("tahun_ajaran");
+  const jenisSidangSelect = document.getElementById("jenis_sidang");
+  const idMatkulSelect = document.getElementById("id_matkul");
+  const prodiSelect = document.getElementById("kelompok_prodi");
+
+  if (tahunAjaranSelect) {
+    tahunAjaranSelect.addEventListener("change", refreshMahasiswaData);
+  }
+
+  if (jenisSidangSelect) {
+    jenisSidangSelect.addEventListener("change", refreshMahasiswaData);
+  }
+
+  if (idMatkulSelect) {
+    idMatkulSelect.addEventListener("change", refreshMahasiswaData);
+  }
+
+  // Note: prodiSelect has onchange="filterMahasiswaByProdi()" in HTML, so no need for additional listener
+}
+
+async function fetchDosenData() {
+  try {
+    const response = await fetch("../../control/get_dosen.php");
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const responseText = await response.text();
+    try {
+      dosenData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("JSON Parse Error for dosen data:", parseError);
+      console.error("Response text:", responseText);
+      dosenData = []; // Fallback to empty array
+    }
+  } catch (error) {
+    console.error("Error fetching dosen data:", error);
+    dosenData = []; // Fallback to empty array
+    alert("Gagal memuat data dosen untuk autocomplete.");
+  }
+}
+
+function openKelompokModal() {
+  // Reset form to create mode
+  resetToCreateMode();
+
+  // Switch to tambah tab
+  switchTab("tambah");
+
+  // Show modal
+  const kelompokModalEl = document.getElementById("kelompokModal");
+  if (kelompokModalInstance) {
+    kelompokModalInstance.show();
+  } else {
+    kelompokModalEl.style.display = "block";
+    kelompokModalEl.classList.add("show");
+    document.body.classList.add("modal-open");
+  }
+
+  // Initialize form data
+  fetchMahasiswaData();
+  fetchDosenData();
+  fetchMataKuliah();
+  setupFormChangeListeners();
+}
+
+async function setNextKelompokId() {
+  try {
+    const jenisSidang = document.getElementById("jenis_sidang");
+    const idMatkul = document.getElementById("id_matkul");
+    const tahunAjaran = document.getElementById("tahun_ajaran");
+
+    // Get current values
+    const tahunAjaranValue = tahunAjaran
+      ? tahunAjaran.value
+      : new Date().getFullYear();
+    const jenisSidangValue = jenisSidang ? jenisSidang.value : "";
+    const idMatkulValue = idMatkul ? idMatkul.value : "";
+
+    // For Tugas Akhir, use fixed matkul ID
+    const finalIdMatkul =
+      jenisSidangValue === "Tugas Akhir" ? "2006" : idMatkulValue;
+
+    if (!jenisSidangValue || !finalIdMatkul) {
+      // Set default value if not ready
+      const nomorKelompokField = document.getElementById("nomor_kelompok");
+      if (nomorKelompokField) {
+        nomorKelompokField.value = "1";
+      }
+      return;
+    }
+
+    const response = await fetch(
+      `../../control/get_next_kelompok_id.php?tahun_ajaran=${tahunAjaranValue}&jenis_sidang=${jenisSidangValue}&id_matkul=${finalIdMatkul}`
+    );
+    if (!response.ok) throw new Error("Failed to fetch next Kelompok ID");
+
+    const responseText = await response.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("JSON Parse Error for next kelompok ID:", parseError);
+      console.error("Response text:", responseText);
+      // Try to extract number from response text
+      const numberMatch = responseText.match(/\d+/);
+      data = { next_nomor: numberMatch ? numberMatch[0] : "1" };
+    }
+
+    const nomorKelompokField = document.getElementById("nomor_kelompok");
+    if (nomorKelompokField && data.next_nomor) {
+      nomorKelompokField.value = data.next_nomor;
+    }
+  } catch (e) {
+    console.error("Error setting next kelompok ID:", e);
+    const nomorKelompokField = document.getElementById("nomor_kelompok");
+    if (nomorKelompokField) {
+      nomorKelompokField.value = "1";
+    }
+  }
+}
+
+function switchTab(tabName) {
+  // Hide all tab contents
+  const tabContents = document.querySelectorAll(".modal-tab-content");
+  tabContents.forEach((content) => {
+    content.classList.remove("active");
+  });
+
+  // Remove active class from all tabs
+  const tabs = document.querySelectorAll(".modal-tab");
+  tabs.forEach((tab) => {
+    tab.classList.remove("active");
+  });
+
+  // Show selected tab content
+  const selectedTabContent = document.getElementById(tabName + "-tab");
+  if (selectedTabContent) {
+    selectedTabContent.classList.add("active");
+  }
+
+  // Add active class to selected tab
+  const selectedTab = document.querySelector(
+    `.modal-tab[onclick="switchTab('${tabName}')"]`
+  );
+  if (selectedTab) {
+    selectedTab.classList.add("active");
+  }
+
+  // Load data based on tab
+  if (tabName === "daftar") {
+    loadKelompokList();
+    setupKelompokFilters();
+  } else if (tabName === "tambah") {
+    // Check if we're in edit mode
+    const form = document.getElementById("kelompokForm");
+    const isEditMode = form && form.dataset.mode === "edit";
+
+    if (!isEditMode) {
+      // Only reset form if not in edit mode
+      resetToCreateMode();
+    }
+
+    fetchMahasiswaData();
+    fetchDosenData();
+    fetchMataKuliah();
+    setupFormChangeListeners();
+  }
+}
+
+function filterMahasiswaByProdi() {
+  const prodiSelect = document.getElementById("kelompok_prodi");
+  currentProdi = prodiSelect.value;
+  // Clear selected mahasiswa tracking when prodi changes
+  selectedMahasiswa = {};
+  // Refresh mahasiswa data with new prodi filter
+  refreshMahasiswaData();
+}
+
+// Helper function to highlight matching text
+function highlightText(text, query) {
+  if (!query || query.trim() === "") {
+    return text;
+  }
+
+  const regex = new RegExp(
+    `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+    "gi"
+  );
+  return text.replace(regex, "<mark>$1</mark>");
+}
+
+function searchMahasiswa(input, anggotaIndex) {
+  const query = input.value.trim().toLowerCase();
+  const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
+  const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
+
+  if (query.length === 0) {
+    dropdown.style.display = "none";
+    namaDisplay.textContent = "Nama akan muncul otomatis";
+    return;
+  }
+
+  // Get current filter values
+  const tahunAjaran = document.getElementById("tahun_ajaran").value;
+  const jenisSidang = document.getElementById("jenis_sidang").value;
+  const idMatkul = document.getElementById("id_matkul").value;
+  const prodi = document.getElementById("kelompok_prodi").value;
+
+  // Filter mahasiswa based on current form values
+  let filteredMahasiswa = mahasiswaData.filter((mhs) => {
+    const normalizedProdi =
+      prodi === "Rekayasa Perangkat Lunak" ? "TRPL" : prodi;
+    const rplAliases = [
+      "TRPL",
+      "RPL",
+      "Rekayasa Perangkat Lunak",
+      "Teknologi Rekayasa Perangkat Lunak",
+    ];
+
+    if (rplAliases.includes(normalizedProdi)) {
+      return rplAliases.includes(mhs.prodi);
+    } else {
+      return mhs.prodi === normalizedProdi;
+    }
+  });
+
+  if (query.length > 0) {
+    filteredMahasiswa = filteredMahasiswa.filter(
+      (mhs) =>
+        String(mhs.nim).toLowerCase().includes(query) ||
+        mhs.nama_mhs.toLowerCase().includes(query)
+    );
+  }
+
+  const selectedNIMs = Array.from(
+    document.querySelectorAll('input[name="anggota[]"]')
+  )
+    .map((inp) => inp.value.trim())
+    .filter((nim) => nim !== "" && nim !== input.value.trim());
+
+  const finalFilteredMahasiswa = filteredMahasiswa.filter(
+    (mhs) => !selectedNIMs.includes(String(mhs.nim))
+  );
+
+  if (finalFilteredMahasiswa.length > 0) {
+    dropdown.innerHTML = "";
+    finalFilteredMahasiswa.forEach((mhs, index) => {
+      const item = document.createElement("div");
+      item.className = "autocomplete-item";
+      item.dataset.nim = mhs.nim;
+      item.dataset.nama = mhs.nama_mhs;
+      item.dataset.index = index;
+
+      // Highlight matching text
+      const highlightedNim = highlightText(String(mhs.nim), query);
+      const highlightedNama = highlightText(mhs.nama_mhs, query);
+
+      item.innerHTML = `<div class="nim">${highlightedNim}</div><div class="nama">${highlightedNama}</div>`;
+      item.onclick = () => selectMahasiswa(mhs, anggotaIndex);
+      dropdown.appendChild(item);
+    });
+    dropdown.style.display = "block";
+  } else {
+    if (query.length > 0) {
+      dropdown.innerHTML =
+        '<div class="autocomplete-item">Tidak ada mahasiswa yang cocok dengan pencarian</div>';
+    } else {
+      dropdown.innerHTML =
+        '<div class="autocomplete-item">Tidak ada mahasiswa yang tersedia untuk prodi ini</div>';
+    }
+    dropdown.style.display = "block";
+  }
+}
+
+function selectMahasiswa(mahasiswa, anggotaIndex) {
+  document.getElementById(`anggota_${anggotaIndex}`).value = mahasiswa.nim;
+  document.getElementById(`anggota_nama_${anggotaIndex}`).textContent =
+    mahasiswa.nama_mhs;
+  document.getElementById(`autocomplete_${anggotaIndex}`).style.display =
+    "none";
+
+  // Track selected mahasiswa
+  selectedMahasiswa[anggotaIndex] = {
+    nim: mahasiswa.nim,
+    nama: mahasiswa.nama_mhs,
+    prodi: mahasiswa.prodi,
+  };
+}
+
+function addAnggota() {
+  anggotaCount++;
+  console.log(`[DEBUG] addAnggota called, new anggotaCount: ${anggotaCount}`);
+
+  const wrapper = document.getElementById("anggota-wrapper");
+  if (!wrapper) {
+    console.error("[ERROR] anggota-wrapper not found in addAnggota");
+    return;
+  }
+
+  const div = document.createElement("div");
+  div.className = "anggota-form-group";
+  div.id = "anggota-form-" + anggotaCount;
+  div.innerHTML = `
+        <label for="anggota_${anggotaCount}">Anggota ${anggotaCount}:</label>
+        <div class="anggota-input-group">
+            <div class="input-container">
+                <input type="text" id="anggota_${anggotaCount}" name="anggota[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, ${anggotaCount})" />
+                <div class="autocomplete-dropdown" id="autocomplete_${anggotaCount}" style="display: none;"></div>
+            </div>
+            <div class="anggota-nama-display" id="anggota_nama_${anggotaCount}">Nama akan muncul otomatis</div>
+            <div class="form-toggle-buttons">
+                <button type="button" onclick="addAnggota()">+</button>
+                <button type="button" onclick="removeAnggota()">-</button>
+            </div>
+        </div>`;
+
+  wrapper.appendChild(div);
+
+  // Verify the element was created
+  const newInput = document.getElementById(`anggota_${anggotaCount}`);
+  const newDisplay = document.getElementById(`anggota_nama_${anggotaCount}`);
+  console.log(`[DEBUG] Created elements for anggota ${anggotaCount}:`, {
+    newInput,
+    newDisplay,
+  });
+
+  updateToggleButtonsVisibility();
+}
+
+function removeAnggota() {
+  if (anggotaCount > 1) {
+    document.getElementById("anggota-form-" + anggotaCount).remove();
+    // Clear tracking for removed anggota
+    delete selectedMahasiswa[anggotaCount];
+    anggotaCount--;
+  }
+  updateToggleButtonsVisibility();
+}
+
+function resetAnggotaInputs() {
+  console.log("[DEBUG] resetAnggotaInputs called");
+
+  const wrapper = document.getElementById("anggota-wrapper");
+  if (!wrapper) {
+    console.error("[ERROR] anggota-wrapper not found");
+    return;
+  }
+
+  wrapper.innerHTML = `
+        <div class="anggota-form-group" id="anggota-form-1">
+            <label for="anggota_1">Anggota 1:</label>
+            <div class="anggota-input-group">
+                <div class="input-container">
+                    <input type="text" id="anggota_1" name="anggota[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" />
+                    <div class="autocomplete-dropdown" id="autocomplete_1" style="display: none;"></div>
+                </div>
+                <div class="anggota-nama-display" id="anggota_nama_1">Nama akan muncul otomatis</div>
+                <div class="form-toggle-buttons">
+                    <button type="button" onclick="addAnggota()">+</button>
+                    <button type="button" onclick="removeAnggota()" style="display: none;">-</button>
+                </div>
+            </div>
+        </div>`;
+
+  anggotaCount = 1;
+  selectedMahasiswa = {};
+
+  console.log(
+    "[DEBUG] resetAnggotaInputs completed, anggotaCount:",
+    anggotaCount
+  );
+  updateToggleButtonsVisibility();
+}
+
+// ============ DOSEN SECTION (Pembimbing) ============
+
+function resetDosenInputs() {
+  const dosenWrapper = document.getElementById("dosen-wrapper");
+  if (!dosenWrapper) return;
+  dosenWrapper.innerHTML = `
+    <div class="anggota-form-group" id="dosen-form-1">
+      <label for="dosen_pembimbing_1">Pembimbing 1:</label>
+      <div class="anggota-input-group">
+        <div class="input-container">
+          <input type="text" id="dosen_pembimbing_1" name="dosen_pembimbing[]" placeholder="Masukkan NIP atau nama dosen" autocomplete="off" oninput="searchDosen(this, 1)" />
+          <div class="autocomplete-dropdown" id="autocomplete_dosen_1" style="display: none;"></div>
+        </div>
+        <div class="anggota-nama-display" id="dosen_nama_display_1">Nama dosen akan muncul otomatis</div>
+        <div class="form-toggle-buttons">
+          <button type="button" onclick="addDosen()">+</button>
+          <button type="button" onclick="removeDosen()" style="display:none;">-</button>
+        </div>
+      </div>
+      <input type="hidden" id="dosen_nomor_hidden_1" name="dosen_nomor_hidden[]" />
+    </div>
+  `;
+  dosenCount = 1;
+  updateToggleButtonsVisibility();
+}
+
+function addDosen() {
+  dosenCount++;
+  const wrapper = document.getElementById("dosen-wrapper");
+  const div = document.createElement("div");
+  div.className = "anggota-form-group";
+  div.id = "dosen-form-" + dosenCount;
+  div.innerHTML = `
+      <label for="dosen_pembimbing_${dosenCount}">Pembimbing ${dosenCount}:</label>
+      <div class="anggota-input-group">
+        <div class="input-container">
+          <input type="text" id="dosen_pembimbing_${dosenCount}" name="dosen_pembimbing[]" placeholder="Masukkan NIP atau nama dosen" autocomplete="off" oninput="searchDosen(this, ${dosenCount})" />
+          <div class="autocomplete-dropdown" id="autocomplete_dosen_${dosenCount}" style="display: none;"></div>
+        </div>
+        <div class="anggota-nama-display" id="dosen_nama_display_${dosenCount}">Nama dosen akan muncul otomatis</div>
+        <div class="form-toggle-buttons">
+          <button type="button" onclick="addDosen()">+</button>
+          <button type="button" onclick="removeDosen()">-</button>
+        </div>
+      </div>
+      <input type="hidden" id="dosen_nomor_hidden_${dosenCount}" name="dosen_nomor_hidden[]" />
+  `;
+  wrapper.appendChild(div);
+  updateToggleButtonsVisibility();
+}
+
+function removeDosen() {
+  if (dosenCount > 1) {
+    document.getElementById("dosen-form-" + dosenCount).remove();
+    dosenCount--;
+  }
+  updateToggleButtonsVisibility();
+}
+
+function searchDosen(input, index) {
+  const query = input.value.trim().toLowerCase();
+  const dropdown = document.getElementById(`autocomplete_dosen_${index}`);
+  const namaDisplay = document.getElementById(`dosen_nama_display_${index}`);
+
+  if (query.length === 0) {
+    dropdown.style.display = "none";
+    namaDisplay.textContent = "Nama dosen akan muncul otomatis";
+    document.getElementById(`dosen_nomor_hidden_${index}`).value = "";
+    return;
+  }
+
+  let filteredDosen = dosenData.filter(
+    (dosen) =>
+      String(dosen.nomor_dosen).toLowerCase().includes(query) ||
+      dosen.nama_dosen.toLowerCase().includes(query)
+  );
+
+  const selectedNIPs = Array.from(
+    document.querySelectorAll('input[name="dosen_nomor_hidden[]"]')
+  )
+    .map((inp) => inp.value.trim())
+    .filter(
+      (nip) =>
+        nip !== "" &&
+        nip !==
+          document.getElementById(`dosen_nomor_hidden_${index}`).value.trim()
+    );
+
+  const finalFilteredDosen = filteredDosen.filter(
+    (dosen) => !selectedNIPs.includes(String(dosen.nomor_dosen))
+  );
+
+  if (finalFilteredDosen.length > 0) {
+    dropdown.innerHTML = "";
+    finalFilteredDosen.forEach((dosen, dropdownIndex) => {
+      const item = document.createElement("div");
+      item.className = "autocomplete-item";
+      item.dataset.nomor = dosen.nomor_dosen;
+      item.dataset.nama = dosen.nama_dosen;
+      item.dataset.index = dropdownIndex;
+
+      // Highlight matching text
+      const highlightedNomor = highlightText(String(dosen.nomor_dosen), query);
+      const highlightedNama = highlightText(dosen.nama_dosen, query);
+
+      item.innerHTML = `<div class="nim">${highlightedNomor}</div><div class="nama">${highlightedNama}</div>`;
+      item.onclick = () => selectDosen(dosen, index);
+      dropdown.appendChild(item);
+    });
+    dropdown.style.display = "block";
+  } else {
+    dropdown.innerHTML = '<div class="autocomplete-item">Tidak ada hasil</div>';
+    dropdown.style.display = "block";
+  }
+}
+
+function selectDosen(dosen, index) {
+  document.getElementById(`dosen_pembimbing_${index}`).value =
+    dosen.nomor_dosen;
+  document.getElementById(`dosen_nama_display_${index}`).textContent =
+    dosen.nama_dosen;
+  document.getElementById(`dosen_nomor_hidden_${index}`).value =
+    dosen.nomor_dosen;
+  document.getElementById(`autocomplete_dosen_${index}`).style.display = "none";
+}
+
+function updateToggleButtonsVisibility() {
+  // Mahasiswa
+  const mhsToggleButtons = document.querySelectorAll(
+    "#anggota-wrapper .form-toggle-buttons"
+  );
+  mhsToggleButtons.forEach((btnGroup, index) => {
+    if (index === mhsToggleButtons.length - 1) {
+      btnGroup.style.display = "inline-flex";
+      const removeBtn = btnGroup.querySelector(
+        'button[onclick="removeAnggota()"]'
+      );
+      if (removeBtn) {
+        removeBtn.style.display = anggotaCount <= 1 ? "none" : "block";
+      }
+    } else {
+      btnGroup.style.display = "none";
+    }
+  });
+
+  // Dosen
+  const dosenToggleButtons = document.querySelectorAll(
+    "#dosen-wrapper .form-toggle-buttons"
+  );
+  dosenToggleButtons.forEach((btnGroup, index) => {
+    if (index === dosenToggleButtons.length - 1) {
+      btnGroup.style.display = "inline-flex";
+      const removeBtn = btnGroup.querySelector(
+        'button[onclick="removeDosen()"]'
+      );
+      if (removeBtn) {
+        removeBtn.style.display = dosenCount <= 1 ? "none" : "block";
+      }
+    } else {
+      btnGroup.style.display = "none";
+    }
+  });
+}
+
+function resetKelompokForm() {
+  const form = document.getElementById("kelompokForm");
+  if (form) {
+    form.reset();
+    // Clear edit mode
+    delete form.dataset.mode;
+    delete form.dataset.nomor_kelompok;
+    delete form.dataset.tahun_ajaran;
+    delete form.dataset.jenis_sidang;
+    delete form.dataset.id_matkul;
+  }
+
+  // Reset modal UI to create mode
+  updateModalUI("create");
+
+  resetAnggotaInputs();
+  resetDosenInputs();
+  showMatkulField(false);
+  showPembimbingField(false);
+
+  // Reset anggota count
+  anggotaCount = 1;
+  dosenCount = 1;
+
+  // Clear selected mahasiswa tracking
+  selectedMahasiswa = {};
+
+  // Clear availability indicator
+  const indicator = document.getElementById("mahasiswa-availability");
+  if (indicator) {
+    indicator.innerHTML = "";
+  }
+
+  // Clear error messages
+  document.querySelectorAll(".error-message").forEach((el) => el.remove());
+  document
+    .querySelectorAll(".is-invalid")
+    .forEach((el) => el.classList.remove("is-invalid"));
+}
+
+// Function to reset form to create mode (for new kelompok)
+function resetToCreateMode() {
+  resetKelompokForm();
+  setNextKelompokId();
+}
+
+// Function to close modal properly
+window.closeKelompokModal = function () {
+  // Set flag to prevent double reset
+  window.modalClosedByFunction = true;
+
+  // Reset form to create mode when closing
+  resetToCreateMode();
+
+  // Hide modal
+  if (
+    kelompokModalInstance &&
+    typeof kelompokModalInstance.hide === "function"
+  ) {
+    kelompokModalInstance.hide();
+  } else {
+    // Fallback: hide modal manually
+    const modalEl = document.getElementById("kelompokModal");
+    if (modalEl) {
+      modalEl.style.display = "none";
+      modalEl.classList.remove("show");
+      document.body.classList.remove("modal-open");
+    }
+  }
+};
+
+async function loadKelompokList() {
+  console.log("loadKelompokList() called");
+
+  const container = document.getElementById("kelompok-list-container");
+  if (!container) {
+    console.error("Kelompok list container not found");
+    return;
+  }
+
+  container.innerHTML =
+    '<p class="text-center text-muted">Memuat daftar kelompok...</p>';
+
+  try {
+    // Add timestamp to prevent caching
+    const timestamp = new Date().getTime();
+    console.log("Fetching kelompok list with timestamp:", timestamp);
+
+    const response = await fetch(
+      `../../control/get_kelompok_list.php?t=${timestamp}`
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseText = await response.text();
+    console.log("Response received:", responseText.substring(0, 200) + "...");
+
+    let kelompokData;
+
+    try {
+      kelompokData = JSON.parse(responseText);
+      console.log("Parsed kelompok data successfully");
+    } catch (parseError) {
+      console.error("JSON Parse Error for kelompok list:", parseError);
+      console.error("Response text:", responseText);
+      throw new Error("Invalid response format from server");
+    }
+
+    if (!Array.isArray(kelompokData)) {
+      throw new Error("Expected array response from server");
+    }
+
+    // Store the data globally for filtering
+    window.allKelompokData = kelompokData;
+
+    console.log("Loaded kelompok data:", kelompokData);
+
+    // Apply filters and render
+    console.log("About to render kelompok list with data:", kelompokData);
+    renderKelompokList(kelompokData);
+  } catch (error) {
+    console.error("Error fetching kelompok data:", error);
+    container.innerHTML =
+      '<p class="text-center text-danger">Gagal memuat daftar kelompok: ' +
+      error.message +
+      "</p>";
+  }
+}
+
+// Function to render kelompok list with filtering
+function renderKelompokList(kelompokData) {
+  console.log("renderKelompokList called with data:", kelompokData);
+  const container = document.getElementById("kelompok-list-container");
+  if (!container) {
+    console.error("kelompok-list-container not found");
+    return;
+  }
+
+  // Get current filter values
+  const filterSemester =
+    document.getElementById("filter-semester")?.checked || false;
+  const filterTugasAkhir =
+    document.getElementById("filter-tugas-akhir")?.checked || false;
+
+  console.log("Filter values:", { filterSemester, filterTugasAkhir });
+
+  // Filter the data based on selected types
+  let filteredData = kelompokData;
+  if (!filterSemester && !filterTugasAkhir) {
+    // If both filters are unchecked, show all data
+    filteredData = kelompokData;
+  } else if (!filterSemester || !filterTugasAkhir) {
+    filteredData = kelompokData.filter((kelompok) => {
+      if (filterSemester && kelompok.jenis_sidang === "Semester") return true;
+      if (filterTugasAkhir && kelompok.jenis_sidang === "Tugas Akhir")
+        return true;
+      return false;
+    });
+  }
+
+  console.log("Filtered data count:", filteredData.length);
+
+  if (filteredData.length === 0) {
+    if (kelompokData.length === 0) {
+      container.innerHTML =
+        '<p class="text-center text-muted">Belum ada kelompok yang dibuat.</p>';
+    } else {
+      container.innerHTML =
+        '<p class="text-center text-muted">Tidak ada kelompok yang sesuai dengan filter yang dipilih.</p>';
+    }
+    return;
+  }
+
+  container.innerHTML = "";
+  console.log("Rendering", filteredData.length, "kelompok items");
+  filteredData.forEach((kelompok) => {
+    const anggotaList = kelompok.anggota
+      .map((angg) => `${angg.nim} - ${angg.nama_mhs}`)
+      .join("<br>");
+
+    // Status Pengajuan
+    let pengajuanInfo =
+      "<span class='badge bg-secondary'>Belum Ada Pengajuan</span>";
+    let locked = false;
+
+    if (
+      kelompok.pengajuan_status &&
+      ["Pending", "Draft", "Approved"].includes(
+        kelompok.pengajuan_status.status_ajuan
+      )
+    ) {
+      pengajuanInfo =
+        `<span class='badge text-bg-success'>Status Pengajuan: ${kelompok.pengajuan_status.status_ajuan}</span> ` +
+        `<br><small>Oleh: ${kelompok.pengajuan_status.nama_pengaju} (${kelompok.pengajuan_status.nim_pengaju})</small>`;
+      locked = true;
+    } else if (
+      kelompok.pengajuan_status &&
+      kelompok.pengajuan_status.status_ajuan === "Rejected"
+    ) {
+      pengajuanInfo = `<span class='badge bg-danger'>Ditolak</span> <br><small>Oleh: ${kelompok.pengajuan_status.nama_pengaju} (${kelompok.pengajuan_status.nim_pengaju})</small>`;
+    }
+
+    const kelompokItem = document.createElement("div");
+    kelompokItem.className =
+      "kelompok-list-item" + (locked ? " kelompok-locked" : "");
+    kelompokItem.innerHTML = `
+      <div class="kelompok-list-header d-flex justify-content-between align-items-center">
+        <div>
+          <div class="kelompok-list-title">Kelompok ${
+            kelompok.nomor_kelompok
+          } (${kelompok.jenis_sidang})</div>
+          <div class="kelompok-list-prodi">${kelompok.nama_matkul} - ${
+      kelompok.tahun_ajaran
+    }</div>
+        </div>
+        <div class="btn-group" role="group">
+          <button class="btn btn-link text-primary p-0 me-2" title="Edit Kelompok" onclick="editKelompok(${
+            kelompok.nomor_kelompok
+          }, '${kelompok.tahun_ajaran}', '${kelompok.jenis_sidang}', ${
+      kelompok.id_matkul
+    })" ${locked ? "disabled style='opacity:0.5;'" : ""}>
+            <i class="bi bi-pencil-fill"></i>
+          </button>
+          <button class="btn btn-link text-danger p-0" title="Hapus Kelompok" onclick="deleteKelompok(${
+            kelompok.nomor_kelompok
+          }, '${kelompok.tahun_ajaran}', '${kelompok.jenis_sidang}', ${
+      kelompok.id_matkul
+    }, this)" ${locked ? "disabled style='opacity:0.5;'" : ""}>
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </div>
+      </div>
+      <div class="kelompok-list-anggota">
+        <strong>Anggota:</strong><br>${anggotaList}
+      </div>
+      <div class="kelompok-list-pengajuan mt-2">
+        ${pengajuanInfo}
+      </div>
+    `;
+    container.appendChild(kelompokItem);
+  });
+}
+
+// Function to setup filter event listeners
+function setupKelompokFilters() {
+  const filterSemester = document.getElementById("filter-semester");
+  const filterTugasAkhir = document.getElementById("filter-tugas-akhir");
+
+  if (filterSemester) {
+    filterSemester.addEventListener("change", function () {
+      // Prevent unchecking both filters
+      if (!this.checked && !filterTugasAkhir.checked) {
+        this.checked = true;
+        return;
+      }
+      applyKelompokFilters();
+    });
+  }
+
+  if (filterTugasAkhir) {
+    filterTugasAkhir.addEventListener("change", function () {
+      // Prevent unchecking both filters
+      if (!this.checked && !filterSemester.checked) {
+        this.checked = true;
+        return;
+      }
+      applyKelompokFilters();
+    });
+  }
+}
+
+// Function to apply filters
+function applyKelompokFilters() {
+  if (window.allKelompokData) {
+    renderKelompokList(window.allKelompokData);
+  }
+}
+
+async function fetchMataKuliah() {
+  const idMatkul = document.getElementById("id_matkul");
+  if (!idMatkul) return;
+
+  const tahunAjaran = document.getElementById("tahun_ajaran");
+  const tahunAjaranValue = tahunAjaran
+    ? tahunAjaran.value
+    : new Date().getFullYear();
+
+  try {
+    const response = await fetch(
+      `../../control/get_matkul_by_jenis.php?jenis_sidang=Semester&tahun_ajaran=${tahunAjaranValue}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseText = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("JSON Parse Error for mata kuliah:", parseError);
+      console.error("Response text:", responseText);
+      throw new Error("Invalid response format from server");
+    }
+
+    idMatkul.innerHTML = '<option value="">-- Pilih Mata Kuliah --</option>';
+    data.forEach((matkul) => {
+      let option = document.createElement("option");
+      option.value = matkul.id_matkul;
+      option.text = matkul.nama_matkul;
+      idMatkul.appendChild(option);
+    });
+
+    // Add event listener for mata kuliah selection
+    idMatkul.onchange = function () {
+      setNextKelompokId();
+    };
+  } catch (e) {
+    console.error("Error fetching mata kuliah:", e);
+    idMatkul.innerHTML = '<option value="">(Gagal memuat data)</option>';
+  }
+}
+
+async function handleKelompokFormSubmit(event) {
+  event.preventDefault();
+  if (!validateKelompokForm()) return;
+
+  const kelompokForm = document.getElementById("kelompokForm");
+  const formMode = kelompokForm.dataset.mode || "create";
+  const formData = new FormData(kelompokForm);
+
+  // For anggota[]: ensure all dynamic anggota fields are included
+  const nimInputs = document.querySelectorAll('input[name="anggota[]"]');
+  formData.delete("anggota[]"); // Remove any default
+  formData.delete("anggota_nim[]"); // Remove any default
+  nimInputs.forEach((input) => {
+    if (input.value.trim() !== "") {
+      formData.append("anggota[]", input.value.trim());
+      formData.append("anggota_nim[]", input.value.trim()); // Add both for compatibility
+    }
+  });
+
+  // For nomor_dosen[]: only for Tugas Akhir
+  const jenisSidang = document.getElementById("jenis_sidang");
+  if (jenisSidang.value === "Tugas Akhir") {
+    const dosenInputs = document.querySelectorAll(
+      'input[name="dosen_nomor_hidden[]"]'
+    );
+    formData.delete("nomor_dosen[]");
+    dosenInputs.forEach((input) => {
+      if (input.value.trim() !== "") {
+        formData.append("nomor_dosen[]", input.value.trim());
+      }
+    });
+  } else {
+    formData.delete("nomor_dosen[]");
+  }
+
+  // For id_matkul: if Tugas Akhir, set to 2006
+  if (jenisSidang.value === "Tugas Akhir") {
+    formData.set("id_matkul", 2006);
+  }
+
+  try {
+    let url = "../../control/kelompok_create.php";
+    if (formMode === "edit") {
+      url = "../../control/kelompok_edit.php";
+      // Add edit mode parameters
+      formData.append("nomor_kelompok", kelompokForm.dataset.nomor_kelompok);
+      formData.append("tahun_ajaran", kelompokForm.dataset.tahun_ajaran);
+      formData.append("jenis_sidang", kelompokForm.dataset.jenis_sidang);
+      formData.append("id_matkul", kelompokForm.dataset.id_matkul);
+
+      console.log("[DEBUG] Edit mode - Form data being sent:");
+      for (let [key, value] of formData.entries()) {
+        console.log(`[DEBUG] ${key}: ${value}`);
+      }
+    } else {
+      console.log("[DEBUG] Create mode - Form data being sent:");
+      for (let [key, value] of formData.entries()) {
+        console.log(`[DEBUG] ${key}: ${value}`);
+      }
+    }
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseText = await response.text();
+    console.log("Response text:", responseText); // Debug log
+
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch (parseError) {
+      // If not JSON, check for success indicators in plain text
+      if (
+        responseText.includes("success") ||
+        responseText.includes("berhasil") ||
+        responseText.includes("ok") ||
+        responseText.includes("updated")
+      ) {
+        result = {
+          success: true,
+          message:
+            formMode === "edit"
+              ? "Kelompok berhasil diperbarui!"
+              : "Kelompok berhasil dibuat!",
+        };
+      } else {
+        // Check for error messages in response
+        let errorMessage =
+          formMode === "edit"
+            ? "Gagal memperbarui kelompok."
+            : "Gagal membuat kelompok.";
+        if (
+          responseText.includes("error") ||
+          responseText.includes("gagal") ||
+          responseText.includes("failed")
+        ) {
+          // Try to extract error message from response
+          const errorMatch = responseText.match(
+            /(?:error|gagal|failed)[:\s]*([^<\n]+)/i
+          );
+          if (errorMatch) {
+            errorMessage = errorMatch[1].trim();
+          }
+        }
+        result = { success: false, message: errorMessage };
+      }
+    }
+
+    if (result.success || result.status === "ok") {
+      alert(
+        result.message ||
+          (formMode === "edit"
+            ? "Kelompok berhasil diperbarui!"
+            : "Kelompok berhasil dibuat!")
+      );
+      resetKelompokForm();
+      if (
+        kelompokModalInstance &&
+        typeof kelompokModalInstance.hide === "function"
+      ) {
+        kelompokModalInstance.hide();
+      } else {
+        // Fallback: hide modal manually
+        const modalEl = document.getElementById("kelompokModal");
+        if (modalEl) {
+          modalEl.style.display = "none";
+          modalEl.classList.remove("show");
+          document.body.classList.remove("modal-open");
+        }
+      }
+      // Refresh both tabs with current filters
+      // Add a small delay to ensure database transaction is complete
+      console.log("Refreshing kelompok list after successful edit...");
+
+      // Clear any cached data first
+      window.allKelompokData = null;
+
+      // Force refresh with multiple attempts to ensure data is updated
+      setTimeout(() => {
+        loadKelompokList();
+        switchTab("daftar");
+      }, 500);
+
+      // Additional refresh after 1 second to ensure data is consistent
+      setTimeout(() => {
+        console.log("Second refresh attempt...");
+        loadKelompokList();
+      }, 1000);
+    } else {
+      alert("Error: " + (result.message || "Gagal memproses kelompok."));
+    }
+  } catch (error) {
+    console.error("Error processing kelompok:", error);
+    alert("Terjadi kesalahan saat memproses kelompok: " + error.message);
+  }
+}
+
+function validateKelompokForm() {
+  let isValid = true;
+  document
+    .querySelectorAll(".error-message")
+    .forEach((el) => (el.style.display = "none"));
+  document
+    .querySelectorAll(".is-invalid")
+    .forEach((el) => el.classList.remove("is-invalid"));
+
+  // 1. Validate Prodi
+  const prodi = document.getElementById("kelompok_prodi").value;
+  if (!prodi) {
+    showError("kelompok_prodi", "Pilih Prodi terlebih dahulu!");
+    isValid = false;
+  }
+
+  // 2. Validate Tahun Ajaran
+  const tahunAjaran = document.getElementById("tahun_ajaran").value;
+  if (!tahunAjaran) {
+    showError("tahun_ajaran", "Pilih Tahun Ajaran!");
+    isValid = false;
+  } else if (
+    !/^\d{4}$/.test(tahunAjaran) ||
+    parseInt(tahunAjaran) < 2020 ||
+    parseInt(tahunAjaran) > 2030
+  ) {
+    showError("tahun_ajaran", "Tahun Ajaran harus antara 2020-2030!");
+    isValid = false;
+  }
+
+  // 3. Validate Nomor Kelompok
+  const nomorKelompok = document.getElementById("nomor_kelompok").value;
+  if (!nomorKelompok) {
+    showError("nomor_kelompok", "Nomor Kelompok harus diisi!");
+    isValid = false;
+  } else if (!/^\d+$/.test(nomorKelompok) || parseInt(nomorKelompok) <= 0) {
+    showError("nomor_kelompok", "Nomor Kelompok harus berupa angka positif!");
+    isValid = false;
+  }
+
+  // 4. Validate Jenis Sidang
+  const jenisSidang = document.getElementById("jenis_sidang").value;
+  if (!jenisSidang) {
+    showError("jenis_sidang", "Pilih Jenis Sidang!");
+    isValid = false;
+  } else if (!["Semester", "Tugas Akhir"].includes(jenisSidang)) {
+    showError(
+      "jenis_sidang",
+      "Jenis Sidang harus 'Semester' atau 'Tugas Akhir'!"
+    );
+    isValid = false;
+  }
+
+  // 5. Validate Mata Kuliah for Semester
+  const idMatkul = document.getElementById("id_matkul");
+  if (jenisSidang === "Semester") {
+    if (!idMatkul || !idMatkul.value) {
+      showError("id_matkul", "Pilih Mata Kuliah untuk Sidang Semester!");
+      isValid = false;
+    } else if (!/^\d+$/.test(idMatkul.value) || parseInt(idMatkul.value) <= 0) {
+      showError("id_matkul", "ID Mata Kuliah harus berupa angka positif!");
+      isValid = false;
+    }
+  }
+
+  // 6. Validate Anggota
+  let hasAnggota = false;
+  const selectedNIMs = new Set();
+  const nimInputs = document.querySelectorAll('input[name="anggota[]"]');
+
+  for (const nimInput of nimInputs) {
+    const nimValue = nimInput.value.trim();
+    if (nimValue !== "") {
+      // Check NIM format (alphanumeric, 8-20 characters)
+      if (!/^[A-Za-z0-9]{8,20}$/.test(nimValue)) {
+        showError(
+          nimInput.id,
+          `NIM ${nimValue} harus berupa 8-20 karakter alfanumerik.`
+        );
+        isValid = false;
+        continue;
+      }
+
+      // Check for duplicate NIMs
+      if (selectedNIMs.has(nimValue)) {
+        showError(nimInput.id, `NIM ${nimValue} duplikat dalam kelompok.`);
+        isValid = false;
+        continue;
+      }
+
+      selectedNIMs.add(nimValue);
+      hasAnggota = true;
+    }
+  }
+
+  if (!hasAnggota) {
+    showError("anggota-wrapper", "Minimal harus ada satu anggota!");
+    isValid = false;
+  }
+
+  // 7. Check maximum anggota limit
+  if (selectedNIMs.size > 5) {
+    showError("anggota-wrapper", "Maksimal 5 anggota per kelompok!");
+    isValid = false;
+  }
+
+  // 8. Validate Dosen Pembimbing for Tugas Akhir (if any selected)
+  if (jenisSidang === "Tugas Akhir") {
+    const dosenInputs = document.querySelectorAll(
+      'input[name="dosen_pembimbing[]"]'
+    );
+    const selectedDosen = new Set();
+
+    for (const dosenInput of dosenInputs) {
+      const dosenValue = dosenInput.value.trim();
+      if (dosenValue !== "") {
+        // Check if dosen exists in dosen data
+        const foundDosen = dosenData.find(
+          (dosen) => String(dosen.nomor_dosen) === dosenValue
+        );
+        if (!foundDosen) {
+          showError(
+            dosenInput.id,
+            `Dosen dengan nomor ${dosenValue} tidak ditemukan.`
+          );
+          isValid = false;
+          continue;
+        }
+
+        // Check for duplicates
+        if (selectedDosen.has(dosenValue)) {
+          showError(dosenInput.id, `Dosen ${dosenValue} sudah ditambahkan.`);
+          isValid = false;
+          continue;
+        }
+
+        selectedDosen.add(dosenValue);
+      }
+    }
+  }
+
+  return isValid;
+}
+
+function showError(fieldId, message) {
+  let field = document.getElementById(fieldId);
+  let error = document.createElement("div");
+  error.className = "error-message";
+  error.style.color = "red";
+  error.style.fontSize = "0.9em";
+  error.style.marginTop = "4px";
+  error.textContent = message;
+  if (field) {
+    field.classList.add("is-invalid");
+    let next = field.nextElementSibling;
+    while (next && next.classList && next.classList.contains("error-message")) {
+      let toRemove = next;
+      next = next.nextElementSibling;
+      toRemove.remove();
+    }
+    field.parentNode.insertBefore(error, field.nextSibling);
+  } else {
+    document.body.insertBefore(error, document.body.firstChild);
+  }
+}
+
+document.addEventListener("click", function (event) {
+  const dropdowns = document.querySelectorAll(".autocomplete-dropdown");
+  dropdowns.forEach((dropdown) => {
+    if (
+      !dropdown.contains(event.target) &&
+      !event.target.matches('input[name="anggota[]"]') &&
+      !event.target.matches('input[name="dosen_pembimbing[]"]')
+    ) {
+      dropdown.style.display = "none";
+    }
+  });
+});
+
+window.deleteKelompok = async function (
+  nomor_kelompok,
+  tahun_ajaran,
+  jenis_sidang,
+  id_matkul,
+  btn
+) {
+  if (!confirm("Yakin ingin menghapus kelompok ini?")) return;
+
+  try {
+    const data = {
+      nomor_kelompok: nomor_kelompok,
+      tahun_ajaran: tahun_ajaran,
+      jenis_sidang: jenis_sidang,
+      id_matkul: id_matkul,
+    };
+
+    const response = await fetch("../../control/kelompok_delete.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseText = await response.text();
+    console.log("Delete response:", responseText);
+
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch (parseError) {
+      // Fallback to text parsing if JSON fails
+      if (
+        responseText.includes("success") ||
+        responseText.includes("berhasil") ||
+        responseText.includes("ok")
+      ) {
+        result = { status: "ok", message: "Kelompok berhasil dihapus" };
+      } else {
+        result = { status: "error", message: "Gagal menghapus kelompok" };
+      }
+    }
+
+    if (result.status === "ok") {
+      alert("Kelompok berhasil dihapus!");
+      // Refresh the list with current filters applied
+      if (window.allKelompokData) {
+        // Remove the deleted item from the stored data
+        window.allKelompokData = window.allKelompokData.filter(
+          (item) =>
+            !(
+              item.nomor_kelompok == nomor_kelompok &&
+              item.tahun_ajaran == tahun_ajaran &&
+              item.jenis_sidang == jenis_sidang &&
+              item.id_matkul == id_matkul
+            )
+        );
+        renderKelompokList(window.allKelompokData);
+      } else {
+        loadKelompokList(); // Fallback to reload all data
+      }
+    } else {
+      alert("Error: " + (result.message || "Gagal menghapus kelompok"));
+    }
+  } catch (error) {
+    console.error("Error deleting kelompok:", error);
+    alert("Terjadi kesalahan saat menghapus kelompok: " + error.message);
+  }
+};
+
+window.editKelompok = async function (
+  nomor_kelompok,
+  tahun_ajaran,
+  jenis_sidang,
+  id_matkul
+) {
+  console.log("[DEBUG][editKelompok] params:", {
+    nomor_kelompok,
+    tahun_ajaran,
+    jenis_sidang,
+    id_matkul,
+  });
+  try {
+    // Fetch kelompok data for editing
+    const response = await fetch(
+      `../../control/kelompok_read.php?nomor_kelompok=${nomor_kelompok}&tahun_ajaran=${tahun_ajaran}&jenis_sidang=${jenis_sidang}&id_matkul=${id_matkul}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseText = await response.text();
+    let kelompokData;
+
+    try {
+      kelompokData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("JSON Parse Error for kelompok data:", parseError);
+      throw new Error("Invalid response format from server");
+    }
+
+    if (
+      kelompokData.status !== "ok" ||
+      !kelompokData.data ||
+      kelompokData.data.length === 0
+    ) {
+      throw new Error("Kelompok data tidak ditemukan");
+    }
+
+    // Switch to edit mode
+    switchTab("tambah");
+
+    // Populate form with existing data
+    await populateEditForm(
+      nomor_kelompok,
+      tahun_ajaran,
+      jenis_sidang,
+      id_matkul
+    );
+
+    // Show modal
+    const kelompokModalEl = document.getElementById("kelompokModal");
+    if (kelompokModalInstance) {
+      kelompokModalInstance.show();
+    } else {
+      kelompokModalEl.style.display = "block";
+      kelompokModalEl.classList.add("show");
+      document.body.classList.add("modal-open");
+    }
+  } catch (error) {
+    console.error("Error loading kelompok for edit:", error);
+    alert("Gagal memuat data kelompok untuk diedit: " + error.message);
+  }
+};
+
+// Function to update modal UI based on mode
+function updateModalUI(mode) {
+  const modalTitle = document.querySelector("#kelompokModal .modal-title");
+  const submitButton = document.querySelector(
+    "#kelompokForm button[type='submit']"
+  );
+  const newKelompokBtn = document.getElementById("newKelompokBtn");
+  const tambahTabBtn = document.getElementById("tambah-tab-btn");
+
+  if (mode === "edit") {
+    if (modalTitle) modalTitle.textContent = "Edit Kelompok";
+    if (submitButton) submitButton.textContent = "Update Kelompok";
+    if (newKelompokBtn) newKelompokBtn.style.display = "inline-block";
+    if (tambahTabBtn) tambahTabBtn.textContent = "Edit Kelompok";
+  } else {
+    if (modalTitle) modalTitle.textContent = "Tambah Kelompok Baru";
+    if (submitButton) submitButton.textContent = "Buat Kelompok";
+    if (newKelompokBtn) newKelompokBtn.style.display = "none";
+    if (tambahTabBtn) tambahTabBtn.textContent = "Tambah Kelompok";
+  }
+}
+
+// Function to populate form with existing kelompok data
+async function populateEditForm(
+  nomor_kelompok,
+  tahun_ajaran,
+  jenis_sidang,
+  id_matkul
+) {
+  console.log("[DEBUG] populateEditForm called with:", {
+    nomor_kelompok,
+    tahun_ajaran,
+    jenis_sidang,
+    id_matkul,
+  });
+
+  // Fetch current anggota from backend
+  let kelompokData = [];
+  try {
+    const params = new URLSearchParams({
+      nomor_kelompok,
+      tahun_ajaran,
+      jenis_sidang,
+      id_matkul,
+    });
+    const response = await fetch(
+      `../../control/kelompok_read.php?${params.toString()}`
+    );
+    const data = await response.json();
+    console.log("[DEBUG] Response from kelompok_read.php:", data);
+
+    if (data.status === "ok") {
+      kelompokData = data.data;
+      console.log("[DEBUG] kelompokData received:", kelompokData);
+    } else {
+      alert("Gagal mengambil data kelompok: " + data.message);
+      return;
+    }
+  } catch (err) {
+    console.error("[ERROR] Failed to fetch kelompok data:", err);
+    alert("Gagal mengambil data kelompok: " + err.message);
+    return;
+  }
+
+  // Set form mode to edit
+  const form = document.getElementById("kelompokForm");
+  form.dataset.mode = "edit";
+  form.dataset.nomor_kelompok = nomor_kelompok;
+  form.dataset.tahun_ajaran = tahun_ajaran;
+  form.dataset.jenis_sidang = jenis_sidang;
+  form.dataset.id_matkul = id_matkul;
+
+  // Update modal UI
+  updateModalUI("edit");
+
+  // Populate basic fields
+  document.getElementById("nomor_kelompok").value = nomor_kelompok;
+  document.getElementById("tahun_ajaran").value = tahun_ajaran;
+  document.getElementById("jenis_sidang").value = jenis_sidang;
+
+  // Set prodi based on first student's prodi
+  if (kelompokData.length > 0) {
+    const firstStudent = kelompokData[0];
+    if (firstStudent.prodi) {
+      // Map prodi to dropdown value
+      const prodiMap = {
+        TRPL: "Rekayasa Perangkat Lunak",
+        "Rekayasa Perangkat Lunak": "Rekayasa Perangkat Lunak",
+        RPL: "Rekayasa Perangkat Lunak",
+        "Teknologi Rekayasa Perangkat Lunak": "Rekayasa Perangkat Lunak",
+      };
+      const prodiValue = prodiMap[firstStudent.prodi] || firstStudent.prodi;
+      document.getElementById("kelompok_prodi").value = prodiValue;
+    }
+  }
+
+  // Handle mata kuliah field
+  if (jenis_sidang === "Semester") {
+    showMatkulField(true);
+    // Fetch mata kuliah data first, then set the value
+    await fetchMataKuliah();
+    // Set the value after mata kuliah data is loaded
+    setTimeout(() => {
+      document.getElementById("id_matkul").value = id_matkul;
+    }, 100);
+  } else {
+    showMatkulField(false);
+  }
+
+  // Handle pembimbing field for Tugas Akhir
+  if (jenis_sidang === "Tugas Akhir") {
+    showPembimbingField(true);
+    // Fetch and populate pembimbing data
+    populatePembimbingData(
+      nomor_kelompok,
+      tahun_ajaran,
+      jenis_sidang,
+      id_matkul
+    );
+  } else {
+    showPembimbingField(false);
+  }
+
+  // Populate anggota
+  console.log("[DEBUG] About to call populateAnggotaData with:", kelompokData);
+  populateAnggotaData(kelompokData);
+
+  // Fetch mahasiswa data to update availability indicator without clearing anggota
+  await fetchMahasiswaData();
+
+  // Add a small delay to ensure DOM elements are properly rendered
+  setTimeout(() => {
+    console.log("[DEBUG] Final check - anggota elements:");
+    for (let i = 1; i <= anggotaCount; i++) {
+      const nimInput = document.getElementById(`anggota_${i}`);
+      const namaDisplay = document.getElementById(`anggota_nama_${i}`);
+      console.log(`[DEBUG] Anggota ${i}:`, {
+        nimInput,
+        namaDisplay,
+        value: nimInput?.value,
+        text: namaDisplay?.textContent,
+      });
+    }
+  }, 100);
+}
+
+// Function to populate anggota data
+function populateAnggotaData(kelompokData) {
+  console.log("[DEBUG] populateAnggotaData called with:", kelompokData);
+
+  // Clear existing anggota
+  resetAnggotaInputs();
+
+  // Add anggota based on data
+  kelompokData.forEach((student, index) => {
+    console.log(`[DEBUG] Processing student ${index + 1}:`, student);
+
+    if (index > 0) {
+      addAnggota(); // Add new anggota field for additional students
+    }
+
+    const anggotaIndex = index + 1;
+    const nimInput = document.getElementById(`anggota_${anggotaIndex}`);
+    const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
+
+    console.log(
+      `[DEBUG] Looking for elements: anggota_${anggotaIndex}, anggota_nama_${anggotaIndex}`
+    );
+    console.log(`[DEBUG] Found elements:`, { nimInput, namaDisplay });
+
+    if (nimInput && namaDisplay) {
+      nimInput.value = student.nim;
+      namaDisplay.textContent = student.nama_mhs;
+
+      // Mark this student as selected to prevent re-selection
+      selectedMahasiswa[anggotaIndex] = {
+        nim: student.nim,
+        nama: student.nama_mhs,
+        prodi: student.prodi,
+      };
+
+      console.log(`[DEBUG] Set anggota ${anggotaIndex}:`, {
+        nim: student.nim,
+        nama: student.nama_mhs,
+        prodi: student.prodi,
+      });
+    } else {
+      console.error(
+        `[ERROR] Could not find elements for anggota ${anggotaIndex}`
+      );
+    }
+  });
+
+  // Update anggota count to match the number of students
+  anggotaCount = kelompokData.length;
+  console.log(`[DEBUG] Updated anggotaCount to: ${anggotaCount}`);
+  updateToggleButtonsVisibility();
+}
+
+// Function to populate pembimbing data
+async function populatePembimbingData(
+  nomor_kelompok,
+  tahun_ajaran,
+  jenis_sidang,
+  id_matkul
+) {
+  try {
+    console.log("[DEBUG] populatePembimbingData called with:", {
+      nomor_kelompok,
+      tahun_ajaran,
+      jenis_sidang,
+      id_matkul,
+    });
+
+    // Fetch pembimbing data using POST
+    const response = await fetch("../../control/get_pembimbing.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nomor_kelompok: nomor_kelompok,
+        tahun_ajaran: tahun_ajaran,
+        jenis_sidang: jenis_sidang,
+        id_matkul: id_matkul,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("[DEBUG] get_pembimbing response:", result);
+
+    if (result.status !== "ok") {
+      throw new Error(result.message || "Failed to get pembimbing data");
+    }
+
+    const pembimbingData = result.data || [];
+
+    // Clear existing pembimbing
+    resetDosenInputs();
+
+    // Add pembimbing based on data (only for Tugas Akhir)
+    if (jenis_sidang === "Tugas Akhir" && pembimbingData.length > 0) {
+      pembimbingData.forEach((dosen, index) => {
+        if (index > 0) {
+          addDosen(); // Add new pembimbing field for additional dosen
+        }
+
+        const dosenIndex = index + 1;
+        const dosenInput = document.getElementById(
+          `dosen_pembimbing_${dosenIndex}`
+        );
+        const namaDisplay = document.getElementById(
+          `dosen_nama_display_${dosenIndex}`
+        );
+        const hiddenInput = document.getElementById(
+          `dosen_nomor_hidden_${dosenIndex}`
+        );
+
+        if (dosenInput && namaDisplay && hiddenInput) {
+          dosenInput.value = dosen.nomor_dosen;
+          namaDisplay.textContent = dosen.nama_dosen;
+          hiddenInput.value = dosen.nomor_dosen;
+        }
+      });
+    } else if (jenis_sidang === "Semester") {
+      console.log("[DEBUG] Semester type - no pembimbing to populate");
+    }
+
+    updateToggleButtonsVisibility();
+  } catch (error) {
+    console.error("Error loading pembimbing data:", error);
+  }
+}
+
+================================================================================
+// File: mahasiswa-dashboard-ajax.js
+================================================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Sidebar toggle logic
+  let menuToggle = document.querySelector(".NavSide__toggle");
+  let sidebar = document.getElementById("main-sidebar");
+  menuToggle.onclick = function () {
+    menuToggle.classList.toggle("NavSide__toggle--active");
+    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+  };
+
+  // Initialize dashboard data
+  let dashboardData = {
+    sidang_status: 0,
+    penilaian_status: 0,
+    tanggungan: [],
+    sidang_mendatang: [],
+  };
+
+  // Function to load all dashboard data
+  async function loadDashboardData() {
+    try {
+      // Load sidang status
+      const sidangResponse = await fetch(
+        "../../control/mahasiswa/mBeranda_queries.php?action=sidang_status"
+      );
+      const sidangData = await sidangResponse.json();
+      if (sidangData.sidang_berlangsung !== undefined) {
+        dashboardData.sidang_status = sidangData.sidang_berlangsung;
+      }
+
+      // Load penilaian status
+      const penilaianResponse = await fetch(
+        "../../control/mahasiswa/mBeranda_queries.php?action=penilaian_status"
+      );
+      const penilaianData = await penilaianResponse.json();
+      if (penilaianData.menunggu_penilaian !== undefined) {
+        dashboardData.penilaian_status = penilaianData.menunggu_penilaian;
+      }
+
+      // Load tanggungan
+      const tanggunganResponse = await fetch(
+        "../../control/mahasiswa/mBeranda_queries.php?action=tanggungan"
+      );
+      const tanggunganData = await tanggunganResponse.json();
+      if (tanggunganData.tanggungan !== undefined) {
+        dashboardData.tanggungan = tanggunganData.tanggungan;
+      }
+
+      // Load sidang mendatang
+      const sidangMendatangResponse = await fetch(
+        "../../control/mahasiswa/mBeranda_queries.php?action=sidang_mendatang"
+      );
+      const sidangMendatangData = await sidangMendatangResponse.json();
+      if (sidangMendatangData.sidang_mendatang !== undefined) {
+        dashboardData.sidang_mendatang = sidangMendatangData.sidang_mendatang;
+      }
+
+      // Update UI with loaded data
+      updateDashboardUI();
+    } catch (error) {
+      console.error("Error loading dashboard data:", error);
+    }
+  }
+
+  // Function to update UI with dashboard data
+  function updateDashboardUI() {
+    // SIDANG STATUS CARD
+    document.querySelector(".sidang-status-card .number").textContent =
+      dashboardData.sidang_status ?? 0;
+
+    // PENILAIAN STATUS CARD
+    document.querySelector(".penilaian-status-card .number").textContent =
+      dashboardData.penilaian_status ?? 0;
+
+    // TANGGUNGAN CARD
+    const tugasContainer = document.querySelector(".tanggungan-card");
+    tugasContainer
+      .querySelectorAll(".tanggungan-item, .text-muted")
+      .forEach((e) => e.remove());
+    if (!dashboardData.tanggungan || dashboardData.tanggungan.length === 0) {
+      const p = document.createElement("p");
+      p.className = "text-center text-muted mt-3";
+      p.textContent = "Tidak ada tugas yang perlu dikerjakan.";
+      tugasContainer.appendChild(p);
+    } else {
+      dashboardData.tanggungan.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "tanggungan-item";
+        div.textContent = `Revisi ${item.judul}`;
+        tugasContainer.appendChild(div);
+      });
+    }
+
+    // SIDANG MENDATANG CARD & CALENDAR
+    let sidangDates = (dashboardData.sidang_mendatang || []).map(
+      (item) => item.tanggal_sidang
+    );
+    let sidangData = dashboardData.sidang_mendatang || [];
+
+    // Declare all calendar variables BEFORE calling renderCalendar
+    const calendarTableBody = document.querySelector("#calendarTable tbody");
+    const currentMonthYearHeader = document.getElementById("currentMonthYear");
+    const prevMonthBtn = document.getElementById("prevMonth");
+    const nextMonthBtn = document.getElementById("nextMonth");
+    let currentDate = new Date();
+    let activeDate = new Date();
+    const monthNames = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    function renderCalendar() {
+      calendarTableBody.innerHTML = "";
+      currentMonthYearHeader.textContent = `${
+        monthNames[activeDate.getMonth()]
+      } ${activeDate.getFullYear()}`;
+      const year = activeDate.getFullYear();
+      const month = activeDate.getMonth();
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      let date = 1;
+      for (let i = 0; i < 6; i++) {
+        const row = document.createElement("tr");
+        for (let j = 0; j < 7; j++) {
+          const cell = document.createElement("td");
+          if (i === 0 && j < firstDayOfMonth) {
+            cell.innerHTML = "";
+          } else if (date > daysInMonth) {
+            cell.innerHTML = "";
+          } else {
+            const daySpan = document.createElement("span");
+            daySpan.classList.add("calendar-day");
+            daySpan.textContent = date;
+            const thisDate = new Date(year, month, date);
+            const dateStr = [
+              thisDate.getFullYear(),
+              String(thisDate.getMonth() + 1).padStart(2, "0"),
+              String(thisDate.getDate()).padStart(2, "0"),
+            ].join("-");
+            if (
+              date === currentDate.getDate() &&
+              month === currentDate.getMonth() &&
+              year === currentDate.getFullYear()
+            ) {
+              daySpan.classList.add("current-day");
+            }
+            if (sidangDates.includes(dateStr)) {
+              daySpan.classList.add("has-sidang");
+            }
+            cell.appendChild(daySpan);
+            date++;
+          }
+          row.appendChild(cell);
+        }
+        calendarTableBody.appendChild(row);
+      }
+    }
+
+    function renderSidangMendatang(data) {
+      const sidangContainer = document.querySelector(".sidang-mendatang-card");
+      sidangContainer
+        .querySelectorAll(".item, .text-muted")
+        .forEach((e) => e.remove());
+      if (!data.length) {
+        const p = document.createElement("p");
+        p.className = "text-center text-muted mt-3";
+        p.textContent = "Tidak ada sidang yang dijadwalkan.";
+        sidangContainer.appendChild(p);
+        return;
+      }
+      data.forEach((item) => {
+        const tgl = new Date(item.tanggal_sidang);
+        const day = String(tgl.getDate()).padStart(2, "0");
+        const month = tgl.toLocaleString("default", { month: "short" });
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+                    <div class="date-bubble">
+                        <span class="day">${day}</span>
+                        <span class="month">${month}</span>
+                    </div>
+                    <span class="info">${item.judul}</span>
+                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                `;
+        const a = document.createElement("a");
+        a.href = `mdetailsidangta.php?id_sidang=${item.id_sidang}`;
+        a.style.textDecoration = "none";
+        a.style.color = "inherit";
+        a.appendChild(div);
+        sidangContainer.appendChild(a);
+      });
+    }
+
+    // Now call the functions after all variables are declared
+    renderSidangMendatang(sidangData);
+    renderCalendar();
+
+    prevMonthBtn.addEventListener("click", () => {
+      activeDate.setMonth(activeDate.getMonth() - 1);
+      activeDate.setDate(1);
+      renderCalendar();
+    });
+    nextMonthBtn.addEventListener("click", () => {
+      activeDate.setMonth(activeDate.getMonth() + 1);
+      activeDate.setDate(1);
+      renderCalendar();
+    });
+  }
+
+  // Load dashboard data when page loads
+  loadDashboardData();
+});
+
+================================================================================
+// File: main.js
+================================================================================
+
+// FUNGSI UNTUK ADMIN
+// --- Tulis fungsi di sini ---
+document.addEventListener("DOMContentLoaded", function () {
+  // =================================================
+  // BAGIAN 1: PENGAMBILAN ELEMEN DARI HTML
+  // =================================================
+  const fileInput = document.getElementById("fileInput");
+  const submitBtn = document.getElementById("submitBtn");
+  const revisionForm = document.getElementById("revisionForm");
+  const btnKembali = document.getElementById("btnKembali");
+
+  // Elemen spesifik untuk UI upload
+  const initialState = document.getElementById("initial-state");
+  const selectedState = document.getElementById("selected-state");
+  const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+  // Cek apakah semua elemen penting ada
+  if (
+    !fileInput ||
+    !submitBtn ||
+    !revisionForm ||
+    !initialState ||
+    !selectedState ||
+    !fileNameDisplay
+  ) {
+    console.error(
+      "Peringatan: Salah satu elemen HTML untuk fungsionalitas upload tidak ditemukan. Pastikan semua ID sudah benar."
+    );
+    return; // Hentikan script jika ada yang kurang
+  }
+
+  // =================================================
+  // BAGIAN 2: LOGIKA SAAT PENGGUNA MEMILIH FILE
+  // =================================================
+  fileInput.addEventListener("change", function () {
+    if (this.files.length > 0) {
+      // --- JIKA FILE DIPILIH ---
+      const selectedFile = this.files[0];
+
+      // Ganti ikon
+      initialState.classList.add("d-none");
+      selectedState.classList.remove("d-none");
+
+      // Tampilkan nama file
+      fileNameDisplay.textContent = selectedFile.name;
+
+      // Aktifkan tombol Kirim (CSS akan otomatis mengubah stylenya)
+      submitBtn.disabled = false;
+    } else {
+      // --- JIKA PEMILIHAN DIBATALKAN ---
+
+      // Kembalikan ikon
+      initialState.classList.remove("d-none");
+      selectedState.classList.add("d-none");
+
+      // Kosongkan nama file
+      fileNameDisplay.textContent = "";
+
+      // Non-aktifkan lagi tombol Kirim
+      submitBtn.disabled = true;
+    }
+  });
+
+  // =================================================
+  // BAGIAN 3: LOGIKA SAAT TOMBOL "KIRIM" DITEKAN
+  // =================================================
+  revisionForm.addEventListener("submit", function (event) {
+    // Selalu hentikan pengiriman form secara otomatis untuk menampilkan konfirmasi
+    event.preventDefault();
+
+    // Tampilkan modal konfirmasi SweetAlert2
+    Swal.fire({
+      title: "Perhatian",
+      text: "Apakah anda sudah yakin ingin mengupload dokumen?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#198754", // Warna hijau
+      cancelButtonColor: "#dc3545", // Warna merah
+      confirmButtonText: "Lanjutkan",
+      cancelButtonText: "Batalkan",
+      customClass: {
+        popup: "rounded-4", // Membuat modal lebih rounded
+      },
+    }).then((result) => {
+      // Cek jika pengguna menekan tombol "Lanjutkan"
+      if (result.isConfirmed) {
+        // Jika dikonfirmasi, baru kita kirim form-nya secara manual ke PHP
+        revisionForm.submit();
+      }
+    });
+  });
+
+  // =================================================
+  // BAGIAN 4: LOGIKA TOMBOL "KEMBALI"
+  // =================================================
+  if (btnKembali) {
+    btnKembali.addEventListener("click", function () {
+      history.back(); // Perintah untuk kembali ke halaman sebelumnya
+    });
+  }
+});
+
+// FUNGSI UNTUK DOSEN
+function goToDetail(id_sidang) {
+    window.location.href = "detail_sidang.php?id_sidang=" + encodeURIComponent(id_sidang);
+}
+
+function goToEvaluasi(nim, tipe) {
+  // Fungsi ini sekarang mengirimkan nim DAN tipe ke URL
+  window.location.href = `dEvaluasiSidang.php?nim=${nim}&tipe=${tipe}`;
+}
+
+const notifModalElement = document.getElementById("notifModal");
+const modal = new bootstrap.Modal(notifModalElement);
+
+function showModal(status) {
+  const modalLabel = document.getElementById("notifModalLabel");
+  modalLabel.innerText = `Sidang berhasil ${status.toLowerCase()}`;
+  modal.show();
+}
+
+notifModalElement.addEventListener("hidden.bs.modal", (event) => {
+  window.location.href = "dpengajuan.php";
+});
+
+
+
+// FUNGSI UNTUK MAHASISWA
+
+================================================================================
+// File: mNilaiakhir.js
+================================================================================
+
+// Argha arybawa Pasha
+
+// Script ini menangani interaksi pada sidebar navigasi.
+
+// 1. Fungsionalitas Toggle Sidebar untuk Mobile
+// Memilih elemen tombol toggle (hamburger menu)
+let menuToggle = document.querySelector(".NavSide__toggle");
+
+// Memilih elemen sidebar utama
+let sidebar = document.getElementById("main-sidebar");
+
+// Menambahkan event listener 'click' pada tombol toggle
+// Periksa dulu apakah elemennya ada sebelum menambahkan event listener
+if (menuToggle && sidebar) {
+  menuToggle.onclick = function () {
+    // Menambah/menghapus kelas '...--active' pada tombol, biasanya untuk mengubah ikon (dari hamburger ke 'x')
+    menuToggle.classList.toggle("NavSide__toggle--active");
+    // Menambah/menghapus kelas '...--active-mobile' pada sidebar untuk menampilkan atau menyembunyikannya
+    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+  };
+}
+
+// 2. Fungsionalitas untuk Menandai Item Menu yang Aktif
+// Memilih semua item menu di sidebar
+let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+
+// Melakukan loop (iterasi) untuk setiap item menu
+for (let i = 0; i < listItems.length; i++) {
+  // Menambahkan event listener 'click' pada setiap item menu
+  listItems[i].onclick = function () {
+    // Cek jika item yang diklik belum memiliki kelas '...--active'
+    if (!this.classList.contains("NavSide__sidebar-item--active")) {
+      // Hapus kelas '...--active' dari SEMUA item menu
+      for (let j = 0; j < listItems.length; j++) {
+        listItems[j].classList.remove("NavSide__sidebar-item--active");
+      }
+      // Tambahkan kelas '...--active' HANYA ke item yang baru saja diklik
+      this.classList.add("NavSide__sidebar-item--active");
+    }
+  };
+}
+
+================================================================================
+// File: mNotifikasi.js
+================================================================================
+
+let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+
+    // Active menu item highlighting
+     let listItems = document.querySelectorAll(".NavSide__sidebar-item");
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].onclick = function() {
+                if (!this.classList.contains("NavSide__sidebar-item--active")) {
+                    for (let j = 0; j < listItems.length; j++) {
+                        listItems[j].classList.remove("NavSide__sidebar-item--active");
+                    }
+                    this.classList.add("NavSide__sidebar-item--active");
+                }
+            };
+        }
+    let rowToUpdate = null;
+
+    function bacaModal(spanElem) {
+      console.log("bacaModal() dipanggil"); // Log awal
+      // Simpan referensi baris (tr) yang akan diubah
+      rowToUpdate = spanElem.closest('tr');
+      const modal = new bootstrap.Modal(document.getElementById("konfirmasiModalnotifikasi"));
+      modal.show();
+    }
+
+    function lanjutkanAksi() {
+      console.log("lanjutkanAksi() dipanggil"); // Log awal
+      // Cek apakah rowToUpdate sudah di-set
+      if (rowToUpdate) {
+        const id_notifikasi = rowToUpdate.getAttribute('data-id');
+        console.log("akan melakukan fetch POST", id_notifikasi); // Log sebelum fetch
+        fetch('../../control/update_notifikasi_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ id_notifikasi: id_notifikasi })
+        })
+        
+        .then(data => {
+            if (data.success) {
+                // Ubah status pada kolom ke-4 dan hapus tombol span
+                rowToUpdate.cells[3].innerText = "Sudah Dibaca";
+                rowToUpdate.cells[4].innerHTML = ""; // Hapus span
+                // Hapus class jadiBiru
+                rowToUpdate.classList.remove("jadiBiru");
+                // Pindahkan row ke tbody SudahDibaca
+                document.getElementById("SudahDibaca").appendChild(rowToUpdate);
+                rowToUpdate = null;
+            } else {
+                alert('Gagal memperbarui notifikasi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menghubungi server.');
+        });
+      }
+      // Tutup modal  
+      const modalElement = document.getElementById("konfirmasiModalnotifikasi");
+      if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+      }
+    };
+
+    document.getElementById("tidakmodal").onclick = function() {
+      // Tutup modal tanpa mengubah apapun
+      const modalElement = document.getElementById("konfirmasiModalnotifikasi");
+      if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+      }
+    };
+
+    function switchMNotifikasi() {
+      const mnotif = document.getElementById("BelumDibaca");
+      const mnotif2 = document.getElementById("SudahDibaca");
+      const mnotifButton = document.getElementById("ddMBelumDibaca");
+      const mnotifmenu = document.getElementById("ddMSudahDibaca");
+      if (mnotif && mnotif2) {
+        if (
+          mnotif.style.display === "none" ||
+          getComputedStyle(mnotif).display === "none"
+        ) {
+          mnotif.style.display = "table-row-group";
+          mnotif2.style.display = "none";
+          mnotifButton.innerText = "Belum Dibaca";
+          mnotifmenu.innerText = "Sudah Dibaca";
+        } else {
+          mnotif.style.display = "none";
+          mnotif2.style.display = "table-row-group";
+          mnotifButton.innerText = "Sudah Dibaca";
+          mnotifmenu.innerText = "Belum Dibaca";
+        }
+      }
+    }
+
+window.lanjutkanAksi = lanjutkanAksi;
+window.bacaModal = bacaModal;
+================================================================================
+// File: mPengajuan.js
+================================================================================
+
+// Mahasiswa Pengajuan JavaScript
+// Tidak ada lagi AJAX/fetch, hanya search/filter pada elemen HTML yang sudah di-render PHP
+
+// Search/filter tetap bisa digunakan pada elemen yang sudah ada
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Setup search functionality jika ada
+  const searchInput = document.getElementById("search-pengajuan");
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
+      const query = this.value.toLowerCase();
+      const cards = document.querySelectorAll(".pengajuan-card");
+      cards.forEach((card) => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(query) ? "block" : "none";
+      });
+    });
+  }
+
+  // Tambahkan filter lain jika diperlukan, langsung pada elemen HTML
+});
+
+// Fungsi-fungsi berikut tetap bisa digunakan jika ingin redirect ke halaman edit/detail
+function editPengajuan(nomor_kelompok, tahun_ajaran, jenis_sidang, id_matkul) {
+  window.location.href = `views/mahasiswa/mEditPengajuan.php?nomor_kelompok=${nomor_kelompok}&tahun_ajaran=${tahun_ajaran}&jenis_sidang=${jenis_sidang}&id_matkul=${id_matkul}`;
+}
+
+function submitPengajuan(
+  nomor_kelompok,
+  tahun_ajaran,
+  jenis_sidang,
+  id_matkul
+) {
+  if (
+    !confirm(
+      "Apakah Anda yakin ingin submit pengajuan ini? Setelah submit, pengajuan tidak dapat diedit lagi."
+    )
+  ) {
+    return;
+  }
+  window.location.href = `views/mahasiswa/mEditPengajuan.php?nomor_kelompok=${nomor_kelompok}&tahun_ajaran=${tahun_ajaran}&jenis_sidang=${jenis_sidang}&id_matkul=${id_matkul}`;
+}
+
+// showError dan showSuccess bisa dihapus jika tidak dipakai, atau tetap dibiarkan untuk kebutuhan lain
+
+================================================================================
+// File: mPerbaikan.js
+================================================================================
+
+document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
+            if (menuToggle && sidebar) {
+                menuToggle.onclick = () => {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
+            const fileInput = document.getElementById('fileInput');
+            const openConfirmModalBtn = document.getElementById('openConfirmModalBtn');
+            const initialState = document.getElementById('initial-state');
+            const selectedState = document.getElementById('selected-state');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const uploadPromptText = document.getElementById('upload-prompt-text');
+            if (fileInput && openConfirmModalBtn) {
+                openConfirmModalBtn.disabled = true;
+                fileInput.addEventListener('change', function () {
+                    if (this.files.length > 0) {
+                        initialState.classList.add('d-none');
+                        selectedState.classList.remove('d-none');
+                        fileNameDisplay.textContent = this.files[0].name;
+                        uploadPromptText.classList.add('d-none');
+                        openConfirmModalBtn.disabled = false;
+                    } else {
+                        initialState.classList.remove('d-none');
+                        selectedState.classList.add('d-none');
+                        fileNameDisplay.textContent = '';
+                        uploadPromptText.classList.remove('d-none');
+                        openConfirmModalBtn.disabled = true;
+                    }
+                });
+            }
+            const revisionForm = document.getElementById('revisionForm');
+            const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+            if (revisionForm && confirmSubmitBtn) {
+                confirmSubmitBtn.addEventListener('click', function () {
+                    revisionForm.submit();
+                });
+            }
+        });
+================================================================================
+// File: profilControl.js
+================================================================================
+
+
+================================================================================
+// File: profilView.js
+================================================================================
+

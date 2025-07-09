@@ -58,67 +58,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         // LANGKAH 2: Cari ID Kelompok mahasiswa
         $id_kelompok = $_POST['kelompok']; // Get selected group from form
         // Validate student belongs to selected group
-        $sql_validate = "SELECT 1 FROM dbo.Kelompok_Mahasiswa 
+        $sql_validate = "SELECT 1 FROM dbo.Kelompok 
                          WHERE nim = ? AND id_kelompok = ?";
+        
         $params_validate = [$nim_mahasiswa_logged_in, $id_kelompok];
         $stmt_validate = sqlsrv_query($conn, $sql_validate, $params_validate);
 
-        if (!$stmt_validate || !sqlsrv_has_rows($stmt_validate)) {
-            throw new Exception("Anda tidak terdaftar dalam kelompok yang dipilih");
+        // Check for query failure or if no rows were found
+        if ($stmt_validate === false) {
+            // This handles a catastrophic query failure
+            throw new Exception("Error saat memvalidasi keanggotaan kelompok: " . print_r(sqlsrv_errors(), true));
+        }
+        if (!sqlsrv_has_rows($stmt_validate)) {
+            // This specifically handles the case where the student is not in the selected group
+            throw new Exception("Validasi gagal: Anda tidak terdaftar dalam kelompok yang dipilih.");
         }
         sqlsrv_free_stmt($stmt_validate);   
 
+        // Validasi kelompok dan mata kuliah cocok
+        $sql_validasi_kelompok_matkul = "SELECT 1 FROM dbo.Kelompok WHERE id_kelompok = ? AND nim = ? AND id_matkul = ?";
+        $stmt_validasi = sqlsrv_query($conn, $sql_validasi_kelompok_matkul, [$id_kelompok, $nim_mahasiswa_logged_in, $id_matkul_terpilih]);
+        if ($stmt_validasi === false) {
+            throw new Exception('Gagal memvalidasi kelompok dan mata kuliah: ' . print_r(sqlsrv_errors(), true));
+        }
+        if (!sqlsrv_has_rows($stmt_validasi)) {
+            throw new Exception('Kelompok yang dipilih tidak sesuai dengan mata kuliah yang dipilih.');
+        }
+        sqlsrv_free_stmt($stmt_validasi);
+
         // LANGKAH 3: Cari Dosen Pembimbing untuk relasi ke Detail_Sidang
-        $nomor_dosen_pembimbing = null;
-        $sql_dosen = "SELECT nomor_dosen FROM dbo.Bimbingan WHERE id_kelompok = ? AND isPembimbing = 0x01";
-        $params_dosen = [$id_kelompok];
-        $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
-        if ($stmt_dosen) {
-            if ($row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
-                $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
-            }
-            sqlsrv_free_stmt($stmt_dosen);
-        }
-
-        // LANGKAH 4: Baca isi file (konten biner) ke dalam variabel dengan validasi
-        $dok_laporan_content = null;
-        if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
-            $file = $_FILES['DokumenSidang'];
-            $fileSize = $file['size'];
-            $allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/zip'];
-            $fileType = mime_content_type($file['tmp_name']);
-            if ($fileSize > 10 * 1024 * 1024) { // Batas 10MB
-                throw new Exception("Ukuran file melebihi 10MB.");
-            }
-            if (!in_array($fileType, $allowedTypes)) {
-                throw new Exception("Tipe file tidak diizinkan. Gunakan PDF, DOCX, PPTX, atau ZIP.");
-            }
-            $dok_laporan_content = file_get_contents($file['tmp_name']);
-        } else {
-            throw new Exception("Gagal mengunggah file: " . ($_FILES['DokumenSidang']['error'] ? "Error " . $_FILES['DokumenSidang']['error'] : "Tidak ada file yang dipilih"));
-        }
-
-        // LANGKAH 5: Ambil data form lainnya
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];
         $aksi = $_POST['aksi'];
-        $status_ajuan = ($aksi == 'Kirim') ? 'pending' : 'draft'; // Karena aksi 'Kirim' berarti mengajukan, sedangkan 'Simpan' hanya menyimpan sebagai draf 
+        $status_ajuan = ($aksi == 'Kirim') ? 'Pending' : 'Draft';
 
-        if (empty($judul)) {
-            throw new Exception("Judul tidak boleh kosong.");
-        }
-        if (empty($id_matkul_terpilih)) {
-            throw new Exception("Mata kuliah harus dipilih.");
-        }
-        
-        if (empty($id_kelompok)) {
-            throw new Exception("Id kelompok harus dipilih.");
-        }
+        if (empty($judul)) throw new Exception("Judul tidak boleh kosong.");
+        if (empty($id_matkul_terpilih)) throw new Exception("Mata kuliah harus dipilih.");
 
-        // Tentukan jenis sidang
+        // First, get the name of the selected Mata Kuliah
         $sql_get_matkul_name = "SELECT nama_matkul FROM dbo.MataKuliah WHERE id_matkul = ?";
-        $params_get_matkul_name = [$id_matkul_terpilih];
-        $stmt_get_matkul_name = sqlsrv_query($conn, $sql_get_matkul_name, $params_get_matkul_name);
+        $stmt_get_matkul_name = sqlsrv_query($conn, $sql_get_matkul_name, [$id_matkul_terpilih]);
         if ($stmt_get_matkul_name === false) {
             throw new Exception("Gagal mengambil nama mata kuliah: " . print_r(sqlsrv_errors(), true));
         }
@@ -127,20 +106,80 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
             $nama_matkul_terpilih = $row_matkul['nama_matkul'];
         }
         sqlsrv_free_stmt($stmt_get_matkul_name);
-        $jenis_sidang_bit = ($nama_matkul_terpilih == 'Tugas Akhir') ? 0x00 : 0x01;
+
+        if (empty($nama_matkul_terpilih)) {
+            throw new Exception("Mata kuliah yang dipilih tidak valid.");
+        }
+
+        // --- NEW BUSINESS LOGIC IMPLEMENTATION ---
+        $nomor_dosen_pembimbing = null;
+        if ($nama_matkul_terpilih == 'Tugas Akhir') {
+            // This is a 'Tugas Akhir', so find the supervisor from the Bimbingan table
+            $sql_dosen = "SELECT nomor_dosen FROM dbo.Bimbingan WHERE id_kelompok = ? AND isPembimbing = 0x01";
+            $params_dosen = [$id_kelompok];
+        } else {
+            // This is a 'Sidang Semester', so find the lecturer from the Pengampu_Kelas table
+            // Note: This assumes one lecturer per subject. If there can be more, you might need to adjust.
+            $sql_dosen = "SELECT TOP 1 nomor_dosen FROM dbo.Pengampu_Kelas WHERE id_matkul = ?";
+            $params_dosen = [$id_matkul_terpilih];
+        }
+        
+        $stmt_dosen = sqlsrv_query($conn, $sql_dosen, $params_dosen);
+        if ($stmt_dosen && ($row_dos = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
+            $nomor_dosen_pembimbing = $row_dos['nomor_dosen'];
+        }
+        sqlsrv_free_stmt($stmt_dosen);
+
+        // Add a final check to ensure a lecturer was found, regardless of the type.
+        if ($nomor_dosen_pembimbing === null) {
+            throw new Exception("Dosen untuk mata kuliah/pembimbingan ini tidak dapat ditemukan. Silakan hubungi admin.");
+        }
+
+        // LANGKAH 4: Upload file ke folder dan simpan path + nama file
+        $dok_laporan_nama = null;
+        $dok_laporan_path = null;
+        if (isset($_FILES['DokumenSidang']) && $_FILES['DokumenSidang']['error'] == UPLOAD_ERR_OK) {
+            $file = $_FILES['DokumenSidang'];
+            $fileSize = $file['size'];
+            $allowedTypes = [
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/zip'
+            ];
+            $fileType = mime_content_type($file['tmp_name']);
+            if ($fileSize > 10 * 1024 * 1024) { // Batas 10MB
+                throw new Exception("Ukuran file melebihi 10MB.");
+            }
+            if (!in_array($fileType, $allowedTypes)) {
+                throw new Exception("Tipe file tidak diizinkan. Gunakan PDF, DOCX, PPTX, atau ZIP.");
+            }
+            // Nama file asli
+            $dok_laporan_nama = $file['name'];
+            // Nama file unik untuk disimpan di server
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $unique_name = 'laporan_' . uniqid() . '.' . $ext;
+            $dok_laporan_path = 'uploads/' . $unique_name;
+            $upload_path = __DIR__ . '/../../uploads/' . $unique_name;
+            if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
+                throw new Exception("Gagal menyimpan file ke server.");
+            }
+        } else {
+            throw new Exception("Gagal mengunggah file: " . ($_FILES['DokumenSidang']['error'] ? "Error " . $_FILES['DokumenSidang']['error'] : "Tidak ada file yang dipilih"));
+        }
 
         // LANGKAH 6: INSERT PERTAMA KE TABEL 'Sidang'
         $sql_sidang = "INSERT INTO dbo.Sidang (
                         id_sidang, judul, waktu_pengumpulan, dok_laporan, 
-                        status_ajuan, jenis_sidang, id_kelompok
+                        status_ajuan, id_kelompok
                        ) 
-                       VALUES (?, ?, GETDATE(), ?, ?, ?, ?)";
+                       VALUES (?, ?, GETDATE(), ?, ?, ?)";
         $params_sidang = [
             $next_id_sidang,
             $judul,
-            $dok_laporan_content, // Cukup kirim variabelnya langsung
+            $dok_laporan_path, // Simpan path file
             $status_ajuan,
-            $jenis_sidang_bit,
+            // $jenis_sidang_bit, // This parameter is now removed
             $id_kelompok
         ];
         $stmt_sidang = sqlsrv_prepare($conn, $sql_sidang, $params_sidang);
@@ -149,9 +188,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         }
 
         // LANGKAH 7: INSERT KEDUA KE TABEL 'Detail_Sidang'
-        $sql_detail = "INSERT INTO dbo.Detail_Sidang (id_sidang, nomor_dosen, id_matkul) 
-                       VALUES (?, ?, ?)";
-        $params_detail = [$next_id_sidang, $nomor_dosen_pembimbing, $id_matkul_terpilih];
+        $sql_detail = "INSERT INTO dbo.Detail_Sidang (id_sidang, nomor_dosen, id_matkul, nama_file) 
+                       VALUES (?, ?, ?, ?)";
+        $params_detail = [$next_id_sidang, $nomor_dosen_pembimbing, $id_matkul_terpilih, $dok_laporan_nama];
         $stmt_detail = sqlsrv_prepare($conn, $sql_detail, $params_detail);
         if ($stmt_detail === false || !sqlsrv_execute($stmt_detail)) {
             throw new Exception("Gagal menyimpan ke tabel Detail_Sidang: " . print_r(sqlsrv_errors(), true));
@@ -292,24 +331,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
                             <label for="kelompok" class="form-label">Kelompok 
                                 <span class="text-danger">* </span>
                             </label>
-                            <select class="form-select" id="kelompok" name="kelompok" required>
+                                                        <select class="form-select" id="kelompok" name="kelompok" required>
                                 <option value="" selected disabled>Pilih Kelompok</option>
                                 <?php
-                                $sql_kelompok = "SELECT DISTINCT k.id_kelompok 
-                                                 FROM dbo.Kelompok_Mahasiswa km
-                                                 JOIN dbo.Kelompok k ON km.id_kelompok = k.id_kelompok
-                                                 WHERE km.nim = ?";
+                                // --- FIX: Use the correct table 'dbo.Kelompok' directly ---
+                                $sql_kelompok = "SELECT DISTINCT id_kelompok, nomor_kelompok 
+                                                 FROM dbo.Kelompok
+                                                 WHERE nim = ? 
+                                                 ORDER BY nomor_kelompok ASC";
+                                
                                 $params_kelompok = [$nim_mahasiswa_logged_in];
                                 $stmt_kelompok = sqlsrv_query($conn, $sql_kelompok, $params_kelompok);
                                 
                                 if ($stmt_kelompok) {
-                                    while ($kelompok_row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
-                                        echo '<option value="' . htmlspecialchars($kelompok_row['id_kelompok']) . '">';
-                                        echo 'Kelompok ' . htmlspecialchars($kelompok_row['id_kelompok']);
-                                        echo '</option>';
+                                    if (!sqlsrv_has_rows($stmt_kelompok)) {
+                                        echo '<option disabled>Anda tidak terdaftar di kelompok manapun</option>';
+                                    } else {
+                                        while ($kelompok_row = sqlsrv_fetch_array($stmt_kelompok, SQLSRV_FETCH_ASSOC)) {
+                                            // Use id_kelompok for the value and nomor_kelompok for the display text
+                                            echo '<option value="' . htmlspecialchars($kelompok_row['id_kelompok']) . '">';
+                                            echo 'Kelompok ' . htmlspecialchars($kelompok_row['nomor_kelompok']);
+                                            echo '</option>';
+                                        }
                                     }
                                     sqlsrv_free_stmt($stmt_kelompok);
                                 } else {
+                                    // This will now correctly show the error message
                                     echo '<option disabled>Error memuat kelompok</option>';
                                 }
                                 ?>

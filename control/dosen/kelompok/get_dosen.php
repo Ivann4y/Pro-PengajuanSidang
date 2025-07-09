@@ -1,12 +1,9 @@
 <?php
-
-include '../koneksi/koneksiAndrew.php'; // Sesuaikan path jika perlu
+include '../../../koneksi/koneksiAndrew.php';
 header('Content-Type: application/json');
 
 $data = [];
-
-// Query untuk mengambil NIM, nama, dan prodi mahasiswa
-$sql = "SELECT nim, nama_mhs, prodi FROM Mahasiswa ORDER BY nama_mhs ASC";
+$sql = "SELECT nomor_dosen, nama_dosen, prodi FROM dosen ORDER BY nama_dosen ASC";
 $result = sqlsrv_query($conn, $sql);
 
 if ($result === false) {
@@ -21,4 +18,4 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
 echo json_encode($data);
 sqlsrv_free_stmt($result);
 sqlsrv_close($conn);
-?>
+?> 
