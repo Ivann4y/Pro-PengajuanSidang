@@ -77,9 +77,6 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $offset = max(0, ($currentPage - 1) * $rowsPerPage);
 
 
-// [REVISED and CORRECTED QUERY]
-// [REVISED and CORRECTED QUERY]
-// --- [REVISED AND CORRECTED QUERY LOGIC] ---
 
 // Step 1: Define the core query that gets all pending data without any filtering by the logged-in user.
 // This will be used as a base for both counting and fetching data.
@@ -616,6 +613,10 @@ $nomor = max(1, $offset + 1);
         function refreshPengajuanData() {
             loadPengajuanData();
         }
+    </script>
+    <script>
+        // Inject nomor dosen login ke JS agar filter autocomplete pembimbing berjalan
+        window.nomorDosenLogin = "<?= isset($_SESSION['user_data']['nomor_dosen']) ? htmlspecialchars($_SESSION['user_data']['nomor_dosen']) : '' ?>";
     </script>
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>

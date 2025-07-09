@@ -4,8 +4,10 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // 1. Cek login and role
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || 
-    !isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+if (
+    !isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true ||
+    !isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa'
+) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
     header("Location: ../../index.php");
     exit();
@@ -68,6 +70,18 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     <title>Mahasiswa - Pengajuan Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+        .pengajuan-card-wrapper .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .pengajuan-card-wrapper .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+        }
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
     <link rel="stylesheet" href="../../assets/css/mPengajuan.css">    
 </head>
@@ -93,7 +107,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 </li>
                 <li class="NavSide__sidebar-item">
                     <b></b><b></b>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                     <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
                 </li>
             </ul>
         </div>
@@ -107,15 +121,15 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
 
         <main class="NavSide__main-content" id="mPengajuan">
             <div class="container-fluid">
-                    <div class="dashboard-header">
+                <div class="dashboard-header">
                     <h2 class="text-heading" style="color:black;">Pengajuan Sidang Anda</h2>
                 </div>
 
                 <?php if ($flash_message): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?= htmlspecialchars($flash_message) ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($flash_message) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 <?php endif; ?>
 
                 <!-- Search Section -->
@@ -149,26 +163,38 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                                                 Tahun Ajaran: <?= htmlspecialchars($p['tahun_ajaran']) ?><br>
                                                 Jenis Sidang: <?= htmlspecialchars($p['jenis_sidang']) ?>
                                             </p>
-                                            
+
                                             <?php
                                             $status = $p['status_ajuan'];
                                             $badge_class = '';
                                             switch ($status) {
-                                                case 'Draft': $badge_class = 'bg-info text-dark'; break;
-                                                case 'Pending': $badge_class = 'bg-warning text-dark'; break;
-                                                case 'Disetujui': case 'Approved': $badge_class = 'bg-success'; break;
-                                                case 'Ditolak': case 'Rejected': $badge_class = 'bg-danger'; break;
-                                                default: $badge_class = 'bg-secondary'; $status = 'Belum Ada Pengajuan';
+                                                case 'Draft':
+                                                    $badge_class = 'bg-info text-dark';
+                                                    break;
+                                                case 'Pending':
+                                                    $badge_class = 'bg-warning text-dark';
+                                                    break;
+                                                case 'Disetujui':
+                                                case 'Approved':
+                                                    $badge_class = 'bg-success';
+                                                    break;
+                                                case 'Ditolak':
+                                                case 'Rejected':
+                                                    $badge_class = 'bg-danger';
+                                                    break;
+                                                default:
+                                                    $badge_class = 'bg-secondary';
+                                                    $status = 'Belum Ada Pengajuan';
                                             }
                                             ?>
                                             <p class="mt-auto pt-2"><strong>Status:</strong> <span class="badge <?= $badge_class ?>"><?= htmlspecialchars($status) ?></span></p>
-                        </div>
+                                        </div>
                                         <div class="card-footer bg-white border-top-0 text-end pb-3">
                                             <?php
                                             $link = "mKelolaPengajuan.php?nomor_kelompok=" . urlencode($p['nomor_kelompok']) .
-                                                    "&tahun_ajaran=" . urlencode($p['tahun_ajaran']) .
-                                                    "&jenis_sidang=" . urlencode($p['jenis_sidang']) .
-                                                    "&id_matkul=" . urlencode($p['id_matkul']);
+                                                "&tahun_ajaran=" . urlencode($p['tahun_ajaran']) .
+                                                "&jenis_sidang=" . urlencode($p['jenis_sidang']) .
+                                                "&id_matkul=" . urlencode($p['id_matkul']);
                                             switch ($p['status_ajuan']) {
                                                 case 'Draft':
                                                     echo "<a href='{$link}' class='btn btn-primary btn-sm'><i class='fas fa-pencil-alt me-2'></i>Lanjutkan Pengajuan</a>";
@@ -176,8 +202,10 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                                                 case 'Belum Ada Pengajuan':
                                                     echo "<a href='{$link}' class='btn btn-success btn-sm'><i class='fas fa-plus me-2'></i>Buat Pengajuan</a>";
                                                     break;
-                                                case 'Disetujui': case 'Approved':
-                                                case 'Ditolak': case 'Rejected':
+                                                case 'Disetujui':
+                                                case 'Approved':
+                                                case 'Ditolak':
+                                                case 'Rejected':
                                                     echo "<a href='mSidang.php' class='btn btn-outline-info btn-sm'><i class='fas fa-eye me-2'></i>Lihat Detail Sidang</a>";
                                                     break;
                                                 case 'Pending':
@@ -185,11 +213,11 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                                                     break;
                                             }
                                             ?>
-                        </div>
-                    </div>
-                </div>
+                                        </div>
+                                    </div>
+                                </div>
                             <?php endforeach; ?>
-                    </div>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -197,29 +225,32 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     </div>
 
     <!-- Logout Modal -->
-    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="logMBerandaLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="logMBerandaLabel">Konfirmasi Logout</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">Apakah Anda yakin ingin keluar?</div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <a href="../../logout.php" class="btn btn-primary">Ya, Keluar</a>
+    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div style="background-color: rgb(67, 54, 240);">
+                            <div class="modal-header">
+                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                            </div>
+                        </div>
+                        <div class="modal-body mx-auto">
+                            Apakah anda yakin ingin keluar?
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Client-side search filter
             const searchInput = document.getElementById("search-pengajuan");
             if (searchInput) {
-                searchInput.addEventListener("input", function () {
+                searchInput.addEventListener("input", function() {
                     const query = this.value.toLowerCase().trim();
                     const cards = document.querySelectorAll(".pengajuan-card-wrapper");
 
@@ -230,10 +261,10 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 });
             }
 
-        // Sidebar Toggle Logic
+            // Sidebar Toggle Logic
             const menuToggle = document.querySelector(".NavSide__toggle");
             const sidebar = document.getElementById("main-sidebar");
-            
+
             if (menuToggle) {
                 menuToggle.onclick = function() {
                     menuToggle.classList.toggle("NavSide__toggle--active");
@@ -243,4 +274,5 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         });
     </script>
 </body>
+
 </html>
