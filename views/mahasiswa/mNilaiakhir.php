@@ -64,7 +64,7 @@ if ($stmtNilai && ($rowNilai = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC
 
 // === 3. Ambil Data Mahasiswa + Judul Sidang + Pembimbing ===
 $sqlDataSidang = "
-    SELECT 
+    SELECT  
         m.nama_mhs, 
         s.judul, 
         d.nama_dosen AS dosen_pembimbing
