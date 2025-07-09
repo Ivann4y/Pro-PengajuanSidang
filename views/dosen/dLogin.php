@@ -115,43 +115,10 @@ $role = "dosen";
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script>
         function toLupaPassword() {
-            window.location.href = '../../views/lupaPassword.php?role=<?= $role ?>';
+            window.location.href = "../../views/lupaPassword.php?role=<?= $role ?>";
         }
-
-        function kembaliKePilihRole() {
-            window.location.href = '../../index.php';
-        }
-
-        // hide pw
-        // let sandiAsli = '';
-
-        // document.getElementById('passwordTampil').addEventListener('input', function(e) {
-        //     const tampilan = e.target.value;
-        //     if (tampilan.length < sandiAsli.length) {
-        //         sandiAsli = sandiAsli.slice(0, tampilan.length);
-        //     } else {
-        //         const hurufBaru = tampilan.charAt(tampilan.length - 1);
-        //         sandiAsli += hurufBaru;
-        //     }
-        //     e.target.value = '•'.repeat(sandiAsli.length);
-        // });
-
-        // function salinSandiAsli() {
-        //     document.getElementById('passwordAsli').value = sandiAsli;
-        // }
-
-        const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-
-        togglePassword.addEventListener('click', function (e) {
-            // HANYA TOGGLE KELAS CSS, BUKAN ATRIBUT TYPE
-            password.classList.toggle('password-masked');
-
-            // Logika untuk menukar ikon mata tetap sama
-            this.classList.toggle('bi-eye-slash-fill');
-            this.classList.toggle('bi-eye-fill');
-        });
     </script>
+    <script src="../../assets/js/login.js"></script>
 </body>
 
 </html>

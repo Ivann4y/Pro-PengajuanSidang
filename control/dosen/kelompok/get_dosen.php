@@ -1,5 +1,5 @@
 <?php
-include '../koneksi/koneksiAndrew.php';
+include '../../../koneksi/koneksiAndrew.php';
 header('Content-Type: application/json');
 
 $data = [];

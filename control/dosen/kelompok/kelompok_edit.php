@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL); ini_set('display_errors', 1);
 session_start();
-include '../koneksi/koneksiAndrew.php';
+include '../../../koneksi/koneksiAndrew.php';
 error_log('EDIT POST: ' . json_encode($_POST));
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -107,15 +107,20 @@ if (!$stmt) {
 }
 
 while ($stmt && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-    $current_anggota[] = $row['nim'];
-    $id_kelompok_map[strval($row['nim'])] = $row['id_kelompok'];
-    error_log("Added to map: nim=" . strval($row['nim']) . ", id_kelompok={$row['id_kelompok']}");
+    $nim_str = strval(trim($row['nim']));
+    $current_anggota[] = $nim_str;
+    $id_kelompok_map[$nim_str] = $row['id_kelompok'];
+    error_log("Added to map: nim=" . $nim_str . ", id_kelompok={$row['id_kelompok']}");
 }
 error_log("Current anggota from database: " . json_encode($current_anggota));
 error_log("ID Kelompok map: " . json_encode($id_kelompok_map));
 // Convert anggota to strings for comparison (ensure consistent type)
     $anggota_int = array_map('strval', $anggota);
     $current_anggota_int = array_map('strval', $current_anggota);
+    
+    // Ensure all NIMs are properly trimmed and converted to strings
+    $anggota_int = array_map('trim', $anggota_int);
+    $current_anggota_int = array_map('trim', $current_anggota_int);
     
     $to_add = array_diff($anggota_int, $current_anggota_int);
     $to_remove = array_diff($current_anggota_int, $anggota_int);
@@ -181,11 +186,21 @@ try {
         if (!$id_kelompok) {
             error_log("ERROR: No id_kelompok found for removed anggota {$nim_remove}");
             error_log("Available id_kelompok_map: " . json_encode($id_kelompok_map));
+            error_log("Available keys in id_kelompok_map: " . json_encode(array_keys($id_kelompok_map)));
             $success = false;
             break;
         }
         
         error_log("Removing anggota {$nim_remove} with id_kelompok {$id_kelompok}");
+        
+        // Verify the record exists before deleting
+        $verify_sql = "SELECT 1 FROM Kelompok WHERE id_kelompok = ?";
+        $verify_stmt = sqlsrv_query($conn, $verify_sql, [$id_kelompok]);
+        if (!$verify_stmt || !sqlsrv_fetch_array($verify_stmt, SQLSRV_FETCH_ASSOC)) {
+            error_log("ERROR: Kelompok record with id_kelompok {$id_kelompok} does not exist");
+            $success = false;
+            break;
+        }
         
         // Delete Bimbingan hanya untuk Tugas Akhir
         if ($jenis_sidang === 'Tugas Akhir') {
@@ -206,6 +221,9 @@ try {
             $success = false; 
             break; 
         }
+        
+        // Remove from id_kelompok_map after successful deletion
+        unset($id_kelompok_map[$nim_remove]);
         
         error_log("Successfully deleted Kelompok for removed anggota {$nim_remove} with id_kelompok {$id_kelompok}");
     }
@@ -229,7 +247,7 @@ try {
         
         $valid_nims = [];
         while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-            $valid_nims[] = $row['nim'];
+            $valid_nims[] = strval(trim($row['nim']));
         }
         
         // Check for invalid NIMs
@@ -243,19 +261,22 @@ try {
         }
         
         // Check if NIMs are already in other kelompok (excluding current kelompok)
-        foreach ($anggota_int as $nim_check) {
-            $sql_check = "SELECT 1 FROM Kelompok 
-                         WHERE nim = ? 
-                           AND tahun_ajaran = ? 
-                           AND jenis_sidang = ? 
-                           AND id_matkul = ? 
-                           AND nomor_kelompok != ?";
-            $stmt_check = sqlsrv_query($conn, $sql_check, [$nim_check, $tahun_ajaran, $jenis_sidang, $id_matkul, $nomor_kelompok]);
-            
-            if ($stmt_check && sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC)) {
-                echo json_encode(['status' => 'error', 'message' => "NIM {$nim_check} sudah terdaftar di kelompok lain"]); 
-                sqlsrv_rollback($conn);
-                exit();
+        // Only check for NIMs that are being added (not existing ones)
+        if (!empty($to_add)) {
+            foreach ($to_add as $nim_check) {
+                $sql_check = "SELECT 1 FROM Kelompok 
+                             WHERE nim = ? 
+                               AND tahun_ajaran = ? 
+                               AND jenis_sidang = ? 
+                               AND id_matkul = ? 
+                               AND nomor_kelompok != ?";
+                $stmt_check = sqlsrv_query($conn, $sql_check, [$nim_check, $tahun_ajaran, $jenis_sidang, $id_matkul, $nomor_kelompok]);
+                
+                if ($stmt_check && sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC)) {
+                    echo json_encode(['status' => 'error', 'message' => "NIM {$nim_check} sudah terdaftar di kelompok lain"]); 
+                    sqlsrv_rollback($conn);
+                    exit();
+                }
             }
         }
         
@@ -351,31 +372,8 @@ try {
         error_log("No retained anggota to update pembimbing for");
     }
 
-    // Delete pembimbing for removed anggota (hanya untuk Tugas Akhir)
-    $removed = array_diff($current_anggota_int, $anggota_int);
-    if (!empty($removed) && $jenis_sidang === 'Tugas Akhir') {
-        error_log("Deleting pembimbing for " . count($removed) . " removed Tugas Akhir anggota: " . json_encode($removed));
-        
-        foreach ($removed as $nim) {
-            $id_kelompok = $id_kelompok_map[$nim];
-            if (!$id_kelompok) {
-                error_log("Warning: No id_kelompok found for removed anggota {$nim}");
-                continue;
-            }
-            
-            error_log("Deleting pembimbing for removed Tugas Akhir anggota {$nim} with id_kelompok {$id_kelompok}");
-            
-            $sql = "DELETE FROM Bimbingan WHERE id_kelompok = ?";
-            if (!sqlsrv_query($conn, $sql, [$id_kelompok])) { 
-                $success = false; 
-                break; 
-            }
-        }
-    } else if (!empty($removed) && $jenis_sidang === 'Semester') {
-        error_log("Skipping pembimbing delete for " . count($removed) . " removed Semester anggota: " . json_encode($removed));
-    } else {
-        error_log("No removed anggota to delete pembimbing for");
-    }
+    // Note: Pembimbing deletion for removed anggota is already handled in the removal loop above
+    // No need to delete pembimbing again here as the id_kelompok records are already deleted
 
     if ($success) {
         sqlsrv_commit($conn);

@@ -15,21 +15,19 @@ $nim = $_SESSION['nim'];
 
 switch($action) {
     case 'sidang_status':
-        // Original code from mBeranda_sidang_status.php
-        $query = "SELECT COUNT(*) AS sidang_berlangsung
-        FROM Sidang s
-        JOIN Jadwal j ON s.id_sidang = j.id_sidang
-        WHERE s.id_kelompok IN (
-            SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?
-        )
-        AND s.status_sidang = 1
-        AND j.tanggal_sidang > GETDATE();";
-        $params = [$nim];
-        $stmt = sqlsrv_query($conn, $query, $params);
-        if ($stmt === false) {
-            echo json_encode(['error' => sqlsrv_errors()]);
-            exit();
-        }
+        $sql = "
+            SELECT COUNT(*) AS sidang_berlangsung
+            FROM Sidang s
+            JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+            JOIN Kelompok k2 ON k2.nomor_kelompok = k.nomor_kelompok
+                AND k2.jenis_sidang = k.jenis_sidang
+                AND k2.tahun_ajaran = k.tahun_ajaran
+                AND k2.id_matkul = k.id_matkul
+            WHERE k2.nim = ?
+            AND s.status_sidang = 0x01;
+        ";
+        $params = array($nim);
+        $stmt = sqlsrv_query($conn, $sql, $params);
         $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
         echo json_encode(['sidang_berlangsung' => $row['sidang_berlangsung']]);
         break;
@@ -81,29 +79,27 @@ switch($action) {
         break;
 
     case 'sidang_mendatang':
-        // Original code from mBeranda_sidang_mendatang.php
-        $query = "SELECT s.id_sidang, s.judul, j.tanggal_sidang
-        FROM Sidang s
-        JOIN Jadwal j ON s.id_sidang = j.id_sidang
-        WHERE s.id_kelompok IN (
-            SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?
-        )
-        AND s.status_sidang = 1
-        AND j.tanggal_sidang > GETDATE()
-        ORDER BY j.tanggal_sidang ASC;";
-        $params = [$nim];
-        $stmt = sqlsrv_query($conn, $query, $params);
-        if ($stmt === false) {
-            echo json_encode(['error' => sqlsrv_errors()]);
-            exit();
-        }
+        $sql = "
+            SELECT s.id_sidang, s.judul, j.tanggal_sidang
+            FROM Sidang s
+            JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+            JOIN Kelompok k2 ON k2.nomor_kelompok = k.nomor_kelompok
+                AND k2.jenis_sidang = k.jenis_sidang
+                AND k2.tahun_ajaran = k.tahun_ajaran
+                AND k2.id_matkul = k.id_matkul
+            JOIN Jadwal j ON j.id_sidang = s.id_sidang
+            WHERE k2.nim = ?
+            AND s.status_sidang = 0x01
+            AND j.tanggal_sidang > CAST(GETDATE() AS DATE)
+            ORDER BY j.tanggal_sidang ASC;
+        ";
+        $params = array($nim);
+        $stmt = sqlsrv_query($conn, $sql, $params);
         $sidang_mendatang = [];
         while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-            // Format tanggal_sidang as Y-m-d
+            // Format the date to Y-m-d format for JavaScript compatibility
             if ($row['tanggal_sidang'] instanceof DateTime) {
                 $row['tanggal_sidang'] = $row['tanggal_sidang']->format('Y-m-d');
-            } else {
-                $row['tanggal_sidang'] = date('Y-m-d', strtotime($row['tanggal_sidang']));
             }
             $sidang_mendatang[] = [
                 'id_sidang' => $row['id_sidang'],

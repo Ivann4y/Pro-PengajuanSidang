@@ -75,6 +75,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         }
         sqlsrv_free_stmt($stmt_validate);   
 
+        // Validasi kelompok dan mata kuliah cocok
+        $sql_validasi_kelompok_matkul = "SELECT 1 FROM dbo.Kelompok WHERE id_kelompok = ? AND nim = ? AND id_matkul = ?";
+        $stmt_validasi = sqlsrv_query($conn, $sql_validasi_kelompok_matkul, [$id_kelompok, $nim_mahasiswa_logged_in, $id_matkul_terpilih]);
+        if ($stmt_validasi === false) {
+            throw new Exception('Gagal memvalidasi kelompok dan mata kuliah: ' . print_r(sqlsrv_errors(), true));
+        }
+        if (!sqlsrv_has_rows($stmt_validasi)) {
+            throw new Exception('Kelompok yang dipilih tidak sesuai dengan mata kuliah yang dipilih.');
+        }
+        sqlsrv_free_stmt($stmt_validasi);
+
         // LANGKAH 3: Cari Dosen Pembimbing untuk relasi ke Detail_Sidang
         $judul = trim($_POST['judul']);
         $id_matkul_terpilih = $_POST['matkul'];

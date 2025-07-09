@@ -91,10 +91,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // SIDANG MENDATANG CARD & CALENDAR
-    let sidangDates = (dashboardData.sidang_mendatang || []).map(
-      (item) => item.tanggal_sidang
-    );
-    let sidangData = dashboardData.sidang_mendatang || [];
+    const sidangDates = (dashboardData.sidang_mendatang || []).map((item) => {
+      // Handle both formats: "Y-m-d\TH:i:s" and "Y-m-d"
+      const dateStr = item.tanggal_sidang;
+      if (dateStr.includes("T")) {
+        return dateStr.split("T")[0]; // Extract Y-m-d part
+      }
+      return dateStr; // Already in Y-m-d format
+    });
+    const sidangData = dashboardData.sidang_mendatang || [];
 
     // Declare all calendar variables BEFORE calling renderCalendar
     const calendarTableBody = document.querySelector("#calendarTable tbody");
