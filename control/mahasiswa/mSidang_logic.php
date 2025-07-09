@@ -59,11 +59,11 @@ FROM
 JOIN
     Kelompok AS K_mhs ON M.nim = K_mhs.nim
 JOIN
-    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok 
+    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok AND K_sidang.nim = M.nim
 JOIN
     Sidang AS S ON K_sidang.id_kelompok = S.id_kelompok 
 WHERE
-    M.nim = ?";
+    M.nim = ? AND S.status_ajuan = 'Approved'";
 
 if ($filter === 'ta') {
     $countQuery .= " AND K_mhs.jenis_sidang = 'Tugas Akhir'";
@@ -109,13 +109,13 @@ FROM
 JOIN
     Kelompok AS K_mhs ON M.nim = K_mhs.nim
 JOIN
-    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok 
+    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok AND K_sidang.nim = M.nim
 JOIN
     Sidang AS S ON K_sidang.id_kelompok = S.id_kelompok 
 JOIN 
 	MataKuliah AS mk ON mk.id_matkul = K_mhs.id_matkul
 WHERE
-    M.nim = ?";
+    M.nim = ? AND S.status_ajuan = 'Approved'";
 
 if ($filter === 'ta') {
     $query .= " AND K_mhs.jenis_sidang = 'Tugas Akhir'";
