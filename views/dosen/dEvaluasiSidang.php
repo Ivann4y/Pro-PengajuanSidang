@@ -201,12 +201,14 @@ require_once '../../control/dosen/dEvaluasiSidang_queries.php';
                             <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                         </div>
 
-                        <?php if (!$nilai_sudah_dikirim_dan_lengkap): ?>
-                            <div class="button-group-bottom">
-                                <button style="margin-left:auto;" type="button" class="btn-kirim" id="btnKirim">Kirim</button>
-                            </div>
-                        <?php endif; ?>
-
+<div class="col-12 d-flex justify-content-end">
+    <button type="button" 
+            id="btnKirim"
+            class="btn btn-setujui <?= $nilai_sudah_dikirim_dan_lengkap ? 'btn-passive' : '' ?>"
+            <?= $nilai_sudah_dikirim_dan_lengkap ? 'disabled' : '' ?>>
+        Kirim
+    </button>
+</div>
                     </form>
                 </div>
             </main>
@@ -218,7 +220,7 @@ require_once '../../control/dosen/dEvaluasiSidang_queries.php';
 
 
     <!-- Modal konfirmasi -->
-    <div class="modal fade" id="confirmationKirimModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationKirimModalLabel" aria-hidden="true">
+ <div class="modal fade" id="confirmationKirimModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmationKirimModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content custom-modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
                 <div class="modal-header custom-modal-header border-0 justify-content-center">
@@ -234,6 +236,8 @@ require_once '../../control/dosen/dEvaluasiSidang_queries.php';
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
     <script>
         // SweetAlert untuk notifikasi sukses
         <?php if (isset($_GET['status']) && $_GET['status'] == 'sukses'): ?>
@@ -252,15 +256,22 @@ require_once '../../control/dosen/dEvaluasiSidang_queries.php';
             }, 2000);
         <?php endif; ?>
 
+    
+
+          
+
+ <?php if (isset($_GET['status']) && $_GET['status'] == 'sukses'): ?>
+            // ... kode sweetalert ...
+        <?php endif; ?>
+
         // Script untuk form action di modal
         document.getElementById('btnKonfirmasiKirim').addEventListener('click', function() {
             document.getElementById('evaluasiForm').submit();
         });
 
-        // Script untuk menampilkan modal
+        
         document.getElementById('btnKirim').addEventListener('click', function() {
-            // Lakukan validasi dulu jika perlu
-            // ...
+        
             var myModal = new bootstrap.Modal(document.getElementById('confirmationKirimModal'));
             myModal.show();
         });
