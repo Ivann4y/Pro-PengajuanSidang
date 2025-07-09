@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../koneksi/koneksiAndrew.php';
+require_once '../../../koneksi/koneksiAndrew.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || 

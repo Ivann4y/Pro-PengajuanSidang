@@ -39,6 +39,7 @@ $jam_akhir = $_POST['jam_akhir'] ?? null;
 if ($tipe_sidang === 'Tugas Akhir') {
     // Jika sidang TA, ambil nama pembimbing dan daftar penguji beserta bobotnya
     $pembimbing_nama = $_POST['pembimbing_nama'] ?? null;
+    $pembimbing_bobot = filter_input(INPUT_POST, 'pembimbing_bobot', FILTER_VALIDATE_FLOAT, ['options' => ['default' => 0.0]]);
     $dosen_nama_list = $_POST['penguji_nama'] ?? [];
     $dosen_bobot_list = $_POST['penguji_bobot'] ?? [];
     $peran_dosen = 0; // 0 untuk Penguji
@@ -64,14 +65,26 @@ if (!$id_sidang) {
 }
 
 // Validasi total bobot dosen (tidak boleh lebih dari 100%)
-if (!empty($dosen_bobot_list)) {
-    $bobot_numerik = array_filter($dosen_bobot_list, 'is_numeric'); // Ambil hanya nilai numerik dari bobot
-    $total_bobot = array_sum($bobot_numerik); // Hitung total bobot
-    if ($total_bobot > 100) {
+if ($tipe_sidang === 'Tugas Akhir') { // PERUBAHAN 2: Validasi spesifik untuk TA
+    $bobot_numerik_penguji = array_filter($dosen_bobot_list, 'is_numeric');
+    $total_bobot_penguji = array_sum($bobot_numerik_penguji);
+    $total_bobot_keseluruhan = $total_bobot_penguji + $pembimbing_bobot; // Jumlahkan dengan bobot pembimbing
+    
+    // Toleransi kecil untuk floating point, meskipun di frontend kita pakai integer
+    if (abs($total_bobot_keseluruhan - 100) > 0.01) { 
+        echo json_encode(['status' => 'error', 'message' => 'Gagal: Total bobot penilaian (Pembimbing + Penguji) harus tepat 100%. Total saat ini: ' . $total_bobot_keseluruhan . '%.']);
+        exit;
+    }
+} elseif ($tipe_sidang === 'Semester' && !empty($dosen_bobot_list)) {
+    // Validasi untuk sidang semester tetap sama
+    $bobot_numerik = array_filter($dosen_bobot_list, 'is_numeric');
+    $total_bobot = array_sum($bobot_numerik);
+    if (abs($total_bobot - 100) > 0.01) {
         echo json_encode(['status' => 'error', 'message' => 'Gagal: Total bobot penilaian tidak boleh melebihi 100%. Total saat ini: ' . $total_bobot . '%.']);
         exit;
     }
 }
+
 
 // ==============================
 // MULAI TRANSAKSI DATABASE
@@ -167,6 +180,17 @@ if ($all_queries_ok) {
                 if (sqlsrv_query($conn, $sql_insert_pembimbing, array($id_sidang, $nomor_pembimbing)) === false) {
                     $all_queries_ok = false;
                     $error_message = "Gagal menyimpan data pembimbing.";
+                }
+                  if ($all_queries_ok) {
+                    foreach ($list_nim_mahasiswa as $nim) {
+                        $sql_insert_penilaian_pembimbing = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, bobot_penilaian) VALUES (?, ?, ?, ?)";
+                        $params_penilaian_pembimbing = array($id_sidang, $nim, $nomor_pembimbing, $pembimbing_bobot);
+                        if (sqlsrv_query($conn, $sql_insert_penilaian_pembimbing, $params_penilaian_pembimbing) === false) {
+                            $all_queries_ok = false;
+                            $error_message = "Gagal menyimpan data bobot pembimbing untuk mahasiswa NIM $nim.";
+                            break; // Keluar dari loop mahasiswa
+                        }
+                    }
                 }
             } else {
                 $all_queries_ok = false;

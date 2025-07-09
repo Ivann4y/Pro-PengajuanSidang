@@ -86,8 +86,8 @@ require_once '../../control/dosen/dDaftarSidang_queries.php';
                                     <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                         <tr class="isiTabel jadiBiru">
                                             <td data-label="No"><?= $nomor++ ?></td>
-                                            <td data-label="Kelompok"><?= htmlspecialchars($row['nomor_kelompok'] ?? '-') ?></td>
-                                            <td data-label="Judul"><?= htmlspecialchars($row['judul_sidang'] ?? '-') ?></td>
+                                            <td data-label="Kelompok"><span><?= htmlspecialchars($row['nomor_kelompok'] ?? '-') ?></span></td>
+                                            <td data-label="Judul"><span><?= htmlspecialchars($row['judul_sidang'] ?? '-') ?></span></td>
                                             <td data-label="Mata Kuliah"><?= htmlspecialchars($row['nama_matkul_sidang'] ?? '-') ?></td>
                                             <td data-label="<?= htmlspecialchars($headerLabel) ?>"><?= htmlspecialchars($row['nama_penanggung_jawab'] ?? 'Belum Ditentukan') ?></td>
                                             <td data-label="Aksi" style="text-align: center;">

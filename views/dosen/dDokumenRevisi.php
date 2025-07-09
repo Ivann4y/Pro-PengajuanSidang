@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
     $dokumen_revisi = $data_revisi['dok_revisi'] ?? null;
 
+
     if ($approve_action && $dokumen_revisi) {
         // Pastikan entri untuk dosen ini ada
         $check_sql = "SELECT id_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
@@ -121,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Variabel default
 $id_kelompok = null;
-$judul = 'Data tidak ditemukan';
+$nim = 'Data tidak ditemukan';
 $ruangan = '-';
 $tanggal_formatted = '-';
 $jam = '-';
@@ -279,39 +280,6 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
             $tanggal_formatted = strftime('%A, %d %B %Y', $data_jadwal['tanggal_sidang']->getTimestamp());
         }
     }
-
-    // Ambil catatan revisi (group-level)
-    $sql_catatan = "SELECT catatan_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-    $result_catatan = sqlsrv_query($conn, $sql_catatan, [$id_sidang, $nomor_dosen_login]);
-    if ($result_catatan && $row_catatan = sqlsrv_fetch_array($result_catatan, SQLSRV_FETCH_ASSOC)) {
-        $catatan_revisi = $row_catatan['catatan_sidang'];
-    }
-
-    // Ambil nilai yang sudah ada untuk mahasiswa yang sedang aktif
-    if (!empty($current_nim)) {
-        $sql_get_nilai = "SELECT n_dokumen, n_presentasi, n_tanyajawab, n_proyek FROM Penilaian WHERE id_sidang = ? AND nomor_dosen = ? AND nim = ?";
-        $result_get_nilai = sqlsrv_query($conn, $sql_get_nilai, [$id_sidang, $nomor_dosen_login, $current_nim]);
-        if ($result_get_nilai && $row_nilai = sqlsrv_fetch_array($result_get_nilai, SQLSRV_FETCH_ASSOC)) {
-            $nilai_mahasiswa = $row_nilai;
-        }
-    }
-}
-
-// --- Query utama untuk mengambil data sidang ---
-
-
-// Pengecekan HANYA berdasarkan nilai mahasiswa yang bersangkutan, bukan catatan kelompok.
-$nilai_sudah_dikirim_dan_lengkap = false;
-if (
-    // Pastikan semua field nilai ada, tidak null, dan tidak kosong.
-    // Nilai default untuk mahasiswa yang belum dinilai adalah string kosong (''), 
-    // jadi pengecekan !== '' sangat penting.
-    isset($nilai_mahasiswa['n_dokumen']) && $nilai_mahasiswa['n_dokumen'] !== null && $nilai_mahasiswa['n_dokumen'] !== '' &&
-    isset($nilai_mahasiswa['n_presentasi']) && $nilai_mahasiswa['n_presentasi'] !== null && $nilai_mahasiswa['n_presentasi'] !== '' &&
-    isset($nilai_mahasiswa['n_tanyajawab']) && $nilai_mahasiswa['n_tanyajawab'] !== null && $nilai_mahasiswa['n_tanyajawab'] !== '' &&
-    isset($nilai_mahasiswa['n_proyek']) && $nilai_mahasiswa['n_proyek'] !== null && $nilai_mahasiswa['n_proyek'] !== ''
-) {
-    $nilai_sudah_dikirim_dan_lengkap = true;
 }
 
 $namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
@@ -387,21 +355,34 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     <div class="info-card">
                         <div class="section">
                             <div class="info-group">
-                                <div class="label-row"> <i class="fa-solid fa-id-card"></i> <span class="fw-bold"> NIM</span></div>
-                                <div class="value-row"><?php echo htmlspecialchars($current_nim ?: '-'); ?></div>
+                                <div class="label-row"> <i class="fa-solid fa-id-card"></i> <span class="fw-bold"> Kelompok</span></div>
+                                <div class="value-row"><?php echo htmlspecialchars($nomor_kelompok ?: '-'); ?></div>
                             </div>
+                            <div class="info-group">
+                                <div class="label-row"><i class="fa-solid fa-users"></i><span class="fw-bold">Anggota Kelompok</span></div>
+                                <div class="value-row">
+                                    <?php if (!empty($mahasiswa)): ?>
+                                        <?php foreach ($mahasiswa as $mhs): ?>
+                                            <?= htmlspecialchars($mhs['nama_mhs']) ?><br>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <em>Belum ada anggota</em>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
                             <div class="info-group">
                                 <div class="label-row"><i class="fa-solid fa-file-invoice"></i><span class="fw-bold">Judul Sidang</span></div>
                                 <div class="value-row"><?php echo !empty($judul) ? htmlspecialchars($judul) : 'Belum ada judul'; ?></div>
                             </div>
 
-                               <div class="info-group">
-                                    <div class="label-row">
-                                        <i class="fa-solid fa-user-tie"></i>
-                                        <span class="fw-bold"><?php echo htmlspecialchars($labelPembimbing); ?></span>
-                                    </div>
-                                    <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
+                            <div class="info-group">
+                                <div class="label-row">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                    <span class="fw-bold"><?php echo htmlspecialchars($labelPembimbing); ?></span>
                                 </div>
+                                <div class="value-row"><?php echo $namaPembimbing_html; ?></div>
+                            </div>
 
                             <!-- Bagian Dosen Penguji (HANYA MUNCUL JIKA BUKAN SIDANG SEMESTER) -->
                             <?php if ($jenis_sidang != 'Semester'): ?>
@@ -414,8 +395,8 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 
                         <div class="section">
                             <div class="info-group">
-                                <div class="label-row"> <i class="fa-solid fa-user"></i> <span class="fw-bold"> Mata Kuliah </span></div>
-                                <div><?= htmlspecialchars($nama_matkul_sidang) ?></div>
+                                <div class="label-row"> <i class="fa-solid fa-user"></i><span class="fw-bold"> Mata Kuliah </span></div>
+                                <div class="value-row"><?php echo htmlspecialchars($nama_matkul_sidang) ?></div>
 
                             </div>
                             <div class="info-group">
@@ -438,14 +419,15 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
                     <h3>Dokumen Revisi</h3>
                     <div class="file-buttons-container d-flex flex-wrap">
                         <?php if (!empty($data_revisi['dok_revisi'])): ?>
-                            <a href="../../uploadtesting/<?= $namaFileRevisi ?>" class="file-button" download>
+                            <a href="../../uploads/<?= $dokumen_revisi ?>" class="file-button" download>
                                 <i class="fa-solid fa-file-zipper"></i>
-                                <?= htmlspecialchars(basename($namaFileRevisi)) ?>
+                                <?= htmlspecialchars(basename($dokumen_revisi)) ?>
                             </a>
                         <?php else: ?>
                             <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>
                         <?php endif; ?>
                     </div>
+
 
                     <div class="button-group-bottom" id="grup-aksi-dokumen">
                         <div class="button-group">

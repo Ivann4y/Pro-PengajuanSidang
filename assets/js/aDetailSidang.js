@@ -1,27 +1,26 @@
-// Membuka modal penjadwalan dan mereset form di dalamnya
+// ==========================================================================
+// FUNGSI GLOBAL & HELPER
+// ==========================================================================
+
 function openModal() {
     document.getElementById('formDalamModal').reset();
     document.getElementById('form-error').textContent = '';
-    var myModal = new bootstrap.Modal(document.getElementById('penjadwalanSidangModal'), {
-        keyboard: false
-    });
+    
+    // Panggil validasi real-time saat modal dibuka untuk pertama kali
+    if (isSidangTA) {
+        validateTotalWeightRealtime();
+    }
+
+    var myModal = new bootstrap.Modal(document.getElementById('penjadwalanSidangModal'));
     myModal.show();
 }
-// Fungsi autocomplete pencarian dosen penguji
+
 function searchDosen(inputElement, index) {
     const query = inputElement.value.toLowerCase().trim();
     const dropdown = document.getElementById(`autocomplete_penguji_${index}`);
+    if (query.length < 1) { dropdown.style.display = 'none'; return; }
 
-    if (query.length < 1) {
-        dropdown.style.display = 'none';
-        return;
-    }
-
-    // Filter dosen berdasarkan input
-    const filteredDosen = dosenData.filter(dosen =>
-        dosen.nama.toLowerCase().includes(query)
-    );
-
+    const filteredDosen = dosenData.filter(dosen => dosen.nama.toLowerCase().includes(query));
     dropdown.innerHTML = ''; 
 
     if (filteredDosen.length > 0) {
@@ -29,228 +28,156 @@ function searchDosen(inputElement, index) {
             const item = document.createElement('div');
             item.className = 'autocomplete-item';
             item.textContent = dosen.nama;
-            // Pilih dosen saat diklik
-            item.addEventListener('click', () => {
-                selectDosen(dosen.nama, index);
-            });
-            
+            item.addEventListener('click', () => selectDosen(dosen.nama, index));
             dropdown.appendChild(item);
         });
-        dropdown.style.display = 'block';
     } else {
         dropdown.innerHTML = '<div class="autocomplete-item">Dosen tidak ditemukan</div>';
     }
-     dropdown.style.display = 'block';
+    dropdown.style.display = 'block';
 }
-// Mengisi input nama dosen penguji dari hasil autocomplete
+
 function selectDosen(namaDosen, index) {
-    const inputElement = document.getElementById(`modal_penguji${index}`);
-    const dropdown = document.getElementById(`autocomplete_penguji_${index}`);
-    
-    inputElement.value = namaDosen;
-    dropdown.style.display = 'none';
+    document.getElementById(`modal_penguji${index}`).value = namaDosen;
+    document.getElementById(`autocomplete_penguji_${index}`).style.display = 'none';
 }
-// Menambah field penguji baru pada form
+
 function addPenguji() {
     const wrapper = document.getElementById('penguji-wrapper');
+    const newIndex = wrapper.children.length + 1;
     const newPengujiDiv = document.createElement('div');
     newPengujiDiv.className = 'form-group';
-    
-    const newIndex = wrapper.children.length + 1;
     newPengujiDiv.id = `penguji-form-${newIndex}`;
 
     newPengujiDiv.innerHTML = `
         <label for="modal_penguji${newIndex}">Penguji ${newIndex}</label>
         <div class="input-with-buttons">
             <div class="autocomplete-container">
-                <input type="text"
-                       id="modal_penguji${newIndex}"
-                       name="penguji_nama[]"
-                       placeholder="Ketik nama dosen penguji"
-                       oninput="searchDosen(this, ${newIndex})"
-                       autocomplete="off">
-                <div class="autocomplete-dropdown" id="autocomplete_penguji_${newIndex}" style="display: none;"></div>
+                <input type="text" id="modal_penguji${newIndex}" name="penguji_nama[]" placeholder="Ketik nama dosen penguji" oninput="searchDosen(this, ${newIndex})" autocomplete="off">
+                <div class="autocomplete-dropdown" id="autocomplete_penguji_${newIndex}"></div>
             </div>
             <div class="input-with-percent">
-                <input type="number" name="penguji_bobot[]" class="form-control-bobot" min="0" placeholder="Bobot">
+                <input type="number" name="penguji_bobot[]" class="form-control-bobot" min="0" placeholder="Bobot" oninput="cleanNumberInput(this); validateTotalWeightRealtime();">
                 <span class="percent-sign">%</span>
             </div>
         </div>
     `;
     wrapper.appendChild(newPengujiDiv);
 }
-// Menghapus field penguji terakhir pada form
+
 function removePenguji() {
     const wrapper = document.getElementById('penguji-wrapper');
     if (wrapper.children.length > 1) {
         wrapper.lastElementChild.remove();
+        validateTotalWeightRealtime(); // Update total setelah menghapus
+    }
+}
+
+function cleanNumberInput(inputElement) {
+    if (inputElement.value) {
+        const numericValue = parseInt(inputElement.value, 10);
+        inputElement.value = isNaN(numericValue) || numericValue < 0 ? 0 : numericValue;
+    }
+}
+
+function validateTotalWeightRealtime() {
+    let totalBobot = 0;
+    const messageElement = document.getElementById('realtime-validation-detail'); 
+     if (!messageElement) return;
+
+    if (isSidangTA) {
+        const pembimbingInput = document.querySelector('input[name="pembimbing_bobot"]');
+        const pengujiInputs = document.querySelectorAll('input[name="penguji_bobot[]"]');
+        if (pembimbingInput) totalBobot += parseInt(pembimbingInput.value, 10) || 0;
+        pengujiInputs.forEach(input => totalBobot += parseInt(input.value, 10) || 0);
+    } else { // Untuk Sidang Semester
+        const pengampuInputs = document.querySelectorAll('input[name="pengampu_bobot[]"]');
+        pengampuInputs.forEach(input => totalBobot += parseInt(input.value, 10) || 0);
+    }
+
+    if (totalBobot > 100) {
+        messageElement.textContent = `Peringatan: Total bobot melebihi 100% (Saat ini: ${totalBobot}%)`;
     } else {
-        // Jika hanya satu, kosongkan saja inputnya
-        const lastForm = wrapper.firstElementChild;
-        if (lastForm) {
-            const inputNama = lastForm.querySelector('input[name="penguji_nama[]"]');
-            const inputBobot = lastForm.querySelector('input[name="penguji_bobot[]"]');
-            if (inputNama) inputNama.value = '';
-            if (inputBobot) inputBobot.value = '';
-        }
+        messageElement.textContent = '';
     }
 }
 
 
+// ==========================================================================
+// EVENT LISTENERS & INSIALISASI
+// ==========================================================================
 document.addEventListener('DOMContentLoaded', function() {
-    // Event listener untuk toggle sidebar di mobile
-    let menuToggle = document.querySelector(".NavSide__toggle");
-    let sidebar = document.getElementById("main-sidebar");
-
-    if (menuToggle && sidebar) {
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-    }
+    // Event listener untuk submit form
+   document.getElementById('formDalamModal')?.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const errorBox = document.getElementById("form-error");
+    errorBox.textContent = ""; 
     
-    // Event listener untuk menutup dropdown autocomplete saat klik di luar
-    document.addEventListener('click', function(event) {
-        setTimeout(() => {
-            const allDropdowns = document.querySelectorAll('.autocomplete-dropdown');
-            allDropdowns.forEach(dropdown => {
-                const container = dropdown.closest('.autocomplete-container');
-                if (container && !container.contains(document.activeElement)) {
-                    dropdown.style.display = 'none';
-                }
-            });
-        }, 150);
-    });
-
-    // Event listener untuk submit form penjadwalan (dengan validasi)
-    const form = document.getElementById('formDalamModal');
-    if (form) {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Cegah submit default
-
-            const errorBox = document.getElementById("form-error");
-            errorBox.textContent = ""; 
-            
-            let isValid = true;
-            let errorMessage = "";
-
-            const pengujiInputs = document.querySelectorAll('input[name="penguji_nama[]"]');
-            
-             // Validasi khusus untuk sidang TA
-            if (isSidangTA) {
-                const namaDosenList = [];
-                pengujiInputs.forEach(input => {
-                    const nama = input.value.trim();
-                    if (nama !== "") {
-                        namaDosenList.push(nama);
-                    }
-                });
-                // Cek duplikasi nama dosen penguji
-                const uniqueNamaDosen = new Set(namaDosenList);
-                if (uniqueNamaDosen.size < namaDosenList.length) {
-                    errorMessage = "Tidak boleh ada nama dosen penguji yang sama.";
-                    isValid = false;
-                }
-                // Validasi nama dosen harus ada di daftar dosenData
-                pengujiInputs.forEach((input, index) => {
-                    const namaDosenValid = dosenData.some(dosen => dosen.nama === input.value.trim());
-                    if (isValid && input.value.trim() === "") {
-                        errorMessage = `Nama penguji ${index + 1} tidak boleh kosong!`;
-                        isValid = false;
-                    } else if (isValid && !namaDosenValid && input.value.trim() !== '') {
-                        errorMessage = `Nama dosen '${input.value}' tidak valid. Harap pilih dari daftar.`;
-                        isValid = false;
-                    }
-                });
-            }
-            // Validasi ruangan, tanggal, jam
-            const ruangan = document.getElementById("modal_ruangan").value.trim();
-            const tanggal = document.getElementById("modal_tanggal").value;
-            const jamAwal = document.getElementById("modal_jam_awal").value;
-            const jamAkhir = document.getElementById("modal_jam_akhir").value;
-
-            if (isValid && ruangan === "") {
-                errorMessage = "Ruangan harus diisi!";
-                isValid = false;
-            } else if (isValid && tanggal === "") {
-                errorMessage = "Tanggal harus dipilih!";
-                isValid = false;
-            } else if (isValid && (jamAwal === "" || jamAkhir === "")) {
-                errorMessage = "Jam awal dan jam akhir harus diisi!";
-                isValid = false;
-            } else if (isValid && jamAkhir <= jamAwal) {
-                errorMessage = "Jam akhir harus setelah jam awal!";
-                isValid = false;
-            }
-            // Jika validasi gagal, tampilkan pesan error
-            if (!isValid) {
-                errorBox.textContent = errorMessage;
-                return;
-            }
-            // Submit form dengan AJAX (fetch)
-            const formData = new FormData(this);
-            const submitButton = this.querySelector('button[type="submit"]');
-            
-            submitButton.disabled = true;
-            submitButton.textContent = 'Menyimpan...';
-
-            fetch('../../control/admin/proses_ubah_jadwal.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-                .then(data => {
-                // Tutup modal jika berhasil
-                var myModalEl = document.getElementById('penjadwalanSidangModal');
-                var modal = bootstrap.Modal.getInstance(myModalEl);
-                if (modal) { modal.hide(); }
-
-                if (data.status === 'success') {
-                    Swal.fire({
-                        // Tampilkan notifikasi sukses dan reload halaman
-                        title: 'Berhasil!',
-                        text: data.message,
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#4B68FB'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload(); 
-                        }
-                    });
-                } else {
-                    // Tampilkan notifikasi gagal
-                    Swal.fire({
-                        title: 'Gagal!',
-                        text: data.message,
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#ff5f5f'
-                    });
-                }
-            })
-                .catch(error => {
-                // Tampilkan error jika fetch gagal
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Oops!',
-                    text: 'Terjadi kesalahan saat menghubungi server.',
-                    icon: 'error'
-                });
-            })
-                .finally(() => {
-                // Aktifkan kembali tombol submit
-                submitButton.disabled = false;
-                submitButton.textContent = 'Ubah Penjadwalan';
-            });
+    let totalBobot = 0;
+    
+    if (isSidangTA) {
+        const pembimbingInput = document.querySelector('input[name="pembimbing_bobot"]');
+        totalBobot += parseInt(pembimbingInput.value, 10) || 0;
+        document.querySelectorAll('input[name="penguji_bobot[]"]').forEach(input => {
+            totalBobot += parseInt(input.value, 10) || 0;
+        });
+    } else { // Untuk Sidang Semester
+        document.querySelectorAll('input[name="pengampu_bobot[]"]').forEach(input => {
+            totalBobot += parseInt(input.value, 10) || 0;
         });
     }
+
+    if (totalBobot !== 100) {
+        errorBox.textContent = `Gagal: Total bobot harus tepat 100%. Total saat ini: ${totalBobot}%.`;
+        return;
+    }
+        
+        
+        const formData = new FormData(this);
+        const submitButton = this.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Menyimpan...';
+
+        fetch('../../control/admin/proses_ubah_jadwal.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('penjadwalanSidangModal'));
+            if (modal) modal.hide();
+
+            Swal.fire({
+                title: data.status === 'success' ? 'Berhasil!' : 'Gagal!',
+                text: data.message,
+                icon: data.status
+            }).then(() => {
+                if (data.status === 'success') location.reload();
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Terjadi kesalahan saat menghubungi server.', 'error');
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Ubah Penjadwalan';
+        });
+    });
+
+    // Event listener untuk klik di luar dropdown
+    document.addEventListener('click', e => {
+        const openDropdown = document.querySelector('.autocomplete-dropdown[style*="display: block"]');
+        if (openDropdown && !openDropdown.closest('.autocomplete-container').contains(e.target)) {
+            openDropdown.style.display = 'none';
+        }
+    });
 });
-// Menampilkan konfirmasi hapus sidang dengan SweetAlert
+
 function confirmDelete(idSidang) {
     Swal.fire({
         title: 'Anda Yakin?',
-        text: "Data sidang ini dan semua jadwal terkait akan dihapus permanen. Aksi ini tidak dapat dibatalkan!",
+        text: "Data sidang ini akan dihapus permanen!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -259,52 +186,27 @@ function confirmDelete(idSidang) {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Jika pengguna menekan "Ya, Hapus!", panggil fungsi untuk proses penghapusan
-            processDelete(idSidang);
-        }
-    });
-}
+            const formData = new FormData();
+            formData.append('id_sidang', idSidang);
 
-
- //Mengirim permintaan penghapusan ke server.
- //@param {number} idSidang - ID sidang yang akan dihapus.
- 
-function processDelete(idSidang) {
-    // Buat objek FormData untuk mengirim ID
-    const formData = new FormData();
-    formData.append('id_sidang', idSidang);
-
-    // Kirim permintaan menggunakan Fetch API
-    fetch('../../control/admin/proses_hapus_sidang.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            // Jika sukses, tampilkan notifikasi dan redirect ke daftar sidang
-            Swal.fire({
-                title: 'Dihapus!',
-                text: data.message,
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                // Arahkan pengguna kembali ke halaman daftar sidang
-                window.location.href = 'aDaftarSidang.php';
-            });
-        } else {
-            // Jika gagal, tampilkan pesan error
-            Swal.fire({
-                title: 'Gagal!',
-                text: data.message,
-                icon: 'error',
-                confirmButtonText: 'Coba Lagi'
+            fetch('../../control/admin/proses_hapus_sidang.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                Swal.fire({
+                    title: data.status === 'success' ? 'Dihapus!' : 'Gagal!',
+                    text: data.message,
+                    icon: data.status
+                }).then(() => {
+                    if (data.status === 'success') window.location.href = 'aDaftarSidang.php';
+                });
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                Swal.fire('Error', 'Gagal menghubungi server.', 'error');
             });
         }
-    })
-        .catch(error => {
-        // Tampilkan error jika fetch gagal
-        console.error('Error:', error);
-        Swal.fire('Error Jaringan', 'Tidak dapat terhubung ke server.', 'error');
     });
 }
