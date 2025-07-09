@@ -450,6 +450,22 @@ nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active
     .btn-tolak:hover { background-color: #F85C5C; color: white; }
     .btn-setujui { background-color: #4FD382; color: white; }
     .btn-setujui:hover { background-color: #3AB070; color: white; }
+    /* CSS untuk membuat tombol menjadi pasif secara visual */
+.btn-setujui.btn-passive {
+  background-color: #fff; /* Warna latar abu-abu muda */
+  color: #6c757d;          /* Warna teks abu-abu */
+  border-color: #6c757d;    /* Warna border yang serasi */
+  cursor: not-allowed;      /* Mengubah cursor menjadi ikon 'tidak diizinkan' */
+  pointer-events: none;     /* Mencegah semua event klik (paling penting!) */
+  box-shadow: none;         /* Menghilangkan bayangan */
+}
+
+/* Mencegah efek hover saat tombol dalam keadaan pasif */
+.btn-setujui.btn-passive:hover {  
+  background-color: #e9ecef;
+  color: #6c757d;
+  border-color: #dee2e6;
+}
     
     /* Pesan Error Validasi */
     .error-message { color: red; font-size: 0.9rem; font-weight: 500; display: none; margin-top: 10px; margin-left: 0; text-align: left; }
