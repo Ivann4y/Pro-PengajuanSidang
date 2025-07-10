@@ -300,11 +300,9 @@ $nomor = max(1, $offset + 1);
                                 ?>
                                 <tr class="isiTabel jadiBiru">
                                     <td><?= $nomor++; ?></td>
-                                    <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td> <!-- [FIX] Use the correct column for group number -->
-                                    <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                                    <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td> <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
                                     <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td> <!-- This will now show all lecturers -->
-                                    <td><?= $jenisSidangTampilan; ?></td>
+                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td> <td><?= $jenisSidangTampilan; ?></td>
                                     <td style="text-align: center;">
                                         <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
                                         <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
@@ -312,7 +310,7 @@ $nomor = max(1, $offset + 1);
                                         <button type="submit" class="detail-btn">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                    </form>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
@@ -321,7 +319,7 @@ $nomor = max(1, $offset + 1);
                                 <td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
                             </tr>
                         <?php endif; ?>
-                    </tbody>
+                        </tbody>
                     </table>
                     <div class="pagination-container" id="paginationContainer" style="display: none;">
                         <nav aria-label="Page navigation">
@@ -332,7 +330,6 @@ $nomor = max(1, $offset + 1);
                 </div>
             </div>
 
-            <!-- MODAL LOGOUT-->
             <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -352,7 +349,6 @@ $nomor = max(1, $offset + 1);
                 </div>
             </div>
 
-            <!-- ===================== Kelompok Modal ===================== -->
             <div class="modal fade" id="kelompokModal" tabindex="-1" aria-labelledby="kelompokModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered ">
                     <div class="modal-content">
@@ -373,19 +369,16 @@ $nomor = max(1, $offset + 1);
                             <div id="tambah-tab" class="modal-tab-content active">
                                 <div class="kelompok-form-container">
                                     <form id="kelompokForm" autocomplete="off">
-                                        <!-- ID Kelompok -->
                                         <div class="kelompok-form-group">
                                             <label for="nomor_kelompok">Nomor Kelompok:</label>
                                             <input type="text" id="nomor_kelompok" name="nomor_kelompok" readonly />
                                         </div>
 
-                                        <!-- Tahun Ajaran -->
                                         <div class="kelompok-form-group">
                                             <label for="tahun_ajaran">Tahun Ajaran:</label>
                                             <input type="text" id="tahun_ajaran" name="tahun_ajaran" value="<?= date('Y') ?>" readonly />
                                         </div>
 
-                                        <!-- Prodi -->
                                         <div class="kelompok-form-group">
                                             <label for="kelompok_prodi">Prodi:</label>
                                             <div class="custom-select-wrapper">
@@ -398,7 +391,6 @@ $nomor = max(1, $offset + 1);
                                             </div>
                                         </div>
 
-                                        <!-- Jenis Sidang -->
                                         <div class="kelompok-form-group">
                                             <label for="jenis_sidang">Jenis Sidang:</label>
                                             <div class="custom-select-wrapper">
@@ -411,19 +403,16 @@ $nomor = max(1, $offset + 1);
                                             </div>
                                         </div>
 
-                                        <!-- Mata Kuliah (Shown only if Semester) -->
                                         <div class="kelompok-form-group" id="matkul-group" style="display:none;">
                                             <label for="id_matkul">Mata Kuliah:</label>
                                             <select id="id_matkul" name="id_matkul"></select>
                                         </div>
 
-                                        <!-- Dosen Pembimbing (shown only if Tugas Akhir) -->
                                         <div class="form-section-card" id="dosen-wrapper-group" style="display:none;">
                                             <div class="form-section-title">Dosen Pembimbing <span class="text-muted">(Opsional - Anda otomatis menjadi pembimbing)</span></div>
                                             <div class="dosen-wrapper" id="dosen-wrapper"></div>
                                         </div>
 
-                                        <!-- Anggota Mahasiswa -->
                                         <div class="form-section-card">
                                             <div class="form-section-title">Anggota Mahasiswa</div>
                                             <div class="anggota-wrapper" id="anggota-wrapper">
@@ -451,7 +440,6 @@ $nomor = max(1, $offset + 1);
                                 </div>
                             </div>
                             <div id="daftar-tab" class="modal-tab-content">
-                                <!-- Filter Toggles -->
                                 <div class="kelompok-filter-container mb-3">
                                     <div class="d-flex justify-content-center gap-2">
                                         <div class="form-check form-check-inline">
@@ -480,146 +468,10 @@ $nomor = max(1, $offset + 1);
                 </div>
             </div>
         </main>
-    </div>
-    <script>
-        // Sidebar Toggle Logic
-        let menuToggle = document.querySelector(".NavSide__toggle");
-        let sidebar = document.getElementById("main-sidebar");
-
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-
-        // Global variables
-        let currentFilter = '<?= $filter ?>';
-        let currentSearch = '<?= $search ?>';
-        let allPengajuanData = [];
-        let filteredPengajuanData = [];
-
-        // Load pengajuan data on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPengajuanData();
-        });
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            currentSearch = e.target.value;
-            filterPengajuanData();
-        });
-
-        // Load pengajuan data from API
-        async function loadPengajuanData() {
-            try {
-                const response = await fetch('../../control/get_pengajuan_pending.php');
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    allPengajuanData = result.data;
-                    filterPengajuanData();
-                } else {
-                    showError('Gagal memuat data pengajuan: ' + result.message);
-                }
-            } catch (error) {
-                console.error('Error loading pengajuan data:', error);
-                showError('Terjadi kesalahan saat memuat data');
-            }
-        }
-
-        // Filter pengajuan data based on current filter and search
-        function filterPengajuanData() {
-            filteredPengajuanData = allPengajuanData.filter(item => {
-                // Filter by jenis sidang
-                if (currentFilter === 'TA' && item.jenis_sidang !== 'Tugas Akhir') return false;
-                if (currentFilter === 'Semester' && item.jenis_sidang !== 'Semester') return false;
-                
-                // Filter by search term
-                if (currentSearch) {
-                    const searchTerm = currentSearch.toLowerCase();
-                    const nomorKelompok = item.nomor_kelompok.toLowerCase();
-                    const judul = (item.judul || '').toLowerCase();
-                    const namaMatkul = (item.nama_matkul || '').toLowerCase();
-                    
-                    if (!nomorKelompok.includes(searchTerm) && 
-                        !judul.includes(searchTerm) && 
-                        !namaMatkul.includes(searchTerm)) {
-                        return false;
-                    }
-                }
-                
-                return true;
-            });
-            
-            renderPengajuanTable();
-        }
-
-        // Render pengajuan table
-        function renderPengajuanTable() {
-            const tbody = document.getElementById('pengajuanTableBody');
-            
-            if (filteredPengajuanData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td></tr>';
-                document.getElementById('paginationContainer').style.display = 'none';
-                return;
-            }
-            
-            let html = '';
-            filteredPengajuanData.forEach((item, index) => {
-                const jenisSidangTampilan = item.jenis_sidang === 'Tugas Akhir' ? 'TA' : 'Semester';
-                const pembimbingText = item.pembimbing && item.pembimbing.length > 0 
-                    ? item.pembimbing.map(p => p.nama_dosen).join(', ')
-                    : 'N/A';
-                
-                html += `
-                    <tr class="isiTabel jadiBiru">
-                        <td>${index + 1}</td>
-                        <td>${escapeHtml(item.nomor_kelompok)}</td>
-                        <td>${escapeHtml(item.judul || 'N/A')}</td>
-                        <td>${escapeHtml(item.nama_matkul || 'N/A')}</td>
-                        <td>${escapeHtml(pembimbingText)}</td>
-                        <td>${jenisSidangTampilan}</td>
-                        <td style="text-align: center;">
-                            <button class="detail-btn" onclick="goToDetail('${item.id_sidang}', '${jenisSidangTampilan}')">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            tbody.innerHTML = html;
-            document.getElementById('paginationContainer').style.display = 'none'; // No pagination for now
-        }
-
-        // Utility function to escape HTML
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Show error message
-        function showError(message) {
-            const tbody = document.getElementById('pengajuanTableBody');
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger" style="padding: 20px;">${escapeHtml(message)}</td></tr>`;
-        }
-
-        // Go to detail page
-        function goToDetail(id_sidang, jenisSidang) {
-            window.location.href = `dDetailPengajuan.php?id_sidang=${id_sidang}&jenis=${jenisSidang}`;
-        }
-
-        // Refresh data (can be called after status changes)
-        function refreshPengajuanData() {
-            loadPengajuanData();
-        }
-    </script>
-    <script>
-        // Inject nomor dosen login ke JS agar filter autocomplete pembimbing berjalan
-        window.nomorDosenLogin = "<?= isset($_SESSION['user_data']['nomor_dosen']) ? htmlspecialchars($_SESSION['user_data']['nomor_dosen']) : '' ?>";
-    </script>
+    </div> 
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
+    <script src="../../assets/js/dPengajuan.js"></script>
 </body>
 
 </html>

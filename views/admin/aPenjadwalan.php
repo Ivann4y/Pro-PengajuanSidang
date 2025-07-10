@@ -9,7 +9,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
   <title>Admin - Penjadwalan Sidang</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="../../assets/css/aPenjadwalan.css">
@@ -43,7 +43,10 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
             <i class="bi bi-list open"></i>
             <i class="bi bi-x-lg close"></i>
         </div>
-        <div id="mobile-icons-container"></div>
+        <div class="header-icons-mobile header-icons">
+            <a href="aNotifikasi.php" title="Notifikasi"><i class="fa-solid fa-bell"></i></a>
+            <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="fa-solid fa-user"></i></a></div>
+        </div>
     </div>
 
     <main class="NavSide__main-content">
@@ -53,34 +56,32 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                 <div class="filter-container">
                     <span class="filter-label fw-semibold">Filter:</span>
                     <div class="dropdown me-2">
-                       <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= htmlspecialchars($tipeButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?tipe=semua&status=<?= htmlspecialchars($selectedStatus) ?>">Semua Tipe</a></li>
-                            <li><a class="dropdown-item" href="?tipe=TA&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
-                            <li><a class="dropdown-item" href="?tipe=Semester&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang Semester</a></li>
+                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Semua Tipe</a></li>
+                            <li><a class="dropdown-item" href="?tipe=TA&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang TA</a></li>
+                            <li><a class="dropdown-item" href="?tipe=Semester&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang Semester</a></li>
                         </ul>
                     </div>
                     <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
+                         <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminProdiButton" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= htmlspecialchars($prodiButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
-                            <!-- MODIFIKASI: Tambahkan parameter tipe agar tidak ter-reset -->
                             <li><a class="dropdown-item" href="?tipe=<?= urlencode($selectedTipe) ?>&prodi=semua">Semua Prodi</a></li>
                             <?php foreach ($prodiList as $prodi): ?>
                                 <li><a class="dropdown-item" href="?tipe=<?= urlencode($selectedTipe) ?>&prodi=<?= urlencode($prodi) ?>"><?= htmlspecialchars($prodi) ?></a></li>
                             <?php endforeach; ?>
+                        </ul>
                     </div>
                 </div>
             </div>
             <div class="header-right-panel">
-                <div id="desktop-icons-container">
-                    <div class="header-icons">
-                        <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
-                        <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="bi bi-person-fill"></i></a></div>
-                    </div>
+                <div id="desktop-icons-container" class="header-icons">
+                    <a href="aNotifikasi.php" title="Notifikasi"><i class="fa-solid fa-bell"></i></a>
+                    <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="fa-solid fa-user"></i></a></div>
                 </div>
                 <div class="input-group search-input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
@@ -89,19 +90,19 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
             </div>
         </div>
 
-         <div class="table-responsive">
-          <table class="table-admin-custom">
-            <thead>
-              <tr>
+       <div class="table-responsive">
+         <table class="table-admin-custom">
+           <thead>
+             <tr>
                  <th scope="col">No</th>
-                        <th scope="col">Kelompok</th>
-                        <th scope="col">Judul</th>
-                        <th scope="col">Mata Kuliah</th>
-                        <th scope="col">Pembimbing/Pengampu</th>
-                        <th scope="col" style="text-align: center;">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="adminSidangContent">
+                 <th scope="col">Kelompok</th>
+                 <th scope="col">Judul</th>
+                 <th scope="col">Mata Kuliah</th>
+                 <th scope="col">Pembimbing/Pengampu</th>
+                 <th scope="col" style="text-align: center;">Aksi</th>
+             </tr>
+           </thead>
+           <tbody id="adminSidangContent">
                <?php if (empty($data)): ?>
                         <tr class="no-results-row"><td colspan="6">Tidak ada data untuk dijadwalkan.</td></tr>
                     <?php else: ?>
@@ -179,16 +180,14 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
     </div>
   </div> 
 
-  <!-- Modals for scheduling -->
-   
   <div class="modal fade" id="penjadwalanSidangTAModal" aria-labelledby="penjadwalanSidangTAModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content modal-content-custom-form">
               <div class="modal-body">
                   <h2>Penjadwalan Sidang TA</h2>
                   <form id="formDalamModal-ta" novalidate>
-                        <input type="hidden" name="id_sidang" id="modal_id_sidang-ta">
-                        <input type="hidden" name="tipe_sidang" value="Tugas Akhir">
+                      <input type="hidden" name="id_sidang" id="modal_id_sidang-ta">
+                      <input type="hidden" name="tipe_sidang" value="Tugas Akhir">
                       <div class="form-container">
                           <div class="form-group"><label for="modal_nim-ta">Kelompok</label><input type="text" id="modal_nim-ta" readonly /></div>
                           <div class="form-group"><label for="modal_judul_sidang-ta">Judul Sidang</label><input type="text" id="modal_judul_sidang-ta" readonly /></div>
@@ -267,8 +266,8 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
               <div class="modal-body">
                   <h2>Penjadwalan Sidang Semester</h2>
                   <form id="formDalamModal-sem" novalidate>
-                        <input type="hidden" name="id_sidang" id="modal_id_sidang-sem">
-                        <input type="hidden" name="tipe_sidang" value="Semester">
+                      <input type="hidden" name="id_sidang" id="modal_id_sidang-sem">
+                      <input type="hidden" name="tipe_sidang" value="Semester">
                       <div class="form-container">
                           <div class="form-group"><label for="modal_nim-sem">Kelompok</label><input type="text" id="modal_nim-sem" readonly /></div>
                           <div class="form-group"><label for="modal_matkul-sem">Mata Kuliah</label><input type="text" id="modal_matkul-sem" readonly /></div>
@@ -326,8 +325,8 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
-    const dosenData = <?php echo json_encode($allDosenList); ?>;
-  </script>
-<script src="../../assets/js/aPenjadwalan.js"></script>                 
+      const dosenData = <?php echo json_encode($allDosenList); ?>;
+    </script>
+<script src="../../assets/js/aPenjadwalan.js"></script>               
 </body>
 </html>

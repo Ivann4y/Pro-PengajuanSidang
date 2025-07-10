@@ -76,6 +76,22 @@ function showPembimbingField(show) {
 
 function handleJenisSidangChange() {
   const jenisSidang = document.getElementById("jenis_sidang").value;
+  const prodi = document.getElementById("kelompok_prodi").value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Prodi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu sebelum memilih jenis sidang.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+
+    // Reset jenis sidang selection
+    document.getElementById("jenis_sidang").value = "";
+    return;
+  }
 
   if (jenisSidang === "Semester") {
     showMatkulField(true);
@@ -103,6 +119,13 @@ async function fetchMahasiswaData() {
     const jenisSidang = document.getElementById("jenis_sidang")?.value || "";
     const prodi = document.getElementById("kelompok_prodi")?.value || "";
     let idMatkul = document.getElementById("id_matkul")?.value || "";
+
+    // Validate prodi selection first
+    if (!prodi) {
+      mahasiswaData = [];
+      updateAvailabilityIndicator();
+      return; // Don't fetch data if prodi is not selected
+    }
 
     if (jenisSidang === "Tugas Akhir") idMatkul = "2006";
 
@@ -176,6 +199,12 @@ function updateAvailabilityIndicator() {
   const count = mahasiswaData.length;
   const prodi = document.getElementById("kelompok_prodi")?.value || "";
 
+  if (!prodi) {
+    indicator.innerHTML =
+      '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
+    return;
+  }
+
   if (count === 0) {
     indicator.innerHTML =
       '<span style="color: #dc3545;">⚠️ Tidak ada mahasiswa yang tersedia</span>';
@@ -230,13 +259,27 @@ function openKelompokModal() {
     document.getElementById("kelompokModal").style.display = "block";
   }
   setupFormChangeListeners();
+
+  // Show initial message for prodi selection
+  const indicator = document.getElementById("mahasiswa-availability");
+  if (indicator)
+    indicator.innerHTML =
+      '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
 }
 
 async function setNextKelompokId() {
   try {
     const tahunAjaran = document.getElementById("tahun_ajaran")?.value;
     const jenisSidang = document.getElementById("jenis_sidang")?.value;
+    const prodi = document.getElementById("kelompok_prodi")?.value;
     let idMatkul = document.getElementById("id_matkul")?.value;
+
+    // Validate prodi selection first
+    if (!prodi) {
+      document.getElementById("nomor_kelompok").value = "1";
+      return;
+    }
+
     if (jenisSidang === "Tugas Akhir") idMatkul = "2006";
 
     if (!tahunAjaran || !jenisSidang || !idMatkul) {
@@ -281,11 +324,31 @@ function switchTab(tabName) {
       resetToCreateMode();
     }
     setupFormChangeListeners();
+
+    // Show initial message for prodi selection when switching to tambah tab
+    const indicator = document.getElementById("mahasiswa-availability");
+    if (indicator)
+      indicator.innerHTML =
+        '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
   }
 }
 
 function filterMahasiswaByProdi() {
-  currentProdi = document.getElementById("kelompok_prodi").value;
+  const prodi = document.getElementById("kelompok_prodi").value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Prodi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+    return;
+  }
+
+  currentProdi = prodi;
   selectedMahasiswa = {};
   refreshMahasiswaData();
 }
@@ -303,6 +366,14 @@ function searchMahasiswa(input, anggotaIndex) {
   const query = input.value.trim().toLowerCase();
   const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
   const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    dropdown.style.display = "none";
+    namaDisplay.textContent = "Pilih Program Studi terlebih dahulu";
+    return;
+  }
 
   if (query.length === 0) {
     dropdown.style.display = "none";
@@ -355,6 +426,20 @@ function selectMahasiswa(mahasiswa, anggotaIndex) {
 }
 
 function addAnggota() {
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Prodi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu sebelum menambahkan anggota.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+    return;
+  }
+
   anggotaCount++;
   const wrapper = document.getElementById("anggota-wrapper");
   const div = document.createElement("div");
@@ -388,6 +473,11 @@ function removeAnggota() {
 
 function resetAnggotaInputs() {
   const wrapper = document.getElementById("anggota-wrapper");
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+  const defaultMessage = prodi
+    ? "Nama akan muncul otomatis"
+    : "Pilih Program Studi terlebih dahulu";
+
   wrapper.innerHTML = `
         <div class="anggota-form-group" id="anggota-form-1">
             <label for="anggota_1">Anggota 1:</label>
@@ -396,7 +486,7 @@ function resetAnggotaInputs() {
           <input type="text" id="anggota_1" name="anggota[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" autocomplete="off" />
           <div class="autocomplete-dropdown" id="autocomplete_1"></div>
                 </div>
-                <div class="anggota-nama-display" id="anggota_nama_1">Nama akan muncul otomatis</div>
+                <div class="anggota-nama-display" id="anggota_nama_1">${defaultMessage}</div>
                 <div class="form-toggle-buttons">
                     <button type="button" onclick="addAnggota()">+</button>
                     <button type="button" onclick="removeAnggota()" style="display: none;">-</button>
@@ -412,6 +502,12 @@ function resetAnggotaInputs() {
 function resetDosenInputs() {
   const dosenWrapper = document.getElementById("dosen-wrapper");
   if (!dosenWrapper) return;
+
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+  const defaultMessage = prodi
+    ? "Nama dosen akan muncul otomatis"
+    : "Pilih Program Studi terlebih dahulu";
+
   dosenWrapper.innerHTML = `
     <div class="anggota-form-group" id="dosen-form-1">
       <label for="dosen_pembimbing_1">Pembimbing 1:</label>
@@ -420,7 +516,7 @@ function resetDosenInputs() {
           <input type="text" id="dosen_pembimbing_1" name="dosen_pembimbing[]" placeholder="Masukkan NIP atau nama dosen" autocomplete="off" oninput="searchDosen(this, 1)" />
           <div class="autocomplete-dropdown" id="autocomplete_dosen_1"></div>
         </div>
-        <div class="anggota-nama-display" id="dosen_nama_display_1">Nama dosen akan muncul otomatis</div>
+        <div class="anggota-nama-display" id="dosen_nama_display_1">${defaultMessage}</div>
         <div class="form-toggle-buttons">
           <button type="button" onclick="addDosen()">+</button>
           <button type="button" onclick="removeDosen()" style="display:none;">-</button>
@@ -433,6 +529,20 @@ function resetDosenInputs() {
 }
 
 function addDosen() {
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Prodi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu sebelum menambahkan pembimbing.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+    return;
+  }
+
   dosenCount++;
   const wrapper = document.getElementById("dosen-wrapper");
   const div = document.createElement("div");
@@ -467,6 +577,16 @@ function removeDosen() {
 function searchDosen(input, index) {
   const query = input.value.trim().toLowerCase();
   const dropdown = document.getElementById(`autocomplete_dosen_${index}`);
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    dropdown.style.display = "none";
+    document.getElementById(`dosen_nama_display_${index}`).textContent =
+      "Pilih Program Studi terlebih dahulu";
+    document.getElementById(`dosen_nomor_hidden_${index}`).value = "";
+    return;
+  }
 
   if (query.length === 0) {
     dropdown.style.display = "none";
@@ -568,7 +688,9 @@ function resetKelompokForm() {
   dosenCount = 1;
   selectedMahasiswa = {};
   const indicator = document.getElementById("mahasiswa-availability");
-  if (indicator) indicator.innerHTML = "";
+  if (indicator)
+    indicator.innerHTML =
+      '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
   document.querySelectorAll(".error-message").forEach((el) => el.remove());
   document
     .querySelectorAll(".is-invalid")
@@ -578,6 +700,12 @@ function resetKelompokForm() {
 function resetToCreateMode() {
   resetKelompokForm();
   setNextKelompokId();
+
+  // Show initial message for prodi selection
+  const indicator = document.getElementById("mahasiswa-availability");
+  if (indicator)
+    indicator.innerHTML =
+      '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
 }
 
 window.closeKelompokModal = function () {
@@ -716,6 +844,16 @@ function applyKelompokFilters() {
 async function fetchMataKuliah() {
   const idMatkul = document.getElementById("id_matkul");
   if (!idMatkul) return;
+
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    idMatkul.innerHTML =
+      '<option value="">-- Pilih Prodi Terlebih Dahulu --</option>';
+    return;
+  }
+
   const tahunAjaran =
     document.getElementById("tahun_ajaran")?.value || new Date().getFullYear();
   try {
@@ -737,6 +875,20 @@ async function fetchMataKuliah() {
 
 async function handleKelompokFormSubmit(event) {
   event.preventDefault();
+
+  // Additional prodi validation before form validation
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Program Studi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu sebelum menyimpan kelompok.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+    return;
+  }
+
   if (!validateKelompokForm()) return;
 
   const kelompokForm = document.getElementById("kelompokForm");
@@ -822,7 +974,10 @@ function validateKelompokForm() {
   };
 
   if (!document.getElementById("kelompok_prodi").value)
-    showError("kelompok_prodi", "Prodi harus dipilih.");
+    showError(
+      "kelompok_prodi",
+      "Program Studi harus dipilih terlebih dahulu sebelum melanjutkan."
+    );
   if (!document.getElementById("tahun_ajaran").value)
     showError("tahun_ajaran", "Tahun Ajaran harus dipilih.");
   if (!document.getElementById("nomor_kelompok").value)
