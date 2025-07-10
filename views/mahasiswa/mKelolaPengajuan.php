@@ -14,6 +14,7 @@ require_once '../../koneksi/koneksiAndrew.php';
 $nim_mahasiswa_logged_in = $_SESSION['nim'];
 
 // Ambil parameter dari URL
+// Ambil parameter dari URL
 $nomor_kelompok = $_GET['nomor_kelompok'] ?? null;
 $tahun_ajaran = $_GET['tahun_ajaran'] ?? null;
 $jenis_sidang = $_GET['jenis_sidang'] ?? null;
@@ -342,78 +343,70 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
                             </div>
                         </div>
 
-                        <!-- Kolom Kanan: Detail Pengajuan -->
-                        <div class="col-lg-7 mb-4">
-                            <div class="card h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Detail Pengajuan</h5>
-                                </div>
-                                <div class="card-body d-flex flex-column">
-                                    <?php if ($status_ajuan === 'Rejected'): ?>
-                                        <div class="alert alert-warning">
-                                            <i class="fas fa-info-circle me-2"></i><strong>Pengajuan Ditolak.</strong> Silakan perbaiki detail di bawah dan submit ulang.
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Detail Pengajuan</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="pengajuan-form" method="POST" enctype="multipart/form-data">
+                            <!-- ... Konten Form ... -->
+                            <input type="hidden" name="id_kelompok" value="<?= htmlspecialchars($id_kelompok) ?>">
+                            <?php if ($is_edit_mode): ?>
+                                <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($data['id_sidang']) ?>">
+                            <?php endif; ?>
+
+                            <div class="mb-3">
+                                <label for="judul" class="form-label">Judul Laporan <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="judul" name="judul" value="<?= htmlspecialchars($data['judul'] ?? '') ?>" <?= $is_editable ? 'required' : 'readonly' ?>>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="file_laporan" class="form-label">
+                                    File Laporan (ZIP, PDF, DOCX, maks 10MB)
+                                    <?php if (!$is_edit_mode): ?><span class="text-danger">*</span><?php endif; ?>
+                                </label>
+                                <?php if (!empty($data['dok_laporan'])): ?>
+                                    <div class="mb-2">
+                                        <a href="../../<?= htmlspecialchars($data['dok_laporan']) ?>" target="_blank">
+                                            Lihat file yang sudah diupload: <?= htmlspecialchars(basename($data['dok_laporan'])) ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <label class="upload-box w-100 text-center" id="upload-box-label">
+                                    <input type="file" id="file_laporan" name="file_laporan" accept=".zip,.pdf,.docx" <?= $is_editable ? ($is_edit_mode ? '' : 'required') : 'disabled' ?> hidden>
+                                    <div class="upload-content">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-secondary" id="upload-icon"></i>
+                                        <p class="mt-2 text-muted" id="upload-text">Klik untuk memilih file</p>
+                                        <p class="file-name mt-2" id="file-name-display"></p>
+                                    </div>
+                                </label>
+                                <?php if ($is_edit_mode): ?>
+                                    <small class="form-text text-muted">Unggah file baru untuk menggantikan yang lama. Kosongkan jika tidak ingin mengubah.</small>
+                                <?php endif; ?>
+                            </div>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <!-- SISI KIRI -->
+                                <a href="mPengajuan.php" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Kembali</a>
+
+                                <!-- SISI KANAN -->
+                                <div>
+                                    <?php if ($is_editable): ?>
+                                        <!-- Gunakan btn-group untuk menggabungkan tombol -->
+                                        <div class="btn-group" role="group">
+                                            <button type="submit" name="save_draft" class="btn btn-info"><i class="fas fa-save me-2"></i>Simpan Draft</button>
+                                            <button type="submit" name="submit_final" class="btn btn-success" id="btn-submit-final"><i class="fas fa-paper-plane me-2"></i>Submit Final</button>
+                                        </div>
+                                    <?php elseif ($status_ajuan === 'Pending'): ?>
+                                        <div class="alert alert-warning mb-0 p-2">
+                                            <i class="fas fa-lock me-2"></i>Pengajuan ini telah disubmit dan tidak dapat diubah.
                                         </div>
                                     <?php endif; ?>
-
-                                    <form id="pengajuan-form" method="POST" enctype="multipart/form-data" class="d-flex flex-column flex-grow-1">
-                                        <div class="flex-grow-1">
-                                            <input type="hidden" name="id_kelompok" value="<?= htmlspecialchars($id_kelompok) ?>">
-                                            <?php if ($is_edit_mode): ?>
-                                                <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($data['id_sidang']) ?>">
-                                            <?php endif; ?>
-
-                                            <div class="mb-3">
-                                                <label for="judul" class="form-label">Judul Laporan <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="judul" name="judul" value="<?= htmlspecialchars($data['judul'] ?? '') ?>" <?= $is_editable ? 'required' : 'readonly' ?>>
-                                            </div>
-
-                                            <div class="mb-4">
-                                                <label for="file_laporan" class="form-label">
-                                                    File Laporan (ZIP, PDF, DOCX, maks 10MB)
-                                                    <?php if (!$is_edit_mode): ?><span class="text-danger">*</span><?php endif; ?>
-                                                </label>
-                                                <?php if (!empty($data['dok_laporan'])): ?>
-                                                    <div class="mb-2">
-                                                        <a href="../../<?= htmlspecialchars($data['dok_laporan']) ?>" target="_blank">
-                                                            <i class="fas fa-file-alt me-1"></i> Lihat file yang sudah diupload: <?= htmlspecialchars(basename($data['dok_laporan'])) ?>
-                                                        </a>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <?php if ($is_editable): ?>
-                                                    <label class="upload-box w-100 text-center" id="upload-box-label">
-                                                        <input type="file" id="file_laporan" name="file_laporan" accept=".zip,.pdf,.docx" <?= $is_edit_mode ? '' : 'required' ?> hidden>
-                                                        <div class="upload-content">
-                                                            <i class="fas fa-cloud-upload-alt fa-3x text-secondary" id="upload-icon"></i>
-                                                            <p class="mt-2 text-muted" id="upload-text">Klik untuk memilih file baru</p>
-                                                            <p class="file-name mt-2" id="file-name-display"></p>
-                                                        </div>
-                                                    </label>
-                                                    <?php if ($is_edit_mode): ?>
-                                                        <small class="form-text text-muted">Unggah file baru hanya jika ingin menggantikan yang lama.</small>
-                                                    <?php endif; ?>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-
-                                        <hr>
-
-                                        <div class="d-flex justify-content-between align-items-center mt-auto">
-                                            <a href="mPengajuan.php" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Kembali</a>
-                                            <div>
-                                                <?php if ($is_editable): ?>
-                                                    <div class="btn-group" role="group">
-                                                        <button type="submit" name="save_draft" class="btn btn-info"><i class="fas fa-save me-2"></i>Simpan Draft</button>
-                                                        <button type="button" name="submit_final" class="btn btn-success" id="btn-submit-final"><i class="fas fa-paper-plane me-2"></i>Submit Final</button>
-                                                    </div>
-                                                <?php elseif (in_array($status_ajuan, ['Pending', 'Approved'])): ?>
-                                                    <div class="alert alert-warning mb-0 p-2">
-                                                        <i class="fas fa-lock me-2"></i>Pengajuan ini telah disubmit dan tidak dapat diubah.
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    </form>
                                 </div>
+
                             </div>
                         </div>
                     </div>

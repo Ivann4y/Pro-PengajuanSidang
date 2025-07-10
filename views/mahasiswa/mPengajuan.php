@@ -92,6 +92,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
     <style>
         .pengajuan-card-wrapper .card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;

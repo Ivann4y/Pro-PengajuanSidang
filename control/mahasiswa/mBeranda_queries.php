@@ -33,16 +33,13 @@ switch($action) {
         break;
 
     case 'penilaian_status':
-        // ✅ DIPERBAIKI: Mencari perwakilan id_kelompok dengan JOIN yang konsisten
+        // Original code from mBeranda_penilaian_status.php
         $query = "SELECT COUNT(DISTINCT s.id_sidang) AS menunggu_penilaian
         FROM Sidang s
         JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-        JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-        JOIN Kelompok k2 ON k2.nomor_kelompok = k.nomor_kelompok
-            AND k2.jenis_sidang = k.jenis_sidang
-            AND k2.tahun_ajaran = k.tahun_ajaran
-            AND k2.id_matkul = k.id_matkul
-        WHERE k2.nim = ?
+        WHERE s.id_kelompok IN (
+            SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?
+        )
         AND s.status_sidang = 1
         AND ds.status_revisi != 1;";
         $params = [$nim];
@@ -56,20 +53,15 @@ switch($action) {
         break;
 
     case 'tanggungan':
-        // ✅ DIPERBAIKI: Mencari perwakilan id_kelompok dengan JOIN yang konsisten
+        // Original code from mBeranda_tanggungan.php
         $query = "SELECT DISTINCT s.id_sidang, s.judul
         FROM Sidang s
         JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-        JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-        JOIN Kelompok k2 ON k2.nomor_kelompok = k.nomor_kelompok
-            AND k2.jenis_sidang = k.jenis_sidang
-            AND k2.tahun_ajaran = k.tahun_ajaran
-            AND k2.id_matkul = k.id_matkul
-        WHERE k2.nim = ?
+        WHERE s.id_kelompok IN (
+            SELECT id_kelompok FROM Kelompok_Mahasiswa WHERE nim = ?
+        )
         AND s.status_sidang = 1
-        AND ds.dok_revisi IS NULL
-        AND ds.catatan_sidang IS NOT NULL
-        AND ds.catatan_sidang != '';";
+        AND ds.dok_revisi IS NULL;";
         $params = [$nim];
         $stmt = sqlsrv_query($conn, $query, $params);
         if ($stmt === false) {
