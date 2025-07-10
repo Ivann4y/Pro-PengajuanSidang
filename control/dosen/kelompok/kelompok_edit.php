@@ -264,18 +264,18 @@ try {
         // Only check for NIMs that are being added (not existing ones)
         if (!empty($to_add)) {
             foreach ($to_add as $nim_check) {
-                $sql_check = "SELECT 1 FROM Kelompok 
-                             WHERE nim = ? 
-                               AND tahun_ajaran = ? 
-                               AND jenis_sidang = ? 
-                               AND id_matkul = ? 
-                               AND nomor_kelompok != ?";
-                $stmt_check = sqlsrv_query($conn, $sql_check, [$nim_check, $tahun_ajaran, $jenis_sidang, $id_matkul, $nomor_kelompok]);
-                
-                if ($stmt_check && sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC)) {
-                    echo json_encode(['status' => 'error', 'message' => "NIM {$nim_check} sudah terdaftar di kelompok lain"]); 
-                    sqlsrv_rollback($conn);
-                    exit();
+            $sql_check = "SELECT 1 FROM Kelompok 
+                         WHERE nim = ? 
+                           AND tahun_ajaran = ? 
+                           AND jenis_sidang = ? 
+                           AND id_matkul = ? 
+                           AND nomor_kelompok != ?";
+            $stmt_check = sqlsrv_query($conn, $sql_check, [$nim_check, $tahun_ajaran, $jenis_sidang, $id_matkul, $nomor_kelompok]);
+            
+            if ($stmt_check && sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC)) {
+                echo json_encode(['status' => 'error', 'message' => "NIM {$nim_check} sudah terdaftar di kelompok lain"]); 
+                sqlsrv_rollback($conn);
+                exit();
                 }
             }
         }

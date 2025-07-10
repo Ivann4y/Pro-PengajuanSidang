@@ -1,3 +1,293 @@
+    
+/* ==============
+   Global & Fonts
+   ============== */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+/* =================================
+   Main Layout System (#NavSide)
+   ================================= */
+
+#NavSide {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* --- Sidebar (Desktop) --- */
+.NavSide__sidebar {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  width: 280px;
+  box-sizing: border-box;
+  border-left: 5px solid #4b68fb;
+  background: #4b68fb;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
+}
+
+.NavSide__sidebar-brand {
+  padding: 10% 5% 50% 5%;
+  text-align: center;
+}
+
+.NavSide__sidebar-brand img {
+  width: 90%;
+  max-width: 180px;
+  height: auto;
+  display: inline-block;
+}
+
+.NavSide__sidebar-nav {
+  width: 100%;
+  padding-left: 0;
+  padding-top: 0;
+  list-style: none;
+  flex-grow: 1;
+}
+
+.NavSide__sidebar-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.NavSide__sidebar-item a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+  color: rgb(252, 252, 252);
+  padding: 5% 2%;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.NavSide__sidebar-title {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Active sidebar item style with curved corners */
+.NavSide__sidebar-item.NavSide__sidebar-item--active {
+  background: #ffffff;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active a {
+  color: #4b68fb;
+}
+
+.NavSide__sidebar-item b:nth-child(1) {
+  position: absolute;
+  top: -20px;
+  height: 20px;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  display: none;
+  right: 0;
+}
+
+.NavSide__sidebar-item b:nth-child(1)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-bottom-right-radius: 20px;
+  background: #4b68fb;
+  display: block;
+}
+
+.NavSide__sidebar-item b:nth-child(2) {
+  position: absolute;
+  bottom: -20px;
+  height: 20px;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  display: none;
+  right: 0;
+}
+
+.NavSide__sidebar-item b:nth-child(2)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 20px;
+  background: #4b68fb;
+  display: block;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+  display: block;
+}
+
+/* --- Main Content Area --- */
+.NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 280px;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  padding-top: 3vh;
+  background-color: #ffffff;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.text-heading {
+    font-size: 30px;
+}
+
+/* ============================
+   Mobile Responsive Layout
+   ============================ */
+
+/* Top bar and Toggle button are hidden on desktop */
+.NavSide__toggle {
+  display: none;
+}
+.NavSide__topbar {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  /* Show and style the top bar for mobile */
+  .NavSide__topbar {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    align-items: center;
+    padding: 0 15px;
+    justify-content: space-between;
+  }
+
+  /* Make sidebar slide in from the left */
+  .NavSide__sidebar {
+    width: 50%;
+    transform: translateX(-100%);
+    border-left-width: 0;
+  }
+
+  .NavSide__sidebar.NavSide__sidebar--active-mobile {
+    transform: translateX(0);
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Adjust sidebar content for smaller screen */
+  .NavSide__sidebar-brand {
+    padding: 20px 10px 30px 10px;
+  }
+  .NavSide__sidebar-nav {
+    padding-top: 20%;
+  }
+  .NavSide__sidebar-item a {
+    padding: 12% 10%;
+    height: auto;
+  }
+
+  /* Make main content area full width and add padding for top bar */
+  .NavSide__main-content {
+    margin-left: 0;
+    padding: 15px;
+    padding-top: 75px; /* Space for the fixed top bar */
+  }
+
+  /* Show and style the toggle button */
+  .NavSide__toggle {
+    display: flex;
+    position: relative;
+    top: auto;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    z-index: 1100;
+    cursor: pointer;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .NavSide__toggle i.bi {
+    position: absolute;
+    font-size: 28px;
+    display: none; /* Icons are hidden until state changes */
+  }
+  .NavSide__toggle i.bi.open {
+    display: block;
+    color: #4b68fb;
+  }
+  .NavSide__toggle i.bi.close {
+    color: #4b68fb;
+  }
+
+  .NavSide__toggle.NavSide__toggle--active i.bi.open {
+    display: none;
+  }
+  .NavSide__toggle.NavSide__toggle--active i.bi.close {
+    display: block;
+    margin-left: 65vh;
+  }
+
+  .text-heading-mobile {
+    font-weight: 550;
+    margin: auto;
+  }
+}
+
+/* ====================================
+   Page-Specific: Pengajuan Cards
+   (Extracted from inline style)
+   ==================================== */
+.pengajuan-card-wrapper .card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.pengajuan-card-wrapper .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+}
+
 /* General styles for the page */
 .btn {
     color:#4B68FB;
@@ -293,3 +583,5 @@
                 display: none;
             }
         }
+
+

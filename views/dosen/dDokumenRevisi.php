@@ -349,7 +349,7 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
-                <h2 class="text-heading text-black" style="font-weight: 700;">Detail Sidang - <?= htmlspecialchars($judul) ?></h2>
+                <h2 class="text-heading text-black" style="font-weight: 700;">Dokumen Revisi - <?= htmlspecialchars($judul) ?></h2>
                 <form id="dokumenRevisiForm" method="POST" action="dDokumenRevisi.php">
                     <input type="hidden" name="nim" value="<?= htmlspecialchars($current_nim) ?>">
                     <div class="info-card">

@@ -102,7 +102,11 @@ while ($stmt_anggota && ($row = sqlsrv_fetch_array($stmt_anggota, SQLSRV_FETCH_A
 // Dosen Pembimbing (list all, if TA)
 $dosen_pembimbing = [];
 if ($data_sidang['jenis_sidang'] === 'Tugas Akhir') {
-    $sql_dosen = "SELECT d.nama_dosen FROM Bimbingan b JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND b.isPembimbing = 1";
+    $sql_dosen = "
+    SELECT d.nama_dosen 
+    FROM Bimbingan b 
+    JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen 
+    WHERE b.id_kelompok = ? AND b.isPembimbing = 1";
     $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$data_sidang['id_kelompok']]);
     while ($stmt_dosen && ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
         $dosen_pembimbing[] = $row['nama_dosen'];
@@ -141,6 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="../../css/button-style.css">
   <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css">
+  <!-- <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css"> -->
   <link rel="stylesheet" href="../../extra/style.css">
   <title>Detail Pengajuan</title>
 </head>
@@ -183,42 +188,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             <h2 class="text-heading text-black" style="font-weight: 700;">Detail Pengajuan - <?= htmlspecialchars($judul) ?></h2>
             <div class="card mb-3 info-pengajuan">
                 <h5 class="fw-bold section">Informasi Pengajuan</h5>
+
                 <div class="row mt-2">
                     <div class="col-md-6 section">
-                        <p class="mb-1 fw-bold">ID Kelompok</p>
-                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></p>
-                        <p class="mb-1 fw-bold">Nomor Kelompok</p>
-                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['nomor_kelompok'] ?? '-') ?></p>
-                        <p class="mb-1 fw-bold">Tahun Ajaran</p>
-                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['tahun_ajaran'] ?? '-') ?></p>
-                        <p class="mb-1 fw-bold">Mata Kuliah</p>
-                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['nama_matkul'] ?? 'N/A') ?></p>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-hashtag me-0"></i><span class="fw-bold ms-0">ID Kelompok</span></div>
+                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-users me-0"></i><span class="fw-bold ms-0">Nomor Kelompok</span></div>
+                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nomor_kelompok'] ?? '-') ?></div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-calendar-days me-0"></i><span class="fw-bold ms-0">Tahun Ajaran</span></div>
+                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['tahun_ajaran'] ?? '-') ?></div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-book me-0"></i><span class="fw-bold ms-0">Mata Kuliah</span></div>
+                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nama_matkul'] ?? 'N/A') ?></div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-people-group me-0"></i><span class="fw-bold ms-0">Anggota Kelompok</span></div>
+                            <div class="value-row ms-4">
+                                <ul class="list-unstyled mb-0">
+                                    <?php foreach ($anggota_kelompok as $anggota): ?>
+                                        <li><?= htmlspecialchars($anggota['nama_mhs']) . " (" . htmlspecialchars($anggota['nim']) . ")" ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="col-md-6 section">
-                        <p class="mb-1 fw-bold">Judul Sidang</p>
-                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['judul'] ?? '-') ?></p>
-                        <p class="mb-1 fw-bold">Jenis Sidang</p>
-                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['label_sidang']) ?></p>
-                        <?php if ($data_sidang['jenis_sidang'] === 'Tugas Akhir'): ?>
-                            <p class="mb-1 fw-bold">Dosen Pembimbing</p>
-                            <ul class="fw-normal ps-3 mb-3">
-                                <?php foreach ($dosen_pembimbing as $nama): ?>
-                                    <li><?= htmlspecialchars($nama) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-file-invoice me-0"></i><span class="fw-bold ms-0">Judul Sidang</span></div>
+                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['judul'] ?? '-') ?></div>
+                        </div>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-tag me-0"></i><span class="fw-bold ms-0">Jenis Sidang</span></div>
+                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['label_sidang']) ?></div>
+                        </div>
+                        <?php if ($data_sidang['jenis_sidang'] === 'Tugas Akhir' && !empty($dosen_pembimbing)): ?>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-user-tie me-0"></i><span class="fw-bold ms-0">Dosen Pembimbing</span></div>
+                            <div class="value-row ms-4">
+                                <ul class="list-unstyled mb-0">
+                                    <?php foreach ($dosen_pembimbing as $nama): ?>
+                                        <li><?= htmlspecialchars($nama) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        </div>
                         <?php endif; ?>
-                        <p class="mb-1 fw-bold">Status Pengajuan</p>
-                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['status_ajuan']) ?></p>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-md-12 section">
-                        <p class="mb-1 fw-bold">Anggota Kelompok</p>
-                        <ul class="fw-normal ps-3 mb-3">
-                            <?php foreach ($anggota_kelompok as $anggota): ?>
-                                <li><?= htmlspecialchars($anggota['nama_mhs']) . " (" . htmlspecialchars($anggota['nim']) . ")" ?></li>
-                            <?php endforeach; ?>
-                        </ul>
+                        <div class="info-group">
+                            <div class="label-row"><i class="fa-solid fa-clipboard-question me-0"></i><span class="fw-bold ms-0">Status Pengajuan</span></div>
+                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['status_ajuan']) ?></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -236,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                         <input type="hidden" name="tipe" value="<?= htmlspecialchars($jenis_sidang_url) ?>">
                         <input type="hidden" name="download" value="main">
                         <button type="submit" class="text-decoration-none base-tombol berkas-laporan" style="border: 1px solid #212529 !important;">
-                            <i class="fa-solid fa-file-lines me-2"></i>Unduh Dokumen Laporan
+                            <i class="fa-solid fa-file-lines me-2"></i><?= htmlspecialchars($doc_data['dok_laporan']) ?>
                         </button>
                     </form>
                     <?php else : ?>
@@ -324,97 +349,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             </div>
         </main>
     </div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Sidebar toggle logic
-    let menuToggle = document.querySelector(".NavSide__toggle");
-    let sidebar = document.getElementById("main-sidebar");
-    if (menuToggle && sidebar) {
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-    }
-
-    // Modal SweetAlert for Approve/Reject
-    const modalSetujui = new bootstrap.Modal(document.getElementById('modalKonfirmasiSetujui'));
-    const modalTolak = new bootstrap.Modal(document.getElementById('modalKonfirmasiTolak'));
-
-    let btnSetujui = document.getElementById('btnSetujuiOpenModal');
-    let btnTolak = document.getElementById('btnTolakOpenModal');
-
-    if (btnSetujui) {
-        btnSetujui.addEventListener('click', function () {
-            modalSetujui.show();
-        });
-    }
-    if (btnTolak) {
-        btnTolak.addEventListener('click', function () {
-            modalTolak.show();
-        });
-    }
-
-    let confirmSetujuiBtn = document.getElementById('confirmSetujuiBtn');
-    if (confirmSetujuiBtn) {
-        confirmSetujuiBtn.addEventListener('click', function () {
-            Swal.fire({
-                title: 'Pengajuan Berhasil Disetujui!',
-                icon: 'success',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const approveForm = document.getElementById('approveForm');
-                    let approveInput = approveForm.querySelector('input[name="approve"]');
-                    if (!approveInput) {
-                        approveInput = document.createElement('input');
-                        approveInput.type = 'hidden';
-                        approveInput.name = 'approve';
-                        approveInput.value = 'Approve';
-                        approveForm.appendChild(approveInput);
-                    }
-                    approveForm.submit();
-                }
-            });
-        });
-    }
-
-    let rejectForm = document.getElementById('rejectForm');
-    if (rejectForm) {
-        rejectForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const catatan = this.querySelector('textarea[name="catatan"]').value.trim();
-            if (catatan === "") {
-                Swal.fire({
-                    title: 'Gagal',
-                    text: 'Silakan isi alasan penolakan terlebih dahulu.',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                });
-            } else {
-                Swal.fire({
-                    title: 'Pengajuan Telah Ditolak!',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let rejectInput = this.querySelector('input[name="reject"]');
-                        if (!rejectInput) {
-                            rejectInput = document.createElement('input');
-                            rejectInput.type = 'hidden';
-                            rejectInput.name = 'reject';
-                            rejectInput.value = 'Reject';
-                            this.appendChild(rejectInput);
-                        }
-                        this.submit();
-                    }
-                });
-            }
-        });
-    }
-});
-</script>
+<script src=" ../../assets/js/dDetailPengajuan.js"></script>
 </body>
 </html>

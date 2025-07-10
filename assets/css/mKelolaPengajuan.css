@@ -8,9 +8,9 @@ body {
 }
 
 .NavSide__main-content {
-  padding: 32px 0 32px 0;
+  padding: 32px;
   margin: 0 auto;
-  max-width: 900px;
+  max-width: 100%; /* Changed from 900px */
   min-height: 100vh;
 }
 
@@ -30,7 +30,6 @@ body {
   background: #f0f4fa;
   border-radius: 18px 18px 0 0;
   border-bottom: 1px solid #e3e8ee;
-  padding: 18px 24px;
 }
 
 .card-body {
@@ -177,18 +176,25 @@ hr {
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .NavSide__main-content {
+    padding: 24px;
+  }
+}
+
 @media (max-width: 900px) {
   .NavSide__main-content {
     max-width: 98vw;
-    padding: 18px 0 18px 0;
+    padding: 18px;
   }
   .card-body {
     padding: 16px;
   }
 }
+
 @media (max-width: 600px) {
   .NavSide__main-content {
-    padding: 8px 0 8px 0;
+    padding: 12px;
   }
   .dashboard-header {
     margin-bottom: 12px;

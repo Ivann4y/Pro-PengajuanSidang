@@ -20,7 +20,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 require $path_to_root . "koneksi/koneksiAndrew.php";
 
 $user = $_SESSION['user_data'];
-$nim = $user['username'];
+$nim = $user['nim'];
 $nama = $user['nama_mhs'];
 $profil = $user['profil'];
 

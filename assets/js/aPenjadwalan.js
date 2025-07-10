@@ -36,12 +36,34 @@ function resetAndPopulateTAModal(el) {
 
     document.getElementById('modal_nim-ta').value = el.dataset.kelompok || '';
     document.getElementById('modal_judul_sidang-ta').value = el.dataset.judul || '';
-    document.getElementById('modal_pembimbing-ta').value = el.dataset.pembimbing || '';
     document.getElementById('modal_prodi-ta').value = el.dataset.prodi || '';
     document.getElementById('form-error-ta').textContent = '';
 
     const wrapper = document.getElementById('penguji-wrapper-ta');
     wrapper.innerHTML = '';
+     try {
+        const pembimbingList = JSON.parse(el.dataset.pembimbingList || '[]');
+        pembimbingList.forEach((nama, index) => {
+            const pembimbingIndex = index + 1;
+            const pembimbingHtml = `
+                <div class="form-group">
+                    <label for="modal_pembimbing-ta-${pembimbingIndex}">Pembimbing ${pembimbingIndex}</label>
+                    <div class="input-with-buttons">
+                        <input type="text" name="pembimbing_nama[]" value="${nama}" readonly />
+                        <div class="bobot-nilai-input-group">
+                            <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_pembimbing_bobot-ta-${pembimbingIndex}')">-</button>
+                            <div class="input-with-percent">
+                                <input type="number" id="modal_pembimbing_bobot-ta-${pembimbingIndex}" name="pembimbing_bobot[]" class="bobot-input-new ta-bobot-input" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
+                                <span class="percent-sign">%</span>
+                            </div>
+                            <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_pembimbing_bobot-ta-${pembimbingIndex}')">+</button>
+                        </div>
+                    </div>
+                </div>`;
+            wrapper.insertAdjacentHTML('beforeend', pembimbingHtml);
+        });
+    } catch(e) { console.error("Gagal memproses data pembimbing:", e); }
+
     pengujiCount = 0;
     addPenguji();
 }
@@ -75,7 +97,7 @@ function populateSemModal(el) {
                             <div class="bobot-nilai-input-group">
                                 <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-${pengampuIndex}')">-</button>
                                 <div class="input-with-percent">
-                                    <input type="number" id="modal_qty_pengampu-sem-${pengampuIndex}" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Semester');" />
+                                    <input type="number" id="modal_qty_pengampu-sem-${pengampuIndex}" name="pengampu_bobot[]" class="bobot-input-new" placeholder="Bobot" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Semester');" />
                                     <span class="percent-sign">%</span>
                                 </div>
                                 <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-${pengampuIndex}')">+</button>
@@ -110,7 +132,7 @@ function addPenguji() {
            <div class="bobot-nilai-input-group">
                 <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-${pengujiCount}')">-</button>
                 <div class="input-with-percent">
-                    <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
+                    <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new ta-bobot-input" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
                     <span class="percent-sign">%</span>
                 </div>
                 <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-${pengujiCount}')">+</button>
@@ -132,9 +154,13 @@ function removePenguji() {
         document.getElementById(`penguji-form-ta-${pengujiCount}`).remove();
         pengujiCount--;
         updateToggleButtonsVisibility();
+        validateTotalWeightRealtime('Tugas Akhir');
     }
 }
 
+/**
+ * Memvalidasi total bobot secara real-time.
+ */
 function validateTotalWeightRealtime(modalType) {
     let totalBobot = 0;
     const suffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
@@ -142,28 +168,24 @@ function validateTotalWeightRealtime(modalType) {
 
     if (modalType === 'Tugas Akhir') {
         const modal = document.getElementById('penjadwalanSidangTAModal');
-        const pembimbingInput = modal.querySelector('#modal_pembimbing_bobot-ta');
-        const pengujiInputs = modal.querySelectorAll('input[name="penguji_bobot[]"]');
-
-        totalBobot += parseInt(pembimbingInput.value, 10) || 0;
-        pengujiInputs.forEach(input => {
+        // BENAR: Ambil SEMUA input bobot di modal TA (pembimbing + penguji)
+        const allBobotInputs = modal.querySelectorAll('.ta-bobot-input'); 
+        allBobotInputs.forEach(input => {
             totalBobot += parseInt(input.value, 10) || 0;
         });
 
     } else if (modalType === 'Semester') {
         const modal = document.getElementById('penjadwalanSidangSemModal');
         const pengampuInputs = modal.querySelectorAll('input[name="pengampu_bobot[]"]');
-        
         pengampuInputs.forEach(input => {
             totalBobot += parseInt(input.value, 10) || 0;
         });
     }
 
-    // Tampilkan atau sembunyikan pesan peringatan
     if (totalBobot > 100) {
         messageElement.textContent = `Total bobot melebihi 100% (Saat ini: ${totalBobot}%)`;
     } else {
-        messageElement.textContent = ''; // Kosongkan jika sudah benar
+        messageElement.textContent = '';
     }
 }
 
@@ -230,6 +252,8 @@ function incrementValue(inputId) {
     if (input) {
         let currentValue = parseInt(input.value, 10) || 0;
         input.value = currentValue + 1;
+        cleanNumberInput(input);
+        validateTotalWeightRealtime(input.form.elements['tipe_sidang'].value);
     }
 }
 
@@ -243,11 +267,13 @@ function decrementValue(inputId) {
         if (val > (parseInt(input.min, 10) || 0)) {
             input.value = val - 1;
         }
+        cleanNumberInput(input);
+        validateTotalWeightRealtime(input.form.elements['tipe_sidang'].value);
     }
 }
 
 /**
- * FUNGSI BARU: Membersihkan nilai input dari angka nol di depan.
+ * Membersihkan nilai input dari angka nol di depan.
  */
 function cleanNumberInput(inputElement) {
     if (inputElement.value) {
@@ -316,20 +342,20 @@ function handleFormSubmit(event) {
 }
 
 /**
- * FUNGSI KRUSIAL: Memvalidasi form sebelum dikirim.
+ * Memvalidasi form sebelum dikirim.
  */
 function validateForm(modalType) {
     const suffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
     const errorBox = document.getElementById(`form-error-${suffix}`);
     errorBox.textContent = '';
 
+    // Validasi field dasar (tidak berubah)
     const fieldsToValidate = [
         { id: `modal_ruangan-${suffix}`, message: 'Ruangan harus diisi.' },
         { id: `modal_tanggal-${suffix}`, message: 'Tanggal harus dipilih.' },
         { id: `modal_jam_awal-${suffix}`, message: 'Jam awal harus diisi.' },
         { id: `modal_jam_akhir-${suffix}`, message: 'Jam akhir harus diisi.' },
     ];
-
     for (const field of fieldsToValidate) {
         const element = document.getElementById(field.id);
         if (!element || element.value.trim() === '') {
@@ -338,7 +364,6 @@ function validateForm(modalType) {
             return false;
         }
     }
-
     const jamAwal = document.getElementById(`modal_jam_awal-${suffix}`).value;
     const jamAkhir = document.getElementById(`modal_jam_akhir-${suffix}`).value;
     if (jamAkhir <= jamAwal) {
@@ -348,32 +373,34 @@ function validateForm(modalType) {
 
     if (modalType === 'Tugas Akhir') {
         let totalBobot = 0;
-        const pembimbingBobotInput = document.getElementById('modal_pembimbing_bobot-ta');
-        const bobotPembimbing = parseInt(pembimbingBobotInput.value, 10);
-        
-        if (isNaN(bobotPembimbing) || bobotPembimbing <= 0) {
-            errorBox.textContent = 'Bobot pembimbing harus diisi (lebih dari 0).';
-            pembimbingBobotInput.focus();
-            return false;
-        }
-        totalBobot += bobotPembimbing;
+        // BENAR: Ambil semua nama dan bobot untuk divalidasi
+        const bobotPembimbingInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="pembimbing_bobot[]"]');
+        const namaPengujiInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="penguji_nama[]"]');
+        const bobotPengujiInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="penguji_bobot[]"]');
 
-        const pengujiNamaInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="penguji_nama[]"]');
-        const pengujiBobotInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="penguji_bobot[]"]');
-        
-        for (let i = 0; i < pengujiNamaInputs.length; i++) {
-            if (pengujiNamaInputs[i].value.trim() === '') {
+        for (let i = 0; i < bobotPembimbingInputs.length; i++) {
+            const bobot = parseInt(bobotPembimbingInputs[i].value, 10);
+            if (isNaN(bobot) || bobot <= 0) {
+                errorBox.textContent = `Bobot Pembimbing ${i + 1} harus diisi (lebih dari 0).`;
+                bobotPembimbingInputs[i].focus();
+                return false;
+            }
+            totalBobot += bobot;
+        }
+
+        for (let i = 0; i < namaPengujiInputs.length; i++) {
+            if (namaPengujiInputs[i].value.trim() === '') {
                 errorBox.textContent = `Nama Penguji ${i + 1} harus diisi.`;
-                pengujiNamaInputs[i].focus();
+                namaPengujiInputs[i].focus();
                 return false;
             }
-            const bobotPenguji = parseInt(pengujiBobotInputs[i].value, 10);
-            if (isNaN(bobotPenguji) || bobotPenguji <= 0) {
+            const bobot = parseInt(bobotPengujiInputs[i].value, 10);
+            if (isNaN(bobot) || bobot <= 0) {
                 errorBox.textContent = `Bobot Penguji ${i + 1} harus diisi (lebih dari 0).`;
-                pengujiBobotInputs[i].focus();
+                bobotPengujiInputs[i].focus();
                 return false;
             }
-            totalBobot += bobotPenguji;
+            totalBobot += bobot;
         }
 
         if (totalBobot !== 100) {
@@ -382,19 +409,22 @@ function validateForm(modalType) {
         }
 
     } else if (modalType === 'Semester') {
+        // Validasi untuk Semester (tidak berubah)
         let totalBobotSem = 0;
         const pengampuBobotInputs = document.querySelectorAll('#penjadwalanSidangSemModal input[name="pengampu_bobot[]"]');
-
+        if (pengampuBobotInputs.length === 0) {
+            errorBox.textContent = 'Tidak ada dosen pengampu yang ditemukan.';
+            return false;
+        }
         for (let i = 0; i < pengampuBobotInputs.length; i++) {
-            const bobotPengampu = parseInt(pengampuBobotInputs[i].value, 10);
-            if (isNaN(bobotPengampu) || bobotPengampu <= 0) {
+            const bobot = parseInt(pengampuBobotInputs[i].value, 10);
+            if (isNaN(bobot) || bobot <= 0) {
                 errorBox.textContent = `Bobot Pengampu ${i + 1} harus diisi (lebih dari 0).`;
                 pengampuBobotInputs[i].focus();
                 return false;
             }
-            totalBobotSem += bobotPengampu;
+            totalBobotSem += bobot;
         }
-
         if (totalBobotSem !== 100) {
             errorBox.textContent = `Total bobot Pengampu harus tepat 100%. Saat ini totalnya adalah ${totalBobotSem}%.`;
             return false;
@@ -403,7 +433,6 @@ function validateForm(modalType) {
 
     return true;
 }
-
 // ==========================================================================
 // BAGIAN 2: SCRIPT YANG BERJALAN SETELAH HALAMAN SIAP
 // ==========================================================================
@@ -421,16 +450,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // ==========================================================================
+    // BAGIAN BARU: LOGIKA UNTUK TOGGLE SIDEBAR MOBILE
+    // ==========================================================================
+    const sidebar = document.getElementById('main-sidebar');
+    const toggleButton = document.querySelector('.NavSide__toggle');
+
+    if (toggleButton && sidebar) {
+        toggleButton.addEventListener('click', () => {
+            sidebar.classList.toggle('NavSide__sidebar--active-mobile');
+            toggleButton.classList.toggle('NavSide__toggle--active');
+        });
+    }
+
     const searchInput = document.getElementById('searchInput');
     const tableRows = document.querySelectorAll('#adminSidangContent tr.isiTabel');
 
     if(searchInput) {
         searchInput.addEventListener('input', function() {
             const keyword = searchInput.value.toLowerCase();
+            let visibleRows = 0;
             tableRows.forEach(row => {
                 const rowText = row.innerText.toLowerCase();
-                row.style.display = rowText.includes(keyword) ? '' : 'none';
+                const isVisible = rowText.includes(keyword);
+                row.style.display = isVisible ? '' : 'none';
+                if (isVisible) {
+                    visibleRows++;
+                }
             });
+
+            const noResultsRow = document.querySelector('.no-results-row');
+            if (noResultsRow) {
+                noResultsRow.style.display = visibleRows === 0 ? '' : 'none';
+            }
         });
     }
 });
