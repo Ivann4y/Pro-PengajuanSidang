@@ -1,20 +1,16 @@
 <?php
-// proses_hapus_sidang.php
+// FILE: proses_hapus_sidang.php (VERSI FINAL YANG LEBIH AMAN)
 
-// Sertakan file koneksi
 require "../../koneksi/koneksiAndrew.php";
 
-// Set header sebagai JSON
 header('Content-Type: application/json');
 
-// Pastikan request adalah POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405); // Method Not Allowed
+    http_response_code(405);
     echo json_encode(['status' => 'error', 'message' => 'Metode request tidak diizinkan.']);
     exit;
 }
 
-// Ambil ID sidang dari data POST
 $id_sidang = isset($_POST['id_sidang']) ? (int)$_POST['id_sidang'] : 0;
 
 if ($id_sidang <= 0) {
@@ -22,90 +18,87 @@ if ($id_sidang <= 0) {
     exit;
 }
 
-// Memulai transaksi database
+// ==============================
+// 1. AMBIL INFORMASI KUNCI SEBELUM MENGHAPUS
+// ==============================
+$sql_get_info = "SELECT id_kelompok FROM Sidang WHERE id_sidang = ?";
+$stmt_get_info = sqlsrv_query($conn, $sql_get_info, array($id_sidang));
+if ($stmt_get_info === false) {
+    echo json_encode(['status' => 'error', 'message' => 'Gagal mengambil informasi sidang.']);
+    exit;
+}
+$info_row = sqlsrv_fetch_array($stmt_get_info, SQLSRV_FETCH_ASSOC);
+
+if (!$info_row) {
+    echo json_encode(['status' => 'error', 'message' => 'Sidang dengan ID tersebut tidak ditemukan.']);
+    exit;
+}
+$id_kelompok = $info_row['id_kelompok'];
+
+
+// ==============================
+// 2. MULAI TRANSAKSI DATABASE
+// ==============================
 if (sqlsrv_begin_transaction($conn) === false) {
     echo json_encode(['status' => 'error', 'message' => 'Gagal memulai transaksi database.']);
     exit;
 }
 
 $all_queries_ok = true;
+$error_message = 'Terjadi kesalahan saat menghapus data.';
 
-// Definisikan urutan penghapusan dari tabel anak ke tabel induk
-// Ini penting untuk menjaga integritas referensial (foreign key constraints)
-$delete_queries = [
-    // 1. Hapus dari tabel yang memiliki foreign key ke Jadwal atau Penjadwalan (jika ada)
-    //    Contoh: Jika ada tabel 'Log_Jadwal', hapus dari sana dulu.
+// ==============================
+// 3. URUTAN PENGHAPUSAN (DARI ANAK KE INDUK)
+//    Foreign Key:
+//    - Penilaian -> Sidang
+//    - Penjadwalan -> Sidang
+//    - Jadwal -> Sidang
+//    - Detail_Sidang -> Sidang
+//    - Sidang -> Kelompok
+//    - Bimbingan -> Kelompok
+//    - Kelas_Mahasiswa -> Kelompok (via nim perwakilan)
+// ==============================
 
-    // 2. Hapus dari tabel Penilaian (tergantung pada Penjadwalan dan Sidang)
-    "DELETE FROM Penilaian WHERE id_sidang = ?",
+// Daftar tabel dan parameter yang akan dihapus
+$delete_operations = [
+    // Hapus dari tabel yang bergantung pada id_sidang
+    "DELETE FROM Penilaian WHERE id_sidang = ?" => [$id_sidang],
+    "DELETE FROM Penjadwalan WHERE id_sidang = ?" => [$id_sidang],
+    "DELETE FROM Jadwal WHERE id_sidang = ?" => [$id_sidang],
+    "DELETE FROM Detail_Sidang WHERE id_sidang = ?" => [$id_sidang],
     
-    // 3. Hapus dari tabel Penjadwalan (tergantung pada Sidang)
-    "DELETE FROM Penjadwalan WHERE id_sidang = ?",
+    // Hapus dari tabel Sidang itu sendiri
+    "DELETE FROM Sidang WHERE id_sidang = ?" => [$id_sidang],
     
-    // 4. Hapus dari tabel Jadwal (tergantung pada Sidang)
-    "DELETE FROM Jadwal WHERE id_sidang = ?",
-    
-    // 5. Hapus dari tabel Detail_Sidang (tergantung pada Sidang)
-    "DELETE FROM Detail_Sidang WHERE id_sidang = ?",
-
-    // 6. Hapus dari tabel Bimbingan (asumsi 1 kelompok bisa bimbingan & sidang)
-    //    Kita perlu id_kelompok dari Sidang dulu
-    //    Ini akan kita handle secara terpisah.
-
-    // 7. Hapus dari tabel Sidang itu sendiri (tabel induk utama)
-    //    Akan dijalankan terakhir.
+    // Hapus dari tabel yang bergantung pada id_kelompok
+    // PENTING: Lakukan ini HANYA JIKA kelompok ini tidak lagi memiliki sidang lain.
+    // Untuk amannya, kita akan hapus semua yang terkait kelompok ini.
+    "DELETE FROM Bimbingan WHERE id_kelompok = ?" => [$id_kelompok],
+    "DELETE FROM Kelas_Mahasiswa WHERE id_kelas = (SELECT id_kelas FROM Kelompok WHERE id_kelompok = ?)" => [$id_kelompok],
+    "DELETE FROM Kelompok WHERE id_kelompok = ?" => [$id_kelompok]
 ];
 
-// Eksekusi query penghapusan yang tidak bergantung pada data lain
-foreach ($delete_queries as $sql) {
-    $stmt = sqlsrv_query($conn, $sql, array($id_sidang));
-    if ($stmt === false) {
+// Eksekusi setiap query penghapusan
+foreach ($delete_operations as $sql => $params) {
+    if (sqlsrv_query($conn, $sql, $params) === false) {
         $all_queries_ok = false;
-        // Hentikan loop jika ada satu query yang gagal
-        break; 
-    }
-}
-
-// Handle penghapusan Bimbingan secara terpisah
-if ($all_queries_ok) {
-    // Ambil id_kelompok dari sidang yang akan dihapus
-    $sql_get_kelompok = "SELECT id_kelompok FROM Sidang WHERE id_sidang = ?";
-    $stmt_get_kelompok = sqlsrv_query($conn, $sql_get_kelompok, array($id_sidang));
-    
-    if ($stmt_get_kelompok && $row = sqlsrv_fetch_array($stmt_get_kelompok, SQLSRV_FETCH_ASSOC)) {
-        $id_kelompok = $row['id_kelompok'];
-        
-        // Hapus bimbingan yang terkait dengan kelompok tersebut
-        $sql_delete_bimbingan = "DELETE FROM Bimbingan WHERE id_kelompok = ?";
-        $stmt_delete_bimbingan = sqlsrv_query($conn, $sql_delete_bimbingan, array($id_kelompok));
-        
-        if ($stmt_delete_bimbingan === false) {
-            $all_queries_ok = false;
-        }
+        // Ambil error spesifik jika perlu untuk debugging
+        // $error_details = sqlsrv_errors(); 
+        // $error_message = "Gagal pada query: " . $sql;
+        break; // Hentikan proses jika ada satu query yang gagal
     }
 }
 
 
-// Langkah terakhir: Hapus dari tabel Sidang
+// ==============================
+// 4. FINALISASI TRANSAKSI
+// ==============================
 if ($all_queries_ok) {
-    $sql_delete_sidang = "DELETE FROM Sidang WHERE id_sidang = ?";
-    $stmt_delete_sidang = sqlsrv_query($conn, $sql_delete_sidang, array($id_sidang));
-    if ($stmt_delete_sidang === false) {
-        $all_queries_ok = false;
-    }
-}
-
-// Finalisasi Transaksi
-if ($all_queries_ok) {
-    // Jika semua query berhasil, commit transaksi
     sqlsrv_commit($conn);
     echo json_encode(['status' => 'success', 'message' => 'Data sidang dan semua yang terkait berhasil dihapus.']);
 } else {
-    // Jika ada satu saja yang gagal, rollback semua perubahan
     sqlsrv_rollback($conn);
-    // Beri pesan error yang lebih spesifik jika memungkinkan
-    // echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data. Terjadi kesalahan pada database.', 'details' => sqlsrv_errors()]);
-    echo json_encode(['status' => 'error', 'message' => 'Gagal menghapus data. Terjadi kesalahan pada database.']);
+    echo json_encode(['status' => 'error', 'message' => $error_message]);
 }
 
 exit;
