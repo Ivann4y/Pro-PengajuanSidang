@@ -5,7 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $path_to_root = '../../';
 
-
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
     header("Location: " . $path_to_root . "index.php");
