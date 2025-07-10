@@ -59,15 +59,15 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= htmlspecialchars($tipeButtonText) ?>
                         </button>
-                       <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?tipe=semua&status=<?= htmlspecialchars($selectedStatus) ?>">Semua Tipe</a></li>
-                            <li><a class="dropdown-item" href="?tipe=Tugas Akhir&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
-                            <li><a class="dropdown-item" href="?tipe=Semester&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang Semester</a></li>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Semua Tipe</a></li>
+                            <li><a class="dropdown-item" href="?tipe=TA&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang TA</a></li>
+                            <li><a class="dropdown-item" href="?tipe=Semester&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang Semester</a></li>
                         </ul>
 
                     </div>
-                    <div class="dropdown">
-                         <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminProdiButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="dropdown ">
+                         <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= htmlspecialchars($prodiButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
