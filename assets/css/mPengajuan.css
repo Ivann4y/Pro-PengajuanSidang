@@ -290,7 +290,7 @@ body {
 
 /* General styles for the page */
 .btn {
-    color:#4B68FB;
+    color:white;
 }
        table {
             border-spacing: 0 10px;
@@ -441,13 +441,14 @@ body {
         }
 
         .btn-primary { 
-            background-color: rgb(67, 54, 240);
-            border-color: rgb(67, 54, 240);
+            background-color: #4b68fb;
+            border-color: #4b68fb;
+            color:white
         }
 
         .btn-primary:hover {
-            background-color: rgb(57, 44, 210);
-            border-color: rgb(57, 44, 210);
+            background-color: #4b68fb;
+            border-color: #4b68fb;
         }
 
         .dropdown-menu .dropdown-item {
@@ -583,5 +584,16 @@ body {
                 display: none;
             }
         }
+
+        .pengajuan-card-wrapper .btn-outline-info {
+    background-color: #4B68FB !important;
+    color: white !important;
+}
+
+/* Aturan untuk mengubah tampilan saat kursor diarahkan ke tombol */
+.pengajuan-card-wrapper .btn-outline-info:hover {       
+    background-color: #4B68FB !important;
+    border-color: #4B68FB !important;
+}
 
 
