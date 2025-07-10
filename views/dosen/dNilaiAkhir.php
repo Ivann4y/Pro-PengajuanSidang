@@ -37,9 +37,9 @@ $jenis_sidang = null;
 $current_nim = '';
 $allStudentsGradesComplete = false;
 
-$sql_detail = "SELECT DISTINCT k.nomor_kelompok, k.id_kelompok, k.jenis_sidang, ds.id_matkul, s.judul
+$sql_detail = "SELECT DISTINCT k.nomor_kelompok, k.id_kelompok, k.jenis_sidang, k.id_matkul, s.judul
                FROM Sidang s, Detail_Sidang ds, Kelompok k
-               WHERE s.id_sidang = ? AND s.id_sidang = ds.id_sidang AND s.id_kelompok = k.id_kelompok";
+               WHERE s.id_sidang = ? AND s.id_kelompok = k.id_kelompok";
 $stmt_detail = sqlsrv_query($conn, $sql_detail, array($id_sidang));
 
 if ($stmt_detail === false) {
