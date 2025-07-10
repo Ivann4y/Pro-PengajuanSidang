@@ -82,7 +82,7 @@ require "../../control/dosen/dNilaiAkhir_queries.php";
 
       <main class="NavSide__main-content">
         <div class="col-12">
-          <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= htmlspecialchars($judul) ?></h2>
+          <h2 class="text-heading text-black" style="font-weight: 700;">Nilai Akhir - <?= htmlspecialchars($judul) ?></h2>
         </div>
           <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;">
               Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
@@ -300,9 +300,29 @@ require "../../control/dosen/dNilaiAkhir_queries.php";
 </div>
 <script src="../../assets/js/main.js"></script>
 
-<script>
-    
-</script>
+<script type="text/javascript">
+      let menuToggle = document.querySelector(".NavSide__toggle");
+      let sidebar = document.getElementById("main-sidebar");
+
+      if (menuToggle && sidebar) {
+        menuToggle.onclick = function () {
+          menuToggle.classList.toggle("NavSide__toggle--active");
+          sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+      }
+
+      let menuItems = document.querySelectorAll(".NavSide__sidebar-item");
+      if (menuItems.length > 0) {
+        menuItems.forEach(item => {
+          item.onclick = function (event) {
+            menuItems.forEach(innerItem => {
+              innerItem.classList.remove("NavSide__sidebar-item--active");
+            });
+            this.classList.add("NavSide__sidebar-item--active");
+          };
+        });
+      }
+    </script>
 <script>
     // Data Mahasiswa dari PHP (dilewatkan sebagai JSON)
     const allMahasiswa = <?php echo json_encode($mahasiswa); ?>;
