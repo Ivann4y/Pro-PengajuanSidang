@@ -13,81 +13,83 @@ if (!isset($_SESSION['is_logged_in']) || !isset($_SESSION['role']) || $_SESSION[
 require_once '../../koneksi/koneksiAndrew.php';
 $nim_mahasiswa_logged_in = $_SESSION['nim'];
 
-// --- 1. GET THE URL PARAMETERS ---
+// Ambil parameter dari URL
 $nomor_kelompok = $_GET['nomor_kelompok'] ?? null;
 $tahun_ajaran = $_GET['tahun_ajaran'] ?? null;
 $jenis_sidang = $_GET['jenis_sidang'] ?? null;
 $id_matkul = $_GET['id_matkul'] ?? null;
 $error_message = '';
+$success_message = '';
+
+// Initialize variables to prevent undefined errors
+$data = null;
+$anggota_list = [];
+$id_kelompok = null;
 
 if (!$nomor_kelompok || !$tahun_ajaran || !$jenis_sidang || !$id_matkul) {
-    die("Error: Parameter URL tidak lengkap.");
+    $error_message = "Error: Parameter tidak lengkap.";
+} else {
+    // Cari id_kelompok berdasarkan kombinasi dan nim login
+    $sql_id = "SELECT TOP 1 id_kelompok FROM Kelompok WHERE nomor_kelompok = ? AND tahun_ajaran = ? AND jenis_sidang = ? AND id_matkul = ? AND nim = ?";
+    $stmt_id = sqlsrv_query($conn, $sql_id, [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul, $nim_mahasiswa_logged_in]);
+    
+    if ($stmt_id === false) {
+        $error_message = 'SQL Error (ID Kelompok): ' . print_r(sqlsrv_errors(), true);
+    } else {
+        $row_id = sqlsrv_fetch_array($stmt_id, SQLSRV_FETCH_ASSOC);
+        
+        if (!$row_id) {
+            $error_message = 'Error: Anda tidak terdaftar sebagai anggota kelompok ini atau parameter tidak valid.';
+        } else {
+            $id_kelompok = $row_id['id_kelompok'];
+            
+            // --- Ambil data utama pengajuan ($data) dan daftar anggota ($anggota_list) ---
+            // Always prioritize draft if exists
+            $sql_data = "SELECT TOP 1
+                k.nomor_kelompok, k.tahun_ajaran, k.jenis_sidang,
+                m.nama_matkul, k.id_matkul,
+                s.id_sidang, s.judul, s.status_ajuan, s.dok_laporan
+            FROM Kelompok k
+            JOIN MataKuliah m ON k.id_matkul = m.id_matkul
+            LEFT JOIN Sidang s ON k.id_kelompok = s.id_kelompok
+            WHERE k.nomor_kelompok = ? AND k.tahun_ajaran = ? AND k.jenis_sidang = ? AND k.id_matkul = ?
+            ORDER BY CASE WHEN s.status_ajuan = 'Draft' THEN 0 ELSE 1 END, s.id_sidang DESC";
+            
+            $stmt_data = sqlsrv_query($conn, $sql_data, [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul]);
+            
+            if ($stmt_data === false) {
+                $error_message = 'SQL Error (Data): ' . print_r(sqlsrv_errors(), true);
+            } else {
+                $data = sqlsrv_fetch_array($stmt_data, SQLSRV_FETCH_ASSOC);
+                
+                if (!$data) {
+                    $error_message = "Error: Data kelompok tidak ditemukan.";
+                } else {
+                    // Fetch group members
+                    $sql_anggota = "SELECT m.nim, m.nama_mhs FROM Kelompok k JOIN Mahasiswa m ON k.nim = m.nim WHERE k.nomor_kelompok = ? AND k.tahun_ajaran = ? AND k.jenis_sidang = ? AND k.id_matkul = ?";
+                    $params_anggota = [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul];
+                    $stmt_anggota = sqlsrv_query($conn, $sql_anggota, $params_anggota);
+                    
+                    if ($stmt_anggota === false) {
+                        $error_message = 'SQL Error (Anggota): ' . print_r(sqlsrv_errors(), true);
+                    } else {
+                        while ($row_anggota = sqlsrv_fetch_array($stmt_anggota, SQLSRV_FETCH_ASSOC)) {
+                            $anggota_list[] = $row_anggota;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
-// --- 2. FETCH DATA FOR DISPLAY (based on URL params for the whole group) ---
-
-// a) Fetch main group info and the most relevant Sidang record
-$sql_data = "
-    SELECT TOP 1
-        k_base.nomor_kelompok, k_base.tahun_ajaran, k_base.jenis_sidang,
-        m.nama_matkul, k_base.id_matkul,
-        s.id_sidang, s.judul, s.status_ajuan, s.dok_laporan
-    FROM (
-        SELECT TOP 1 * FROM Kelompok
-        WHERE nomor_kelompok = ? AND tahun_ajaran = ? AND jenis_sidang = ? AND id_matkul = ?
-    ) AS k_base
-    JOIN MataKuliah m ON k_base.id_matkul = m.id_matkul
-    OUTER APPLY (
-        SELECT TOP 1 s_inner.*
-        FROM Kelompok k_inner
-        JOIN Sidang s_inner ON k_inner.id_kelompok = s_inner.id_kelompok
-        WHERE k_inner.nomor_kelompok = k_base.nomor_kelompok
-          AND k_inner.tahun_ajaran = k_base.tahun_ajaran
-          AND k_inner.jenis_sidang = k_base.jenis_sidang
-          AND k_inner.id_matkul = k_base.id_matkul
-        ORDER BY
-            CASE s_inner.status_ajuan
-                WHEN 'Draft' THEN 1
-                WHEN 'Rejected' THEN 2
-                ELSE 3
-            END,
-            s_inner.id_sidang DESC
-    ) s
-";
-$params_data = [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul];
-$stmt_data = sqlsrv_query($conn, $sql_data, $params_data);
-
-if ($stmt_data === false) die('SQL Error (Data): ' . print_r(sqlsrv_errors(), true));
-$data = sqlsrv_fetch_array($stmt_data, SQLSRV_FETCH_ASSOC);
-
-if (!$data) die("Error: Data kelompok tidak ditemukan atau parameter tidak valid.");
-
-// b) Fetch all members of this logical group
-$anggota_list = [];
-$sql_anggota = "SELECT m.nim, m.nama_mhs FROM Kelompok k JOIN Mahasiswa m ON k.nim = m.nim WHERE k.nomor_kelompok = ? AND k.tahun_ajaran = ? AND k.jenis_sidang = ? AND k.id_matkul = ?";
-$params_anggota = [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul];
-$stmt_anggota = sqlsrv_query($conn, $sql_anggota, $params_anggota);
-if ($stmt_anggota === false) die('SQL Error (Anggota): ' . print_r(sqlsrv_errors(), true));
-while ($row_anggota = sqlsrv_fetch_array($stmt_anggota, SQLSRV_FETCH_ASSOC)) {
-    $anggota_list[] = $row_anggota;
-}
-
-// c) Find the specific id_kelompok for the logged-in user (needed for POST actions)
-$sql_id_kelompok = "SELECT id_kelompok FROM Kelompok WHERE nomor_kelompok = ? AND tahun_ajaran = ? AND jenis_sidang = ? AND id_matkul = ? AND nim = ?";
-$params_id_kelompok = [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul, $nim_mahasiswa_logged_in];
-$stmt_id_kelompok = sqlsrv_query($conn, $sql_id_kelompok, $params_id_kelompok);
-$row_id = sqlsrv_fetch_array($stmt_id_kelompok, SQLSRV_FETCH_ASSOC);
-if (!$row_id) die('Error: Anda tidak terdaftar sebagai anggota kelompok ini.');
-$id_kelompok = $row_id['id_kelompok'];
-
-
-// --- 3. HANDLE POST REQUEST (form submission) ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_sidang_existing = $data['id_sidang']; // Use the ID we already fetched
+// --- Baru proses POST jika ada ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error_message)) {
+    $id_sidang_existing = $_POST['id_sidang'] ?? null;
     $judul = trim($_POST['judul']);
     $status_ajuan = isset($_POST['submit_final']) ? 'Pending' : 'Draft';
 
-    // File upload logic
+    // --- File upload logic (match mTambahPengajuan/mEditPengajuan) ---
     $allowedTypes = [
         'application/pdf',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -97,9 +99,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dok_laporan_path = $data['dok_laporan'] ?? null; // default to old path if editing
     if (isset($_FILES['file_laporan']) && $_FILES['file_laporan']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['file_laporan'];
-        if ($file['size'] > 10 * 1024 * 1024) { // 10MB
+        $fileSize = $file['size'];
+        $fileType = mime_content_type($file['tmp_name']);
+        if ($fileSize > 10 * 1024 * 1024) {
             $error_message = "Ukuran file tidak boleh melebihi 10MB.";
-        } elseif (!in_array(mime_content_type($file['tmp_name']), $allowedTypes)) {
+        } elseif (!in_array($fileType, $allowedTypes)) {
             $error_message = "Tipe file tidak diizinkan. Gunakan PDF, DOCX, atau ZIP.";
         } else {
             $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
@@ -115,81 +119,125 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "File laporan wajib diunggah saat membuat pengajuan baru.";
     }
 
-    if (empty($judul)) $error_message = "Judul tidak boleh kosong.";
+    if (empty($judul)) {
+        $error_message = "Judul tidak boleh kosong.";
+    }
+
+    // --- DRAFT LOGIC FIX: Always update existing draft if present ---
+    if (empty($id_sidang_existing)) {
+        // Check if a draft already exists for this group
+        $sql_check = "SELECT TOP 1 id_sidang FROM Sidang WHERE id_kelompok = ? AND status_ajuan = 'Draft'";
+        $stmt_check = sqlsrv_query($conn, $sql_check, [$id_kelompok]);
+        if ($stmt_check && ($row_check = sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC))) {
+            $id_sidang_existing = $row_check['id_sidang'];
+        }
+    }
 
     if (empty($error_message)) {
         sqlsrv_begin_transaction($conn);
         try {
-            if ($id_sidang_existing) { // UPDATE existing draft/rejected submission
+            // Decide whether to INSERT or UPDATE
+            if ($id_sidang_existing) { // UPDATE existing draft
                 $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?" .
-                    ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?" : "") .
-                    " WHERE id_sidang = ?";
+                    ($dok_laporan_path ? ", dok_laporan = ?" : "") .
+                    " WHERE id_sidang = ? AND id_kelompok = ?";
                 $params = [$judul, $status_ajuan];
-                if ($dok_laporan_path !== $data['dok_laporan']) $params[] = $dok_laporan_path;
+                if ($dok_laporan_path) $params[] = $dok_laporan_path;
                 $params[] = $id_sidang_existing;
+                $params[] = $id_kelompok;
                 $stmt = sqlsrv_query($conn, $sql_update, $params);
             } else { // INSERT new submission
+                // --- Get next id_sidang (refer to mTambahPengajuan.php) ---
                 $next_id_sidang = 1;
-                $sql_max_id = "SELECT MAX(id_sidang) AS max_id FROM Sidang";
-                $stmt_max_id = sqlsrv_query($conn, $sql_max_id);
-                if ($stmt_max_id && ($row_max_id = sqlsrv_fetch_array($stmt_max_id, SQLSRV_FETCH_ASSOC))) {
-                    $next_id_sidang = ($row_max_id['max_id'] ?? 0) + 1;
+                $sql_id = "SELECT MAX(id_sidang) AS max_id FROM Sidang";
+                $stmt_id = sqlsrv_query($conn, $sql_id);
+                if ($stmt_id && ($row_id = sqlsrv_fetch_array($stmt_id, SQLSRV_FETCH_ASSOC))) {
+                    $next_id_sidang = $row_id['max_id'] !== null ? $row_id['max_id'] + 1 : 1;
                 }
-
+                // --- Insert with id_sidang ---
                 $sql_insert = "INSERT INTO Sidang (id_sidang, judul, waktu_pengumpulan, dok_laporan, status_ajuan, id_kelompok) VALUES (?, ?, GETDATE(), ?, ?, ?)";
-                $params = [$next_id_sidang, $judul, $dok_laporan_path, $status_ajuan, $id_kelompok];
+                $params = [
+                    $next_id_sidang,
+                    $judul,
+                    $dok_laporan_path,
+                    $status_ajuan,
+                    $id_kelompok
+                ];
                 $stmt = sqlsrv_query($conn, $sql_insert, $params);
             }
 
-            if ($stmt === false) throw new Exception(print_r(sqlsrv_errors(), true));
+            if ($stmt === false) {
+                throw new Exception(print_r(sqlsrv_errors(), true));
+            }
 
             sqlsrv_commit($conn);
             $_SESSION['flash_message'] = "Pengajuan berhasil di " . ($status_ajuan == 'Pending' ? 'submit' : 'simpan sebagai draft') . ".";
-            
-            // Notification logic...
-            if ($status_ajuan == 'Pending') {
-                require_once __DIR__ . '/../../control/kirimNotifikasi.php';
-                $nama_mahasiswa = $_SESSION['user_data']['nama_mhs'] ?? $nim_mahasiswa_logged_in;
-                $nomor_dosen_pembimbing = null;
-                $jenis_sidang_kelompok = $data['jenis_sidang'] ?? null;
-                if ($jenis_sidang_kelompok === 'Tugas Akhir') {
-                    $sql_dosen = "SELECT d.nomor_dosen FROM Bimbingan b JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ? AND b.isPembimbing = 1";
-                    $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$id_kelompok]);
-                    if ($stmt_dosen && ($row_dosen = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
-                        $nomor_dosen_pembimbing = $row_dosen['nomor_dosen'];
-                    }
-                } else {
-                    $sql_dosen = "SELECT TOP 1 nomor_dosen FROM Pengampu_Kelas WHERE id_matkul = ?";
-                    $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$id_matkul]);
-                    if ($stmt_dosen && ($row_dosen = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
-                        $nomor_dosen_pembimbing = $row_dosen['nomor_dosen'];
-                    }
+
+            // Kirim notifikasi ke dosen pembimbing atau pengampu
+            require_once __DIR__ . '/../../control/kirimNotifikasi.php';
+            $nama_mahasiswa = $_SESSION['user_data']['nama_mhs'] ?? $nim_mahasiswa_logged_in;
+            $nomor_dosen_pembimbing = null;
+            $jenis_sidang_kelompok = $data['jenis_sidang'] ?? null;
+            if ($jenis_sidang_kelompok === 'Tugas Akhir') {
+                $sql_dosen = "SELECT nomor_dosen FROM Bimbingan WHERE id_kelompok = ? AND isPembimbing = 0x01";
+                $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$id_kelompok]);
+                if ($stmt_dosen && ($row_dosen = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
+                    $nomor_dosen_pembimbing = $row_dosen['nomor_dosen'];
                 }
-                if ($nomor_dosen_pembimbing) {
-                    $pesan = "Mahasiswa $nama_mahasiswa ($nim_mahasiswa_logged_in) telah mengajukan sidang baru. Silakan cek pengajuan di sistem.";
-                    kirimNotifikasi($nomor_dosen_pembimbing, $pesan, $nim_mahasiswa_logged_in, $conn);
+            } else {
+                $sql_dosen = "SELECT TOP 1 nomor_dosen FROM Pengampu_Kelas WHERE id_matkul = ?";
+                $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$id_matkul]);
+                if ($stmt_dosen && ($row_dosen = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
+                    $nomor_dosen_pembimbing = $row_dosen['nomor_dosen'];
                 }
             }
-            
+            if ($nomor_dosen_pembimbing) {
+                $pesan = "Mahasiswa $nama_mahasiswa ($nim_mahasiswa_logged_in) telah mengajukan sidang baru. Silakan cek pengajuan di sistem.";
+                kirimNotifikasi($nomor_dosen_pembimbing, $pesan, $nim_mahasiswa_logged_in, $conn);
+            }
+
             header("Location: mPengajuan.php");
             exit();
-
         } catch (Exception $e) {
             sqlsrv_rollback($conn);
-            $error_message = "Terjadi kesalahan pada database: " . $e->getMessage();
+            $error_message = "Terjadi kesalahan: " . $e->getMessage();
+        }
+
+        // --- Always re-fetch latest data after POST if not redirecting ---
+        if (!headers_sent() && empty($_SESSION['flash_message'])) {
+            // Re-query Sidang data, prioritize draft
+            $sql_data = "SELECT TOP 1
+                k.nomor_kelompok, k.tahun_ajaran, k.jenis_sidang,
+                m.nama_matkul, k.id_matkul,
+                s.id_sidang, s.judul, s.status_ajuan, s.dok_laporan
+            FROM Kelompok k
+            JOIN MataKuliah m ON k.id_matkul = m.id_matkul
+            LEFT JOIN Sidang s ON k.id_kelompok = s.id_kelompok
+            WHERE k.nomor_kelompok = ? AND k.tahun_ajaran = ? AND k.jenis_sidang = ? AND k.id_matkul = ?
+            ORDER BY CASE WHEN s.status_ajuan = 'Draft' THEN 0 ELSE 1 END, s.id_sidang DESC";
+            $stmt_data = sqlsrv_query($conn, $sql_data, [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul]);
+            $data = sqlsrv_fetch_array($stmt_data, SQLSRV_FETCH_ASSOC);
+
+            // Re-query anggota
+            $anggota_list = [];
+            $sql_anggota = "SELECT m.nim, m.nama_mhs FROM Kelompok k JOIN Mahasiswa m ON k.nim = m.nim WHERE k.nomor_kelompok = ? AND k.tahun_ajaran = ? AND k.jenis_sidang = ? AND k.id_matkul = ?";
+            $params_anggota = [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul];
+            $stmt_anggota = sqlsrv_query($conn, $sql_anggota, $params_anggota);
+            if ($stmt_anggota !== false) {
+                while ($row_anggota = sqlsrv_fetch_array($stmt_anggota, SQLSRV_FETCH_ASSOC)) {
+                    $anggota_list[] = $row_anggota;
+                }
+            }
         }
     }
 }
 
-
-// --- 4. PREPARE VARIABLES FOR VIEW ---
-$is_edit_mode = !is_null($data['id_sidang']);
+// 3. GET Request Data Fetching (Displaying the form)
+$is_edit_mode = !is_null($data['id_sidang'] ?? null);
 $status_ajuan = $data['status_ajuan'] ?? null;
-$page_title = ($is_edit_mode) ? "Edit Pengajuan Sidang" : "Buat Pengajuan Baru";
-if ($status_ajuan === 'Rejected') {
-    $page_title = "Edit Pengajuan (Ditolak)";
-}
+$page_title = $is_edit_mode ? "Edit Pengajuan Sidang" : "Buat Pengajuan Baru";
 $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rejected']));
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -203,6 +251,7 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
     <link rel="stylesheet" href="../../assets/css/mKelolaPengajuan.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
@@ -230,29 +279,36 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
         </div>
 
         <!-- 2. Topbar untuk Mobile -->
-         <div class="NavSide__topbar">
-                <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
-                <div class="header-icons">
-                    <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
-                    <a href="mProfil.php" title="Profil" class="profile-icon">
-                        <i class="bi bi-person-fill fs-5"></i>
-                    </a>
-                </div>
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+            <div class="header-icons">
+                <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                <a href="mProfil.php" title="Profil" class="profile-icon">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </a>
             </div>
+        </div>
 
-                    <!-- 3. KONTEN UTAMA (SEKARANG DI DALAM #NavSide) -->
-            <main class="NavSide__main-content" id="mKelolaPengajuan">
-                <div class="container-fluid">
-                    <div class="dashboard-header">
-                        <h2 class="text-heading" style="color:black;"><?= $page_title ?></h2>
-                        <div class="header-icons d-none d-md-flex">
-                            <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
-                            <a href="mProfil.php" title="Profil" class="profile-icon">
-                                <i class="bi bi-person-fill fs-5" style="color: white;"></i>
-                            </a>
-                        </div>
+        <!-- 3. KONTEN UTAMA (SEKARANG DI DALAM #NavSide) -->
+        <main class="NavSide__main-content" id="mKelolaPengajuan">
+            <div class="container-fluid">
+                <div class="dashboard-header">
+                    <h2 class="text-heading" style="color:black;"><?= $page_title ?></h2>
+                    <div class="header-icons d-none d-md-flex">
+                        <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                        <a href="mProfil.php" title="Profil" class="profile-icon">
+                            <i class="bi bi-person-fill fs-5" style="color: white;"></i>
+                        </a>
                     </div>
+                </div>
 
+                <?php if (!empty($error_message)): ?>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i><?= htmlspecialchars($error_message) ?>
+                        <br><br>
+                        <a href="mPengajuan.php" class="btn btn-primary">Kembali ke Pengajuan</a>
+                    </div>
+                <?php elseif ($data): ?>
                     <div class="row">
                         <!-- Kolom Kiri: Informasi Kelompok -->
                         <div class="col-lg-5 mb-4">
@@ -361,91 +417,108 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
                             </div>
                         </div>
                     </div>
-                </div>
-            </main>
+                <?php endif; ?>
+            </div>
+        </main>
 
     </div> <!-- AKHIR PEMBUNGKUS UTAMA -->
 
     <!-- Modal Logout -->
-    <!-- ... (copy from mPengajuan.php) ... -->
+    <div class="modal fade" id="logMBeranda" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color: rgb(67, 54, 240);">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
+                </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Sidebar Toggle Logic
-                const menuToggle = document.querySelector(".NavSide__toggle");
-                const sidebar = document.getElementById("main-sidebar");
-                if (menuToggle) {
-                    menuToggle.onclick = function() {
-                        menuToggle.classList.toggle("NavSide__toggle--active");
-                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                    };
-                }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar Toggle Logic
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
+            if (menuToggle) {
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
 
-                // File Upload UI Logic
-                const fileInput = document.getElementById('file_laporan');
-                if (fileInput) {
-                    const uploadBox = document.getElementById('upload-box-label');
-                    const fileNameDisplay = document.getElementById('file-name-display');
-                    const uploadIcon = document.getElementById('upload-icon');
-                    const uploadText = document.getElementById('upload-text');
+            // File Upload UI Logic
+            const fileInput = document.getElementById('file_laporan');
+            if (fileInput) {
+                const uploadBox = document.getElementById('upload-box-label');
+                const fileNameDisplay = document.getElementById('file-name-display');
+                const uploadIcon = document.getElementById('upload-icon');
+                const uploadText = document.getElementById('upload-text');
 
-                    fileInput.addEventListener('change', function() {
-                        if (this.files.length > 0) {
-                            fileNameDisplay.textContent = this.files[0].name;
-                            uploadIcon.style.display = 'none';
-                            uploadText.style.display = 'none';
-                            uploadBox.classList.add('file-selected');
-                        } else {
-                            fileNameDisplay.textContent = '';
-                            uploadIcon.style.display = 'block';
-                            uploadText.style.display = 'block';
-                            uploadBox.classList.remove('file-selected');
+                fileInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        fileNameDisplay.textContent = this.files[0].name;
+                        uploadIcon.style.display = 'none';
+                        uploadText.style.display = 'none';
+                        uploadBox.classList.add('file-selected');
+                    } else {
+                        fileNameDisplay.textContent = '';
+                        uploadIcon.style.display = 'block';
+                        uploadText.style.display = 'block';
+                        uploadBox.classList.remove('file-selected');
+                    }
+                });
+            }
+
+            // Submit Confirmation with SweetAlert
+            const submitBtn = document.getElementById('btn-submit-final');
+            const form = document.getElementById('pengajuan-form');
+            if (submitBtn && form) {
+                submitBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent form submission
+                    Swal.fire({
+                        title: 'Anda Yakin?',
+                        text: "Setelah submit, pengajuan tidak dapat diedit lagi.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#4b68fb',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Submit Final!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Add a hidden input to signify final submission
+                            let hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'submit_final';
+                            hiddenInput.value = '1';
+                            form.appendChild(hiddenInput);
+                            form.submit();
                         }
                     });
-                }
-
-                // Submit Confirmation with SweetAlert
-                const submitBtn = document.getElementById('btn-submit-final');
-                const form = document.getElementById('pengajuan-form');
-                if (submitBtn && form) {
-                    submitBtn.addEventListener('click', function(e) {
-                        e.preventDefault(); // Prevent form submission
-                        Swal.fire({
-                            title: 'Anda Yakin?',
-                            text: "Setelah submit, pengajuan tidak dapat diedit lagi.",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#4b68fb',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Ya, Submit Final!',
-                            cancelButtonText: 'Batal'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Add a hidden input to signify final submission
-                                let hiddenInput = document.createElement('input');
-                                hiddenInput.type = 'hidden';
-                                hiddenInput.name = 'submit_final';
-                                hiddenInput.value = '1';
-                                form.appendChild(hiddenInput);
-                                form.submit();
-                            }
-                        });
-                    });
-                }
-
-                // Display PHP errors with SweetAlert
-                <?php if ($error_message): ?>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan',
-                    text: '<?= addslashes(htmlspecialchars($error_message)) ?>',
-                    confirmButtonColor: '#4b68fb'
                 });
-                <?php endif; ?>
+            }
+
+            // Display PHP errors with SweetAlert
+            <?php if ($error_message): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: '<?= addslashes(htmlspecialchars($error_message)) ?>',
+                confirmButtonColor: '#4b68fb'
             });
-        </script>
+            <?php endif; ?>
+        });
+    </script>
 </body>
 
 </html>
