@@ -232,28 +232,27 @@ try {
 
         // Insert ke tabel Bimbingan hanya untuk Tugas Akhir
         if ($jenis_sidang === "Tugas Akhir") {
-            // Ambil pembimbing tambahan dari input
-            $pembimbing_input = $_POST['nomor_dosen'] ?? [];
-            // Gabungkan dosen login dan pembimbing tambahan, hindari duplikat
-            $pembimbing_list = [];
-            if ($jenis_sidang === "Tugas Akhir") {
-                $pembimbing_list = is_array($pembimbing_input) ? $pembimbing_input : (empty($pembimbing_input) ? [] : [$pembimbing_input]);
-                if (!in_array($nomor_dosen, $pembimbing_list)) {
-                    $pembimbing_list[] = $nomor_dosen; // dosen login selalu masuk
-                }
+            // Untuk Tugas Akhir: gunakan dosen yang sedang login
+            $insertBimbinganSql = "INSERT INTO Bimbingan (nomor_dosen, isPembimbing, id_kelompok) VALUES (?, ?, ?)";
+            $isPembimbing = 1; // isPembimbing = 1 untuk Tugas Akhir
+            $paramsBimbingan = [$nomor_dosen, $isPembimbing, $id_kelompok];
+            
+            error_log("Inserting Bimbingan for Tugas Akhir - Data: " . json_encode([
+                'sql' => $insertBimbinganSql,
+                'params' => $paramsBimbingan,
+                'jenis_sidang' => $jenis_sidang,
+                'isPembimbing' => $isPembimbing
+            ]));
+            
+            $stmtBimbingan = sqlsrv_query($conn, $insertBimbinganSql, $paramsBimbingan);
+
+            if ($stmtBimbingan === false) {
+                $errors = sqlsrv_errors();
+                error_log("INSERT Bimbingan failed with errors: " . json_encode($errors));
+                throw new Exception("INSERT Bimbingan gagal: " . json_encode($errors, JSON_PRETTY_PRINT));
             }
-            // Insert semua pembimbing (login + tambahan) ke Bimbingan
-            foreach ($pembimbing_list as $nip_pembimbing) {
-                $insertBimbinganSql = "INSERT INTO Bimbingan (nomor_dosen, isPembimbing, id_kelompok) VALUES (?, 1, ?)";
-                $paramsBimbingan = [$nip_pembimbing, $id_kelompok];
-                $stmtBimbingan = sqlsrv_query($conn, $insertBimbinganSql, $paramsBimbingan);
-                if ($stmtBimbingan === false) {
-                    $errors = sqlsrv_errors();
-                    error_log("INSERT Bimbingan failed with errors: " . json_encode($errors));
-                    throw new Exception("INSERT Bimbingan gagal: " . json_encode($errors, JSON_PRETTY_PRINT));
-                }
-                error_log("Successfully inserted Bimbingan for Tugas Akhir, id_kelompok: {$id_kelompok}, dosen: {$nip_pembimbing}");
-            }
+            
+            error_log("Successfully inserted Bimbingan for Tugas Akhir, id_kelompok: {$id_kelompok}");
         } else {
             error_log("Skipping Bimbingan insert for Semester, id_kelompok: {$id_kelompok}");
         }

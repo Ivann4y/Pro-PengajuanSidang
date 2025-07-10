@@ -141,7 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="../../css/button-style.css">
   <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css">
-  <!-- <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css"> -->
   <link rel="stylesheet" href="../../extra/style.css">
   <title>Detail Pengajuan</title>
 </head>
@@ -184,62 +183,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             <h2 class="text-heading text-black" style="font-weight: 700;">Detail Pengajuan - <?= htmlspecialchars($judul) ?></h2>
             <div class="card mb-3 info-pengajuan">
                 <h5 class="fw-bold section">Informasi Pengajuan</h5>
-
                 <div class="row mt-2">
                     <div class="col-md-6 section">
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-hashtag me-0"></i><span class="fw-bold">ID Kelompok</span></div>
-                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></div>
-                        </div>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-users me-0"></i><span class="fw-bold">Nomor Kelompok</span></div>
-                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nomor_kelompok'] ?? '-') ?></div>
-                        </div>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-calendar-days me-0"></i><span class="fw-bold">Tahun Ajaran</span></div>
-                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['tahun_ajaran'] ?? '-') ?></div>
-                        </div>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-book me-0"></i><span class="fw-bold">Mata Kuliah</span></div>
-                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nama_matkul'] ?? 'N/A') ?></div>
-                        </div>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-people-group me-0"></i><span class="fw-bold">Anggota Kelompok</span></div>
-                            <div class="value-row ms-4">
-                                <ul class="list-unstyled mb-0">
-                                    <?php foreach ($anggota_kelompok as $anggota): ?>
-                                        <li><?= htmlspecialchars($anggota['nama_mhs']) . " (" . htmlspecialchars($anggota['nim']) . ")" ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        </div>
+                        <p class="mb-1 fw-bold">ID Kelompok</p>
+                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></p>
+                        <p class="mb-1 fw-bold">Nomor Kelompok</p>
+                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['nomor_kelompok'] ?? '-') ?></p>
+                        <p class="mb-1 fw-bold">Tahun Ajaran</p>
+                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['tahun_ajaran'] ?? '-') ?></p>
+                        <p class="mb-1 fw-bold">Mata Kuliah</p>
+                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['nama_matkul'] ?? 'N/A') ?></p>
                     </div>
-
                     <div class="col-md-6 section">
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-file-invoice me-0"></i><span class="fw-bold">Judul Sidang</span></div>
-                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['judul'] ?? '-') ?></div>
-                        </div>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-tag me-0"></i><span class="fw-bold">Jenis Sidang</span></div>
-                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['label_sidang']) ?></div>
-                        </div>
-                        <?php if ($data_sidang['jenis_sidang'] === 'Tugas Akhir' && !empty($dosen_pembimbing)): ?>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-user-tie me-0"></i><span class="fw-bold">Dosen Pembimbing</span></div>
-                            <div class="value-row ms-4">
-                                <ul class="list-unstyled mb-0">
-                                    <?php foreach ($dosen_pembimbing as $nama): ?>
-                                        <li><?= htmlspecialchars($nama) ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        </div>
+                        <p class="mb-1 fw-bold">Judul Sidang</p>
+                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['judul'] ?? '-') ?></p>
+                        <p class="mb-1 fw-bold">Jenis Sidang</p>
+                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['label_sidang']) ?></p>
+                        <?php if ($data_sidang['jenis_sidang'] === 'Tugas Akhir'): ?>
+                            <p class="mb-1 fw-bold">Dosen Pembimbing</p>
+                            <ul class="fw-normal ps-3 mb-3">
+                                <?php foreach ($dosen_pembimbing as $nama): ?>
+                                    <li><?= htmlspecialchars($nama) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
                         <?php endif; ?>
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-clipboard-question me-0"></i><span class="fw-bold">Status Pengajuan</span></div>
-                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['status_ajuan']) ?></div>
-                        </div>
+                        <p class="mb-1 fw-bold">Status Pengajuan</p>
+                        <p class="fw-normal"><?= htmlspecialchars($data_sidang['status_ajuan']) ?></p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12 section">
+                        <p class="mb-1 fw-bold">Anggota Kelompok</p>
+                        <ul class="fw-normal ps-3 mb-3">
+                            <?php foreach ($anggota_kelompok as $anggota): ?>
+                                <li><?= htmlspecialchars($anggota['nama_mhs']) . " (" . htmlspecialchars($anggota['nim']) . ")" ?></li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -257,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                         <input type="hidden" name="tipe" value="<?= htmlspecialchars($jenis_sidang_url) ?>">
                         <input type="hidden" name="download" value="main">
                         <button type="submit" class="text-decoration-none base-tombol berkas-laporan" style="border: 1px solid #212529 !important;">
-                            <i class="fa-solid fa-file-lines me-2"></i><?= htmlspecialchars($doc_data['dok_laporan']) ?>
+                            <i class="fa-solid fa-file-lines me-2"></i>Unduh Dokumen Laporan
                         </button>
                     </form>
                     <?php else : ?>
