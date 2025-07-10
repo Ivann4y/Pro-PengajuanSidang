@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof isFormLocked !== 'undefined' && isFormLocked) {
             btnKirim.classList.remove('btn-passive'); // Hapus class pasif agar jadi hijau
             btnKirim.disabled = true;                // Tapi tetap non-aktifkan
-            btnKirim.textContent = 'Evaluasi Terkirim'; // Pastikan teks sesuai
+            btnKirim.textContent = 'kirim'; // Pastikan teks sesuai
             // Non-aktifkan semua input juga
             requiredInputs.forEach(input => input.readOnly = true);
             return; // Hentikan fungsi di sini, tidak perlu validasi lagi.

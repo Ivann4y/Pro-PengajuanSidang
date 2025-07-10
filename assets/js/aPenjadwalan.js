@@ -53,7 +53,7 @@ function resetAndPopulateTAModal(el) {
                         <div class="bobot-nilai-input-group">
                             <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_pembimbing_bobot-ta-${pembimbingIndex}')">-</button>
                             <div class="input-with-percent">
-                                <input type="number" id="modal_pembimbing_bobot-ta-${pembimbingIndex}" name="pembimbing_bobot[]" class="bobot-input-new ta-bobot-input" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
+                                <input type="number" id="modal_pembimbing_bobot-ta-${pembimbingIndex}" name="pembimbing_bobot[]" class="bobot-input-new ta-bobot-input" placeholder="Bobot" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
                                 <span class="percent-sign">%</span>
                             </div>
                             <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_pembimbing_bobot-ta-${pembimbingIndex}')">+</button>
@@ -132,7 +132,7 @@ function addPenguji() {
            <div class="bobot-nilai-input-group">
                 <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-${pengujiCount}')">-</button>
                 <div class="input-with-percent">
-                    <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new ta-bobot-input" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
+                    <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new ta-bobot-input" placeholder="Bobot" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
                     <span class="percent-sign">%</span>
                 </div>
                 <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-${pengujiCount}')">+</button>

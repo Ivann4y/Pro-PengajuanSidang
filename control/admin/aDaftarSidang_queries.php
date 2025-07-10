@@ -1,7 +1,8 @@
 <?php
 // --- FUNGSI 3: KONTROL SESI DAN KEAMANAN ---
 
-// Mulai session PHP jika belum aktif. Ini diperlukan untuk mengakses variabel $_SESSION.
+// Cek status sesi saat ini. Jika tidak ada sesi yang aktif (PHP_SESSION_NONE),
+// maka mulai sesi baru. Ini mencegah error jika session_start() dipanggil lebih dari sekali.
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -9,13 +10,15 @@ if (session_status() === PHP_SESSION_NONE) {
 // Tentukan path relatif ke folder root aplikasi.
 $path_to_root = '../../';
 
-// 3.1. Cek otentikasi: Apakah pengguna sudah login?
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
-    // Jika belum login, siapkan pesan error.
+// 3.1. Cek Otentikasi: Memastikan pengguna sudah login.
+// `!isset($_SESSION['is_logged_in'])` -> Cek apakah variabel sesi 'is_logged_in' ada.
+// `$_SESSION['is_logged_in'] !== true` -> Cek apakah nilainya adalah `true`.
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) { 
+    // Jika salah satu kondisi di atas benar (pengguna belum login), siapkan pesan error.
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    // Arahkan (redirect) pengguna ke halaman login utama.
+   // Mengarahkan pengguna kembali ke halaman login (index.php) menggunakan header HTTP.
     header("Location: " . $path_to_root . "index.php"); 
-    exit(); // Hentikan eksekusi script setelah redirect.
+    exit(); // Hentikan eksekusi script ini agar tidak ada kode lain yang dijalankan setelah redirect.
 }
 
 // 3.2. Cek otorisasi: Apakah pengguna memiliki role 'admin'?
@@ -32,13 +35,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // 4.1. Sertakan file koneksi database.
 require "../../koneksi/koneksiAndrew.php";
 
-// 4.2. Ambil parameter dari URL (query string) untuk filter dan paginasi.
-// Gunakan operator null coalescing (??) untuk memberikan nilai default jika parameter tidak ada.
+// 4.2. Ambil parameter dari URL untuk filter dan paginasi.
+// Menggunakan `isset()` untuk mengecek apakah parameter ada di URL. Jika ada, gunakan nilainya. Jika tidak, berikan nilai default.
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all'; // Filter jenis sidang (ta, semester, all)
 $prodiFilter = isset($_GET['prodi']) ? $_GET['prodi'] : 'all'; // Filter program studi
 $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1; // Halaman saat ini untuk paginasi
 $rowsPerPage = 10; // Jumlah data yang ditampilkan per halaman.
-$offset = ($currentPage - 1) * $rowsPerPage; // Hitung offset untuk query SQL.
+$offset = ($currentPage - 1) * $rowsPerPage; // Menghitung berapa baris data yang harus dilewati (offset) untuk halaman saat ini.
 
 // 4.3. Ambil daftar program studi unik untuk ditampilkan di dropdown filter.
 $prodiList = [];
@@ -53,8 +56,9 @@ if ($prodiResult) {
 // --- FUNGSI 5: PEMBUATAN QUERY SQL DINAMIS ---
 
 // 5.1. Persiapan
-$params = [];
-$whereClauses = [];
+$params = []; // Array untuk menampung nilai parameter yang akan diikat ke query (mencegah SQL Injection).
+$whereClauses = []; // Array untuk menampung semua kondisi WHERE yang akan digabungkan nanti.
+
 
 // 5.2. Tambahkan kondisi WHERE berdasarkan filter jenis sidang.
 if ($filter === 'ta') {
@@ -65,6 +69,8 @@ if ($filter === 'ta') {
 
 // 5.3. Tambahkan kondisi WHERE berdasarkan filter prodi.
 if ($prodiFilter !== 'all') {
+     // Menggunakan subquery dengan EXISTS. Ini lebih efisien daripada JOIN untuk sekadar mengecek keberadaan data.
+    // Artinya: "Pilih sidang HANYA JIKA ADA (EXISTS) mahasiswa di kelompok tersebut yang prodinya cocok dengan filter".
     $whereClauses[] = "
         EXISTS (
             SELECT 1 
@@ -74,22 +80,29 @@ if ($prodiFilter !== 'all') {
             WHERE k_inner.id_kelompok = k.id_kelompok AND m.prodi = ?
         )
     ";
+    // Tambahkan nilai prodi ke array parameter. Tanda tanya (?) adalah placeholder.
     $params[] = $prodiFilter;
 }
 
-// 5.4. Query untuk menghitung total data (untuk paginasi).
+// 5.4. Query untuk menghitung total data yang sesuai filter (diperlukan untuk paginasi).
+// Ini adalah bagian dasar dari query yang sama dengan query utama, tanpa pemilihan kolom.
 $countBaseQuery = "
     FROM Sidang s
     JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
     WHERE EXISTS (SELECT 1 FROM Jadwal j WHERE j.id_sidang = s.id_sidang)
 ";
+// Gabungkan query dasar dengan SELECT COUNT.
 $countQuery = "SELECT COUNT(s.id_sidang) as total " . $countBaseQuery;
-if (!empty($whereClauses)) {
+if (!empty($whereClauses)) {// Jika ada filter yang aktif,
+    // Gabungkan semua kondisi WHERE dengan "AND" dan tambahkan ke query hitung.
     $countQuery .= " AND " . implode(" AND ", $whereClauses);
 }
+// Jalankan query hitung dengan parameter filter.
 $countResult = sqlsrv_query($conn, $countQuery, $params);
 if($countResult === false) { die("Error di count query: " . print_r(sqlsrv_errors(), true)); }
+// Ambil hasilnya, yaitu jumlah total record.
 $totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
+// Hitung jumlah total halaman yang dibutuhkan. `ceil` membulatkan ke atas.
 $totalPages = ceil($totalRecords / $rowsPerPage);
 
 // 5.5. [PERBAIKAN UTAMA] Query utama yang sudah disederhanakan.

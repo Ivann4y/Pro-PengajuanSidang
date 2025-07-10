@@ -59,11 +59,12 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminSidangTypeButton" data-bs-toggle="dropdown" aria-expanded="false">
                             <?= htmlspecialchars($tipeButtonText) ?>
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Semua Tipe</a></li>
-                            <li><a class="dropdown-item" href="?tipe=TA&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang TA</a></li>
-                            <li><a class="dropdown-item" href="?tipe=Semester&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang Semester</a></li>
+                       <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="?tipe=semua&status=<?= htmlspecialchars($selectedStatus) ?>">Semua Tipe</a></li>
+                            <li><a class="dropdown-item" href="?tipe=Tugas Akhir&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang TA</a></li>
+                            <li><a class="dropdown-item" href="?tipe=Semester&status=<?= htmlspecialchars($selectedStatus) ?>">Sidang Semester</a></li>
                         </ul>
+
                     </div>
                     <div class="dropdown">
                          <button class="btn btn-primary dropdown-toggle" type="button" id="ddAdminProdiButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -212,7 +213,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                             <div class="form-group" id="penguji-form-ta-1">
                                 <label for="modal_penguji-ta-1">Penguji 1</label>
                                 <div class="input-with-buttons">
-                                <!-- STRUKTUR AUTOCOMPLETE BARU DI SINI -->
+                                
                                 <div class="autocomplete-container">
                                 <input type="text"
                                         id="modal_penguji-ta-1"

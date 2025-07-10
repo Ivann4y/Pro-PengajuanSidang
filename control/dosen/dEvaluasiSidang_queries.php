@@ -308,15 +308,21 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
 
 // Pengecekan HANYA berdasarkan nilai mahasiswa yang bersangkutan, bukan catatan kelompok.
 $nilai_sudah_dikirim_dan_lengkap = false;
+// --- KODE BARU YANG SUDAH DIPERBAIKI ---
+// Pengecekan sekarang berdasarkan SEMUA nilai DAN catatan evaluasi.
+$nilai_sudah_dikirim_dan_lengkap = false;
 if (
-    // Pastikan semua field nilai ada, tidak null, dan tidak kosong.
-    // Nilai default untuk mahasiswa yang belum dinilai adalah string kosong (''), 
-    // jadi pengecekan !== '' sangat penting.
-    isset($nilai_mahasiswa['n_dokumen']) && $nilai_mahasiswa['n_dokumen'] !== null && $nilai_mahasiswa['n_dokumen'] !== '' &&
+    // 1. Cek semua field nilai (tidak berubah)
+    isset($nilai_mahasiswa['n_dokumen'])    && $nilai_mahasiswa['n_dokumen']    !== null && $nilai_mahasiswa['n_dokumen']    !== '' &&
     isset($nilai_mahasiswa['n_presentasi']) && $nilai_mahasiswa['n_presentasi'] !== null && $nilai_mahasiswa['n_presentasi'] !== '' &&
     isset($nilai_mahasiswa['n_tanyajawab']) && $nilai_mahasiswa['n_tanyajawab'] !== null && $nilai_mahasiswa['n_tanyajawab'] !== '' &&
-    isset($nilai_mahasiswa['n_proyek']) && $nilai_mahasiswa['n_proyek'] !== null && $nilai_mahasiswa['n_proyek'] !== ''
+    isset($nilai_mahasiswa['n_proyek'])     && $nilai_mahasiswa['n_proyek']     !== null && $nilai_mahasiswa['n_proyek']     !== '' &&
+    
+    // 2. Tambahkan pengecekan untuk catatan revisi (INI YANG BARU)
+    // `trim()` digunakan untuk memastikan string yang hanya berisi spasi dianggap kosong.
+    !empty(trim($catatan_revisi))
 ) {
+    // Hanya jika SEMUA nilai DAN catatan terisi, maka form dianggap terkunci.
     $nilai_sudah_dikirim_dan_lengkap = true;
 }
 
