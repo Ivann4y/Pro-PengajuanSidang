@@ -182,17 +182,7 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
           document.getElementById("downloadContainer").appendChild(containerDiv);
         </script>
 
-      <?php else: ?>
-        <div class="revision-card shadow-sm">
-          <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
-          <div class="revision-cardUp text-center">
-            <p class="text-muted mt-3">Belum ada dokumen revisi yang diunggah.</p>
-          </div>
-        </div>
-      <?php endif; ?>
-
-
-      <div class="button-group-bottom mt-4">
+        <div class="button-group-bottom mt-4">
         <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
           <span class="icon-circle">
             <i class="fa-solid fa-arrow-left"></i>
@@ -200,6 +190,24 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
           Kembali
         </button>
       </div>
+
+      <?php else: ?>
+        <div class="revision-empty shadow-sm mb-4">
+          <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
+          <div class="revision-inEmpty text-center">
+            <p class="text-muted mt-3">Belum ada dokumen revisi yang diunggah.</p>
+          </div>
+        </div>
+
+        <div class="button-group-bottom mt-4">
+        <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
+          <span class="icon-circle">
+            <i class="fa-solid fa-arrow-left"></i>
+          </span>
+          Kembali
+        </button>
+      </div>
+      <?php endif; ?>
 
       <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
