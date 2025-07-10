@@ -248,9 +248,9 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                 </div>
                 
             </main>
-            
-        </div> 
-    </div> 
+            <!-- SEKARANG TUTUP PEMBUNGKUSNYA -->
+        </div> <!-- Penutup untuk <div style="flex-grow: 1; ..."> -->
+    </div> <!-- Penutup untuk <div id="NavSide"> -->
 
 
 

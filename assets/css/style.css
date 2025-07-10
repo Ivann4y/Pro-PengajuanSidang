@@ -39,10 +39,10 @@ body {
   width: 80vw;
 }
 
-/* .text-heading {
-  font-size: 2.5rem;
+.text-heading {
+  font-size: 2rem;
   font-weight: 700;
-} */
+}
 
 .jadiBiru {
   background-color: rgb(235, 238, 245);
@@ -383,9 +383,10 @@ body {
     margin-top: 0;
   }
 
-  .text-heading {
+  /* .text-heading {
     font-size: 30px;
-  }
+    font-weight: 700;
+  } */
 
   .text-heading-mobile {
     font-weight: 550;
