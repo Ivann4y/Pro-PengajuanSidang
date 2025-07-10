@@ -189,7 +189,7 @@ function addPenguji() {
                 <div class="autocomplete-dropdown" id="autocomplete_penguji_${newIndex}"></div>
             </div>
             <div class="input-with-percent">
-                <input type="number" name="penguji_bobot[]" class="form-control-bobot" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime();">
+                <input type="number" name="penguji_bobot[]" class="form-control-bobot" placeholder="Bobot" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime();">
                 <span class="percent-sign">%</span>
             </div>
         </div>

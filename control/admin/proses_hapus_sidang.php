@@ -74,7 +74,6 @@ $delete_operations = [
     // PENTING: Lakukan ini HANYA JIKA kelompok ini tidak lagi memiliki sidang lain.
     // Untuk amannya, kita akan hapus semua yang terkait kelompok ini.
     "DELETE FROM Bimbingan WHERE id_kelompok = ?" => [$id_kelompok],
-    "DELETE FROM Kelas_Mahasiswa WHERE id_kelas = (SELECT id_kelas FROM Kelompok WHERE id_kelompok = ?)" => [$id_kelompok],
     "DELETE FROM Kelompok WHERE id_kelompok = ?" => [$id_kelompok]
 ];
 

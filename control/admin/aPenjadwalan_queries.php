@@ -53,10 +53,17 @@ if ($resultAllDosen) {
 // FUNGSI 4: AMBIL FILTER DARI URL
 // ==============================
 
+// ==============================
+// FUNGSI 4: AMBIL FILTER DARI URL
+// ==============================
+
 // Ambil filter tipe sidang dari URL, default 'semua'
 $selectedTipe = $_GET['tipe'] ?? 'semua';
 // Ambil filter prodi dari URL, default 'semua'
 $selectedProdi = $_GET['prodi'] ?? 'semua';
+// Tambahan: Ambil filter status dari URL, default 'semua'
+$selectedStatus = $_GET['status'] ?? 'semua';
+
 
 // ==============================
 // FUNGSI 5: AMBIL DAFTAR PRODI UNIK
@@ -191,16 +198,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
 // FUNGSI 10: VARIABEL DINAMIS UNTUK TAMPILAN
 // ==============================
 
-// Teks dinamis untuk header tabel dan tombol, tergantung filter tipe sidang
-$tipeButtonText = 'Semua Tipe';
-if ($selectedTipe == 'Tugas Akhir') $tipeButtonText = 'Sidang TA';
-elseif ($selectedTipe == 'Semester') $tipeButtonText = 'Sidang Semester';
 
-// Teks dinamis untuk tombol filter prodi
-$prodiButtonText = 'Semua Prodi';
-if ($selectedProdi !== 'semua') {
-    $prodiButtonText = htmlspecialchars($selectedProdi);
-}
 
 // Teks dinamis untuk header kolom tabel
 $dynamicHeaderText = 'Judul/Mata Kuliah';
