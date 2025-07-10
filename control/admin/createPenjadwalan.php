@@ -1,118 +1,60 @@
 <?php
-// ==============================
-// KONEKSI DATABASE
-// ==============================
-require "../../koneksi/koneksiAndrew.php"; // Menghubungkan ke database SQL Server
+// FILE: createPenjadwalan.php (VERSI FINAL YANG BENAR)
 
 // ==============================
-// CEK REQUEST METHOD
+// KONEKSI & HEADER
 // ==============================
+require "../../koneksi/koneksiAndrew.php";
 
-// Pastikan request adalah POST (bukan GET, dsb)
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405); // Set HTTP status code 405 (Method Not Allowed)
-    echo json_encode(['status' => 'error', 'message' => 'Method Not Allowed']); // Kirim pesan error dalam format JSON
-    exit; // Hentikan eksekusi script
+    http_response_code(405);
+    echo json_encode(['status' => 'error', 'message' => 'Method Not Allowed']);
+    exit;
 }
-
-// Set header response agar hasilnya berupa JSON
 header('Content-Type: application/json');
 
 // ==============================
-// AMBIL DATA DARI FORM (POST)
+// AMBIL DATA DARI FORM
 // ==============================
-
-// Ambil dan validasi id_sidang (harus integer)
 $id_sidang = filter_input(INPUT_POST, 'id_sidang', FILTER_VALIDATE_INT);
-// Ambil tipe sidang (Tugas Akhir/Semester)
 $tipe_sidang = $_POST['tipe_sidang'] ?? '';
-// Ambil data ruangan, tanggal, jam mulai, jam selesai dari form
 $ruangan = $_POST['ruangan'] ?? null;
 $tanggal = $_POST['tanggal'] ?? null;
 $jam_awal = $_POST['jam_awal'] ?? null;
 $jam_akhir = $_POST['jam_akhir'] ?? null;
 
 // ==============================
-// AMBIL DATA DOSEN SESUAI TIPE SIDANG
+// VALIDASI AWAL
 // ==============================
-
-if ($tipe_sidang === 'Tugas Akhir') {
-    // Jika sidang TA, ambil nama pembimbing dan daftar penguji beserta bobotnya
-    $pembimbing_nama = $_POST['pembimbing_nama'] ?? null;
-    $pembimbing_bobot = filter_input(INPUT_POST, 'pembimbing_bobot', FILTER_VALIDATE_FLOAT, ['options' => ['default' => 0.0]]);
-    $dosen_nama_list = $_POST['penguji_nama'] ?? [];
-    $dosen_bobot_list = $_POST['penguji_bobot'] ?? [];
-    $peran_dosen = 0; // 0 untuk Penguji
-} elseif ($tipe_sidang === 'Semester') {
-    // Jika sidang Semester, ambil daftar dosen pengampu beserta bobotnya
-    $dosen_nama_list = $_POST['pengampu_nama'] ?? [];
-    $dosen_bobot_list = $_POST['pengampu_bobot'] ?? [];
-    // Tidak perlu peran_dosen = 2 jika tidak ingin memasukkan pengampu ke Penjadwalan
-} else {
-    // Jika tipe sidang tidak valid, kirim error dan hentikan script
-    echo json_encode(['status' => 'error', 'message' => 'Tipe sidang tidak valid.']);
-    exit;
-}
-
-// ==============================
-// VALIDASI AWAL DATA
-// ==============================
-
-// Validasi id_sidang harus ada dan valid
 if (!$id_sidang) {
     echo json_encode(['status' => 'error', 'message' => 'ID Sidang tidak valid.']);
     exit;
 }
 
-// Validasi total bobot dosen (tidak boleh lebih dari 100%)
-if ($tipe_sidang === 'Tugas Akhir') { // PERUBAHAN 2: Validasi spesifik untuk TA
-    $bobot_numerik_penguji = array_filter($dosen_bobot_list, 'is_numeric');
-    $total_bobot_penguji = array_sum($bobot_numerik_penguji);
-    $total_bobot_keseluruhan = $total_bobot_penguji + $pembimbing_bobot; // Jumlahkan dengan bobot pembimbing
-    
-    // Toleransi kecil untuk floating point, meskipun di frontend kita pakai integer
-    if (abs($total_bobot_keseluruhan - 100) > 0.01) { 
-        echo json_encode(['status' => 'error', 'message' => 'Gagal: Total bobot penilaian (Pembimbing + Penguji) harus tepat 100%. Total saat ini: ' . $total_bobot_keseluruhan . '%.']);
-        exit;
-    }
-} elseif ($tipe_sidang === 'Semester' && !empty($dosen_bobot_list)) {
-    // Validasi untuk sidang semester tetap sama
-    $bobot_numerik = array_filter($dosen_bobot_list, 'is_numeric');
-    $total_bobot = array_sum($bobot_numerik);
-    if (abs($total_bobot - 100) > 0.01) {
-        echo json_encode(['status' => 'error', 'message' => 'Gagal: Total bobot penilaian tidak boleh melebihi 100%. Total saat ini: ' . $total_bobot . '%.']);
-        exit;
-    }
-}
-
-
 // ==============================
-// MULAI TRANSAKSI DATABASE
+// MULAI TRANSAKSI
 // ==============================
-
 if (sqlsrv_begin_transaction($conn) === false) {
     echo json_encode(['status' => 'error', 'message' => 'Gagal memulai transaksi database.']);
     exit;
 }
 
-$all_queries_ok = true; // Flag untuk cek apakah semua query sukses
-$error_message = 'Gagal membuat jadwal. Terjadi kesalahan.'; // Pesan error default
+$all_queries_ok = true;
+$error_message = 'Gagal membuat jadwal. Terjadi kesalahan.';
 
 // ==============================
-// 1. CEK APAKAH JADWAL SUDAH ADA
+// 1. CEK JADWAL YANG SUDAH ADA
 // ==============================
-
 $sql_check_exist = "SELECT id_sidang FROM Jadwal WHERE id_sidang = ?";
-$stmt_check = sqlsrv_query($conn, $sql_check_exist, array($id_sidang)); // Cek apakah jadwal sudah ada
+$stmt_check = sqlsrv_query($conn, $sql_check_exist, array($id_sidang));
 if ($stmt_check && sqlsrv_has_rows($stmt_check)) {
     $all_queries_ok = false;
     $error_message = "Jadwal untuk sidang ini sudah pernah dibuat sebelumnya.";
 }
 
 // ==============================
-// 2. INSERT DATA JADWAL JIKA BELUM ADA
+// 2. INSERT JADWAL UTAMA
 // ==============================
-
 if ($all_queries_ok) {
     $sql_insert_jadwal = "INSERT INTO Jadwal (id_sidang, ruang_sidang, tanggal_sidang, jam_sidang, jam_selesai) VALUES (?, ?, ?, ?, ?)";
     $params_jadwal = array($id_sidang, $ruangan, $tanggal, $jam_awal, $jam_akhir);
@@ -123,139 +65,122 @@ if ($all_queries_ok) {
 }
 
 // ==============================
-// 3. AMBIL DAFTAR MAHASISWA DALAM KELOMPOK
+// 3. AMBIL DAFTAR MAHASISWA
 // ==============================
-
-$list_nim_mahasiswa = []; // Array untuk menampung NIM mahasiswa dalam kelompok
+$list_nim_mahasiswa = [];
 if ($all_queries_ok) {
-    // Ambil NIM perwakilan dari kelompok sidang
-    $sql_get_info = "SELECT k.nim FROM Sidang s JOIN Kelompok k ON s.id_kelompok = k.id_kelompok WHERE s.id_sidang = ?";
-    $stmt_get_info = sqlsrv_query($conn, $sql_get_info, array($id_sidang));
-    $info_data = sqlsrv_fetch_array($stmt_get_info, SQLSRV_FETCH_ASSOC);
+    // Ambil nim perwakilan dari kelompok
+  $list_nim_mahasiswa = [];
+if ($all_queries_ok) {
+    // Langsung ambil SEMUA NIM mahasiswa dari kelompok yang bersidang, bukan berdasarkan kelas.
+    $sql_get_all_nim_in_group = "SELECT k.nim 
+                                 FROM Sidang s 
+                                 JOIN Kelompok k ON s.id_kelompok = k.id_kelompok 
+                                 WHERE s.id_sidang = ?";
+    
+    $params_get_nim = array($id_sidang);
+    $stmt_get_nim = sqlsrv_query($conn, $sql_get_all_nim_in_group, $params_get_nim);
 
-    if ($info_data) {
-        $nim_perwakilan = $info_data['nim'];
-        // Cari id_kelas dari nim perwakilan
-        $sql_get_kelas = "SELECT TOP 1 id_kelas FROM Kelas_Mahasiswa WHERE nim = ?";
-        $stmt_get_kelas = sqlsrv_query($conn, $sql_get_kelas, array($nim_perwakilan));
-        $kelas_data = sqlsrv_fetch_array($stmt_get_kelas, SQLSRV_FETCH_ASSOC);
-        
-        if ($kelas_data) {
-            $id_kelas = $kelas_data['id_kelas'];
-            // Ambil semua NIM mahasiswa yang ada di kelas tersebut
-            $sql_get_nim = "SELECT nim FROM Kelas_Mahasiswa WHERE id_kelas = ?";
-            $stmt_get_nim = sqlsrv_query($conn, $sql_get_nim, array($id_kelas));
-            while ($row = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)) {
-                $list_nim_mahasiswa[] = $row['nim'];
-            }
+    if ($stmt_get_nim) {
+        while ($row = sqlsrv_fetch_array($stmt_get_nim, SQLSRV_FETCH_ASSOC)) {
+            // Masukkan setiap NIM yang ditemukan ke dalam array
+            $list_nim_mahasiswa[] = $row['nim'];
         }
     }
 
-    // Validasi: pastikan daftar mahasiswa tidak kosong
+    // Cek jika setelah query, daftar mahasiswa tetap kosong (misal: ada sidang tapi tidak ada anggota di kelompoknya)
     if (empty($list_nim_mahasiswa)) {
         $all_queries_ok = false;
-        $error_message = "Gagal menemukan daftar mahasiswa dalam kelompok atau kelas.";
+        // Anda bisa membuat pesan error lebih spesifik
+        $error_message = "Gagal menemukan anggota mahasiswa dalam kelompok yang terkait dengan sidang ini."; 
     }
 }
+}
+// ==============================================================================
+// 4. FUNGSI BANTU UNTUK INSERT DOSEN (PENTING!)
+//    Fungsi ini untuk menghindari duplikasi kode.
+// ==============================================================================
+function insertDosenDanPenilaian($conn, $id_sidang, $nama_dosen_list, $bobot_list, $peran, &$all_queries_ok, &$error_message, $list_nim_mahasiswa, $tipe_sidang) {
+    $role_name = ($peran == 1) ? 'pembimbing' : (($peran == 0) ? 'penguji' : 'pengampu');
 
-// ==============================
-// 4. INSERT DATA DOSEN DAN PENILAIAN
-// ==============================
+    foreach ($nama_dosen_list as $index => $nama_dosen) {
+        if (empty(trim($nama_dosen))) continue;
 
-if ($all_queries_ok) {
-    // =====================================================================================
-    // AWAL PERBAIKAN: Kode duplikat dihapus, hanya blok ini yang tersisa.
-    // =====================================================================================
-    if ($tipe_sidang === 'Tugas Akhir') {
-        // --- A. Insert data pembimbing (khusus TA) ---
-        if (isset($pembimbing_nama) && !empty($pembimbing_nama)) {
-            $sql_get_pembimbing = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
-            $stmt_get_pembimbing = sqlsrv_query($conn, $sql_get_pembimbing, array($pembimbing_nama));
-            $pembimbing_data = sqlsrv_fetch_array($stmt_get_pembimbing, SQLSRV_FETCH_ASSOC);
+        // Cari nomor dosen
+        $sql_get_dosen = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
+        $stmt_get_dosen = sqlsrv_query($conn, $sql_get_dosen, array($nama_dosen));
+        $dosen_data = sqlsrv_fetch_array($stmt_get_dosen, SQLSRV_FETCH_ASSOC);
 
-            if ($pembimbing_data) {
-                $nomor_pembimbing = $pembimbing_data['nomor_dosen'];
-                // Insert ke Penjadwalan dengan peran_dosen = 1 (pembimbing)
-                $sql_insert_pembimbing = "INSERT INTO Penjadwalan (id_sidang, nomor_dosen, peran_dosen) VALUES (?, ?, 1)";
-                if (sqlsrv_query($conn, $sql_insert_pembimbing, array($id_sidang, $nomor_pembimbing)) === false) {
+        if ($dosen_data) {
+            $nomor_dosen = $dosen_data['nomor_dosen'];
+            $bobot = isset($bobot_list[$index]) && is_numeric($bobot_list[$index]) ? (float)$bobot_list[$index] : 0.0;
+
+            // Insert ke Penjadwalan (hanya untuk TA)
+            if ($tipe_sidang === 'Tugas Akhir') {
+                $sql_insert_penjadwalan = "INSERT INTO Penjadwalan (id_sidang, nomor_dosen, peran_dosen) VALUES (?, ?, ?)";
+                if (sqlsrv_query($conn, $sql_insert_penjadwalan, array($id_sidang, $nomor_dosen, $peran)) === false) {
                     $all_queries_ok = false;
-                    $error_message = "Gagal menyimpan data pembimbing.";
+                    $error_message = "Gagal menyimpan data $role_name '$nama_dosen' ke penjadwalan.";
+                    break;
                 }
-                  if ($all_queries_ok) {
-                    foreach ($list_nim_mahasiswa as $nim) {
-                        $sql_insert_penilaian_pembimbing = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, bobot_penilaian) VALUES (?, ?, ?, ?)";
-                        $params_penilaian_pembimbing = array($id_sidang, $nim, $nomor_pembimbing, $pembimbing_bobot);
-                        if (sqlsrv_query($conn, $sql_insert_penilaian_pembimbing, $params_penilaian_pembimbing) === false) {
-                            $all_queries_ok = false;
-                            $error_message = "Gagal menyimpan data bobot pembimbing untuk mahasiswa NIM $nim.";
-                            break; // Keluar dari loop mahasiswa
-                        }
-                    }
+            }
+
+            // Insert ke Penilaian untuk setiap mahasiswa
+            foreach ($list_nim_mahasiswa as $nim) {
+                $sql_insert_penilaian = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, bobot_penilaian) VALUES (?, ?, ?, ?)";
+                if (sqlsrv_query($conn, $sql_insert_penilaian, array($id_sidang, $nim, $nomor_dosen, $bobot)) === false) {
+                    $all_queries_ok = false;
+                    $error_message = "Gagal menyimpan data bobot $role_name untuk mahasiswa NIM $nim.";
+                    break 2; // Keluar dari kedua loop
                 }
-            } else {
-                $all_queries_ok = false;
-                $error_message = "Dosen pembimbing dengan nama '$pembimbing_nama' tidak ditemukan.";
             }
         } else {
-             $all_queries_ok = false;
-             $error_message = "Nama dosen pembimbing tidak terkirim dari form.";
-        }
-    }
-    
-    // --- B. Insert data dosen penguji/pengampu dan penilaian ---
-    if ($all_queries_ok) { // Cek lagi sebelum masuk loop
-        foreach ($dosen_nama_list as $index => $nama_dosen) {
-            if (empty(trim($nama_dosen))) continue; // Lewati jika nama dosen kosong
-
-            // Cari nomor dosen berdasarkan nama
-            $sql_get_dosen = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
-            $stmt_get_dosen = sqlsrv_query($conn, $sql_get_dosen, array($nama_dosen));
-            $dosen_data = sqlsrv_fetch_array($stmt_get_dosen, SQLSRV_FETCH_ASSOC);
-
-            if ($dosen_data) {
-                $nomor_dosen = $dosen_data['nomor_dosen'];
-                // Ambil bobot penilaian dari input, default 0 jika tidak valid
-                $bobot = isset($dosen_bobot_list[$index]) && is_numeric($dosen_bobot_list[$index]) ? (float)$dosen_bobot_list[$index] : 0.0;
-
-                // Insert ke tabel Penjadwalan hanya untuk penguji (TA)
-                if ($tipe_sidang === 'Tugas Akhir') {
-                    $sql_insert_penjadwalan = "INSERT INTO Penjadwalan (id_sidang, nomor_dosen, peran_dosen) VALUES (?, ?, 0)"; // peran_dosen = 0 (Penguji)
-                    if (sqlsrv_query($conn, $sql_insert_penjadwalan, array($id_sidang, $nomor_dosen)) === false) {
-                        $all_queries_ok = false;
-                        $error_message = "Gagal menyimpan data penguji '$nama_dosen' ke penjadwalan.";
-                        break;
-                    }
-                }
-
-                // Insert ke tabel Penilaian untuk setiap mahasiswa
-                foreach ($list_nim_mahasiswa as $nim) {
-                    $sql_insert_penilaian = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, bobot_penilaian) VALUES (?, ?, ?, ?)";
-                    $params_penilaian = array($id_sidang, $nim, $nomor_dosen, $bobot);
-                    if (sqlsrv_query($conn, $sql_insert_penilaian, $params_penilaian) === false) {
-                        $all_queries_ok = false;
-                        $error_message = "Gagal menyimpan data bobot untuk mahasiswa NIM $nim.";
-                        break 2; // Keluar dari kedua loop (dosen dan mahasiswa)
-                    }
-                }
-            } else {
-                $all_queries_ok = false;
-                $error_message = "Dosen dengan nama '$nama_dosen' tidak ditemukan.";
-                break;
-            }
+            $all_queries_ok = false;
+            $error_message = "Dosen $role_name dengan nama '$nama_dosen' tidak ditemukan.";
+            break;
         }
     }
 }
 
 // ==============================
-// FINALISASI TRANSAKSI DATABASE
+// 5. EKSEKUSI INSERT DOSEN
 // ==============================
-
 if ($all_queries_ok) {
-    sqlsrv_commit($conn); // Simpan semua perubahan ke database
+    if ($tipe_sidang === 'Tugas Akhir') {
+        // --- Ambil data Pembimbing dan Penguji dari form ---
+        $pembimbing_nama_list = $_POST['pembimbing_nama'] ?? [];
+        $pembimbing_bobot_list = $_POST['pembimbing_bobot'] ?? [];
+        $penguji_nama_list = $_POST['penguji_nama'] ?? [];
+        $penguji_bobot_list = $_POST['penguji_bobot'] ?? [];
+
+        // --- Panggil fungsi untuk insert Pembimbing ---
+        insertDosenDanPenilaian($conn, $id_sidang, $pembimbing_nama_list, $pembimbing_bobot_list, 1, $all_queries_ok, $error_message, $list_nim_mahasiswa, $tipe_sidang);
+        
+        // --- Panggil fungsi untuk insert Penguji (hanya jika pembimbing sukses) ---
+        if ($all_queries_ok) {
+            insertDosenDanPenilaian($conn, $id_sidang, $penguji_nama_list, $penguji_bobot_list, 0, $all_queries_ok, $error_message, $list_nim_mahasiswa, $tipe_sidang);
+        }
+
+    } elseif ($tipe_sidang === 'Semester') {
+        // --- Ambil data Pengampu dari form ---
+        $pengampu_nama_list = $_POST['pengampu_nama'] ?? [];
+        $pengampu_bobot_list = $_POST['pengampu_bobot'] ?? [];
+
+        // --- Panggil fungsi untuk insert Pengampu ---
+        // Peran disini tidak terlalu penting jika tidak dimasukkan ke Penjadwalan, kita bisa set ke 2 (pengampu)
+        insertDosenDanPenilaian($conn, $id_sidang, $pengampu_nama_list, $pengampu_bobot_list, 2, $all_queries_ok, $error_message, $list_nim_mahasiswa, $tipe_sidang);
+    }
+}
+
+// ==============================
+// 6. FINALISASI TRANSAKSI
+// ==============================
+if ($all_queries_ok) {
+    sqlsrv_commit($conn);
     echo json_encode(['status' => 'success', 'message' => 'Jadwal berhasil dibuat!']);
 } else {
-    sqlsrv_rollback($conn); // Batalkan semua perubahan jika ada error
+    sqlsrv_rollback($conn);
     echo json_encode(['status' => 'error', 'message' => $error_message]);
 }
-exit; // Hentikan eksekusi script
+exit;
 ?>
