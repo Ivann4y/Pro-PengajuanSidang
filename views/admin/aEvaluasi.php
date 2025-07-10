@@ -48,7 +48,11 @@ WHERE ds.id_sidang = ?
 
 $params = [$id_sidang];
 $stmt = sqlsrv_query($conn, $sql, $params);
+if ($stmt === false) {
+  die("Query gagal: " . print_r(sqlsrv_errors(), true));
+}
 
+$allRows = [];
 $statusList = [];
 
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
@@ -60,17 +64,22 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
 sqlsrv_free_stmt($stmt);
 
 // Hitung status global
-if (in_array('Ditolak', $statusList)) {
-  $statusRevisiGlobal = "Ditolak";
-  $badgeClass = "badge-danger";
-} elseif (in_array('Pending', $statusList)) {
-  $statusRevisiGlobal = "Belum Disetujui";
-  $badgeClass = "badge-warning";
+if (!empty($allRows)) {
+  if (in_array('Ditolak', $statusList)) {
+    $statusRevisiGlobal = "Ditolak";
+    $badgeClass = "badge-danger";
+  } elseif (in_array('Pending', $statusList)) {
+    $statusRevisiGlobal = "Belum Disetujui";
+    $badgeClass = "badge-warning";
+  } else {
+    $statusRevisiGlobal = "Disetujui";
+    $badgeClass = "badge-success";
+  }
 } else {
-  $statusRevisiGlobal = "Disetujui";
-  $badgeClass = "badge-success";
+  // Kalau data kosong
+  $statusRevisiGlobal = "Tidak ada data";
+  $badgeClass = "badge-secondary";
 }
-
 
 ?>
 <!DOCTYPE html>
@@ -161,34 +170,47 @@ if (in_array('Ditolak', $statusList)) {
         </span>
       </div>
 
-      <?php foreach ($allRows as $row): ?>
-        <?php $peranDosen = unpack("C", $row['peran_dosen'])[1]; ?>
-        <?php
-        $catatanFull = $row['catatan_sidang'];
-        $catatanPreview = strlen($catatanFull) > 50 ? substr($catatanFull, 0, 50) . '...' : $catatanFull;
-        ?>
-        <div class="card-comment mt-4" data-bs-toggle="modal"
-          data-bs-target="#modalDetail"
-          data-catatan="<?= htmlspecialchars($catatanFull, ENT_QUOTES) ?>">
-          <h6 class="card-h">
-            <?= htmlspecialchars($row['nama_dosen']) ?>
-            - <?= ($peranDosen == 1 ? 'Pembimbing' : 'Penguji') ?>
-          </h6>
+      <?php if (!empty($allRows)): ?>
+        <?php foreach ($allRows as $row): ?>
+          <?php
+          $namaDosen = isset($row['nama_dosen']) && $row['nama_dosen'] !== '' ? htmlspecialchars($row['nama_dosen']) : 'Tidak diketahui';
 
-          <p class="mt-2 mb-0 text-truncate-2">
-            <?= htmlspecialchars($catatanPreview) ?>
-          </p>
+          $peranDosen = isset($row['peran_dosen']) ? unpack("C", $row['peran_dosen'])[1] : null;
+          $peranLabel = ($peranDosen === 1) ? 'Pembimbing' : (($peranDosen === 0) ? 'Penguji' : 'Peran tidak diketahui');
 
-          <?php if ($row['status_revisi'] === 'Pending'): ?>
-            <div class="badge-statusDosen badge-warning"><?= $row['status_revisi'] ?></div>
-          <?php elseif ($row['status_revisi'] === 'Disetujui'): ?>
-            <div class="badge-statusDosen badge-success"><?= $row['status_revisi'] ?></div>
-          <?php elseif ($row['status_revisi'] === 'Ditolak'): ?>
-            <div class="badge-statusDosen badge-danger"><?= $row['status_revisi'] ?></div>
-          <?php endif; ?>
+          $catatanFull = isset($row['catatan_sidang']) && $row['catatan_sidang'] !== '' ? $row['catatan_sidang'] : 'Tidak ada catatan.';
+          $catatanPreview = strlen($catatanFull) > 50 ? substr($catatanFull, 0, 50) . '...' : $catatanFull;
+
+          $statusRevisi = isset($row['status_revisi']) && $row['status_revisi'] !== '' ? $row['status_revisi'] : 'Tidak diketahui';
+          ?>
+          <div class="card-comment mt-4" data-bs-toggle="modal"
+            data-bs-target="#modalDetail"
+            data-catatan="<?= htmlspecialchars($catatanFull, ENT_QUOTES) ?>">
+            <h6 class="card-h">
+              <?= $namaDosen ?> - <?= $peranLabel ?>
+            </h6>
+
+            <p class="mt-2 mb-0 text-truncate-2">
+              <?= htmlspecialchars($catatanPreview) ?>
+            </p>
+
+            <?php if ($statusRevisi === 'Pending'): ?>
+              <div class="badge-statusDosen badge-warning"><?= $statusRevisi ?></div>
+            <?php elseif ($statusRevisi === 'Disetujui'): ?>
+              <div class="badge-statusDosen badge-success"><?= $statusRevisi ?></div>
+            <?php elseif ($statusRevisi === 'Ditolak'): ?>
+              <div class="badge-statusDosen badge-danger"><?= $statusRevisi ?></div>
+            <?php else: ?>
+              <div class="badge-statusDosen badge-secondary"><?= $statusRevisi ?></div>
+            <?php endif; ?>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="card-comment mt-4">
+          <h6 class="card-h">Data tidak ditemukan</h6>
+          <p class="mt-2 mb-0 text-muted">Tidak ada catatan evaluasi atau data dosen yang tersedia.</p>
         </div>
-      <?php endforeach; ?>
-
+      <?php endif; ?>
 
       <?php if (!empty($allRows[0]['dok_revisi'])): ?>
         <div class="revision-card shadow-sm">
