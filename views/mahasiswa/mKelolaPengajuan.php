@@ -203,6 +203,7 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
     <link rel="stylesheet" href="../../assets/css/mKelolaPengajuan.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
@@ -225,7 +226,7 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
                 <li class="NavSide__sidebar-item"><a href="mBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a></li>
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active"><b></b><b></b><a href="mPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a></li>
                 <li class="NavSide__sidebar-item"><a href="mSidang.php"><span class="NavSide__sidebar-title fw-semibold">Sidang</span></a></li>
-                <li class="NavSide__sidebar-item"><a href="#" data-bs-toggle="modal" data-bs-target="#logMBeranda"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a></li>
+                <li class="NavSide__sidebar-item"><a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a></li>
             </ul>
         </div>
 
@@ -367,85 +368,101 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
     </div> <!-- AKHIR PEMBUNGKUS UTAMA -->
 
     <!-- Modal Logout -->
-    <!-- ... (copy from mPengajuan.php) ... -->
+    <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div style="background-color: rgb(67, 54, 240);">
+                    <div class="modal-header">
+                        <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                    </div>
+                </div>
+                <div class="modal-body mx-auto">
+                    Apakah anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer justify-content-center border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Sidebar Toggle Logic
-                const menuToggle = document.querySelector(".NavSide__toggle");
-                const sidebar = document.getElementById("main-sidebar");
-                if (menuToggle) {
-                    menuToggle.onclick = function() {
-                        menuToggle.classList.toggle("NavSide__toggle--active");
-                        sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                    };
-                }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar Toggle Logic
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
+            if (menuToggle) {
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
 
-                // File Upload UI Logic
-                const fileInput = document.getElementById('file_laporan');
-                if (fileInput) {
-                    const uploadBox = document.getElementById('upload-box-label');
-                    const fileNameDisplay = document.getElementById('file-name-display');
-                    const uploadIcon = document.getElementById('upload-icon');
-                    const uploadText = document.getElementById('upload-text');
+            // File Upload UI Logic
+            const fileInput = document.getElementById('file_laporan');
+            if (fileInput) {
+                const uploadBox = document.getElementById('upload-box-label');
+                const fileNameDisplay = document.getElementById('file-name-display');
+                const uploadIcon = document.getElementById('upload-icon');
+                const uploadText = document.getElementById('upload-text');
 
-                    fileInput.addEventListener('change', function() {
-                        if (this.files.length > 0) {
-                            fileNameDisplay.textContent = this.files[0].name;
-                            uploadIcon.style.display = 'none';
-                            uploadText.style.display = 'none';
-                            uploadBox.classList.add('file-selected');
-                        } else {
-                            fileNameDisplay.textContent = '';
-                            uploadIcon.style.display = 'block';
-                            uploadText.style.display = 'block';
-                            uploadBox.classList.remove('file-selected');
+                fileInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        fileNameDisplay.textContent = this.files[0].name;
+                        uploadIcon.style.display = 'none';
+                        uploadText.style.display = 'none';
+                        uploadBox.classList.add('file-selected');
+                    } else {
+                        fileNameDisplay.textContent = '';
+                        uploadIcon.style.display = 'block';
+                        uploadText.style.display = 'block';
+                        uploadBox.classList.remove('file-selected');
+                    }
+                });
+            }
+
+            // Submit Confirmation with SweetAlert
+            const submitBtn = document.getElementById('btn-submit-final');
+            const form = document.getElementById('pengajuan-form');
+            if (submitBtn && form) {
+                submitBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent form submission
+                    Swal.fire({
+                        title: 'Anda Yakin?',
+                        text: "Setelah submit, pengajuan tidak dapat diedit lagi.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#4b68fb',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Submit Final!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Add a hidden input to signify final submission
+                            let hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'submit_final';
+                            hiddenInput.value = '1';
+                            form.appendChild(hiddenInput);
+                            form.submit();
                         }
                     });
-                }
-
-                // Submit Confirmation with SweetAlert
-                const submitBtn = document.getElementById('btn-submit-final');
-                const form = document.getElementById('pengajuan-form');
-                if (submitBtn && form) {
-                    submitBtn.addEventListener('click', function(e) {
-                        e.preventDefault(); // Prevent form submission
-                        Swal.fire({
-                            title: 'Anda Yakin?',
-                            text: "Setelah submit, pengajuan tidak dapat diedit lagi.",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#4b68fb',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Ya, Submit Final!',
-                            cancelButtonText: 'Batal'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Add a hidden input to signify final submission
-                                let hiddenInput = document.createElement('input');
-                                hiddenInput.type = 'hidden';
-                                hiddenInput.name = 'submit_final';
-                                hiddenInput.value = '1';
-                                form.appendChild(hiddenInput);
-                                form.submit();
-                            }
-                        });
-                    });
-                }
-
-                // Display PHP errors with SweetAlert
-                <?php if ($error_message): ?>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan',
-                    text: '<?= addslashes(htmlspecialchars($error_message)) ?>',
-                    confirmButtonColor: '#4b68fb'
                 });
-                <?php endif; ?>
+            }
+
+            // Display PHP errors with SweetAlert
+            <?php if ($error_message): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: '<?= addslashes(htmlspecialchars($error_message)) ?>',
+                confirmButtonColor: '#4b68fb'
             });
-        </script>
+            <?php endif; ?>
+        });
+    </script>
 </body>
 
 </html>
