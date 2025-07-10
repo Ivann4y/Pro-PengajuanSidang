@@ -261,6 +261,8 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
           </div>
       </div>
   </div>
+
+  
   <div class="modal fade" id="penjadwalanSidangSemModal" aria-labelledby="penjadwalanSidangSemModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content modal-content-custom-form">

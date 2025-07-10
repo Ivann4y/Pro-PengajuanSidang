@@ -1,7 +1,11 @@
 <?php
 session_start();
 require_once '../koneksi/koneksiAndrew.php';
+require_once '../security/security_helper.php';
 include '../control/inputPasswordBaru_queries.php';
+
+// Set security headers
+setSecurityHeaders();
 ?>
 
 <!DOCTYPE html>
@@ -10,7 +14,7 @@ include '../control/inputPasswordBaru_queries.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $judul ?> - Sistem Pengajuan Sidang</title>
+    <title><?= htmlspecialchars($judul) ?> - Sistem Pengajuan Sidang</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -60,38 +64,62 @@ include '../control/inputPasswordBaru_queries.php';
                 <?php if ($reset): ?>
                     <form action="inputPasswordBaru.php?token=<?= htmlspecialchars($token) ?>" method="POST">
                         <div class="text-center pt-5 mb-4">
-                            <h2 class="fs-2 fw-bold"><?= $judul ?></h2>
+                            <h2 class="fs-2 fw-bold"><?= htmlspecialchars($judul) ?></h2>
                             <?php if (!empty($success)): ?>
                                 <div class="alert alert-success mt-3">
-                                    <?= $success ?>
+                                    <?= htmlspecialchars($success) ?>
                                 </div>
                             <?php endif; ?>
                         </div>
-
-                        <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
 
                         <div class="mb-3">
                             <label for="newPassword">Masukkan Kata Sandi Baru</label>
                             <div class="password-wrap">
                                 <input type="password"
                                     id="newPassword"
-                                    class="form-control form-control-lg <?= in_array($errorType, ['empty', 'short']) ? 'border border-danger' : 'border border-dark' ?>"
-                                    name="newPassword">
+                                    class="form-control form-control-lg <?= in_array($errorType, ['empty', 'short', 'weak_password', 'too_long', 'same_password']) ? 'border border-danger' : 'border border-dark' ?>"
+                                    name="newPassword"
+                                    maxlength="128"
+                                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                                    title="Password harus minimal 8 karakter dengan huruf besar, huruf kecil, angka, dan karakter khusus">
                                 <i class="bi bi-eye-slash-fill toggle-password" id="toggleNewPassword"></i>
                             </div>
                             <?php if ($errorType === 'empty'): ?>
                                 <div class="text-danger">Kata sandi tidak boleh kosong.</div>
                             <?php elseif ($errorType === 'short'): ?>
                                 <div class="text-danger">Kata sandi minimal 8 karakter.</div>
+                            <?php elseif ($errorType === 'weak_password'): ?>
+                                <div class="text-danger">
+                                    <strong>Kata sandi harus memenuhi:</strong>
+                                    <ul class="mt-1 mb-0">
+                                        <?php if (isset($_SESSION['password_errors'])): ?>
+                                            <?php foreach ($_SESSION['password_errors'] as $error): ?>
+                                                <li><?= htmlspecialchars($error) ?></li>
+                                            <?php endforeach; ?>
+                                            <?php unset($_SESSION['password_errors']); ?>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
+                            <?php elseif ($errorType === 'too_long'): ?>
+                                <div class="text-danger">Kata sandi terlalu panjang (maksimal 128 karakter).</div>
+                            <?php elseif ($errorType === 'same_password'): ?>
+                                <div class="text-danger">Kata sandi baru tidak boleh sama dengan kata sandi lama.</div>
                             <?php endif; ?>
+                            
+                            <!-- Password strength indicator -->
+                            <div class="mt-2">
+                                <small class="text-muted">Password harus mengandung minimal 8 karakter dengan huruf besar, huruf kecil, angka, dan karakter khusus.</small>
+                            </div>
                         </div>
+                        
                         <div class="mb-3">
                             <label for="confirmPassword">Konfirmasi Kata Sandi Baru</label>
                             <div class="password-wrap">
                                 <input type="password"
                                     id="confirmPassword"
                                     class="form-control form-control-lg <?= in_array($errorType, ['empty', 'mismatch']) ? 'border border-danger' : 'border border-dark' ?>"
-                                    name="confirmPassword">
+                                    name="confirmPassword"
+                                    maxlength="128">
                                 <i class="bi bi-eye-slash-fill toggle-password" id="toggleConfirmPassword"></i>
                             </div>
                             <?php if ($errorType === 'empty'): ?>
@@ -100,6 +128,7 @@ include '../control/inputPasswordBaru_queries.php';
                                 <div class="text-danger">Kata sandi dan konfirmasi tidak cocok.</div>
                             <?php endif; ?>
                         </div>
+                        
                         <div class="d-flex justify-content-end mt-4">
                             <button type="submit" class="btn btn-setujui" id="btnKirim">
                                 Kirim
@@ -115,9 +144,7 @@ include '../control/inputPasswordBaru_queries.php';
                             </button>
                         </div>
                     </form>
-                <?php endif; ?>
-
-                <?php if (!$reset): ?>
+                <?php else: ?>
                     <div class="token-alert">
                         <span class="icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
                         Token tidak valid atau sudah kadaluarsa.

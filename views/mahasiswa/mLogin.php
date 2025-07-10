@@ -1,14 +1,26 @@
 <?php
 
 require "../../koneksi/koneksiAndrew.php";
+require_once "../../security/security_helper.php";
 
 session_start();
+
+// Set security headers
+setSecurityHeaders();
+
+// Validasi role dari session
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     header('Location: ../../index.php');
     exit();
 }
 
 $role = "mahasiswa";
+
+// Generate CSRF token
+$csrf_token = generateCSRFToken();
+
+// Cleanup expired tokens
+cleanupExpiredTokens($conn);
 ?>
 
 <!DOCTYPE html>
@@ -72,32 +84,38 @@ $role = "mahasiswa";
             $error = $_GET['error'] ?? '';
             ?>
             <div class="col-md-7 d-flex justify-content-center align-items-center mt-5">
-                <!-- Mengecek autentikasi login -->
+                <!-- Form login dengan CSRF protection -->
                 <form action="../../auth.php" method="POST" novalidate>
                     <div class="text-center pt-5 mb-4">
                         <h2><strong>Masuk Akun</strong></h2>
                         <h2><strong>Mahasiswa</strong></h2>
                     </div>
-                    <!-- Tanda input selain text -->
-                    <input type="hidden" name="role" value="<?= $role ?>">
+                    
+                    <!-- CSRF Token -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                    
+                    <!-- Role (tidak bisa diedit user) -->
+                    <input type="hidden" name="role" value="<?= htmlspecialchars($role) ?>">
 
                     <div class="mb-3">
                         <input type="text"
-                            class="form-control form-control-lg <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
-                            id="username" name="username" placeholder="NIM"
+                            class="form-control form-control-lg <?= ($error === 'empty' || $error === '1' || $error === 'invalid') ? 'border border-danger' : 'border border-dark' ?>"
+                            id="username" name="username" placeholder="NIM" maxlength="50"
                             value="<?= htmlspecialchars($_GET['username'] ?? '') ?>">
                         <?php if ($error === 'empty'): ?>
                             <small class="text-danger">NIM dan Kata Sandi harus diisi!</small>
                         <?php elseif ($error === '1'): ?>
                             <small class="text-danger">NIM atau Kata Sandi salah!</small>
+                        <?php elseif ($error === 'invalid'): ?>
+                            <small class="text-danger">Format NIM tidak valid!</small>
                         <?php endif; ?>
                     </div>
 
                     <div class="mb-3">
                         <div class="password-wrap">
-                            <input type="text"
+                            <input type="password"
                                 class="form-control form-control-lg password-masked <?= ($error === 'empty' || $error === '1') ? 'border border-danger' : 'border border-dark' ?>"
-                                id="password" name="password" placeholder="Kata Sandi">
+                                id="password" name="password" placeholder="Kata Sandi" maxlength="128">
                             <i class="bi bi-eye-slash-fill" id="togglePassword"></i>
                         </div>
                         <a href="#" class="float-end mt-1" onclick="toLupaPassword()"> Lupa kata sandi?</a>
@@ -118,7 +136,7 @@ $role = "mahasiswa";
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     <script>
         function toLupaPassword() {
-            window.location.href = "../../views/lupaPassword.php?role=<?= $role ?>";
+            window.location.href = "../../views/lupaPassword.php?role=<?= htmlspecialchars($role) ?>";
         }
     </script>
     <script src="../../assets/js/login.js"></script>
