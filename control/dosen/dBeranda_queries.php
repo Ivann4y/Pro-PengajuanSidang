@@ -37,7 +37,10 @@ switch($action) {
 
     case 'perbaikan':
         // Filter perbaikan by dosen's nomor_dosen
-        $sqlPerbaikan = "SELECT COUNT(*) AS total FROM Detail_Sidang WHERE (status_revisi IS NULL OR status_revisi = 'Pending') AND nomor_dosen = ?";
+        $sqlPerbaikan = "SELECT COUNT(DISTINCT id_sidang) AS total
+                            FROM Detail_Sidang
+                            WHERE nomor_dosen = ?
+                            AND (status_revisi IS NULL OR status_revisi = 'Pending')";
         $stmtPerbaikan = sqlsrv_query($conn, $sqlPerbaikan, [$nomor_dosen]);
         if ($stmtPerbaikan === false) {
             echo json_encode(['error' => sqlsrv_errors()]);
@@ -49,7 +52,10 @@ switch($action) {
 
     case 'penilaian':
         // Filter penilaian by dosen's nomor_dosen
-        $sqlPenilaian = "SELECT COUNT(*) AS total FROM Penilaian WHERE (n_dokumen IS NULL OR n_presentasi IS NULL OR n_tanyajawab IS NULL OR n_proyek IS NULL) AND nomor_dosen = ?";
+        $sqlPenilaian = "SELECT COUNT(DISTINCT id_sidang) AS total 
+                            FROM Penilaian 
+                            WHERE (n_dokumen IS NULL OR n_presentasi IS NULL OR n_tanyajawab IS NULL OR n_proyek IS NULL) 
+                            AND nomor_dosen = ?";
         $stmtPenilaian = sqlsrv_query($conn, $sqlPenilaian, [$nomor_dosen]);
         if ($stmtPenilaian === false) {
             echo json_encode(['error' => sqlsrv_errors()]);
