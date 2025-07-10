@@ -82,6 +82,8 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <link rel="stylesheet" href="../../assets/css/mPengajuan.css">    
 </head>
 
 <body>
