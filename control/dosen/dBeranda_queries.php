@@ -22,7 +22,10 @@ $nomor_dosen = $_SESSION['user_data']['nomor_dosen'];
 switch($action) {
     case 'pengajuan':
         // Filter pengajuan by dosen's nomor_dosen
-        $sqlPengajuan = "SELECT COUNT(*) AS total FROM Sidang WHERE status_ajuan = 0x00 AND nomor_dosen = ?";
+        $sqlPengajuan = "SELECT COUNT(*) AS total 
+                            FROM Sidang s
+                            JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
+                            WHERE s.status_ajuan = 'Draft' AND b.nomor_dosen = ?";
         $stmtPengajuan = sqlsrv_query($conn, $sqlPengajuan, [$nomor_dosen]);
         if ($stmtPengajuan === false) {
             echo json_encode(['error' => sqlsrv_errors()]);
@@ -34,7 +37,7 @@ switch($action) {
 
     case 'perbaikan':
         // Filter perbaikan by dosen's nomor_dosen
-        $sqlPerbaikan = "SELECT COUNT(*) AS total FROM Detail_Sidang WHERE (status_revisi IS NULL /*OR status_revisi = 'pending'*/) AND nomor_dosen = ?";
+        $sqlPerbaikan = "SELECT COUNT(*) AS total FROM Detail_Sidang WHERE (status_revisi IS NULL OR status_revisi = 'Pending') AND nomor_dosen = ?";
         $stmtPerbaikan = sqlsrv_query($conn, $sqlPerbaikan, [$nomor_dosen]);
         if ($stmtPerbaikan === false) {
             echo json_encode(['error' => sqlsrv_errors()]);
@@ -58,14 +61,11 @@ switch($action) {
 
     case 'sidang_mendatang':
         // Filter sidang mendatang by dosen's nomor_dosen
-        $query = "SELECT s.id_sidang, s.judul, j.tanggal_sidang
-        FROM Sidang s
-        JOIN Jadwal j ON s.id_sidang = j.id_sidang
-        JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-        WHERE ds.nomor_dosen = ?
-        AND s.status_sidang = 1
-        AND j.tanggal_sidang > GETDATE()
-        ORDER BY j.tanggal_sidang ASC;";
+        $query = "SELECT sm.id_sidang, sm.judul, sm.tanggal_sidang
+                    FROM View_SidangMendatang sm
+                    JOIN Detail_Sidang ds ON sm.id_sidang = ds.id_sidang
+                    WHERE ds.nomor_dosen = ?
+                    ORDER BY sm.tanggal_sidang ASC";
         $stmt = sqlsrv_query($conn, $query, [$nomor_dosen]);
         if ($stmt === false) {
             echo json_encode(['error' => sqlsrv_errors()]);
