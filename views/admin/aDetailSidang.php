@@ -27,7 +27,10 @@ require_once '../../control/admin/aDetailSidang_queries.php';
 
         <div style="flex-grow: 1; display: flex; flex-direction: column;">
             <div class="NavSide__topbar">
-                <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
+                <div class="NavSide__toggle">
+                    <i class="bi bi-list open"></i>
+                    <i class="bi bi-x-lg close"></i>
+                </div>
             </div>
 
             <main class="NavSide__main-content">
