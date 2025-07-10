@@ -127,7 +127,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                                 $dosen_pengampu_json = htmlspecialchars(json_encode($dosen_array), ENT_QUOTES, 'UTF-8');
                             }
 
-                            // Siapkan data-* attributes untuk JavaScript
+                            
                             $row_props_js = "data-id='".htmlspecialchars($entry['id_sidang'])."'"
                                 . " data-kelompok='".htmlspecialchars($entry['id_kelompok'])."'"
                                 . " data-nama-list='".htmlspecialchars($entry['namaList'] ?? '')."'"
