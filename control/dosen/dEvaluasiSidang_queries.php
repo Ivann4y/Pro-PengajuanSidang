@@ -2,6 +2,7 @@
 session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
+
 // Ambil ID sidang dari GET (sekali) lalu simpan ke session
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
@@ -46,39 +47,42 @@ $id_sidang = $_SESSION['id_sidang_aktif'];
 if (!isset($_SESSION['user_data']['nomor_dosen'])) { die("Akses ditolak."); }
 $nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
 
-// ===================================================================================
-// BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
-// ===================================================================================
+
 // ===================================================================================
 // BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
 // ===================================================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Ambil data dari form (NAMA DISAMAKAN DENGAN DATABASE)
+    // Ambil data dari form
     $nim_post = $_POST['nim'] ?? null;
     $catatan_post = $_POST['catatanEvaluasi'] ?? '';
-    $n_dokumen = !empty($_POST['n_dokumen']) ? (int)$_POST['n_dokumen'] : null;
-    $n_presentasi = !empty($_POST['n_presentasi']) ? (int)$_POST['n_presentasi'] : null;
-    $n_tanyajawab = !empty($_POST['n_tanyajawab']) ? (int)$_POST['n_tanyajawab'] : null;
-    $n_proyek = !empty($_POST['n_proyek']) ? (int)$_POST['n_proyek'] : null;
+
+    // PERBAIKAN: Gunakan isset() dan periksa apakah string kosong untuk menangani nilai '0' dengan benar
+    $n_dokumen    = (isset($_POST['n_dokumen'])    && $_POST['n_dokumen']    !== '') ? (int)$_POST['n_dokumen']    : null;
+    $n_presentasi = (isset($_POST['n_presentasi']) && $_POST['n_presentasi'] !== '') ? (int)$_POST['n_presentasi'] : null;
+    $n_tanyajawab = (isset($_POST['n_tanyajawab']) && $_POST['n_tanyajawab'] !== '') ? (int)$_POST['n_tanyajawab'] : null;
+    $n_proyek     = (isset($_POST['n_proyek'])     && $_POST['n_proyek']     !== '') ? (int)$_POST['n_proyek']     : null;
 
     // Validasi penting: pastikan NIM terkirim bersama form
     if (empty($nim_post)) {
-        die("Terjadi kesalahan: NIM mahasiswa tidak terkirim saat menyimpan data.");
+        // Sebaiknya gunakan session untuk pesan error agar tidak hilang saat redirect
+        $_SESSION['error'] = "Terjadi kesalahan: NIM mahasiswa tidak terkirim saat menyimpan data.";
+        header("Location: dEvaluasiSidang.php");
+        exit;
     }
     
-    // 1. UPDATE CATATAN REVISI
+    // 1. UPDATE CATATAN REVISI (Logika sudah benar)
     $sql_update_catatan = "UPDATE Detail_Sidang SET catatan_sidang = ? WHERE id_sidang = ? AND nomor_dosen = ?";
     $params_update_catatan = [$catatan_post, $id_sidang, $nomor_dosen_login];
     $stmt_update_catatan = sqlsrv_query($conn, $sql_update_catatan, $params_update_catatan);
 
     if ($stmt_update_catatan === false) {
         $_SESSION['error'] = "Gagal memperbarui catatan revisi: " . print_r(sqlsrv_errors(), true);
-        header("Location: dEvaluasiSidang.php?nim=$nim_post");
+        header("Location: dEvaluasiSidang.php"); // Redirect kembali ke halaman dengan nim terakhir
         exit;
     }
 
-    // 2. CEK & SIMPAN NILAI (UPSERT)
+    // 2. CEK & SIMPAN NILAI (UPSERT) (Logika sudah benar)
     $sql_cek_nilai = "SELECT COUNT(*) as 'count' FROM Penilaian WHERE id_sidang = ? AND nomor_dosen = ? AND nim = ?";
     $stmt_cek_nilai = sqlsrv_query($conn, $sql_cek_nilai, [$id_sidang, $nomor_dosen_login, $nim_post]);
     $nilai_exists = sqlsrv_fetch_array($stmt_cek_nilai, SQLSRV_FETCH_ASSOC)['count'] > 0;
@@ -86,20 +90,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($nilai_exists) {
         // UPDATE
         $sql_nilai = "UPDATE Penilaian SET n_dokumen = ?, n_presentasi = ?, n_tanyajawab = ?, n_proyek = ? WHERE id_sidang = ? AND nomor_dosen = ? AND nim = ?";
-        $params_nilai = [$n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek, $id_sidang, $nomor_dosen_login, $nim_post];
     } else {
         // INSERT
         $sql_nilai = "INSERT INTO Penilaian (id_sidang, nim, nomor_dosen, n_dokumen, n_presentasi, n_tanyajawab, n_proyek) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    }
+    
+    // Sesuaikan parameter berdasarkan query
+    if ($nilai_exists) {
+        $params_nilai = [$n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek, $id_sidang, $nomor_dosen_login, $nim_post];
+    } else {
         $params_nilai = [$id_sidang, $nim_post, $nomor_dosen_login, $n_dokumen, $n_presentasi, $n_tanyajawab, $n_proyek];
     }
 
     $stmt_nilai = sqlsrv_query($conn, $sql_nilai, $params_nilai);
     if ($stmt_nilai === false) {
-        die("Gagal menyimpan nilai: " . print_r(sqlsrv_errors(), true));
+        // Tampilkan error yang lebih spesifik
+        $_SESSION['error'] = "Gagal menyimpan nilai: " . print_r(sqlsrv_errors(), true);
+        header("Location: dEvaluasiSidang.php");
+        exit;
     }
 
-    // Redirect
-    header("Location: dEvaluasiSidang.php?nim=" . $nim_post . "&status=sukses");
+    // Redirect dengan status sukses
+    header("Location: dEvaluasiSidang.php?status=sukses");
     exit();
 }
 
