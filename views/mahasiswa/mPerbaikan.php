@@ -8,15 +8,15 @@ $path_to_root = '../../';
 // 1. Cek jika pengguna BELUM login.
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     $_SESSION['login_error'] = 'Anda harus login untuk mengakses halaman ini.';
-    header("Location: " . $path_to_root . "index.php"); 
-    exit(); 
+    header("Location: " . $path_to_root . "index.php");
+    exit();
 }
 
 // 2. Cek jika role pengguna BUKAN 'mahasiswa'.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     $_SESSION['login_error'] = 'Anda tidak memiliki izin untuk mengakses halaman ini.';
     header("Location: " . $path_to_root . "index.php");
-    exit(); 
+    exit();
 }
 
 include '../../koneksi/koneksiAndrew.php';
@@ -42,7 +42,7 @@ $catatan_list = [];
 // === FIX: Query untuk mengambil informasi dasar ===
 // Menggunakan JOIN yang benar: Sidang -> Kelompok -> Mahasiswa
 $query_info = "
-    SELECT TOP 1 ds.status_revisi, m.nama_mhs, s.status_ajuan
+    SELECT TOP 1 ds.status_revisi, m.nama_mhs, s.status_ajuan, m.nim
     FROM Sidang s
     LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
     JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
@@ -62,6 +62,8 @@ if (!$data_info) {
 }
 
 $nama_mahasiswa = $data_info['nama_mhs'];
+$nim_mahasiswa = $data_info['nim'];
+
 
 
 
@@ -90,19 +92,41 @@ while ($row = sqlsrv_fetch_array($stmt_catatan, SQLSRV_FETCH_ASSOC)) {
     $catatan_list[] = $row;
 }
 
+// Ambil id_kelompok dari nim
+$sql_k = "SELECT id_kelompok FROM Kelompok WHERE nim = ?";
+$params_k = [$nim_mahasiswa];
+$stmt_k = sqlsrv_query($conn, $sql_k, $params_k);
+
+if ($stmt_k === false) {
+    die("Query id_kelompok gagal: " . print_r(sqlsrv_errors(), true));
+}
+
+$data_k = sqlsrv_fetch_array($stmt_k, SQLSRV_FETCH_ASSOC);
+
+
+
+$id_kelompok = $data_k['id_kelompok'] ?? null;
+
+if (!$id_kelompok) {
+    $_SESSION['pesan'] = "Error: ID kelompok tidak ditemukan untuk NIM ini.";
+    header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
+    exit();
+}
+
+
 // === LOGIKA FILE UPLOAD ===
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
         $file_asli = basename($_FILES["fileInput"]["name"]);
         $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
         $file_unik = 'revisi_' . $id_sidang . '_' . time() . '.' . $ekstensi_file;
-        
+
         // Perbaikan: Gunakan path absolut yang benar
         $folder_target = __DIR__ . "/uploads/";
         if (!file_exists($folder_target)) {
             mkdir($folder_target, 0755, true);
         }
-        
+
         $path_target = $folder_target . $file_unik;
         // Simpan path relatif ke database untuk konsistensi
         $path_relatif = "views/mahasiswa/uploads/" . $file_unik;
@@ -115,14 +139,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Debug: Log informasi file
                 error_log("File uploaded successfully: " . $path_target);
                 error_log("File size: " . filesize($path_target));
-                
-                $query_update_dokumen = "UPDATE Detail_Sidang SET dok_revisi = ?, nama_file = ?, status_revisi = 'Pending' WHERE id_sidang = ?";
-                $params_update = array($path_relatif, $file_asli, $id_sidang);
+
+                $nim_mahasiswa = $_SESSION['user_data']['nim'];
+                $query_update_dokumen = "UPDATE Detail_Sidang SET dok_revisi = ?, nama_file = ?, status_revisi = 'Pending' WHERE id_sidang = ? AND nomor_dosen = ?";
+                $params_update = array($path_relatif, $file_asli, $id_sidang, $nomor_dosen_target);
 
                 // Debug: Log query dan parameter
                 error_log("Update query: " . $query_update_dokumen);
                 error_log("Parameters: " . print_r($params_update, true));
-                
+
                 $stmt_update = sqlsrv_query($conn, $query_update_dokumen, $params_update);
 
                 if ($stmt_update) {
@@ -188,124 +213,124 @@ if ($stmt_utama && sqlsrv_execute($stmt_utama)) {
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="mSidang.php"><span class="fw-semibold">Kembali</span></a></li>
             </ul>
         </div>
-        
+
         <div id="page-content-wrapper">
             <div class="NavSide__topbar">
                 <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
             </div>
             <main class="NavSide__main-content">
-            <div
-                class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
-                <h2>Detail Sidang -
-                    <?php
+                <div
+                    class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
+                    <h2>Detail Sidang -
+                        <?php
                         if (isset($data_sidang['jenis_sidang']) && $data_sidang['jenis_sidang'] === 'Tugas Akhir') {
                             echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Tugas Akhir';
                         } elseif (isset($data_sidang['jenis_sidang']) && $data_sidang['jenis_sidang'] === 'Semester' && !empty($data_matkul)) {
                             echo htmlspecialchars($data_matkul['nama_matkul']);
                         }
-                    ?>
-                </h2>
-                <div class="d-flex flex-column align-items-start align-items-md-end">
-                    <span
-                        class="badge-custom status-<?php echo strtolower(str_replace(' ', '-', $status_revisi)); ?>">Status
-                        Revisi : <?php echo htmlspecialchars($status_revisi); ?></span>
+                        ?>
+                    </h2>
+                    <div class="d-flex flex-column align-items-start align-items-md-end">
+                        <span
+                            class="badge-custom status-<?php echo strtolower(str_replace(' ', '-', $status_revisi)); ?>">Status
+                            Revisi : <?php echo htmlspecialchars($status_revisi); ?></span>
+                    </div>
+                </div>
+                <h1 class="fs-4 fw-semibold mb-3">Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok); ?></h1>
+                <div class="mt-4">
+                    <?php if (empty($catatan_list)): ?>
+                        <div class="alert alert-info">Belum ada catatan perbaikan untuk sidang ini.</div>
+                    <?php else: ?>
+                        <?php foreach ($catatan_list as $index => $catatan): ?>
+                            <div class="card-comment mb-3" data-bs-toggle="modal"
+                                data-bs-target="#modalDetail<?php echo $index; ?>">
+                                <strong><?php echo htmlspecialchars($catatan['nama_dosen']); ?> - Penguji</strong>
+                                <p class="mt-2 mb-0 text-truncate-2">
+                                    <?php echo htmlspecialchars($catatan['catatan_sidang']); ?><span
+                                        class="text-selengkapnya">Selengkapnya...</span>
+                                </p>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                <div class="revision-card mt-4">
+                    <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
+                    <form id="revisionForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST"
+                        enctype="multipart/form-data">
+                        <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
+                            <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i></div>
+                            <div id="selected-state" class="d-none"><i
+                                    class="bi bi-file-earmark-text-fill fs-1 text-primary"></i></div>
+                            <p id="upload-prompt-text" class="text-muted mt-2">Unggah berkas revisi (.pdf, .docx, .pptx,
+                                .zip)</p>
+                        </label>
+                        <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
+                        <div class="text-center mt-2">
+                            <p id="fileNameDisplay" class="fw-bold mb-0"></p>
+                        </div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-custom-primary" id="openConfirmModalBtn"
+                                data-bs-toggle="modal" data-bs-target="#modalKonfirmasi">Kirim</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+
+        <?php foreach ($catatan_list as $index => $catatan): ?>
+            <div class="modal fade" id="modalDetail<?php echo $index; ?>" tabindex="-1"
+                aria-labelledby="modalDetailLabel<?php echo $index; ?>" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title fs-5" id="modalDetailLabel<?php echo $index; ?>">Detail Catatan dari
+                                <?php echo htmlspecialchars($catatan['nama_dosen']); ?>
+                            </h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p style="white-space: pre-wrap;"><?php echo htmlspecialchars($catatan['catatan_sidang']); ?></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <h1 class="fs-4 fw-semibold mb-3">Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok); ?></h1>
-            <div class="mt-4">
-                <?php if (empty($catatan_list)): ?>
-                    <div class="alert alert-info">Belum ada catatan perbaikan untuk sidang ini.</div>
-                <?php else: ?>
-                    <?php foreach ($catatan_list as $index => $catatan): ?>
-                        <div class="card-comment mb-3" data-bs-toggle="modal"
-                            data-bs-target="#modalDetail<?php echo $index; ?>">
-                            <strong><?php echo htmlspecialchars($catatan['nama_dosen']); ?> - Penguji</strong>
-                            <p class="mt-2 mb-0 text-truncate-2">
-                                <?php echo htmlspecialchars($catatan['catatan_sidang']); ?><span
-                                    class="text-selengkapnya">Selengkapnya...</span>
-                            </p>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-            <div class="revision-card mt-4">
-                <h5 class="fw-bold" style="color:#4B68FB;">Dokumen Revisi</h5>
-                <form id="revisionForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST"
-                    enctype="multipart/form-data">
-                    <label for="fileInput" class="upload-area-v2 mt-3" id="uploadArea">
-                        <div id="initial-state"><i class="bi bi-file-earmark-arrow-up fs-1 text-secondary"></i></div>
-                        <div id="selected-state" class="d-none"><i
-                                class="bi bi-file-earmark-text-fill fs-1 text-primary"></i></div>
-                        <p id="upload-prompt-text" class="text-muted mt-2">Unggah berkas revisi (.pdf, .docx, .pptx,
-                            .zip)</p>
-                    </label>
-                    <input type="file" id="fileInput" name="fileInput" accept=".pdf,.docx,.pptx,.zip" hidden />
-                    <div class="text-center mt-2">
-                        <p id="fileNameDisplay" class="fw-bold mb-0"></p>
-                    </div>
-                    <div class="d-flex justify-content-end mt-4">
-                        <button type="button" class="btn btn-custom-primary" id="openConfirmModalBtn"
-                            data-bs-toggle="modal" data-bs-target="#modalKonfirmasi" >Kirim</button>
-                    </div>
-                </form>
-            </div>
-        </main>
-    </div>
+        <?php endforeach; ?>
 
-    <?php foreach ($catatan_list as $index => $catatan): ?>
-        <div class="modal fade" id="modalDetail<?php echo $index; ?>" tabindex="-1"
-            aria-labelledby="modalDetailLabel<?php echo $index; ?>" aria-hidden="true">
+        <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title fs-5" id="modalDetailLabel<?php echo $index; ?>">Detail Catatan dari
-                            <?php echo htmlspecialchars($catatan['nama_dosen']); ?>
-                        </h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        <h4 class="modal-title" id="modalKonfirmasiLabel">Perhatian</h4>
                     </div>
                     <div class="modal-body">
-                        <p style="white-space: pre-wrap;"><?php echo htmlspecialchars($catatan['catatan_sidang']); ?></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endforeach; ?>
-
-    <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="modalKonfirmasiLabel">Perhatian</h4>
-                </div>
-                <div class="modal-body">
-                    <p>Apakah Anda sudah yakin ingin mengupload dokumen revisi ini?</p>
-                    <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-tolak me-3" data-bs-dismiss="modal">Batalkan</button>
-                        <button type="button" class="btn btn-kirim me-3" id="confirmSubmitBtn">Lanjutkan</button>
+                        <p>Apakah Anda sudah yakin ingin mengupload dokumen revisi ini?</p>
+                        <div class="d-flex justify-content-center">
+                            <button type="button" class="btn btn-tolak me-3" data-bs-dismiss="modal">Batalkan</button>
+                            <button type="button" class="btn btn-kirim me-3" id="confirmSubmitBtn">Lanjutkan</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script src="../../assets/js/mPerbaikan.js"></script>
+        <script src="../../assets/js/mPerbaikan.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <?php if (!empty($pesan)): ?>
-        <script>
-            Swal.fire({
-                title: '<?php echo stripos($pesan, "sukses") !== false ? "Berhasil" : "Error"; ?>',
-                text: '<?php echo addslashes(preg_replace('/^(Sukses|Error): /i', '', $pesan)); ?>',
-                icon: '<?php echo stripos($pesan, "sukses") !== false ? "success" : "error"; ?>',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-            });
-        </script>
-    <?php endif; ?>
+        <?php if (!empty($pesan)): ?>
+            <script>
+                Swal.fire({
+                    title: '<?php echo stripos($pesan, "sukses") !== false ? "Berhasil" : "Error"; ?>',
+                    text: '<?php echo addslashes(preg_replace('/^(Sukses|Error): /i', '', $pesan)); ?>',
+                    icon: '<?php echo stripos($pesan, "sukses") !== false ? "success" : "error"; ?>',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4B68FB'
+                });
+            </script>
+        <?php endif; ?>
 </body>
 
 </html>
