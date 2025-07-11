@@ -42,6 +42,10 @@ thead th:nth-child(7) {
   text-align: center;
   width: 20%;
 }
+thead th:nth-child(8) {
+  text-align: center;
+  width: 20%;
+}
 
 .isiTabel td {
   padding: 12px 15px;
@@ -55,7 +59,7 @@ thead th:nth-child(7) {
   text-align: center;
 }
 
-.isiTabel td:nth-child(7) {
+.isiTabel td:nth-child(8) {
   border-radius: 0 20px 20px 0;
 }
 
@@ -423,6 +427,26 @@ tr.jadiBiru:hover .detail-btn i {
 .kelompok-filter-container .form-check-input:checked {
   background-color: #4b68fb;
   border-color: #4b68fb;
+}
+
+#ddStatus {
+  background-color: #0d6efd; 
+  border-color: #0d6efd;
+  color: white;
+}
+
+#ddStatus:hover {
+  background-color: #0b5ed7; 
+  border-color: #0a58ca;
+}
+
+#ddStatus + .dropdown-menu {
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#ddStatus + .dropdown-menu .dropdown-item:hover {
+  background-color: #f0f0f0;
 }
 
 .kelompok-list-container {

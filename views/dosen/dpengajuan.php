@@ -72,18 +72,18 @@ $rowsPerPage = 10; // Number of records per page
 $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 
 // Filter setup for frontend
+// [MODIFIKASI] Tambahkan filter untuk status
+$statusFilter = isset($_GET['status']) ? $_GET['status'] : 'Pending'; // Default 'Pending'
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $offset = max(0, ($currentPage - 1) * $rowsPerPage);
 
-
-
-// Step 1: Define the core query that gets all pending data without any filtering by the logged-in user.
-// This will be used as a base for both counting and fetching data.
+// [MODIFIKASI] Kondisi status_ajuan = 'Pending' dihapus dari sini dan akan ditangani secara dinamis di bawah.
 $querySource = "
 (
     SELECT
         s.id_sidang,
+        s.status_ajuan, -- [TAMBAHAN] Ambil kolom status untuk filtering
         ku.id_kelompok, 
         ku.nomor_kelompok,
         s.judul,
@@ -111,8 +111,6 @@ $querySource = "
         (SELECT DISTINCT id_kelompok, nomor_kelompok, tahun_ajaran, jenis_sidang, id_matkul FROM dbo.Kelompok) AS ku ON s.id_kelompok = ku.id_kelompok
     JOIN 
         MataKuliah mk ON ku.id_matkul = mk.id_matkul
-    WHERE
-        s.status_ajuan = 'Pending'
 ) AS FullDataSet
 ";
 
@@ -124,7 +122,15 @@ $params = [];
 $whereConditions[] = "list_nomor_dosen LIKE ?";
 array_push($params, '%' . $nomorDosen . '%');
 
-// Terapkan kondisi filter
+// [MODIFIKASI] Terapkan kondisi filter status secara dinamis
+if ($statusFilter === 'History') {
+    $whereConditions[] = "status_ajuan IN ('Approved', 'Rejected')";
+} else if (in_array($statusFilter, ['Pending', 'Approved', 'Rejected'])) {
+    $whereConditions[] = "status_ajuan = ?";
+    array_push($params, $statusFilter);
+}
+
+// Terapkan kondisi filter jenis sidang
 if ($filter === 'TA') {
     $whereConditions[] = "tipe_sidang_text = 'Tugas Akhir'";
 } elseif ($filter === 'Semester') {
@@ -250,7 +256,25 @@ $nomor = max(1, $offset + 1);
                 <div class="row"></div><br><br>
                 <div class="row">
                     <div class="d-flex align-items-center gap-2 mb-4">
-                        <label for="ddMsidang" class="fw-semibold mb-0">Filter:</label>
+                        <label for="ddStatus" class="fw-semibold mb-0">Status:</label>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddStatus">
+                                <?php
+                                if ($statusFilter === 'Pending') echo 'Pengajuan Aktif';
+                                elseif ($statusFilter === 'History') echo 'Semua';
+                                elseif ($statusFilter === 'Approved') echo 'Disetujui';
+                                elseif ($statusFilter === 'Rejected') echo 'Ditolak';
+                                ?>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?status=Pending&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Pengajuan Aktif</a></li>
+                                <li><a class="dropdown-item" href="?status=History&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Semua</a></li>
+                                <li><a class="dropdown-item" href="?status=Approved&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Disetujui</a></li>
+                                <li><a class="dropdown-item" href="?status=Rejected&filter=<?= urlencode($filter) ?>&search=<?= urlencode($search) ?>">Ditolak</a></li>
+                            </ul>
+                        </div>
+
+                        <label for="ddMsidang" class="fw-semibold mb-0 ms-3">Filter:</label>
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
                                 <?php
@@ -260,9 +284,9 @@ $nomor = max(1, $offset + 1);
                                 ?>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="?filter=Semua&search=<?= urlencode($search) ?>">Semua</a></li>
-                                <li><a class="dropdown-item" href="?filter=TA&search=<?= urlencode($search) ?>">Sidang TA</a></li>
-                                <li><a class="dropdown-item" href="?filter=Semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
+                                <li><a class="dropdown-item" href="?status=<?= urlencode($statusFilter) ?>&filter=Semua&search=<?= urlencode($search) ?>">Semua</a></li>
+                                <li><a class="dropdown-item" href="?status=<?= urlencode($statusFilter) ?>&filter=TA&search=<?= urlencode($search) ?>">Sidang TA</a></li>
+                                <li><a class="dropdown-item" href="?status=<?= urlencode($statusFilter) ?>&filter=Semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
                             </ul>
                         </div>
                         <div class="search-input-group ms-auto d-flex align-items-center">
@@ -288,6 +312,9 @@ $nomor = max(1, $offset + 1);
                                 <th scope="col">Mata Kuliah</th>
                                 <th scope="col">Dosen Pembimbing / Pengampu</th>
                                 <th scope="col">Jenis Sidang</th>
+                                <?php if ($statusFilter !== 'Pending'): ?>
+                                    <th scope="col">Status</th>
+                                <?php endif; ?>
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
@@ -295,14 +322,28 @@ $nomor = max(1, $offset + 1);
                         <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
                             <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
                                 <?php
-                                // [FIX] Check against the correct column name and value
                                 $jenisSidangTampilan = ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester';
                                 ?>
                                 <tr class="isiTabel jadiBiru">
                                     <td><?= $nomor++; ?></td>
-                                    <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td> <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                                    <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
+                                    <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
                                     <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td> <td><?= $jenisSidangTampilan; ?></td>
+                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                    <td><?= $jenisSidangTampilan; ?></td>
+                                    <?php if ($statusFilter !== 'Pending'): ?>
+                                        <td>
+                                            <?php
+                                            $statusClass = '';
+                                            if ($row['status_ajuan'] == 'Approved') {
+                                                $statusClass = 'text-success fw-bold';
+                                            } elseif ($row['status_ajuan'] == 'Rejected') {
+                                                $statusClass = 'text-danger fw-bold';
+                                            }
+                                            echo '<span class="' . $statusClass . '">' . htmlspecialchars($row['status_ajuan']) . '</span>';
+                                            ?>
+                                        </td>
+                                    <?php endif; ?>
                                     <td style="text-align: center;">
                                         <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
                                         <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
@@ -316,7 +357,7 @@ $nomor = max(1, $offset + 1);
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
+                                <td colspan="<?= ($statusFilter !== 'Pending') ? '8' : '7' ?>" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
                             </tr>
                         <?php endif; ?>
                         </tbody>
@@ -467,11 +508,23 @@ $nomor = max(1, $offset + 1);
                     </div>
                 </div>
             </div>
+
         </main>
     </div> 
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
     <script src="../../assets/js/dPengajuan.js"></script>
+    <script>
+    // [TAMBAHAN] Script sederhana untuk menangani search
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const searchValue = this.value;
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('search', searchValue);
+            window.location.href = currentUrl.toString();
+        }
+    });
+    </script>
 </body>
 
 </html>
