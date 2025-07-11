@@ -1,11 +1,13 @@
 <?php
 session_start();
+// Cek dulu, yang akses ini harus dosen
 if ($_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit();
 }
+// Pastiin juga data dosennya ada di session
 if (!isset($_SESSION['user_data']['nomor_dosen'])) {
-    die("Error: Data dosen tidak ditemukan di session. Silakan login kembali.");
+    die("Error: Data dosen nggak ketemu di session. Coba login lagi deh.");
 }
 $nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
@@ -14,18 +16,18 @@ if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-// Handle Accept/Reject Action via POST
+// Bagian buat nanggepin Aksi Terima/Tolak lewat POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id_sidang'])) {
     $id_sidang = (int)$_POST['id_sidang'];
     $action = $_POST['action'];
     $newStatus = $action === 'accept' ? 'Approved' : ($action === 'reject' ? 'Rejected' : null);
 
     if (!$newStatus) {
-        echo json_encode(['success' => false, 'message' => 'Aksi tidak valid.']);
+        echo json_encode(['success' => false, 'message' => 'Aksi nggak valid.']);
         exit();
     }
 
-    // --- Fetch Sidang info ---
+    // --- Ambil info Sidang ---
     $sql = "SELECT s.id_sidang, s.id_kelompok, k.jenis_sidang, k.id_matkul, k.tahun_ajaran
             FROM Sidang s
             JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
@@ -34,11 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id_
     $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 
     if (!$sidang) {
-        echo json_encode(['success' => false, 'message' => 'Sidang tidak ditemukan.']);
+        echo json_encode(['success' => false, 'message' => 'Sidang nggak ketemu.']);
         exit();
     }
 
-    // --- Authorization check ---
+    // --- Cek dulu, ini dosennya berhak apa kaga ---
     $authorized = false;
     if ($sidang['jenis_sidang'] === 'Tugas Akhir') {
         $sqlAuth = "SELECT 1 FROM Bimbingan WHERE id_kelompok = ? AND nomor_dosen = ? AND isPembimbing = 1";
@@ -51,46 +53,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id_
     }
 
     if (!$authorized) {
-        echo json_encode(['success' => false, 'message' => 'Anda tidak berhak mengubah status pengajuan ini.']);
+        echo json_encode(['success' => false, 'message' => 'Kamu nggak berhak ngubah status pengajuan ini.']);
         exit();
     }
 
-    // --- Update status_ajuan ---
+    // --- Update status ajuannya ---
     $updateSql = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
     $updateStmt = sqlsrv_query($conn, $updateSql, [$newStatus, $id_sidang]);
     if ($updateStmt === false) {
-        echo json_encode(['success' => false, 'message' => 'Gagal mengubah status.']);
+        echo json_encode(['success' => false, 'message' => 'Gagal ngubah status.']);
         exit();
     }
     echo json_encode(['success' => true, 'message' => 'Status pengajuan berhasil diubah.']);
     exit();
 }
 
-// --- GET: Show the page ---
-// Pagination setup
-$rowsPerPage = 10; // Number of records per page
+// Atur paginasinya (buat halaman-halaman)
+$rowsPerPage = 10;
 $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 
-// Filter setup for frontend
-// [MODIFIKASI] Tambahkan filter untuk status
-$statusFilter = isset($_GET['status']) ? $_GET['status'] : 'Pending'; // Default 'Pending'
+// Ini filter buat statusnya
+$statusFilter = isset($_GET['status']) ? $_GET['status'] : 'Pending';
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $offset = max(0, ($currentPage - 1) * $rowsPerPage);
 
-// [MODIFIKASI] Kondisi status_ajuan = 'Pending' dihapus dari sini dan akan ditangani secara dinamis di bawah.
+// Langkah 1: Bikin query dasarnya dulu, isinya semua join sama kolom yang dibutuhin.
 $querySource = "
 (
     SELECT
         s.id_sidang,
-        s.status_ajuan, -- [TAMBAHAN] Ambil kolom status untuk filtering
+        s.status_ajuan, -- [TAMBAHAN] Ambil kolom status buat filter
         ku.id_kelompok, 
         ku.nomor_kelompok,
         s.judul,
         mk.nama_matkul,
         ku.jenis_sidang AS tipe_sidang_text,
         
-        -- Use STRING_AGG to get all authorized lecturer names for display
+        -- Pake STRING_AGG buat nampilin semua nama dosen yang berhak
         CASE
             WHEN ku.jenis_sidang = 'Tugas Akhir' THEN
                 (SELECT STRING_AGG(d.nama_dosen, ', ') FROM Bimbingan b JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ku.id_kelompok AND b.isPembimbing = 1)
@@ -98,7 +98,7 @@ $querySource = "
                 (SELECT STRING_AGG(d.nama_dosen, ', ') FROM Pengampu_Kelas pk JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen WHERE pk.id_matkul = ku.id_matkul)
         END AS nama_dosen,
         
-        -- Get a comma-separated list of lecturer numbers to use for filtering
+        -- Ambil daftar nomor dosen (dipisahin koma) buat ngefilter
         CASE
             WHEN ku.jenis_sidang = 'Tugas Akhir' THEN
                 (SELECT STRING_AGG(CAST(b.nomor_dosen AS VARCHAR), ',') FROM Bimbingan b WHERE b.id_kelompok = ku.id_kelompok AND b.isPembimbing = 1)
@@ -114,15 +114,15 @@ $querySource = "
 ) AS FullDataSet
 ";
 
-// Step 2: Build the WHERE clause and parameters dynamically.
+// Langkah 2: Bikin klausa WHERE sama parameternya secara dinamis.
 $whereConditions = [];
 $params = [];
 
-// Kondisi dasar: Dosen yang login (check if their number is in the comma-separated list)
+// Kondisi dasar: Dosen yang lagi login (cek nomornya ada di daftar apa kaga)
 $whereConditions[] = "list_nomor_dosen LIKE ?";
 array_push($params, '%' . $nomorDosen . '%');
 
-// [MODIFIKASI] Terapkan kondisi filter status secara dinamis
+// [MODIFIKASI] Terapin kondisi filter statusnya secara dinamis
 if ($statusFilter === 'History') {
     $whereConditions[] = "status_ajuan IN ('Approved', 'Rejected')";
 } else if (in_array($statusFilter, ['Pending', 'Approved', 'Rejected'])) {
@@ -130,14 +130,14 @@ if ($statusFilter === 'History') {
     array_push($params, $statusFilter);
 }
 
-// Terapkan kondisi filter jenis sidang
+// Terapin kondisi filter jenis sidang
 if ($filter === 'TA') {
     $whereConditions[] = "tipe_sidang_text = 'Tugas Akhir'";
 } elseif ($filter === 'Semester') {
     $whereConditions[] = "tipe_sidang_text = 'Semester'";
 }
 
-// Terapkan kondisi pencarian
+// Terapin kondisi pencarian
 if (!empty($search)) {
     $whereConditions[] = "(
         CAST(nomor_kelompok AS VARCHAR(255)) LIKE ? OR 
@@ -148,38 +148,38 @@ if (!empty($search)) {
     array_push($params, $likeParam, $likeParam, $likeParam);
 }
 
-// Gabungkan semua kondisi menjadi satu string
+// Gabungin semua kondisi jadi satu string
 $whereClause = "WHERE " . implode(" AND ", $whereConditions);
 
-// Step 3: Build and execute the COUNT query.
+// Langkah 3: Bikin dan jalanin query buat NGITUNG total data.
 $countSql = "SELECT COUNT(*) as total FROM " . $querySource . " " . $whereClause;
 $countStmt = sqlsrv_query($conn, $countSql, $params);
 if ($countStmt === false) {
-    die("Error saat menghitung data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+    die("Error pas ngitung data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 $totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
 $totalPages = ($rowsPerPage > 0) ? ceil($totalRecords / $rowsPerPage) : 1;
 
-// Adjust current page if it's out of bounds
+// Kalo halamannya kelebihan, benerin dulu
 if ($totalPages > 0 && $currentPage > $totalPages) {
     $currentPage = $totalPages;
     $offset = max(0, ($currentPage - 1) * $rowsPerPage);
 }
 
-// Step 4: Build and execute the MAIN data query with pagination.
+// Langkah 4: Bikin dan jalanin query UTAMA buat ngambil datanya, pake pagination.
 $mainSql = "SELECT * FROM " . $querySource . " " . $whereClause . "
             ORDER BY id_sidang DESC
             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
-// Tambahkan parameter paginasi (offset, rowsPerPage) ke array parameter utama
+// Tambahin parameter pagination (offset, rowsPerPage) ke array parameter utama
 $mainParams = array_merge($params, [$offset, $rowsPerPage]);
 $result = sqlsrv_query($conn, $mainSql, $mainParams);
 
 if ($result === false) {
-    die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+    die("Error pas ngambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-// Set nomor awal untuk tabel
+// Atur nomor awal buat tabelnya
 $nomor = max(1, $offset + 1);
 ?>
 <!DOCTYPE html>
@@ -312,54 +312,54 @@ $nomor = max(1, $offset + 1);
                                 <th scope="col">Mata Kuliah</th>
                                 <th scope="col">Dosen Pembimbing / Pengampu</th>
                                 <th scope="col">Jenis Sidang</th>
-                                <?php if ($statusFilter !== 'Pending'): ?>
+                                <?php if ($statusFilter !== 'Pending') : ?>
                                     <th scope="col">Status</th>
                                 <?php endif; ?>
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)): ?>
-                            <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
-                                <?php
-                                $jenisSidangTampilan = ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester';
-                                ?>
-                                <tr class="isiTabel jadiBiru">
-                                    <td><?= $nomor++; ?></td>
-                                    <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
-                                    <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                    <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
-                                    <td><?= $jenisSidangTampilan; ?></td>
-                                    <?php if ($statusFilter !== 'Pending'): ?>
-                                        <td>
-                                            <?php
-                                            $statusClass = '';
-                                            if ($row['status_ajuan'] == 'Approved') {
-                                                $statusClass = 'text-success fw-bold';
-                                            } elseif ($row['status_ajuan'] == 'Rejected') {
-                                                $statusClass = 'text-danger fw-bold';
-                                            }
-                                            echo '<span class="' . $statusClass . '">' . htmlspecialchars($row['status_ajuan']) . '</span>';
-                                            ?>
+                            <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)) : ?>
+                                <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) : ?>
+                                    <?php
+                                    $jenisSidangTampilan = ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester';
+                                    ?>
+                                    <tr class="isiTabel jadiBiru">
+                                        <td><?= $nomor++; ?></td>
+                                        <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
+                                        <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                        <td><?= $jenisSidangTampilan; ?></td>
+                                        <?php if ($statusFilter !== 'Pending') : ?>
+                                            <td>
+                                                <?php
+                                                $statusClass = '';
+                                                if ($row['status_ajuan'] == 'Approved') {
+                                                    $statusClass = 'text-success fw-bold';
+                                                } elseif ($row['status_ajuan'] == 'Rejected') {
+                                                    $statusClass = 'text-danger fw-bold';
+                                                }
+                                                echo '<span class="' . $statusClass . '">' . htmlspecialchars($row['status_ajuan']) . '</span>';
+                                                ?>
+                                            </td>
+                                        <?php endif; ?>
+                                        <td style="text-align: center;">
+                                            <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
+                                                <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
+                                                <input type="hidden" name="tipe" value="<?= $jenisSidangTampilan; ?>">
+                                                <button type="submit" class="detail-btn">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </form>
                                         </td>
-                                    <?php endif; ?>
-                                    <td style="text-align: center;">
-                                        <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
-                                        <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
-                                        <input type="hidden" name="tipe" value="<?= $jenisSidangTampilan; ?>">
-                                        <button type="submit" class="detail-btn">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        </form>
-                                    </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan="<?= ($statusFilter !== 'Pending') ? '8' : '7' ?>" class="text-center" style="padding: 20px;">Nggak ada data ditemukan.</td>
                                 </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="<?= ($statusFilter !== 'Pending') ? '8' : '7' ?>" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
-                            </tr>
-                        <?php endif; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                     <div class="pagination-container" id="paginationContainer" style="display: none;">
@@ -380,11 +380,11 @@ $nomor = max(1, $offset + 1);
                             </div>
                         </div>
                         <div class="modal-body mx-auto">
-                            Apakah anda yakin ingin keluar?
+                            Yakin mau keluar?
                         </div>
                         <div class="modal-footer justify-content-center border-0">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjut</button>
                         </div>
                     </div>
                 </div>
@@ -450,7 +450,7 @@ $nomor = max(1, $offset + 1);
                                         </div>
 
                                         <div class="form-section-card" id="dosen-wrapper-group" style="display:none;">
-                                            <div class="form-section-title">Dosen Pembimbing <span class="text-muted">(Opsional - Anda otomatis menjadi pembimbing)</span></div>
+                                            <div class="form-section-title">Dosen Pembimbing <span class="text-muted">(Opsional - Kamu otomatis jadi pembimbing)</span></div>
                                             <div class="dosen-wrapper" id="dosen-wrapper"></div>
                                         </div>
 
@@ -461,10 +461,10 @@ $nomor = max(1, $offset + 1);
                                                     <label for="anggota_1">Anggota 1:</label>
                                                     <div class="anggota-input-group">
                                                         <div class="input-container">
-                                                            <input type="text" id="anggota_1" name="anggota[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" />
+                                                            <input type="text" id="anggota_1" name="anggota[]" placeholder="Masukin NIM atau nama" oninput="searchMahasiswa(this, 1)" />
                                                             <div class="autocomplete-dropdown" id="autocomplete_1" style="display: none;"></div>
                                                         </div>
-                                                        <div class="anggota-nama-display" id="anggota_nama_1">Nama akan muncul otomatis</div>
+                                                        <div class="anggota-nama-display" id="anggota_nama_1">Nama bakal muncul otomatis</div>
                                                         <div class="form-toggle-buttons">
                                                             <button type="button" onclick="addAnggota()">+</button>
                                                             <button type="button" onclick="removeAnggota()" style="display: none;">-</button>
@@ -474,7 +474,7 @@ $nomor = max(1, $offset + 1);
                                             </div>
                                         </div>
                                         <div class="kelompok-form-actions modal-footer border-0">
-                                            <button type="button" class="btn btn-danger" onclick="closeKelompokModal()">Batalkan</button>
+                                            <button type="button" class="btn btn-danger" onclick="closeKelompokModal()">Batal</button>
                                             <button type="submit" class="btn btn-success">Simpan</button>
                                         </div>
                                     </form>
@@ -498,7 +498,7 @@ $nomor = max(1, $offset + 1);
                                     </div>
                                 </div>
                                 <div class="kelompok-list-container" id="kelompok-list-container">
-                                    <p class="text-center text-muted">Memuat daftar kelompok...</p>
+                                    <p class="text-center text-muted">Lagi ngambil daftar kelompok...</p>
                                 </div>
                                 <div class="kelompok-form-actions modal-footer justify-content-center border-0">
                                     <button type="button" class="btn btn-danger" onclick="closeKelompokModal()">Tutup</button>
@@ -510,22 +510,10 @@ $nomor = max(1, $offset + 1);
             </div>
 
         </main>
-    </div> 
+    </div>
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
     <script src="../../assets/js/dPengajuan.js"></script>
-    <script>
-    // [TAMBAHAN] Script sederhana untuk menangani search
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            const searchValue = this.value;
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('search', searchValue);
-            window.location.href = currentUrl.toString();
-        }
-    });
-    </script>
 </body>
-
 </html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
