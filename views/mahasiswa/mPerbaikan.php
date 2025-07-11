@@ -114,6 +114,20 @@ if (!$id_kelompok) {
 }
 
 
+// Ambil semua dosen penguji/pembimbing dari Penjadwalan (tanpa filter peran)
+$daftar_dosen = [];
+$sql_dosen = "SELECT nomor_dosen FROM Penjadwalan WHERE id_sidang = ?";
+$stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$id_sidang]);
+
+if ($stmt_dosen) {
+    while ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC)) {
+        $daftar_dosen[] = $row['nomor_dosen'];
+    }
+} else {
+    die("Gagal mengambil data dosen: " . print_r(sqlsrv_errors(), true));
+}
+
+
 // === LOGIKA FILE UPLOAD ===
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["fileInput"]) && $_FILES["fileInput"]["error"] == 0) {
@@ -121,53 +135,84 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $ekstensi_file = strtolower(pathinfo($file_asli, PATHINFO_EXTENSION));
         $file_unik = 'revisi_' . $id_sidang . '_' . time() . '.' . $ekstensi_file;
 
-        // Perbaikan: Gunakan path absolut yang benar
         $folder_target = __DIR__ . "/uploads/";
         if (!file_exists($folder_target)) {
             mkdir($folder_target, 0755, true);
         }
 
         $path_target = $folder_target . $file_unik;
-        // Simpan path relatif ke database untuk konsistensi
         $path_relatif = "views/mahasiswa/uploads/" . $file_unik;
         $ekstensi_diizinkan = array("pdf", "docx", "pptx", "zip");
 
-        if (!in_array($ekstensi_file, $ekstensi_diizinkan) || $_FILES["fileInput"]["size"] > 5242880) { // Max 5MB
+        if (!in_array($ekstensi_file, $ekstensi_diizinkan) || $_FILES["fileInput"]["size"] > 5242880) {
             $_SESSION['pesan'] = "Error: Format atau ukuran file tidak sesuai.";
         } else {
             if (move_uploaded_file($_FILES["fileInput"]["tmp_name"], $path_target)) {
-                // Debug: Log informasi file
-                error_log("File uploaded successfully: " . $path_target);
-                error_log("File size: " . filesize($path_target));
 
-                $nim_mahasiswa = $_SESSION['user_data']['nim'];
-                $query_update_dokumen = "UPDATE Detail_Sidang SET dok_revisi = ?, nama_file = ?, status_revisi = 'Pending' WHERE id_sidang = ? AND nomor_dosen = ?";
-                $params_update = array($path_relatif, $file_asli, $id_sidang, $nomor_dosen_target);
-
-                // Debug: Log query dan parameter
-                error_log("Update query: " . $query_update_dokumen);
-                error_log("Parameters: " . print_r($params_update, true));
-
-                $stmt_update = sqlsrv_query($conn, $query_update_dokumen, $params_update);
-
-                if ($stmt_update) {
-                    $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
-                    error_log("Database update successful");
-                } else {
-                    unlink($path_target);
-                    $errors = sqlsrv_errors();
-                    error_log("Database update error: " . print_r($errors, true));
-                    $_SESSION['pesan'] = "Error: Gagal menyimpan informasi file ke database. Error: " . ($errors ? $errors[0]['message'] : 'Unknown error');
+                // Ambil id_matkul dari Kelompok
+                $sql_matkul = "SELECT mk.id_matkul 
+               FROM Sidang s
+               JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+               JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul
+               WHERE s.id_sidang = ?";
+                $stmt_matkul = sqlsrv_query($conn, $sql_matkul, [$id_sidang]);
+                $id_matkul = null;
+                if ($stmt_matkul && ($row = sqlsrv_fetch_array($stmt_matkul, SQLSRV_FETCH_ASSOC))) {
+                    $id_matkul = $row['id_matkul'];
                 }
+
+
+                // Loop setiap dosen
+                error_log("Jumlah dosen yang ditemukan: " . count($daftar_dosen));
+                error_log("Daftar dosen: " . print_r($daftar_dosen, true));
+
+                foreach ($daftar_dosen as $nomor_dosen) {
+                    // Cek apakah sudah ada
+                    $cek_sql = "SELECT 1 FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
+                    $cek_stmt = sqlsrv_query($conn, $cek_sql, [$id_sidang, $nomor_dosen]);
+                    $cek_exist = $cek_stmt && sqlsrv_fetch_array($cek_stmt, SQLSRV_FETCH_ASSOC);
+
+                    if (!$cek_exist) {
+                        error_log(">> Menjalankan INSERT untuk dosen $nomor_dosen");
+
+                        // Insert baru
+                        $insert_sql = "INSERT INTO Detail_Sidang (id_sidang, nomor_dosen, dok_revisi, nama_file, status_revisi, id_matkul) 
+                                       VALUES (?, ?, ?, ?, ?, ?)";
+                        $insert_params = [$id_sidang, $nomor_dosen, $path_relatif, $file_asli, 'Pending', $id_matkul];
+                        $stmt_insert = sqlsrv_query($conn, $insert_sql, $insert_params);
+
+                        if (!$stmt_insert) {
+                            error_log("Gagal insert Detail_Sidang: " . print_r(sqlsrv_errors(), true));
+                            error_log("Query: $insert_sql");
+                            error_log("Params: " . print_r($insert_params, true));
+                        } else {
+                            error_log("INSERT Detail_Sidang berhasil untuk dosen: $nomor_dosen");
+                        }
+                    } else {
+                        // Update revisi
+                        $update_sql = "UPDATE Detail_Sidang 
+                                       SET dok_revisi = ?, nama_file = ?, status_revisi = 'Pending' 
+                                       WHERE id_sidang = ? AND nomor_dosen = ?";
+                        $update_params = [$path_relatif, $file_asli, $id_sidang, $nomor_dosen];
+                        $stmt_update = sqlsrv_query($conn, $update_sql, $update_params);
+
+                        if (!$stmt_update) {
+                            error_log("Gagal update Detail_Sidang: " . print_r(sqlsrv_errors(), true));
+                        }
+                    }
+                }
+
+                $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
             } else {
-                error_log("Failed to move uploaded file from " . $_FILES["fileInput"]["tmp_name"] . " to " . $path_target);
-                $_SESSION['pesan'] = "Error: Maaf, terjadi kesalahan saat memindahkan file.";
+                $_SESSION['pesan'] = "Error: Gagal memindahkan file.";
             }
         }
+
         header("Location: " . htmlspecialchars($_SERVER["PHP_SELF"]));
         exit();
     }
 }
+
 
 // Tambahan: Query detail sidang agar $data_sidang tidak undefined
 $data_sidang = null;
