@@ -526,7 +526,26 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
         }
 
         // --- Modal Logic ---
+        // Mencegah form tersubmit secara default
+        document.getElementById('dokumenRevisiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+
         function showConfirmationModal(action) {
+            // Mencegah aksi jika dokumen belum diunggah
+            <?php if (empty($data_revisi['dok_revisi'])): ?>
+            if (action === 'Disetujui' || action === 'Ditolak') {
+                Swal.fire({
+                    title: 'Aksi Tidak Dapat Dilakukan',
+                    text: 'Mahasiswa belum mengunggah dokumen revisi.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4B68FB'
+                });
+                return; // Hentikan fungsi
+            }
+            <?php endif; ?>
+
             const confirmationModalElement = document.getElementById('confirmationModal');
             if (!confirmationModalElement) {
                 console.error('Modal HTML dengan id "confirmationModal" tidak ditemukan!');
@@ -551,97 +570,111 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                 await new Promise(resolve => setTimeout(resolve, 300));
 
                 if (action === 'Ditolak') {
-                    const {
-                        value: catatan,
-                        isConfirmed
-                    } = await Swal.fire({
-                        title: 'Alasan Penolakan',
-                        input: 'textarea',
-                        inputLabel: 'Catatan:',
-                        inputPlaceholder: 'Masukan catatan penolakan di sini...',
-                        showCancelButton: true,
-                        confirmButtonText: 'Kirim',
-                        cancelButtonText: 'Batal',
-                        reverseButtons: true,
-                        customClass: {
-                            confirmButton: 'btn btn-setujui',
-                            cancelButton: 'btn btn-tolak'
-                        },
-                        inputValidator: (value) => {
-                            if (!value || value.trim() === '') {
-                                return 'Alasan penolakan tidak boleh kosong!';
-                            }
-                        }
-                    });
-
-                    if (isConfirmed && catatan) {
-                        // Di sini Anda bisa menambahkan logika fetch untuk mengirim data penolakan ke server
-                        console.log('Catatan Penolakan:', catatan); // Untuk saat ini kita log saja
-
-                        await Swal.fire({
-                            title: 'Berhasil!',
-                            text: 'Dokumen revisi telah ditolak dan catatan telah disimpan.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                        // Redirect ke daftar sidang setelah menolak
-                        window.location.href = 'dDaftarSidang.php';
-                    }
-
+                    handleRejectAction();
                 } else { // Jika aksi adalah 'Disetujui'
-                    try {
-                        const postData = new URLSearchParams({
-                            approve: true,
-                            id_sidang: <?= $id_sidang ?>
-                        });
-
-                        const response = await fetch(window.location.href, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: postData
-                        });
-
-                        // Periksa apakah respons adalah JSON yang valid
-                        const contentType = response.headers.get("content-type");
-                        if (!response.ok || !contentType || !contentType.includes("application/json")) {
-                            const errorText = await response.text();
-                            throw new Error(`Server memberikan respon yang tidak valid. Isi respon: \n${errorText}`);
-                        }
-
-                        const result = await response.json();
-
-                        if (result.status === 'success') {
-                            await Swal.fire({
-                                title: 'Berhasil!',
-                                text: result.message,
-                                icon: 'success',
-                                confirmButtonText: 'OK',
-                                confirmButtonColor: '#4B68FB'
-                            });
-                            // Redirect ke URL yang diberikan oleh server
-                            window.location.href = result.redirectUrl;
-                        } else {
-                            // Tampilkan pesan error spesifik dari server
-                            Swal.fire({
-                                title: 'Gagal!',
-                                text: result.message,
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    } catch (error) {
-                        console.error("Terjadi error saat proses persetujuan:", error);
-                        Swal.fire({
-                            title: 'Error Teknis!',
-                            text: 'Tidak dapat terhubung ke server atau terjadi kesalahan. Silakan cek konsol untuk detail.',
-                            icon: 'error'
-                        });
-                    }
+                    handleApproveAction();
                 }
             });
             confirmationModal.show();
+        }
+
+        async function handleRejectAction() {
+            const {
+                value: catatan,
+                isConfirmed
+            } = await Swal.fire({
+                title: 'Alasan Penolakan',
+                input: 'textarea',
+                inputLabel: 'Catatan:',
+                inputPlaceholder: 'Masukan catatan penolakan di sini...',
+                showCancelButton: true,
+                confirmButtonText: 'Kirim',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-setujui',
+                    cancelButton: 'btn btn-tolak'
+                },
+                inputValidator: (value) => {
+                    if (!value || value.trim() === '') {
+                        return 'Alasan penolakan tidak boleh kosong!';
+                    }
+                }
+            });
+
+            if (isConfirmed && catatan) {
+                // Logika untuk mengirim data penolakan ke server bisa ditambahkan di sini
+                console.log('Catatan Penolakan:', catatan); // Contoh log
+
+                // Simulasi pengiriman ke server dan menampilkan pesan sukses
+                // Anda bisa menggantinya dengan fetch() seperti pada handleApproveAction
+                await Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Dokumen revisi telah ditolak dan catatan telah disimpan.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+                // Redirect ke daftar sidang setelah menolak
+                window.location.href = 'dDaftarSidang.php';
+            }
+        }
+
+        async function handleApproveAction() {
+            try {
+                const formData = new FormData();
+                formData.append('approve', 'true');
+                // Menambahkan nim dari form untuk konsistensi, meskipun tidak digunakan di backend POST saat ini
+                const nimInput = document.querySelector('input[name="nim"]');
+                if (nimInput) {
+                    formData.append('nim', nimInput.value);
+                }
+
+                const response = await fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Periksa apakah respons adalah JSON yang valid
+                const contentType = response.headers.get("content-type");
+                if (!response.ok || !contentType || !contentType.includes("application/json")) {
+                    const errorText = await response.text();
+                    // Tampilkan pop-up error teknis jika respons bukan JSON
+                    throw new Error(`Server memberikan respon yang tidak valid. Status: ${response.status}. Isi respon: \n${errorText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    await Swal.fire({
+                        title: 'Berhasil!',
+                        text: result.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#4B68FB'
+                    });
+                    // Redirect ke URL yang diberikan oleh server
+                    window.location.href = result.redirectUrl;
+                } else {
+                    // **POP-UP ERROR DARI SERVER**
+                    // Tampilkan pop-up jika status adalah 'error' dengan pesan dari server
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: result.message || 'Terjadi kesalahan saat memproses permintaan Anda.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.error("Terjadi error saat proses persetujuan:", error);
+                // **POP-UP ERROR TEKNIS**
+                // Tampilkan pop-up jika terjadi kesalahan pada fetch atau koneksi
+                Swal.fire({
+                    title: 'Error Teknis!',
+                    text: 'Tidak dapat terhubung ke server atau terjadi kesalahan. Silakan coba lagi nanti.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         }
     </script>
 </body>
