@@ -55,76 +55,66 @@ document.addEventListener('DOMContentLoaded', function() {
     // === LOGIKA UTAMA UNTUK TOMBOL KIRIM YANG PROAKTIF ===
     // =================================================================
 
-    // 1. Definisikan semua elemen yang diperlukan untuk validasi
-    const btnKirim = document.getElementById('btnKirim');
-    const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
+      const btnKirim = document.getElementById('btnKirim');
+    const form = document.getElementById('evaluasiForm');
     
-    // Pastikan kita punya tombol sebelum melanjutkan
-    if (!btnKirim) {
-        console.warn('Tombol dengan ID "btnKirim" tidak ditemukan. Fungsi tombol pasif tidak akan berjalan.');
-        return; // Hentikan eksekusi script jika tombol tidak ada
+    // Pastikan elemen penting ada sebelum melanjutkan
+    if (!btnKirim || !form) {
+        console.error('Tombol Kirim atau Form tidak ditemukan. Script dihentikan.');
+        return;
     }
 
     // Kumpulkan semua input yang wajib diisi.
-    // PENTING: Nama input (n_dokumen, n_presentasi, dll.) harus sesuai dengan atribut 'name' di HTML Anda.
     const requiredInputs = [
         document.querySelector('input[name="n_dokumen"]'),
         document.querySelector('input[name="n_presentasi"]'),
         document.querySelector('input[name="n_tanyajawab"]'),
         document.querySelector('input[name="n_proyek"]'),
         document.getElementById('catatanEvaluasi')
-    ]
+    ].filter(Boolean); // .filter(Boolean) untuk menghapus elemen null jika ada yg tidak ditemukan
 
     /**
      * Fungsi utama untuk memeriksa semua input dan mengaktifkan/menonaktifkan tombol "Kirim".
      */
     function updateKirimButtonState() {
-        // Cek apakah SEMUA input yang wajib diisi memiliki nilai (tidak kosong)
+        // PERUBAHAN UTAMA: Cek dulu apakah form dikunci dari server.
+        // Variabel 'isFormLocked' ini datang dari tag <script> di file PHP.
+        if (typeof isFormLocked !== 'undefined' && isFormLocked) {
+            btnKirim.classList.remove('btn-passive'); // Hapus class pasif agar jadi hijau
+            btnKirim.disabled = true;                // Tapi tetap non-aktifkan
+            btnKirim.textContent = 'kirim'; // Pastikan teks sesuai
+            // Non-aktifkan semua input juga
+            requiredInputs.forEach(input => input.readOnly = true);
+            return; // Hentikan fungsi di sini, tidak perlu validasi lagi.
+        }
+
+        // Jika form tidak dikunci, lanjutkan dengan logika validasi seperti biasa.
         const isFormValid = requiredInputs.every(input => input.value.trim() !== '');
 
         if (isFormValid) {
             // Jika valid, buat tombol menjadi AKTIF
             btnKirim.classList.remove('btn-passive');
+            btnKirim.disabled = false;
             btnKirim.title = 'Klik untuk mengirim evaluasi';
         } else {
             // Jika tidak valid, buat tombol menjadi PASIF
             btnKirim.classList.add('btn-passive');
+            btnKirim.disabled = true;
             btnKirim.title = 'Harap lengkapi semua kolom nilai dan catatan evaluasi';
         }
     }
 
-    // 2. Tambahkan event listener ke setiap input yang wajib diisi agar tombol diperbarui secara real-time
+    // Tambahkan event listener ke setiap input yang wajib diisi
     requiredInputs.forEach(input => {
-        input.addEventListener('input', updateKirimButtonState);
+        if(input) { // Pastikan input tidak null
+             input.addEventListener('input', updateKirimButtonState);
+        }
     });
 
-    // 3. Atur status awal tombol saat halaman pertama kali dimuat
-    // Ini penting jika form sudah terisi data dari database
+    // Jalankan pengecekan saat halaman pertama kali dimuat
     updateKirimButtonState();
-
-    // 4. Modifikasi event klik pada tombol "Kirim"
-    // Event ini sekarang hanya akan berjalan jika tombol dalam keadaan aktif
-// ... (di dalam DOMContentLoaded)
-    if (confirmationKirimModalElement && btnKirim) {
-        btnKirim.addEventListener('click', function() {
-            // Cek sekali lagi jika tombol tidak disabled sebelum membuka modal
-            if (!this.disabled) { 
-                const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
-                confirmationKirimModal.show();
-            }
-        });
-
-        // Event listener untuk tombol konfirmasi di dalam modal (sudah ada di HTML Anda)
-        const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
-        if (btnKonfirmasiKirim) {
-            btnKonfirmasiKirim.addEventListener('click', function() {
-                document.getElementById('evaluasiForm').submit();
-            });
-        }
-    }
-
-
-    // --- VALIDASI INPUT: HANYA ANGKA 0-100 (opsional, bisa digabung) ---
+    
+    // --- VALIDASI INPUT: HANYA ANGKA 0-100 ---
     document.querySelectorAll('.input-nilai').forEach(function(input) {
         input.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
@@ -137,5 +127,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // --- MODAL CONFIRMATION ---
+    // Logika ini sudah benar, tidak perlu diubah.
+    const confirmationKirimModalElement = document.getElementById('confirmationKirimModal');
+    if (confirmationKirimModalElement) {
+        btnKirim.addEventListener('click', function(event) {
+            event.preventDefault(); // Mencegah submit form langsung
+            if (!this.disabled) { 
+                const confirmationKirimModal = new bootstrap.Modal(confirmationKirimModalElement);
+                confirmationKirimModal.show();
+            }
+        });
+
+        const btnKonfirmasiKirim = document.getElementById('btnKonfirmasiKirim');
+        if (btnKonfirmasiKirim) {
+            btnKonfirmasiKirim.addEventListener('click', function() {
+                form.submit();
+            });
+        }
+    }
 });
-        

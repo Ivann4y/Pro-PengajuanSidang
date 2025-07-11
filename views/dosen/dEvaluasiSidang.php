@@ -189,24 +189,23 @@ require_once '../../control/dosen/dEvaluasiSidang_queries.php';
                             <?php unset($_SESSION['error']); ?>
                         <?php endif; ?>
 
-                        <h3>Catatan Evaluasi Sidang</h3>
+      <h3>Catatan Evaluasi Sidang</h3>
                         <div class="form-card">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h4>Masukkan Catatan Evaluasi Sidang <span style="color: red;">*</span></h4>
                             </div>
                             <div class="form-group-custom">
                                 <label for="catatanEvaluasi" class="visually-hidden">Catatan Evaluasi</label>
-                                <textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini.." <?= $nilai_sudah_dikirim_dan_lengkap ? 'readonly' : '' ?>><?php echo htmlspecialchars($catatan_revisi); ?></textarea>
+<textarea id="catatanEvaluasi" name="catatanEvaluasi" class="form-control-custom" placeholder="Silahkan masukkan Catatan Evaluasi Sidang disini..">
+    <?php echo htmlspecialchars($catatan_revisi); ?></textarea>
                             </div>
                             <p class="error-message" id="catatanEvaluasiErrorMessage"> *Harus diisi!</p>
                         </div>
-
 <div class="col-12 d-flex justify-content-end">
-    <button type="button" 
-            id="btnKirim"
-            class="btn btn-setujui <?= $nilai_sudah_dikirim_dan_lengkap ? 'btn-passive' : '' ?>"
-            <?= $nilai_sudah_dikirim_dan_lengkap ? 'disabled' : '' ?>>
-        Kirim
+    <button type="button" id="btnKirim"
+        class="btn btn-setujui <?= $nilai_sudah_dikirim_dan_lengkap ? '' : 'btn-passive' ?>"
+        <?= $nilai_sudah_dikirim_dan_lengkap ? 'disabled' : '' ?>>
+        <?= $nilai_sudah_dikirim_dan_lengkap ? 'kirim' : 'Kirim' ?>
     </button>
 </div>
                     </form>
@@ -214,7 +213,7 @@ require_once '../../control/dosen/dEvaluasiSidang_queries.php';
             </main>
         </div>
     </div>
-
+                            
 
 
 
@@ -276,6 +275,11 @@ require_once '../../control/dosen/dEvaluasiSidang_queries.php';
             myModal.show();
         });
     </script>
+
+       <script>
+        const isFormLocked = <?= json_encode($nilai_sudah_dikirim_dan_lengkap); ?>;
+    </script>
+
     <script src="../../assets/js/dEvaluasiSidang.js"></script>
 </body>
 

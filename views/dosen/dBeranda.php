@@ -79,8 +79,8 @@ include "../../koneksi/koneksiAndrew.php";
                             <div class="dashboard-card card-perbaikan status-card-common hover-effect-card">
                                 <div class="number" id="perbaikan-count">0</div>
                                 <div class="text-content">
-                                    <span class="title">Perbaikan</span>
-                                    <span class="description">Menunggu untuk Dinilai</span>
+                                    <span class="title">Kelompok</span>
+                                    <span class="description">Menunggu untuk perbaikan</span>
                                 </div>
                             </div>
                         </a>
@@ -90,7 +90,7 @@ include "../../koneksi/koneksiAndrew.php";
                             <div class="dashboard-card card-penilaian status-card-common hover-effect-card">
                                 <div class="number" id="penilaian-count">0</div>
                                 <div class="text-content">
-                                    <span class="title">Penilaian</span>
+                                    <span class="title">Kelompok</span>
                                     <span class="description">Menunggu untuk Dinilai</span>
                                 </div>
                             </div>

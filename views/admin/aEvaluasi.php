@@ -17,61 +17,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   exit();
 }
 
-require "../../koneksi/koneksiAndrew.php";
-
-if (
-  !isset($_SESSION['id_sidang_aktif']) || !is_numeric($_SESSION['id_sidang_aktif']) ||
-  !isset($_SESSION['judul']) || empty($_SESSION['judul'])
-) {
-  $_SESSION['error_message'] = "Sidang tidak ditemukan atau belum dipilih.";
-  header("Location: aDaftarSidang.php");
-  exit();
-}
-
-$judulSidang = $_SESSION['judul'];
-$id_sidang = (int) $_SESSION['id_sidang_aktif'];
-
-$sql = "
-    SELECT 
-    ds.nomor_dosen,
-    d.nama_dosen,
-    ds.catatan_sidang,
-    ds.status_revisi,
-    ds.dok_revisi,
-    ds.nama_file,
-    p.peran_dosen
-FROM Detail_Sidang ds
-JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-JOIN Penjadwalan p ON ds.id_sidang = p.id_sidang AND ds.nomor_dosen = p.nomor_dosen
-WHERE ds.id_sidang = ?
-";
-
-$params = [$id_sidang];
-$stmt = sqlsrv_query($conn, $sql, $params);
-
-$statusList = [];
-
-while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-  $statusList[] = $row['status_revisi'];
-  $allRows[] = $row; // simpan baris-baris untuk ditampilkan nanti
-}
-
-// Reset ulang pointer untuk looping nanti
-sqlsrv_free_stmt($stmt);
-
-// Hitung status global
-if (in_array('Ditolak', $statusList)) {
-  $statusRevisiGlobal = "Ditolak";
-  $badgeClass = "badge-danger";
-} elseif (in_array('Pending', $statusList)) {
-  $statusRevisiGlobal = "Belum Disetujui";
-  $badgeClass = "badge-warning";
-} else {
-  $statusRevisiGlobal = "Disetujui";
-  $badgeClass = "badge-success";
-}
-
-
+require $path_to_root . "koneksi/koneksiAndrew.php";
+include $path_to_root . "control/admin/aEvaluasi_queries.php";
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -151,6 +98,13 @@ if (in_array('Ditolak', $statusList)) {
     </div>
     <main class="NavSide__main-content">
 
+      <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="aDaftarSidang.php">Daftar Sidang</a></li>
+          <li class="breadcrumb-item"><a href="aDetailSidang.php">Detail Sidang</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Evaluasi</li>
+        </ol>
+      </nav>
       <div>
         <h2 class="judul text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= $judulSidang ?></h2>
       </div>
@@ -161,34 +115,47 @@ if (in_array('Ditolak', $statusList)) {
         </span>
       </div>
 
-      <?php foreach ($allRows as $row): ?>
-        <?php $peranDosen = unpack("C", $row['peran_dosen'])[1]; ?>
-        <?php
-        $catatanFull = $row['catatan_sidang'];
-        $catatanPreview = strlen($catatanFull) > 50 ? substr($catatanFull, 0, 50) . '...' : $catatanFull;
-        ?>
-        <div class="card-comment mt-4" data-bs-toggle="modal"
-          data-bs-target="#modalDetail"
-          data-catatan="<?= htmlspecialchars($catatanFull, ENT_QUOTES) ?>">
-          <h6 class="card-h">
-            <?= htmlspecialchars($row['nama_dosen']) ?>
-            - <?= ($peranDosen == 1 ? 'Pembimbing' : 'Penguji') ?>
-          </h6>
+      <?php if (!empty($allRows)): ?>
+        <?php foreach ($allRows as $row): ?>
+          <?php
+          $namaDosen = isset($row['nama_dosen']) && $row['nama_dosen'] !== '' ? htmlspecialchars($row['nama_dosen']) : 'Tidak diketahui';
 
-          <p class="mt-2 mb-0 text-truncate-2">
-            <?= htmlspecialchars($catatanPreview) ?>
-          </p>
+          $peranDosen = isset($row['peran_dosen']) ? unpack("C", $row['peran_dosen'])[1] : null;
+          $peranLabel = ($peranDosen === 1) ? 'Pembimbing' : (($peranDosen === 0) ? 'Penguji' : 'Peran tidak diketahui');
 
-          <?php if ($row['status_revisi'] === 'Pending'): ?>
-            <div class="badge-statusDosen badge-warning"><?= $row['status_revisi'] ?></div>
-          <?php elseif ($row['status_revisi'] === 'Disetujui'): ?>
-            <div class="badge-statusDosen badge-success"><?= $row['status_revisi'] ?></div>
-          <?php elseif ($row['status_revisi'] === 'Ditolak'): ?>
-            <div class="badge-statusDosen badge-danger"><?= $row['status_revisi'] ?></div>
-          <?php endif; ?>
+          $catatanFull = isset($row['catatan_sidang']) && $row['catatan_sidang'] !== '' ? $row['catatan_sidang'] : 'Tidak ada catatan.';
+          $catatanPreview = strlen($catatanFull) > 50 ? substr($catatanFull, 0, 50) . '...' : $catatanFull;
+
+          $statusRevisi = isset($row['status_revisi']) && $row['status_revisi'] !== '' ? $row['status_revisi'] : 'Tidak diketahui';
+          ?>
+          <div class="card-comment mt-4" data-bs-toggle="modal"
+            data-bs-target="#modalDetail"
+            data-catatan="<?= htmlspecialchars($catatanFull, ENT_QUOTES) ?>">
+            <h6 class="card-h">
+              <?= $namaDosen ?> - <?= $peranLabel ?>
+            </h6>
+
+            <p class="mt-2 mb-0 text-truncate-2">
+              <?= htmlspecialchars($catatanPreview) ?>
+            </p>
+
+            <?php if ($statusRevisi === 'Pending'): ?>
+              <div class="badge-statusDosen badge-warning"><?= $statusRevisi ?></div>
+            <?php elseif ($statusRevisi === 'Disetujui'): ?>
+              <div class="badge-statusDosen badge-success"><?= $statusRevisi ?></div>
+            <?php elseif ($statusRevisi === 'Ditolak'): ?>
+              <div class="badge-statusDosen badge-danger"><?= $statusRevisi ?></div>
+            <?php else: ?>
+              <div class="badge-statusDosen badge-secondary"><?= $statusRevisi ?></div>
+            <?php endif; ?>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="card-comment mt-4">
+          <h6 class="card-h">Data tidak ditemukan</h6>
+          <p class="mt-2 mb-0 text-muted">Tidak ada catatan evaluasi atau data dosen yang tersedia.</p>
         </div>
-      <?php endforeach; ?>
-
+      <?php endif; ?>
 
       <?php if (!empty($allRows[0]['dok_revisi'])): ?>
         <div class="revision-card shadow-sm">
@@ -222,24 +189,32 @@ if (in_array('Ditolak', $statusList)) {
           document.getElementById("downloadContainer").appendChild(containerDiv);
         </script>
 
+        <div class="button-group-bottom mt-4">
+          <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
+            <span class="icon-circle">
+              <i class="fa-solid fa-arrow-left"></i>
+            </span>
+            Kembali
+          </button>
+        </div>
+
       <?php else: ?>
-        <div class="revision-card shadow-sm">
+        <div class="revision-empty shadow-sm mb-4">
           <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
-          <div class="revision-cardUp text-center">
+          <div class="revision-inEmpty text-center">
             <p class="text-muted mt-3">Belum ada dokumen revisi yang diunggah.</p>
           </div>
         </div>
+
+        <div class="button-group-bottom mt-4">
+          <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
+            <span class="icon-circle">
+              <i class="fa-solid fa-arrow-left"></i>
+            </span>
+            Kembali
+          </button>
+        </div>
       <?php endif; ?>
-
-
-      <div class="button-group-bottom mt-4">
-        <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
-          <span class="icon-circle">
-            <i class="fa-solid fa-arrow-left"></i>
-          </span>
-          Kembali
-        </button>
-      </div>
 
       <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
