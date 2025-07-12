@@ -59,7 +59,10 @@ FROM
 JOIN
     Kelompok AS K_mhs ON M.nim = K_mhs.nim
 JOIN
-    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok AND K_sidang.nim = M.nim
+    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok
+    AND K_mhs.tahun_ajaran = K_sidang.tahun_ajaran
+    AND K_mhs.jenis_sidang = K_sidang.jenis_sidang
+    AND K_mhs.id_matkul = K_sidang.id_matkul
 JOIN
     Sidang AS S ON K_sidang.id_kelompok = S.id_kelompok 
 WHERE
@@ -109,7 +112,10 @@ FROM
 JOIN
     Kelompok AS K_mhs ON M.nim = K_mhs.nim
 JOIN
-    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok AND K_sidang.nim = M.nim
+    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok
+    AND K_mhs.tahun_ajaran = K_sidang.tahun_ajaran
+    AND K_mhs.jenis_sidang = K_sidang.jenis_sidang
+    AND K_mhs.id_matkul = K_sidang.id_matkul
 JOIN
     Sidang AS S ON K_sidang.id_kelompok = S.id_kelompok 
 JOIN 
