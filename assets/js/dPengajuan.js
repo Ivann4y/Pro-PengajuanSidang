@@ -1,4 +1,5 @@
-// Untuk responsifitas sidebar
+
+        // Sidebar Toggle Logic
         let menuToggle = document.querySelector(".NavSide__toggle");
         let sidebar = document.getElementById("main-sidebar");
 
