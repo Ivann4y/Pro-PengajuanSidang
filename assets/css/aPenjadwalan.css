@@ -696,6 +696,8 @@ body {
         overflow-x: hidden;
     }
 
+    
+
     .table-admin-custom thead {
         display: none;
     }
@@ -755,7 +757,7 @@ body {
 
     .table-admin-custom td:first-child,
     .table-admin-custom td:last-child {
-        border-radius: 0;
+        border-radius: 0px 0px 0px 0px !important
     }
 
     .table-admin-custom td:last-child {

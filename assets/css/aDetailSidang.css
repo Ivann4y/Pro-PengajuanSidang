@@ -1,19 +1,19 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
 }
 
 body {
-  min-height: 100vh;
-  background-color: #ffffff;
+    min-height: 100vh;
+    background-color: #ffffff;
 }
 
 #NavSide {
-  display: flex;
-  min-height: 100vh;
-  position: relative;
+    display: flex;
+    position: relative;
+    min-height: 100vh;
 }
 
 .NavSide__sidebar-brand {
@@ -29,21 +29,16 @@ body {
 }
 
 .NavSide__sidebar {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  width: 280px;
-  border-radius: 1px;
-  box-sizing: border-box;
-  border-left: 5px solid #4b68fb;
-  background: #4b68fb;
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    background: #4B68FB;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s ease-in-out;
 }
 
 .NavSide__sidebar-nav {
@@ -138,32 +133,14 @@ body {
 
 /* === PERUBAHAN CSS BAGIAN 1: GAYA TOPBAR === */
 .NavSide__topbar {
-  display: none;
-  /* Sembunyikan di desktop, muncul di mobile */
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  /* Dimulai dari kiri */
-  width: 100%;
-  /* Lebar penuh */
-  height: 60px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1045;
-  /* Pastikan di atas sidebar saat mobile */
-  padding-left: 15px;
-  /* Beri sedikit jarak untuk tombol toggle */
+    display: none; /* Sembunyi di desktop */
 }
 
 .NavSide__main-content {
-  flex-grow: 1;
-  padding: 20px;
-  margin-left: 280px;
-  overflow-y: auto;
-  transition: margin-left 0.5s ease-in-out;
-  /* Tambahkan padding-top agar konten tidak tertutup topbar di mobile */
-  padding-top: calc(60px + 20px);
+    flex-grow: 1;
+    margin-left: 280px; /* Jarak untuk sidebar di desktop */
+    padding: 25px 30px;
+    transition: margin-left 0.4s ease-in-out;
 }
 
 /* === PERUBAHAN CSS BAGIAN 2: GAYA H2 === */
@@ -176,20 +153,19 @@ body {
 }
 
 .NavSide__toggle {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  position: relative;
-  /* ubah ke relative agar ikon bisa absolute di dalamnya */
+    font-size: 2rem;
+    cursor: pointer;
+    color: #4B68FB;
+    z-index: 1002; /* Selalu paling atas */
+    transition: transform 0.4s ease-in-out;
 }
+.NavSide__toggle .close { display: none; }
+.NavSide__toggle .open { display: block; }
+.NavSide__toggle.NavSide__toggle--active .open { display: none; }
+.NavSide__toggle.NavSide__toggle--active .close { display: block; }
+
 
 .NavSide__toggle i.bi {
-  position: absolute;
   font-size: 28px;
   display: none;
   color: #4b68fb;
@@ -237,6 +213,118 @@ body {
   }
 }
 
+/* ======================================= */
+/* 1. Styling untuk Kontainer Header Umum  */
+/* ======================================= */
+/* Anda mungkin sudah punya ini, tapi pastikan ada */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.header-left-panel, .header-right-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+/* ======================================= */
+/* 2. Styling Inti untuk Ikon-ikonnya      */
+/* ======================================= */
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.header-right-panel { align-items: flex-end; }
+.header-icons { display: flex; align-items: center; gap: 1.5rem; }
+
+/* Style untuk link ikon (misal: lonceng) */
+.header-icons > a {
+    font-size: 1.4rem;
+    color: #5a5a5a;
+    transition: color 0.2s ease;
+}
+
+.header-icons > a:hover {
+    color: #4B68FB;
+}
+
+/* Style untuk ikon profil yang bulat */
+.header-icons .profile-icon {
+    background-color: #333;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-icons .profile-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Style untuk link di dalam ikon profil (memastikan ikonnya di tengah) */
+.header-icons .profile-icon a { color: white; font-size: 1.2rem; }
+.header-icons a, .header-icons .profile-icon a {
+    font-size: 1.4rem;
+    text-decoration: none;
+}
+
+
+
+/* ======================================= */
+/* 3. Styling untuk Tampilan Mobile (Penting!) */
+/* ======================================= */
+/* Ini menyembunyikan kontainer desktop di layar kecil */
+@media (max-width: 992px) {
+   .NavSide__sidebar {
+        transform: translateX(-100%); /* Sembunyikan sidebar */
+        z-index: 1001; /* Pastikan di atas konten saat aktif */
+    }
+    .NavSide__sidebar.NavSide__sidebar--active-mobile {
+        transform: translateX(0); /* Munculkan sidebar */
+    }
+
+    .NavSide__main-content {
+        margin-left: 0;
+        padding-top: 85px; /* Jarak dari topbar */
+    }
+
+    .NavSide__topbar {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: #FFFFFF;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 900;
+    }
+
+    #desktop-icons-container {
+        display: none; /* Sembunyikan ikon desktop */
+    }
+
+    .header-icons-mobile {
+        display: flex; /* Kontainer untuk ikon di mobile */
+    }
+    
+    .NavSide__toggle.NavSide__toggle--active {
+        transform: translateX(280px); /* Dorong tombol X ke kanan */
+    }
+    #desktop-icons-container {
+        display: none;
+    }
+}
 /* Gaya lain yang sudah ada dipertahankan */
 .status-badge {
   background-color: #4fd382;
@@ -288,12 +376,13 @@ body {
 
 .info-card .section {
   flex: 0 0 48%;
-  margin-bottom: 15px;
   z-index: 1;
   color: #333;
   transition: color 0.4s ease;
 }
-
+.info-card .section p:last-child {
+    margin-bottom: 0;
+}
 .info-card:hover .section {
   color: white;
 }
