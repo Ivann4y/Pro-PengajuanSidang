@@ -483,10 +483,6 @@ $nomor = max(1, $offset + 1);
             </div>
         </main>
     </div> 
-
-
-        </main>
-    </div>
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
     <script src="../../assets/js/dPengajuan.js"></script>
