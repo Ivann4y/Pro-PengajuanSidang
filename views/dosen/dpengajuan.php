@@ -326,6 +326,11 @@ $nomor = max(1, $offset + 1);
                                             <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
                                                 <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
                                                 <input type="hidden" name="tipe" value="<?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?>">
+                                                
+                                                <input type="hidden" name="from_status" value="<?= htmlspecialchars($statusFilter) ?>">
+                                                <input type="hidden" name="from_filter" value="<?= htmlspecialchars($filter) ?>">
+                                                <input type="hidden" name="from_page" value="<?= htmlspecialchars($currentPage) ?>">
+
                                                 <button type="submit" class="detail-btn">
                                                     <i class="bi bi-eye"></i>
                                                 </button>
