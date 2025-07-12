@@ -92,9 +92,9 @@ $query = "SELECT DISTINCT S.id_sidang, S.judul, mk.nama_matkul, K_mhs.jenis_sida
 	CASE 
         WHEN K_mhs.jenis_sidang = 'Tugas Akhir' THEN (
             SELECT d1.nama_dosen 
-            FROM Penjadwalan p1 
+            FROM Bimbingan p1 
             JOIN Dosen d1 ON d1.nomor_dosen = p1.nomor_dosen 
-            WHERE p1.id_sidang = S.id_sidang AND p1.peran_dosen = 1
+			WHERE S.id_kelompok = p1.id_kelompok
         )
         WHEN K_mhs.jenis_sidang = 'Semester' THEN (
             SELECT TOP 1 d2.nama_dosen
@@ -123,7 +123,7 @@ if ($filter === 'ta') {
     $query .= " AND K_mhs.jenis_sidang = 'Semester'";
 }
 
-$query .= " GROUP BY S.id_sidang, S.judul, K_mhs.jenis_sidang, K_mhs.id_matkul, mk.nama_matkul ORDER BY S.id_sidang";
+$query .= " GROUP BY S.id_sidang, S.judul, S.id_kelompok, K_mhs.jenis_sidang, K_mhs.id_matkul, mk.nama_matkul ORDER BY S.id_sidang";
 
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
 
