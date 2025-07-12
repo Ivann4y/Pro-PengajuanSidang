@@ -19,16 +19,20 @@ $nim = $_SESSION['user_data']['nim'];
 require "../../koneksi/koneksiAndrew.php";
 
 // === 1. Ambil ID Sidang yang diikuti mahasiswa ===
-$sqlGetSidang = "SELECT TOP 1 id_sidang FROM Penilaian WHERE nim = ?";
+$sqlGetSidang = "
+    SELECT TOP 1 s.id_sidang
+    FROM Sidang s
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    WHERE k.nim = ?
+    ORDER BY s.id_sidang DESC
+";
 $stmtGetSidang = sqlsrv_query($conn, $sqlGetSidang, [$nim]);
 
 if (!$stmtGetSidang || !($row = sqlsrv_fetch_array($stmtGetSidang, SQLSRV_FETCH_ASSOC))) {
-    // Jika tidak ditemukan di Penilaian, artinya belum dinilai.
-    // Kita bisa hentikan atau tampilkan pesan 'belum dinilai'.
-    // Untuk sekarang, kita akan hentikan agar tidak ada error di query selanjutnya.
-    die("Data penilaian untuk Anda belum ditemukan. Mohon cek kembali nanti.");
+    die("Data sidang untuk Anda belum ditemukan. Mohon cek dengan dosen pembimbing.");
 }
 $id_sidang = $row['id_sidang'];
+
 
 
 // === 2. Hitung Nilai Akhir MAHASISWA (Weighted Average) ===
@@ -62,6 +66,7 @@ if ($stmtNilai && ($rowNilai = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC
     }
 }
 
+
 // === 3. Ambil Data Mahasiswa + Judul Sidang + Pembimbing ===
 $sqlDataSidang = "
     SELECT  
@@ -86,31 +91,12 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
     $dataSidang['nama'] = $rowData['nama_mhs'];
     $dataSidang['judul'] = $rowData['judul'] ?? 'Belum ada judul';
     $dataSidang['pembimbing'] = $rowData['dosen_pembimbing'] ?? 'Belum ditentukan';
+
+    $judul = $dataSidang['judul'];
+
 }
 
 
-    // $sqlCatatan = "
-    //     SELECT d.nama_dosen, ds.catatan_sidang
-    //     FROM Detail_Sidang ds
-    //     JOIN Dosen d ON ds.nomor_dosen = d.nomor_dosen
-    //     WHERE ds.id_sidang = ?
-    //     ORDER BY d.nama_dosen;
-    // ";
-    // $paramsCatatan = array($id_sidang);
-    // $stmtCatatan = sqlsrv_query($conn, $sqlCatatan, $paramsCatatan);
-
-    // $catatanArray = [];
-    // if ($stmtCatatan) {
-    //     while ($rowCatatan = sqlsrv_fetch_array($stmtCatatan, SQLSRV_FETCH_ASSOC)) {
-    //         $catatan = trim($rowCatatan['catatan_sidang']);
-    //         if (!empty($catatan) && $catatan !== '-') {
-    //             $catatanArray[] = "• " . $rowCatatan['nama_dosen'] . ":\n  " . $catatan;
-    //         }
-    //     }
-    //     if (!empty($catatanArray)) {
-    //         $semuaCatatan = implode("\n\n", $catatanArray);
-    //     }
-    // }
 ?>
 
 
@@ -169,7 +155,7 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
         </div>
            <main class="NavSide__main-content">
             <div class="container-fluid">
-                <div class="row mb-4 title-container"><div class="col-12"><h2 class="main-title">Detail Evaluasi - Sistem Pengajuan Sidang</h2></div></div>
+                <div class="row mb-4 title-container"><div class="col-12"><h2 class="main-title">Detail Evaluasi - <?= htmlspecialchars($judul ?? 'Sistem Evaluasi Sidang') ?></h2></div></div>
                 
                 <div class="row mt-3 g-3">
                     <div class="col-lg-6 d-flex">
