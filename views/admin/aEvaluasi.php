@@ -98,6 +98,13 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
     </div>
     <main class="NavSide__main-content">
 
+      <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="aDaftarSidang.php">Daftar Sidang</a></li>
+          <li class="breadcrumb-item"><a href="aDetailSidang.php">Detail Sidang</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Evaluasi</li>
+        </ol>
+      </nav>
       <div>
         <h2 class="judul text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= $judulSidang ?></h2>
       </div>
@@ -182,24 +189,32 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
           document.getElementById("downloadContainer").appendChild(containerDiv);
         </script>
 
+        <div class="button-group-bottom mt-4">
+          <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
+            <span class="icon-circle">
+              <i class="fa-solid fa-arrow-left"></i>
+            </span>
+            Kembali
+          </button>
+        </div>
+
       <?php else: ?>
-        <div class="revision-card shadow-sm">
+        <div class="revision-empty shadow-sm mb-4">
           <h5 class="fw-bold text-primary">Dokumen Revisi</h5>
-          <div class="revision-cardUp text-center">
+          <div class="revision-inEmpty text-center">
             <p class="text-muted mt-3">Belum ada dokumen revisi yang diunggah.</p>
           </div>
         </div>
+
+        <div class="button-group-bottom mt-4">
+          <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
+            <span class="icon-circle">
+              <i class="fa-solid fa-arrow-left"></i>
+            </span>
+            Kembali
+          </button>
+        </div>
       <?php endif; ?>
-
-
-      <div class="button-group-bottom mt-4">
-        <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
-          <span class="icon-circle">
-            <i class="fa-solid fa-arrow-left"></i>
-          </span>
-          Kembali
-        </button>
-      </div>
 
       <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
