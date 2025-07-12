@@ -2,6 +2,7 @@
 session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 
+
 // Ambil ID sidang dari GET (sekali) lalu simpan ke session
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
@@ -64,10 +65,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $approve_action = isset($_POST['approve']) ? true : false;
 
     // Ambil dokumen revisi
-    $sql_revisi = "SELECT dok_revisi FROM Detail_Sidang WHERE id_sidang = ? AND nim = ?";
-    $stmt_revisi = sqlsrv_query($conn, [$id_sidang, $nim_post]);
+    $sql_revisi = "SELECT ds.dok_revisi, ds.nama_file 
+               FROM Detail_Sidang ds
+               JOIN Kelompok k ON ds.id_sidang = ?
+               JOIN Mahasiswa m ON k.nim = m.nim
+               WHERE ds.id_sidang = ? AND m.nim = ?";
+    $params_revisi = [$id_sidang, $id_sidang, $nim_post];
+    $stmt_revisi = sqlsrv_query($conn, $sql_revisi, $params_revisi);
+
     $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
     $dokumen_revisi = $data_revisi['dok_revisi'] ?? null;
+    $nama_file = $data_revisi['nama_file'] ?? basename($dokumen_revisi);
+
 
 
     if ($approve_action && $dokumen_revisi) {
@@ -209,6 +218,15 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
         $_SESSION['nim_aktif'] = $current_nim;
     }
 
+    // Ambil dokumen revisi milik current_nim
+    $sql_revisi = "SELECT dok_revisi, nama_file FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
+    $stmt_revisi = sqlsrv_query($conn, $sql_revisi, [$id_sidang, $nomor_dosen_login]);
+    $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
+    $dokumen_revisi = $data_revisi['dok_revisi'] ?? '';
+    $nama_file_revisi = $data_revisi['nama_file'] ?? '';
+
+
+
 
     // Mendapatkan nama mahasiswa yang sedang aktif untuk ditampilkan
     foreach ($mahasiswa as $mhs) {
@@ -284,6 +302,41 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
 
 $namaPembimbing_html = !empty($dosenPembimbing) ? implode('<br>', array_map('htmlspecialchars', $dosenPembimbing)) : 'Belum ditentukan';
 $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspecialchars', $dosenPenguji)) : 'Belum ditentukan';
+
+// Tangani permintaan download file revisi
+if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
+    $id_sidang = (int)($_GET['id'] ?? 0);
+    $nim_download = $_GET['nim'] ?? '';
+
+    if ($id_sidang && $nim_download) {
+        $sql_revisi = "SELECT dok_revisi, nama_file FROM Detail_Sidang WHERE id_sidang = ? AND nim = ?";
+        $stmt_revisi = sqlsrv_query($conn, [$id_sidang, $nim_download]);
+        $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
+
+        if ($data_revisi && !empty($data_revisi['dok_revisi'])) {
+            $path_revisi = $data_revisi['dok_revisi'];
+            $nama_file = $data_revisi['nama_file'] ?? basename($path_revisi);
+            $full_path = __DIR__ . '/../../' . $path_revisi;
+
+            if (file_exists($full_path)) {
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename="' . $nama_file . '"');
+                header('Content-Length: ' . filesize($full_path));
+                flush();
+                readfile($full_path);
+                exit;
+            } else {
+                die("File revisi tidak ditemukan di server.");
+            }
+        } else {
+            die("Dokumen revisi tidak ditemukan di database.");
+        }
+    } else {
+        die("Parameter download tidak lengkap.");
+    }
+}
+
 
 ?>
 
@@ -418,15 +471,17 @@ $namaPenguji_html = !empty($dosenPenguji) ? implode('<br>', array_map('htmlspeci
 
                     <h3>Dokumen Revisi</h3>
                     <div class="file-buttons-container d-flex flex-wrap">
-                        <?php if (!empty($data_revisi['dok_revisi'])): ?>
-                            <a href="../../uploads/<?= $dokumen_revisi ?>" class="file-button" download>
+                        <?php if (!empty($dokumen_revisi)): ?>
+                            <a href="dDokumenRevisi.php?download=revisi&id=<?= $id_sidang ?>&nim=<?= $current_nim ?>" class="file-button">
                                 <i class="fa-solid fa-file-zipper"></i>
                                 <?= htmlspecialchars(basename($dokumen_revisi)) ?>
                             </a>
+
                         <?php else: ?>
                             <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>
                         <?php endif; ?>
                     </div>
+
 
 
                     <div class="button-group-bottom" id="grup-aksi-dokumen">

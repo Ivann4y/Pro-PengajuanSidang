@@ -8,15 +8,23 @@
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         };
 
-        // [FIXED] Search functionality
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const searchValue = e.target.value;
-                const currentFilter = '<?= htmlspecialchars($filter) ?>';
-                // Redirect to the same page with the new search query and existing filter
-                window.location.href = `?filter=${currentFilter}&search=${encodeURIComponent(searchValue)}`;
+//Untuk filter pencarian
+        document.addEventListener("DOMContentLoaded", function() {
+            // Logika untuk pencarian real-time pada tabel
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) {
+                searchInput.addEventListener("input", function() {
+                    const query = this.value.toLowerCase().trim();
+                    const tableRows = document.querySelectorAll("tbody tr.isiTabel");
+
+                    tableRows.forEach(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        // Tampilkan baris jika cocok dengan query, sebaliknya sembunyikan
+                        row.style.display = rowText.includes(query) ? "" : "none";
+                    });
+                });
             }
         });
-    
+            
         // Inject nomor dosen login ke JS agar filter autocomplete pembimbing berjalan
         window.nomorDosenLogin = "<?= isset($_SESSION['user_data']['nomor_dosen']) ? htmlspecialchars($_SESSION['user_data']['nomor_dosen']) : '' ?>";
