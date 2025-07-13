@@ -20,6 +20,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 }
 
 include '../../koneksi/koneksiAndrew.php';
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
     $pesan = $_SESSION['pesan'];
@@ -200,6 +201,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             error_log("Gagal update Detail_Sidang: " . print_r(sqlsrv_errors(), true));
                         }
                     }
+                    // === Kirim notifikasi ke dosen ===
+                    $nama_mahasiswa = $nama_mahasiswa ?? ($data_info['nama_mhs'] ?? $nim_mahasiswa);
+                    $nim_pengirim = $nim_mahasiswa;
+                    $pesan_notif = "Mahasiswa $nama_mahasiswa ($nim_pengirim) telah mengunggah revisi dokumen sidang. Silakan cek revisi di sistem.";
+                    kirimNotifikasi($nomor_dosen, $pesan_notif, $nim_pengirim, $conn);
                 }
 
                 $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
