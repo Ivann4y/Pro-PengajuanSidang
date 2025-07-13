@@ -242,13 +242,99 @@ body {
 .revision-card { background-color: white; border-radius: 1.5rem; padding: 2rem; border: 1px solid #e9ecef; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, .075); }
 .upload-area-v2 { background-color: #f8f9fa; border: 2px dashed #e0e0e0; border-radius: 1rem; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: background-color 0.2s; min-height: 180px; }
 .upload-area-v2:hover { background-color: #f1f3f5; }
-.btn-custom-primary { background-color: #4FD382; color: white; font-weight: 600; border: none; border-radius: 50px; padding: 0.75rem 1.5rem; box-shadow: 0 4px 15px rgba(75, 254, 159, 0.87); transition: all 0.2s ease-in-out; }
-.btn-custom-primary:hover { background-color: #3FA970; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(75, 254, 159, 0.87); color: white; }
+.btn-custom-primary { background-color: #4FD382; font-weight: 600; border: none; border-radius: 50px; padding: 0.75rem 1.5rem;   }
+.btn-custom-primary:hover { background-color: #4FD382; color: white;}
 .btn-custom-primary:disabled { background-color: #e2e8f0; color: #94a3b8; box-shadow: none; transform: none; cursor: not-allowed; }
-.btn-tolak { background-color: #fd7d7d; border-radius: 50px; height: 40px; width: 120px; }
+/* .btn-tolak { background-color: #fd7d7d; border-radius: 50px; height: 40px; width: 120px; }
 .btn-tolak:hover { background-color: #fd7d7d; transform: translateY(-2px); color: white; }
 .btn-kirim { background-color: #4FD382; border-radius: 50px; height: 40px; width: 120px; }
-.btn-kirim:hover { background-color: #4FD382; transform: translateY(-2px); color: white; }
+.btn-kirim:hover { background-color: #4FD382; transform: translateY(-2px); color: white; } */
+
+/* Kode Baru (SEBAGAI PENGGANTI) */
+/* ================================== */
+/* Style untuk Modal Konfirmasi       */
+/* ================================== */
+
+/* Pastikan modal muncul di tengah dengan flexbox */
+/* .modal {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+} */
+
+/* Konten Modal Utama */
+/* ==================================================== */
+/* ===== GAYA MODAL KONFIRMASI (SESUAI GAMBAR) ====== */
+/* ==================================================== */
+
+/* Mengatur dialog modal agar tidak melebihi lebar tertentu */
+#modalKonfirmasi .modal-dialog {
+    max-width: 480px;
+}
+
+/* Konten utama modal: sudut melengkung, bayangan, dan tanpa border */
+#modalKonfirmasi .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden; /* Penting agar header tidak keluar dari sudut */
+}
+
+/* Header modal: latar belakang biru, teks putih */
+#modalKonfirmasi .modal-header {
+    background-color: #4b68fb;
+    color: #ffffff;
+    justify-content: center; /* Teks di tengah */
+    border-bottom: none;
+    padding: 20px;
+}
+
+/* Judul di dalam header */
+#modalKonfirmasi .modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Body modal: padding dan teks di tengah */
+#modalKonfirmasi .modal-body {
+    padding: 30px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+/* Footer modal: tombol di tengah dan tanpa border */
+#modalKonfirmasi .modal-footer {
+    border-top: none;
+    justify-content: center;
+    padding: 0 30px 30px 30px;
+    gap: 15px; /* Jarak antar tombol */
+}
+
+/* Tombol Tolak/Batalkan (Merah) */
+#modalKonfirmasi .btn-tolak {
+    background-color: #ff5a5f;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 50px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+
+
+/* Tombol Kirim/Lanjutkan (Hijau) */
+#modalKonfirmasi .btn-kirim {
+    background-color: #4FD382;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 50px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
 
 /* Media Query untuk Mobile */
 @media (max-width: 992px) {

@@ -344,23 +344,22 @@ if ($stmt_utama && sqlsrv_execute($stmt_utama)) {
             </div>
         <?php endforeach; ?>
 
-        <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="modalKonfirmasiLabel">Perhatian</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>Apakah Anda sudah yakin ingin mengupload dokumen revisi ini?</p>
-                        <div class="d-flex justify-content-center">
-                            <button type="button" class="btn btn-tolak me-3" data-bs-dismiss="modal">Batalkan</button>
-                            <button type="button" class="btn btn-kirim me-3" id="confirmSubmitBtn">Lanjutkan</button>
-                        </div>
-                    </div>
-                </div>
+        <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalKonfirmasiLabel">Konfirmasi Unggah</h4>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin mengunggah file revisi ini?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-tolak" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-kirim" id="confirmSubmitBtn">Kirim</button>
             </div>
         </div>
+    </div>
+</div>
         <script src="../../assets/js/mPerbaikan.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -164,6 +164,17 @@ tr.jadiBiru:hover .detail-btn i {
   color: #6c757d;
 }
 
+#ddStatus {
+    background-color: #0d6efd;  
+    border-color: #0d6efd;
+    color: white;
+}
+
+#ddStatus:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
 /* Kelompok button styles */
 .kelompok-btn {
   background-color: #4b68fb;
@@ -427,26 +438,6 @@ tr.jadiBiru:hover .detail-btn i {
 .kelompok-filter-container .form-check-input:checked {
   background-color: #4b68fb;
   border-color: #4b68fb;
-}
-
-#ddStatus {
-  background-color: #0d6efd; 
-  border-color: #0d6efd;
-  color: white;
-}
-
-#ddStatus:hover {
-  background-color: #0b5ed7; 
-  border-color: #0a58ca;
-}
-
-#ddStatus + .dropdown-menu {
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-#ddStatus + .dropdown-menu .dropdown-item:hover {
-  background-color: #f0f0f0;
 }
 
 .kelompok-list-container {

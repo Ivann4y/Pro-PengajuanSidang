@@ -9,7 +9,7 @@ require_once '../../control/admin/aDetailSidang_queries.php';
     <title>Detail Sidang - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../assets/css/style.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../assets/css/aDetailSidang.css">
 </head>
 <body>
@@ -25,19 +25,34 @@ require_once '../../control/admin/aDetailSidang_queries.php';
             </ul>
         </div>
 
-        <div style="flex-grow: 1; display: flex; flex-direction: column;">
+       
             <div class="NavSide__topbar">
-                <div class="NavSide__toggle">
-                    <i class="bi bi-list open"></i>
-                    <i class="bi bi-x-lg close"></i>
-                </div>
+               <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div id="mobile-icons-container"></div>
             </div>
 
             <main class="NavSide__main-content">
-                <h2>Detail Sidang - <?php echo htmlspecialchars($data_sidang['judul']); ?></h2>
-                <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['id_kelompok']); ?></p>
-                <div class="status-badge">Status Sidang : <?php echo htmlspecialchars($data_sidang['status_sidang_text']); ?></div>
-                
+               <div class="main-header">
+                <div class="header-left-panel">
+                    <h2>Detail Sidang - <?php echo htmlspecialchars($data_sidang['judul']); ?></h2>
+                    <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['id_kelompok']); ?></p>
+                </div>
+                <div class="header-right-panel">
+                    <div id="desktop-icons-container">
+                        <div class="header-icons">
+                            <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                            <div class="profile-icon">
+                                <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-badge">Status Sidang : <?php echo htmlspecialchars($data_sidang['status_sidang_text']); ?></div>
                 <div class="info-card">
                     <div class="section">
                         <?php if ($data_sidang['jenis_sidang'] == 'Tugas Akhir'): ?>
@@ -70,7 +85,7 @@ require_once '../../control/admin/aDetailSidang_queries.php';
 
                 <h5 class="mt-4">Aksi</h5>
                 <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
-                <button class="btn-hapus" onclick="confirmDelete(<?php echo $id_sidang; ?>)">Hapus Sidang</button>
+                <button class="btn-hapus" onclick="confirmDelete(<?php echo $id_sidang; ?>)">Batalkan Sidang</button>
 
 
                 <!-- MODAL UBAH JADWAL -->
