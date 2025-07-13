@@ -283,13 +283,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                     <?php endif; ?>
                 </div>
             </div>
-            <?php if ($data_sidang['status_ajuan'] === 'Pending'): ?>
-                <div class="action-buttons mt-4 d-flex justify-content-between align-items-center">
-                    <a href="<?= $kembali_url ?>" class="btn btn-secondary btn-circle">
-                        <i class="fa-solid fa-circle-arrow-left"></i>
-                        <span class="ms-2">Kembali</span>
-                    </a>
-                    </div>  
+                <?php if ($data_sidang['status_ajuan'] === 'Pending'): ?>
+                    <div class="action-buttons mt-4 d-flex justify-content-between align-items-center">
+                        <a href="<?= $kembali_url ?>" class="btn btn-secondary btn-circle">
+                            <i class="fa-solid fa-circle-arrow-left"></i>
+                            <span class="ms-2">Kembali</span>
+                        </a>
+
+                        <div class="d-flex gap-3">
+                            <button type="button" class="btn btn-danger btn-circle" data-bs-toggle="modal" data-bs-target="#modalKonfirmasiTolak">
+                                <i class="fa-solid"></i>
+                                <span class="ms-2">Tolak</span>
+                            </button>
+                            <button type="button" class="btn btn-success btn-circle" data-bs-toggle="modal" data-bs-target="#modalKonfirmasiSetujui">
+                                <i class="fa-solid"></i>
+                                <span class="ms-2">Setujui</span>
+                            </button>
+                        </div>
+                    </div>
                 <?php else: ?>
                 <div class="mt-4">
                     <a href="<?= $kembali_url ?>" class="btn btn-secondary btn-circle">
