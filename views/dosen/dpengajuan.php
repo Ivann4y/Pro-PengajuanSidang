@@ -233,7 +233,12 @@ $nomor = max(1, $offset + 1);
         </div>
         <main class="NavSide__main-content" id="dBeranda">
             <div class="dashboard-header">
-                <h2 class="bodyHeading">Pengajuan Sidang</h2>
+                <div class="header-title-group">
+                    <h2 class="bodyHeading">Pengajuan Sidang</h2>
+                    <h2 class="text-heading" style="font-size:1.5rem; font-weight:500;">
+                        <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?> (Dosen)
+                    </h2>
+                </div>
                 <div class="header-icons d-none d-md-flex">
                     <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
