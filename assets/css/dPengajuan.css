@@ -47,6 +47,16 @@ thead th:nth-child(8) {
   width: 20%;
 }
 
+thead th:first-child,
+.isiTabel td:first-child {
+  border-radius: 20px 0 0 20px;
+}
+
+thead th:last-child,
+.isiTabel td:last-child {
+  border-radius: 0 20px 20px 0;
+}
+
 .isiTabel td {
   padding: 12px 15px;
   font-family: "Poppins";
