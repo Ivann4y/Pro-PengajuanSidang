@@ -227,7 +227,7 @@ $nomor = max(1, $offset + 1);
             <div class="dashboard-header">
                 <div class="header-title-group">
                     <h2 class="bodyHeading">Pengajuan Sidang</h2>
-                    <h2 class="text-heading" style="font-size:1.5rem; font-weight:500;">
+                    <h2 class="text-heading mt-3" style="font-size:1.5rem; font-weight:500;">
                         <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?> (Dosen)
                     </h2>
                 </div>

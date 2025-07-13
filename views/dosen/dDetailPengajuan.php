@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_data']['nomor_dosen'])) {
 }
 
 include '../../koneksi/koneksiAndrew.php';
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
@@ -112,6 +113,8 @@ $anggota_kelompok = [];
 while ($stmt_anggota && ($row = sqlsrv_fetch_array($stmt_anggota, SQLSRV_FETCH_ASSOC))) {
     $anggota_kelompok[] = $row;
 }
+// Ambil NIM anggota kelompok untuk notifikasi
+$nims_mahasiswa = array_map(function($m) { return $m['nim']; }, $anggota_kelompok);
 
 // Dosen Pembimbing (list all, if TA)
 $dosen_pembimbing = [];
@@ -133,6 +136,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
         $sql_update = "UPDATE Sidang SET status_ajuan = 'Approved' WHERE id_sidang = ?";
         sqlsrv_query($conn, $sql_update, [$id_sidang]);
         $_SESSION['success'] = "Sidang berhasil disetujui";
+        // Kirim notifikasi ke admin (ad01) dan ke mahasiswa
+        $judul_sidang = $data_sidang['judul'] ?? '';
+        $nomor_kelompok = $data_sidang['nomor_kelompok'] ?? '';
+        $pesan_admin = "Pengajuan sidang kelompok $nomor_kelompok dengan judul '$judul_sidang' telah disetujui dosen. Mohon dijadwalkan.";
+        kirimNotifikasi('ad01', $pesan_admin, $nomorDosen, $conn);
+        $pesan_mhs = "Pengajuan sidang kelompok $nomor_kelompok dengan judul '$judul_sidang' telah disetujui. Silakan menunggu penjadwalan dari admin.";
+        foreach ($nims_mahasiswa as $nim_mhs) {
+            kirimNotifikasi($nim_mhs, $pesan_mhs, $nomorDosen, $conn);
+        }
         header("Location: dPengajuan.php"); exit();
     }
     if (isset($_POST['reject'])) {
@@ -142,6 +154,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             $sql_update = "UPDATE Sidang SET status_ajuan = 'Rejected' WHERE id_sidang = ?";
             sqlsrv_query($conn, $sql_update, [$id_sidang]);
             $_SESSION['success'] = "Sidang berhasil ditolak";
+            // Kirim notifikasi ke mahasiswa untuk evaluasi pengajuan
+            $judul_sidang = $data_sidang['judul'] ?? '';
+            $nomor_kelompok = $data_sidang['nomor_kelompok'] ?? '';
+            $pesan_mhs = "Pengajuan sidang kelompok $nomor_kelompok dengan judul '$judul_sidang' ditolak. Silakan lakukan evaluasi dan ajukan kembali.";
+            foreach ($nims_mahasiswa as $nim_mhs) {
+                kirimNotifikasi($nim_mhs, $pesan_mhs, $nomorDosen, $conn);
+            }
             header("Location: dPengajuan.php"); exit();
         }
     }
