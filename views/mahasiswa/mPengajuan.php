@@ -166,9 +166,6 @@
                             <a href="mProfil.php" title="Profil" class="profile-icon"><i class="bi bi-person-fill fs-5" style="color: white;"></i></a>
                         </div>
                     </div>
-
-                     <h1 class="welcome-text">Selamat Datang, <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?>!</h1>
-
                     <?php if ($flash_message): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <?= htmlspecialchars($flash_message) ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
