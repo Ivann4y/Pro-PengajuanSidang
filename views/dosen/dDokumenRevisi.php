@@ -1,6 +1,7 @@
 <?php
 session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 
 
 // Ambil ID sidang dari GET (sekali) lalu simpan ke session
@@ -101,6 +102,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql_set_sidang = "UPDATE Sidang SET status_revisi = 1 WHERE id_sidang = ?";
                 sqlsrv_query($conn, [$id_sidang]);
             }
+
+            // Kirim notifikasi ke mahasiswa bahwa dokumen revisi disetujui
+            // Ambil nama dosen dari session
+            $nama_dosen = isset($_SESSION['user_data']['nama_dosen']) ? $_SESSION['user_data']['nama_dosen'] : 'Dosen';
+            // Ambil judul sidang (jika tersedia)
+            $judul_sidang = isset($judul) ? $judul : '';
+            $pesan = "Dokumen revisi untuk judul '$judul_sidang' telah disetujui oleh $nama_dosen. Silakan cek status revisi Anda.";
+            kirimNotifikasi($nim_post, $pesan, $nomor_dosen_login, $conn);
 
             echo json_encode([
                 'status' => 'success',
