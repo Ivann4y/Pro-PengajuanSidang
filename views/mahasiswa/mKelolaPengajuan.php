@@ -94,9 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'application/zip',
         'application/msword',
     ];
-    $file_content = null;
-    $file_mime_type = null;
-    $dok_laporan_filename = $data['dok_laporan'] ?? null; // default to old filename if editing
+    $dok_laporan_path = $data['dok_laporan'] ?? null; // default to old path if editing
     if (isset($_FILES['file_laporan']) && $_FILES['file_laporan']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['file_laporan'];
         if ($file['size'] > 10 * 1024 * 1024) { // 10MB
@@ -104,11 +102,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!in_array(mime_content_type($file['tmp_name']), $allowedTypes)) {
             $error_message = "Tipe file tidak diizinkan. Gunakan PDF, DOCX, atau ZIP.";
         } else {
-            $file_content = file_get_contents($file['tmp_name']);
-            $file_mime_type = mime_content_type($file['tmp_name']);
-            $dok_laporan_filename = basename($file['name']);
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $unique_name = 'laporan_' . uniqid() . '.' . $ext;
+            $upload_path = __DIR__ . '/../../uploads/' . $unique_name;
+            if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
+                $error_message = "Gagal menyimpan file ke server.";
+            } else {
+                $dok_laporan_path = 'uploads/' . $unique_name;
+            }
         }
-    } elseif (!$id_sidang_existing && is_null($file_content)) {
+    } elseif (!$id_sidang_existing && empty($dok_laporan_path)) {
         $error_message = "File laporan wajib diunggah saat membuat pengajuan baru.";
     }
 
@@ -118,19 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         sqlsrv_begin_transaction($conn);
         try {
             if ($id_sidang_existing) { // UPDATE existing draft/rejected submission
-                $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?";
+                $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?" .
+                    ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?" : "") .
+                    " WHERE id_sidang = ?";
                 $params = [$judul, $status_ajuan];
-
-                if ($file_content !== null) {
-                    $sql_update .= ", dok_laporan = ?, dok_laporan_content = ?, dok_laporan_type = ?";
-                    $params[] = $dok_laporan_filename;
-                    $params[] = $file_content;
-                    $params[] = $file_mime_type;
-                }
-
-                $sql_update .= " WHERE id_sidang = ?";
+                if ($dok_laporan_path !== $data['dok_laporan']) $params[] = $dok_laporan_path;
                 $params[] = $id_sidang_existing;
-
                 $stmt = sqlsrv_query($conn, $sql_update, $params);
             } else { // INSERT new submission
                 $next_id_sidang = 1;
@@ -140,8 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $next_id_sidang = ($row_max_id['max_id'] ?? 0) + 1;
                 }
 
-                $sql_insert = "INSERT INTO Sidang (id_sidang, judul, waktu_pengumpulan, dok_laporan, dok_laporan_content, dok_laporan_type, status_ajuan, id_kelompok) VALUES (?, ?, GETDATE(), ?, ?, ?, ?, ?)";
-                $params = [$next_id_sidang, $judul, $dok_laporan_filename, $file_content, $file_mime_type, $status_ajuan, $id_kelompok];
+                $sql_insert = "INSERT INTO Sidang (id_sidang, judul, waktu_pengumpulan, dok_laporan, status_ajuan, id_kelompok) VALUES (?, ?, GETDATE(), ?, ?, ?)";
+                $params = [$next_id_sidang, $judul, $dok_laporan_path, $status_ajuan, $id_kelompok];
                 $stmt = sqlsrv_query($conn, $sql_insert, $params);
             }
 
@@ -207,7 +203,6 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
     <link rel="stylesheet" href="../../assets/css/mKelolaPengajuan.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
@@ -246,20 +241,18 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
                 </div>
             </div>
 
-        <!-- 3. KONTEN UTAMA (SEKARANG DI DALAM #NavSide) -->
-        <main class="NavSide__main-content" id="mKelolaPengajuan">
-            <?php 
-            // Include the function file
-            require_once '../../control/function.php'; 
-            // Generate breadcrumb
-            echo generateBreadcrumb(getPageTitle('mKelolaPengajuan'), 'mahasiswa', [
-                ['url' => 'mPengajuan.php', 'text' => 'Pengajuan']
-            ]); 
-            ?>
-            <div class="container-fluid">
-                <div class="dashboard-header">
-                    <h2 class="text-heading" style="color:black;"><?= $page_title ?></h2>
-                </div>
+                    <!-- 3. KONTEN UTAMA (SEKARANG DI DALAM #NavSide) -->
+            <main class="NavSide__main-content" id="mKelolaPengajuan">
+                <div class="container-fluid">
+                    <div class="dashboard-header">
+                        <h2 class="text-heading" style="color:black;"><?= $page_title ?></h2>
+                        <div class="header-icons d-none d-md-flex">
+                            <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                            <a href="mProfil.php" title="Profil" class="profile-icon">
+                                <i class="bi bi-person-fill fs-5" style="color: white;"></i>
+                            </a>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <!-- Kolom Kiri: Informasi Kelompok -->
@@ -326,7 +319,9 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
                                                 </label>
                                                 <?php if (!empty($data['dok_laporan'])): ?>
                                                     <div class="mb-2">
-                                                        <p><i class="fas fa-file-alt me-1"></i> File yang sudah diupload: <?= htmlspecialchars(basename($data['dok_laporan'])) ?></p>
+                                                        <a href="../../<?= htmlspecialchars($data['dok_laporan']) ?>" target="_blank">
+                                                            <i class="fas fa-file-alt me-1"></i> Lihat file yang sudah diupload: <?= htmlspecialchars(basename($data['dok_laporan'])) ?>
+                                                        </a>
                                                     </div>
                                                 <?php endif; ?>
                                                 <?php if ($is_editable): ?>
@@ -393,17 +388,81 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../assets/js/mKelolaPengajuan.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar Toggle Logic
+            const menuToggle = document.querySelector(".NavSide__toggle");
+            const sidebar = document.getElementById("main-sidebar");
+            if (menuToggle) {
+                menuToggle.onclick = function() {
+                    menuToggle.classList.toggle("NavSide__toggle--active");
+                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+                };
+            }
+
+            // File Upload UI Logic
+            const fileInput = document.getElementById('file_laporan');
+            if (fileInput) {
+                const uploadBox = document.getElementById('upload-box-label');
+                const fileNameDisplay = document.getElementById('file-name-display');
+                const uploadIcon = document.getElementById('upload-icon');
+                const uploadText = document.getElementById('upload-text');
+
+                fileInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        fileNameDisplay.textContent = this.files[0].name;
+                        uploadIcon.style.display = 'none';
+                        uploadText.style.display = 'none';
+                        uploadBox.classList.add('file-selected');
+                    } else {
+                        fileNameDisplay.textContent = '';
+                        uploadIcon.style.display = 'block';
+                        uploadText.style.display = 'block';
+                        uploadBox.classList.remove('file-selected');
+                    }
+                });
+            }
+
+            // Submit Confirmation with SweetAlert
+            const submitBtn = document.getElementById('btn-submit-final');
+            const form = document.getElementById('pengajuan-form');
+            if (submitBtn && form) {
+                submitBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent form submission
+                    Swal.fire({
+                        title: 'Anda Yakin?',
+                        text: "Setelah submit, pengajuan tidak dapat diedit lagi.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#4b68fb',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Submit Final!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Add a hidden input to signify final submission
+                            let hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'submit_final';
+                            hiddenInput.value = '1';
+                            form.appendChild(hiddenInput);
+                            form.submit();
+                        }
+                    });
+                });
+            }
+
+            // Display PHP errors with SweetAlert
+            <?php if ($error_message): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: '<?= addslashes(htmlspecialchars($error_message)) ?>',
+                confirmButtonColor: '#4b68fb'
+            });
+            <?php endif; ?>
+        });
+    </script>
 </body>
 
-<script>
-    <?php if (!empty($error_message)): ?>
-    Swal.fire({
-        icon: 'error',
-        title: 'Terjadi Kesalahan',
-        text: '<?= addslashes(htmlspecialchars($error_message)) ?>',
-        confirmButtonColor: '#4b68fb'
-    });
-    <?php endif; ?>
-</script>
 </html>

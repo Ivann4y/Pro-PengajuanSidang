@@ -65,35 +65,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nim_post = $_POST['nim'] ?? '';
     $approve_action = isset($_POST['approve']) ? true : false;
 
-    error_log("== DEBUG POST ==");
-    error_log("NIM Post: $nim_post");
-    error_log("ID Sidang: $id_sidang");
-
     // Ambil dokumen revisi
-    $sql_revisi = "SELECT dok_revisi, nama_file FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-    $params_revisi = [$id_sidang, $nomor_dosen_login];
+    $sql_revisi = "SELECT ds.dok_revisi, ds.nama_file 
+               FROM Detail_Sidang ds
+               JOIN Kelompok k ON ds.id_sidang = ?
+               JOIN Mahasiswa m ON k.nim = m.nim
+               WHERE ds.id_sidang = ? AND m.nim = ?";
+    $params_revisi = [$id_sidang, $id_sidang, $nim_post];
     $stmt_revisi = sqlsrv_query($conn, $sql_revisi, $params_revisi);
 
-
-    if ($stmt_revisi === false) {
-        error_log("QUERY ERROR: " . print_r(sqlsrv_errors(), true));
-    } else {
-        $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
-        error_log("DATA REVISI: " . print_r($data_revisi, true));
-    }
-
-
-    // $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
-    error_log("DATA REVISI (lengkap): " . print_r($data_revisi, true));
+    $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
     $dokumen_revisi = $data_revisi['dok_revisi'] ?? null;
     $nama_file = $data_revisi['nama_file'] ?? basename($dokumen_revisi);
-
-
-    error_log("== DEBUG KONDISI ==");
-    error_log("approve_action: " . var_export($approve_action, true));
-    error_log("dokumen_revisi: " . var_export($dokumen_revisi, true));
-    error_log("DOKUMEN_REVISI: $dokumen_revisi");
-    error_log("NAMA_FILE: $nama_file");
 
 
 
@@ -102,12 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $check_sql = "SELECT id_sidang FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
         $params_check = [$id_sidang, $nomor_dosen_login];
         $stmt_check = sqlsrv_query($conn, $check_sql, $params_check);
-
-        error_log("== DEBUG CHECK ==");
-        error_log("Query check SQL: $check_sql");
-        error_log("Params: " . print_r($params_check, true));
-        error_log("Has rows? " . (sqlsrv_has_rows($stmt_check) ? 'YES' : 'NO'));
-
 
         if ($stmt_check && sqlsrv_has_rows($stmt_check)) {
             // Update status_revisi dosen ini
@@ -118,12 +95,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Cek apakah SEMUA dosen sudah menyetujui
             $sql_cek_all = "SELECT COUNT(*) AS total, SUM(CASE WHEN status_revisi = 'Disetujui' THEN 1 ELSE 0 END) AS disetujui 
                             FROM Detail_Sidang WHERE id_sidang = ?";
-            $stmt_cek_all = sqlsrv_query($conn, $sql_cek_all, [$id_sidang]);
+            $stmt_cek_all = sqlsrv_query($conn, [$id_sidang]);
             $result_all = sqlsrv_fetch_array($stmt_cek_all, SQLSRV_FETCH_ASSOC);
 
             if ($result_all && $result_all['total'] == $result_all['disetujui']) {
                 $sql_set_sidang = "UPDATE Sidang SET status_revisi = 1 WHERE id_sidang = ?";
-                sqlsrv_query($conn, $sql_set_sidang, [$id_sidang]);
+                sqlsrv_query($conn, [$id_sidang]);
             }
 
             // Kirim notifikasi ke mahasiswa bahwa dokumen revisi disetujui
@@ -132,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Ambil judul sidang (jika tersedia)
             $judul_sidang = isset($judul) ? $judul : '';
             $pesan = "Dokumen revisi untuk judul '$judul_sidang' telah disetujui oleh $nama_dosen. Silakan cek status revisi Anda.";
-            kirimNotifikasi($nim_post, $pesan, $conn, $nomor_dosen_login);
+            kirimNotifikasi($nim_post, $pesan, $nomor_dosen_login, $conn);
 
             echo json_encode([
                 'status' => 'success',
@@ -342,12 +319,15 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 
     if ($id_sidang && $nim_download) {
         $sql_revisi = "
-    SELECT dok_revisi, nama_file
-    FROM Detail_Sidang
-    WHERE id_sidang = ? AND nomor_dosen = ?
-";
-        $params = [$id_sidang, $nomor_dosen_login];
+            SELECT ds.dok_revisi, ds.nama_file
+            FROM Detail_Sidang ds
+            JOIN Sidang s ON ds.id_sidang = s.id_sidang
+            WHERE ds.id_sidang = ? AND EXISTS (
+                SELECT 1 FROM Kelompok k2 WHERE k2.id_kelompok = s.id_kelompok AND k2.nim = ?
+            )
+        ";
 
+        $params = [$id_sidang, $nim_download];
         $stmt_revisi = sqlsrv_query($conn, $sql_revisi, $params);
 
         if ($stmt_revisi && ($data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC))) {
@@ -447,7 +427,6 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                 <h2 class="text-heading text-black" style="font-weight: 700;">Dokumen Revisi - <?= htmlspecialchars($judul) ?></h2>
                 <form id="dokumenRevisiForm" method="POST" action="dDokumenRevisi.php">
                     <input type="hidden" name="nim" value="<?= htmlspecialchars($current_nim) ?>">
-                    <input type="hidden" name="approve" value="1">
                     <div class="info-card">
                         <div class="section">
                             <div class="info-group">
@@ -517,8 +496,8 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                         <?php if (!empty($dokumen_revisi)): ?>
                             <a href="/SIDANG/Pro-PengajuanSidang/<?= htmlspecialchars($dokumen_revisi) ?>"
                                 class="file-button"
-                                download="<?= htmlspecialchars($nama_file_revisi) ?>">
                                 id="linkDokumenRevisi"
+                                download="<?= htmlspecialchars($nama_file_revisi) ?>">
                                 <i class="fa-solid fa-file-zipper"></i>
                                 <?= htmlspecialchars($nama_file_revisi) ?>
                             </a>
@@ -534,8 +513,8 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 
                     <div class="button-group-bottom" id="grup-aksi-dokumen">
                         <div class="button-group">
-                            <button type="button" class="btn btn-tolak" onclick="handleAction('Ditolak'); return false;">Tolak</button>
-                            <button type="button" class="btn btn-setujui" onclick="handleAction('Disetujui'); return false;">Setujui</button>
+                            <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
+                            <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
                         </div>
                     </div>
                 </form>
@@ -640,8 +619,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                     try {
                         const postData = new URLSearchParams({
                             approve: true,
-                            id_sidang: <?= $id_sidang ?>,
-                            nim: '<?= $current_nim ?>'
+                            id_sidang: <?= $id_sidang ?>
                         });
 
                         const response = await fetch(window.location.href, {
@@ -705,8 +683,45 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                 return;
             }
 
-            // Kalau dokumen ada, baru munculkan modal
-            showConfirmationModal(action);
+            if (action === 'Ditolak') {
+                // Langsung tampilkan alasan penolakan (tanpa konfirmasi)
+                Swal.fire({
+                    title: 'Alasan Penolakan',
+                    input: 'textarea',
+                    inputLabel: 'Catatan:',
+                    inputPlaceholder: 'Masukkan catatan penolakan di sini...',
+                    showCancelButton: true,
+                    confirmButtonText: 'Kirim',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'btn btn-setujui',
+                        cancelButton: 'btn btn-tolak'
+                    },
+                    inputValidator: (value) => {
+                        if (!value || value.trim() === '') {
+                            return 'Alasan penolakan tidak boleh kosong!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed && result.value) {
+                        // Kirim alasan penolakan ke server di sini (TODO)
+                        console.log("Catatan ditolak:", result.value);
+
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Dokumen revisi telah ditolak dan catatan telah disimpan.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = 'dDaftarSidang.php';
+                        });
+                    }
+                });
+            } else {
+                // Untuk "Disetujui", tetap gunakan modal konfirmasi
+                showConfirmationModal(action);
+            }
         }
     </script>
 </body>

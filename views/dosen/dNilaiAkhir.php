@@ -178,13 +178,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
              <div class="value-row text-secondary fw-bold">
                  <?php echo htmlspecialchars($dosen_terkait_sidang ?? ''); ?>
              </div>
-             <!-- Debug Info -->
-             <!-- <div style="font-size: 12px; color: #666; margin-top: 5px;">
-                 Debug: jenis_sidang=<?php echo $jenis_sidang; ?>, 
-                 id_kelompok=<?php echo $id_kelompok; ?>, 
-                 id_matkul=<?php echo $id_matkul; ?>, 
-                 dosen_terkait_sidang=<?php echo $dosen_terkait_sidang; ?>
-             </div> -->
            </div>
          </div>
        </div>
@@ -216,6 +209,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
 <div class="card-body" id="card-penilaian-body">
      <div class="d-flex justify-content-between align-items-center mb-4">
          <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
+         <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tekan ini jika ingin menggunakan nilai sementara">
+             <i class="bi bi-pencil-fill fs-5" style="color: var(--text-dark);"></i>
+         </a>
      </div>
     
      <div class="penilaian-container">
@@ -271,6 +267,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
      
    </div>
    
+   <div class="modal fade" id="konfirmasiModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+     <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
+       <div class="modal-header border-0 justify-content-center">
+                     <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
+                   </div>
+       <div class="modal-body">
+         <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah nilai akhir sama dengan nilai sementara?</p>
+         <div class="d-flex justify-content-between px-5">
+           <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
+           <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="checkAndFillGrades()">Iya</button>
+         </div>
+       </div>
+     </div>
+   </div>
+</div>
    <div class="modal fade" id="konfirmasiModalKirim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
    <div class="modal-dialog modal-dialog-centered">
      <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
@@ -351,11 +363,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
     });
 
     /**
+     * Mengosongkan semua input nilai.
+     */
+    function clearGradeInputs() {
+        // Mengosongkan input nilai desktop
+        document.getElementById('nilaiLaporanInput').value = '';
+        document.getElementById('materiPresentasiInput').value = '';
+        document.getElementById('tanyaJawabInput').value = '';
+        document.getElementById('nilaiProyekInput').value = '';
+
+        // Mengosongkan input nilai mobile/tablet
+        document.getElementById('nilaiLaporanInput_v').value = '';
+        document.getElementById('materiPresentasiInput_v').value = '';
+        document.getElementById('tanyaJawabInput_v').value = '';
+        document.getElementById('nilaiProyekInput_v').value = '';
+
+        // Mengosongkan nilai akhir
+        document.getElementById('nilaiMahasiswa').value = '--';
+    }
+
+    /**
+     * Membuka modal konfirmasi untuk nilai sementara.
+     */
+    function bukaKonfirmasiModal() {
+        var konfirmasiModal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
+        konfirmasiModal.show();
+    }
+
+    /**
+     * Menutup modal konfirmasi nilai sementara.
+     */
+    function TutupKonfirmasiModal() {
+        var konfirmasiModal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
+        konfirmasiModal.hide();
+    }
+
+    /**
      * Menghitung rata-rata nilai dari input detail penilaian dan mengonversinya ke nilai huruf.
      * Kemudian menampilkannya di kolom "Nilai Mahasiswa".
      */
     function calculateAndDisplayAverage() {
-        // Ambil nilai dari input detail penilaian (prioritaskan input desktop)
+        // Ambil nilai dari input detail penilaian (prioritaskan input desktop)>
         const nilaiLaporan = parseFloat(document.getElementById('nilaiLaporanInput').value);
         const materiPresentasi = parseFloat(document.getElementById('materiPresentasiInput').value);
         const tanyaJawab = parseFloat(document.getElementById('tanyaJawabInput').value);
@@ -467,5 +515,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
     }
 </script>
 
+<!-- SCRIPT NILAI SEMENTARA -->
+<script>
+(function() {
+    var id_sidang = <?php echo json_encode($id_sidang); ?>;
+    var mahasiswaList = <?php echo json_encode($mahasiswa); ?>;
+    var btnKirim = document.getElementById('btnKirim');
+
+    // Fungsi cek semua nilai sudah diisi
+    function cekSemuaNilaiTerisi() {
+        if (!mahasiswaList || mahasiswaList.length === 0) return false;
+        for (var i = 0; i < mahasiswaList.length; i++) {
+            var nim = mahasiswaList[i].nim;
+            var storageKey = 'nilaiSementara_' + id_sidang + '_' + nim;
+            var dataStr = sessionStorage.getItem(storageKey);
+            if (!dataStr) return false;
+            try {
+                var data = JSON.parse(dataStr);
+                if (!data.n_dokumen || !data.n_presentasi || !data.n_tanyajawab || !data.n_proyek) {
+                    return false;
+                }
+            } catch(e) { return false; }
+        }
+        return true;
+    }
+
+    // Fungsi update status button
+    function updateBtnKirim() {
+        if (btnKirim) {
+            btnKirim.disabled = !cekSemuaNilaiTerisi();
+        }
+    }
+
+    // Set event listener ke semua input pada halaman ini
+    var inputLaporan = document.getElementById('nilaiLaporanInput');
+    var inputPresentasi = document.getElementById('materiPresentasiInput');
+    var inputTanyaJawab = document.getElementById('tanyaJawabInput');
+    var inputProyek = document.getElementById('nilaiProyekInput');
+    function simpanNilaiSementara() {
+        var nim = <?php echo json_encode($current_nim); ?>;
+        var storageKey = 'nilaiSementara_' + id_sidang + '_' + nim;
+        var data = {
+            n_dokumen: inputLaporan ? inputLaporan.value : '',
+            n_presentasi: inputPresentasi ? inputPresentasi.value : '',
+            n_tanyajawab: inputTanyaJawab ? inputTanyaJawab.value : '',
+            n_proyek: inputProyek ? inputProyek.value : ''
+        };
+        sessionStorage.setItem(storageKey, JSON.stringify(data));
+        updateBtnKirim();
+    }
+    if (inputLaporan) inputLaporan.addEventListener('input', simpanNilaiSementara);
+    if (inputPresentasi) inputPresentasi.addEventListener('input', simpanNilaiSementara);
+    if (inputTanyaJawab) inputTanyaJawab.addEventListener('input', simpanNilaiSementara);
+    if (inputProyek) inputProyek.addEventListener('input', simpanNilaiSementara);
+
+    // Cek juga saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', function() {
+        // Isi nilai dari sessionStorage jika ada (fungsi lama)
+        var nim = <?php echo json_encode($current_nim); ?>;
+        var storageKey = 'nilaiSementara_' + id_sidang + '_' + nim;
+        var dataStr = sessionStorage.getItem(storageKey);
+        if (dataStr) {
+            try {
+                var data = JSON.parse(dataStr);
+                if (inputLaporan && data.n_dokumen !== undefined) inputLaporan.value = data.n_dokumen;
+                if (inputPresentasi && data.n_presentasi !== undefined) inputPresentasi.value = data.n_presentasi;
+                if (inputTanyaJawab && data.n_tanyajawab !== undefined) inputTanyaJawab.value = data.n_tanyajawab;
+                if (inputProyek && data.n_proyek !== undefined) inputProyek.value = data.n_proyek;
+            } catch(e) {}
+        }
+        updateBtnKirim();
+    });
+})();
+</script>
   </body>
 </html>

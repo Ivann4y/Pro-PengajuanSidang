@@ -7,12 +7,23 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     exit(); 
 }
 include "../../koneksi/koneksiAndrew.php";
-require_once '../../control/get_unread_notif.php';
 
 // Ambil jumlah notifikasi belum dibaca untuk dosen
-// Hapus seluruh query unread notif lama dan variabel terkait
+$unread_notifications = [];
+if (isset($_SESSION['user_data']['nomor_dosen'])) {
+    $nomor_dosen = (string)$_SESSION['user_data']['nomor_dosen'];
+    $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nomor_dosen));
+    if ($stmt_unread) {
+        while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+            $unread_notifications[] = $row;
+        }
+    }
+}
+$unread_count = count($unread_notifications);
 
-
+// DEBUG: tampilkan nilai $unread_count dan $nomor_dosen
+echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
 
 ?>
 
@@ -30,7 +41,27 @@ require_once '../../control/get_unread_notif.php';
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../../assets/css/style.css" />
     <link rel="stylesheet" href="../../assets/css/dBeranda.css">
-    <!-- Hapus <style>...</style> yang berisi .notif-badge dan .position-relative di <head> -->
+    <style>
+        .notif-badge {
+            position: absolute;
+            top: -2px;
+            right: -8px;
+            background: #4b68fb;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.55em;
+            padding: 0 3px;
+            z-index: 10;
+            border: 2px solid white;
+            font-weight: bold;
+            min-width: 10px;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 0 0 2px #0002;
+        }
+        .position-relative { position: relative; }
+    </style>
+
 </head>
 
 <body>

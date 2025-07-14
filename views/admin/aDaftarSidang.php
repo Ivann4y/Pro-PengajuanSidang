@@ -1,6 +1,5 @@
 <?php
 require_once '../../control/admin/aDaftarSidang_queries.php';
-require_once '../../control/get_unread_notif.php';
 ?>
 
 
@@ -16,7 +15,26 @@ require_once '../../control/get_unread_notif.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <link rel="stylesheet" href="../../assets/css/aDaftarSidang.css">
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+      .notif-badge {
+        position: absolute;
+        top: -2px;
+        right: -8px;
+        background: #4b68fb;
+        color: white;
+        border-radius: 50%;
+        font-size: 0.55em;
+        padding: 0 3px;
+        z-index: 10;
+        border: 2px solid white;
+        font-weight: bold;
+        min-width: 10px;
+        text-align: center;
+        line-height: 1.2;
+        box-shadow: 0 0 2px #0002;
+      }
+      .position-relative { position: relative; }
+    </style>
 
 </head>
 
@@ -88,7 +106,16 @@ require_once '../../control/get_unread_notif.php';
                             <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                                 <i class="bi bi-bell-fill position-relative">
                                     <?php
-                                    $unread_count = get_unread_notifications_count($conn, $_SESSION['user_data']['username']);
+                                    $admin_username = $_SESSION['user_data']['username'];
+                                    $unread_notifications = [];
+                                    $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+                                    $stmt_unread = sqlsrv_query($conn, $query_unread, array($admin_username));
+                                    if ($stmt_unread) {
+                                        while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+                                            $unread_notifications[] = $row;
+                                        }
+                                    }
+                                    $unread_count = count($unread_notifications);
                                     ?>
                                     <?php if ($unread_count > 0): ?>
                                         <span class="notif-badge"> <?= $unread_count ?> </span>

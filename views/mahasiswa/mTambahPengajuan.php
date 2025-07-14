@@ -231,7 +231,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
     <link rel="stylesheet" href="../../assets/css/mEditPengajuan.css" />
     <link rel="stylesheet" href="../../assets/css/style.css" />
     <link rel="stylesheet" href="../../extra/style.css">
-    <link rel="stylesheet" href="../../assets/css/breadcrumb.css" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -283,14 +282,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-            <?php 
-            // Include the function file
-            require_once '../../control/function.php'; 
-            // Generate breadcrumb
-            echo generateBreadcrumb(getPageTitle('mTambahPengajuan'), 'mahasiswa', [
-                ['url' => 'mPengajuan.php', 'text' => 'Pengajuan']
-            ]); 
-            ?>
             <div class="container-fluid">
                 <div class="dashboard-header">
                     <h2 class="text-heading"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
