@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_data']['nomor_dosen'])) {
 }
 
 include '../../koneksi/koneksiAndrew.php';
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
@@ -21,6 +22,20 @@ if (empty($id_sidang)) {
 $id_sidang = (int)$id_sidang;
 $jenis_sidang_url = $_POST['tipe'] ?? $_GET['tipe'] ?? null;
 $nomorDosen = $_SESSION['user_data']['nomor_dosen'];
+
+// Tangkap parameter filter dari halaman sebelumnya
+$from_status = $_POST['from_status'] ?? $_GET['from_status'] ?? 'Pending';
+$from_filter = $_POST['from_filter'] ?? $_GET['from_filter'] ?? 'Semua';
+$from_page = $_POST['from_page'] ?? $_GET['from_page'] ?? '1';
+
+// Bangun query string untuk URL kembali
+$back_query_string = http_build_query([
+    'status' => $from_status,
+    'filter' => $from_filter,
+    'page' => $from_page
+]);
+
+$kembali_url = "dPengajuan.php?" . $back_query_string;
 
 // [REPLACE THIS BLOCK]
 // ------------------------------
@@ -98,6 +113,8 @@ $anggota_kelompok = [];
 while ($stmt_anggota && ($row = sqlsrv_fetch_array($stmt_anggota, SQLSRV_FETCH_ASSOC))) {
     $anggota_kelompok[] = $row;
 }
+// Ambil NIM anggota kelompok untuk notifikasi
+$nims_mahasiswa = array_map(function($m) { return $m['nim']; }, $anggota_kelompok);
 
 // Dosen Pembimbing (list all, if TA)
 $dosen_pembimbing = [];
@@ -119,6 +136,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
         $sql_update = "UPDATE Sidang SET status_ajuan = 'Approved' WHERE id_sidang = ?";
         sqlsrv_query($conn, $sql_update, [$id_sidang]);
         $_SESSION['success'] = "Sidang berhasil disetujui";
+        // Kirim notifikasi ke admin (ad01) dan ke mahasiswa
+        $judul_sidang = $data_sidang['judul'] ?? '';
+        $nomor_kelompok = $data_sidang['nomor_kelompok'] ?? '';
+        $pesan_admin = "Pengajuan sidang kelompok $nomor_kelompok dengan judul '$judul_sidang' telah disetujui dosen. Mohon dijadwalkan.";
+        kirimNotifikasi('ad01', $pesan_admin, $nomorDosen, $conn);
+        $pesan_mhs = "Pengajuan sidang kelompok $nomor_kelompok dengan judul '$judul_sidang' telah disetujui. Silakan menunggu penjadwalan dari admin.";
+        foreach ($nims_mahasiswa as $nim_mhs) {
+            kirimNotifikasi($nim_mhs, $pesan_mhs, $nomorDosen, $conn);
+        }
         header("Location: dPengajuan.php"); exit();
     }
     if (isset($_POST['reject'])) {
@@ -128,6 +154,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             $sql_update = "UPDATE Sidang SET status_ajuan = 'Rejected' WHERE id_sidang = ?";
             sqlsrv_query($conn, $sql_update, [$id_sidang]);
             $_SESSION['success'] = "Sidang berhasil ditolak";
+            // Kirim notifikasi ke mahasiswa untuk evaluasi pengajuan
+            $judul_sidang = $data_sidang['judul'] ?? '';
+            $nomor_kelompok = $data_sidang['nomor_kelompok'] ?? '';
+            $pesan_mhs = "Pengajuan sidang kelompok $nomor_kelompok dengan judul '$judul_sidang' ditolak. Silakan lakukan evaluasi dan ajukan kembali.";
+            foreach ($nims_mahasiswa as $nim_mhs) {
+                kirimNotifikasi($nim_mhs, $pesan_mhs, $nomorDosen, $conn);
+            }
             header("Location: dPengajuan.php"); exit();
         }
     }
@@ -271,7 +304,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             </div>
             <?php if ($data_sidang['status_ajuan'] === 'Pending'): ?>
             <div class="action-buttons mt-4 d-flex justify-content-between align-items-center">
-                <a href="dPengajuan.php" class="btn btn-secondary btn-circle">
+                <a href="<?= $kembali_url ?>" class="btn btn-secondary btn-circle">
                     <i class="fa-solid fa-circle-arrow-left"></i>
                     <span class="ms-2">Kembali</span>
                 </a>
@@ -285,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             </div>  
             <?php else: ?>
             <div class="mt-4">
-                <a href="dPengajuan.php" class="btn btn-secondary btn-circle">
+                <a href="<?= $kembali_url ?>" class="btn btn-secondary btn-circle">
                     <i class="fa-solid fa-circle-arrow-left"></i>
                     <span class="ms-2">Kembali</span>
                 </a>
@@ -349,97 +382,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             </div>
         </main>
     </div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Sidebar toggle logic
-    let menuToggle = document.querySelector(".NavSide__toggle");
-    let sidebar = document.getElementById("main-sidebar");
-    if (menuToggle && sidebar) {
-        menuToggle.onclick = function() {
-            menuToggle.classList.toggle("NavSide__toggle--active");
-            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-        };
-    }
-
-    // Modal SweetAlert for Approve/Reject
-    const modalSetujui = new bootstrap.Modal(document.getElementById('modalKonfirmasiSetujui'));
-    const modalTolak = new bootstrap.Modal(document.getElementById('modalKonfirmasiTolak'));
-
-    let btnSetujui = document.getElementById('btnSetujuiOpenModal');
-    let btnTolak = document.getElementById('btnTolakOpenModal');
-
-    if (btnSetujui) {
-        btnSetujui.addEventListener('click', function () {
-            modalSetujui.show();
-        });
-    }
-    if (btnTolak) {
-        btnTolak.addEventListener('click', function () {
-            modalTolak.show();
-        });
-    }
-
-    let confirmSetujuiBtn = document.getElementById('confirmSetujuiBtn');
-    if (confirmSetujuiBtn) {
-        confirmSetujuiBtn.addEventListener('click', function () {
-            Swal.fire({
-                title: 'Pengajuan Berhasil Disetujui!',
-                icon: 'success',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#4B68FB'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const approveForm = document.getElementById('approveForm');
-                    let approveInput = approveForm.querySelector('input[name="approve"]');
-                    if (!approveInput) {
-                        approveInput = document.createElement('input');
-                        approveInput.type = 'hidden';
-                        approveInput.name = 'approve';
-                        approveInput.value = 'Approve';
-                        approveForm.appendChild(approveInput);
-                    }
-                    approveForm.submit();
-                }
-            });
-        });
-    }
-
-    let rejectForm = document.getElementById('rejectForm');
-    if (rejectForm) {
-        rejectForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const catatan = this.querySelector('textarea[name="catatan"]').value.trim();
-            if (catatan === "") {
-                Swal.fire({
-                    title: 'Gagal',
-                    text: 'Silakan isi alasan penolakan terlebih dahulu.',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                });
-            } else {
-                Swal.fire({
-                    title: 'Pengajuan Telah Ditolak!',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#4B68FB'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        let rejectInput = this.querySelector('input[name="reject"]');
-                        if (!rejectInput) {
-                            rejectInput = document.createElement('input');
-                            rejectInput.type = 'hidden';
-                            rejectInput.name = 'reject';
-                            rejectInput.value = 'Reject';
-                            this.appendChild(rejectInput);
-                        }
-                        this.submit();
-                    }
-                });
-            }
-        });
-    }
-});
-</script>
+<script src=" ../../assets/js/dDetailPengajuan.js"></script>
 </body>
 </html>

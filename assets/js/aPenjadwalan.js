@@ -53,7 +53,7 @@ function resetAndPopulateTAModal(el) {
                         <div class="bobot-nilai-input-group">
                             <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_pembimbing_bobot-ta-${pembimbingIndex}')">-</button>
                             <div class="input-with-percent">
-                                <input type="number" id="modal_pembimbing_bobot-ta-${pembimbingIndex}" name="pembimbing_bobot[]" class="bobot-input-new ta-bobot-input" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
+                                <input type="number" id="modal_pembimbing_bobot-ta-${pembimbingIndex}" name="pembimbing_bobot[]" class="bobot-input-new ta-bobot-input" placeholder="Bobot" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
                                 <span class="percent-sign">%</span>
                             </div>
                             <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_pembimbing_bobot-ta-${pembimbingIndex}')">+</button>
@@ -132,7 +132,7 @@ function addPenguji() {
            <div class="bobot-nilai-input-group">
                 <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-${pengujiCount}')">-</button>
                 <div class="input-with-percent">
-                    <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new ta-bobot-input" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
+                    <input type="number" id="modal_qty_penguji-ta-${pengujiCount}" name="penguji_bobot[]" class="bobot-input-new ta-bobot-input" placeholder="Bobot" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
                     <span class="percent-sign">%</span>
                 </div>
                 <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-${pengujiCount}')">+</button>
@@ -154,9 +154,13 @@ function removePenguji() {
         document.getElementById(`penguji-form-ta-${pengujiCount}`).remove();
         pengujiCount--;
         updateToggleButtonsVisibility();
+        validateTotalWeightRealtime('Tugas Akhir');
     }
 }
 
+/**
+ * Memvalidasi total bobot secara real-time.
+ */
 function validateTotalWeightRealtime(modalType) {
     let totalBobot = 0;
     const suffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
@@ -248,6 +252,8 @@ function incrementValue(inputId) {
     if (input) {
         let currentValue = parseInt(input.value, 10) || 0;
         input.value = currentValue + 1;
+        cleanNumberInput(input);
+        validateTotalWeightRealtime(input.form.elements['tipe_sidang'].value);
     }
 }
 
@@ -261,11 +267,13 @@ function decrementValue(inputId) {
         if (val > (parseInt(input.min, 10) || 0)) {
             input.value = val - 1;
         }
+        cleanNumberInput(input);
+        validateTotalWeightRealtime(input.form.elements['tipe_sidang'].value);
     }
 }
 
 /**
- * FUNGSI BARU: Membersihkan nilai input dari angka nol di depan.
+ * Membersihkan nilai input dari angka nol di depan.
  */
 function cleanNumberInput(inputElement) {
     if (inputElement.value) {
@@ -334,7 +342,7 @@ function handleFormSubmit(event) {
 }
 
 /**
- * FUNGSI KRUSIAL: Memvalidasi form sebelum dikirim.
+ * Memvalidasi form sebelum dikirim.
  */
 function validateForm(modalType) {
     const suffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
@@ -442,16 +450,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // ==========================================================================
+    // BAGIAN BARU: LOGIKA UNTUK TOGGLE SIDEBAR MOBILE
+    // ==========================================================================
+    const sidebar = document.getElementById('main-sidebar');
+    const toggleButton = document.querySelector('.NavSide__toggle');
+
+    if (toggleButton && sidebar) {
+        toggleButton.addEventListener('click', () => {
+            sidebar.classList.toggle('NavSide__sidebar--active-mobile');
+            toggleButton.classList.toggle('NavSide__toggle--active');
+        });
+    }
+
     const searchInput = document.getElementById('searchInput');
     const tableRows = document.querySelectorAll('#adminSidangContent tr.isiTabel');
 
     if(searchInput) {
         searchInput.addEventListener('input', function() {
             const keyword = searchInput.value.toLowerCase();
+            let visibleRows = 0;
             tableRows.forEach(row => {
                 const rowText = row.innerText.toLowerCase();
-                row.style.display = rowText.includes(keyword) ? '' : 'none';
+                const isVisible = rowText.includes(keyword);
+                row.style.display = isVisible ? '' : 'none';
+                if (isVisible) {
+                    visibleRows++;
+                }
             });
+
+            const noResultsRow = document.querySelector('.no-results-row');
+            if (noResultsRow) {
+                noResultsRow.style.display = visibleRows === 0 ? '' : 'none';
+            }
         });
     }
 });

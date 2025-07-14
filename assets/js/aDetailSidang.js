@@ -9,6 +9,41 @@ let pengujiCount = 0;
 // INISIALISASI SAAT HALAMAN SIAP (DOMContentLoaded)
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", function () {
+    // --- Logika untuk Toggle Sidebar & Ikon ---
+    const menuToggle = document.querySelector(".NavSide__toggle");
+    const sidebar = document.getElementById("main-sidebar");
+    const desktopIconsContainer = document.getElementById('desktop-icons-container');
+    const mobileIconsContainer = document.getElementById('mobile-icons-container');
+
+    // Event listener untuk tombol toggle
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        });
+    }
+
+    // Fungsi untuk memindahkan ikon di layar mobile/desktop
+    function handleIconPlacement() {
+        if (!desktopIconsContainer || !mobileIconsContainer) return;
+        const headerIcons = desktopIconsContainer.querySelector('.header-icons') || mobileIconsContainer.querySelector('.header-icons');
+        if (!headerIcons) return;
+
+        if (window.innerWidth <= 992) {
+            if (!mobileIconsContainer.contains(headerIcons)) {
+                mobileIconsContainer.appendChild(headerIcons);
+            }
+        } else {
+            if (!desktopIconsContainer.contains(headerIcons)) {
+                desktopIconsContainer.appendChild(headerIcons);
+            }
+        }
+    }
+    // Jalankan fungsi saat halaman dimuat dan saat ukuran window berubah
+    handleIconPlacement();
+    window.addEventListener('resize', handleIconPlacement);
+
+
   // 1. Inisialisasi instance modal Bootstrap sekali saja. Ini lebih aman.
   const modalElement = document.getElementById("penjadwalanSidangModal");
   if (modalElement) {
@@ -217,7 +252,7 @@ function addPenguji() {
                 <div class="autocomplete-dropdown" id="autocomplete_penguji_${newIndex}"></div>
             </div>
             <div class="input-with-percent">
-                <input type="number" name="penguji_bobot[]" class="form-control-bobot" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime();">
+                <input type="number" name="penguji_bobot[]" class="form-control-bobot" placeholder="Bobot" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime();">
                 <span class="percent-sign">%</span>
             </div>
         </div>
