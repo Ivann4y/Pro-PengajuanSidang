@@ -1,5 +1,7 @@
     <?php
     require_once '../../control/dosen/dEvaluasiSidang_queries.php';
+    // HAPUS: require_once __DIR__ . '/../../control/kirimNotifikasi.php';
+    // HAPUS: if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) { ... kirimNotifikasi ... }
     ?>
 
 
