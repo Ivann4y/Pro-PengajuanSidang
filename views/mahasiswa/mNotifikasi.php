@@ -45,6 +45,8 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
     $read_notifications[] = $row;
 }
 
+$unread_count = count($unread_notifications);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,12 +61,8 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
   <link rel="stylesheet" href="../../extra/style.css">
   <link rel="stylesheet" href="../../css/button-styles.css">
   <link rel="stylesheet" href="../../assets/css/mNotifikasi.css">
-  <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
   
   <title>Mahasiswa - Notifikasi</title>
-  <style>
-  
-  </style>
 </head>
 
 <body>
@@ -99,7 +97,12 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
-                <i class="bi bi-bell-fill"></i>
+                <a href="mNotifikasi.php" title="Notifikasi" style="position:relative;">
+                    <i class="bi bi-bell-fill"></i>
+                    <?php if ($unread_count > 0): ?>
+                        <span class="notif-badge" style="position:absolute;top:0;right:0;background:red;color:white;border-radius:50%;font-size:0.7em;padding:2px 6px;"> <?= $unread_count ?> </span>
+                    <?php endif; ?>
+                </a>
                 <div class="profile-icon">
                     <i class="bi bi-person-fill fs-5"></i>
                 </div>
@@ -107,12 +110,6 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
         </div>
 
       <main class="NavSide__main-content">
-        <?php 
-        // Include the function file
-        require_once '../../control/function.php'; 
-        // Generate breadcrumb
-        echo generateBreadcrumb(getPageTitle('mNotifikasi'), 'mahasiswa'); 
-        ?>
         <div class="container-fluid">
           <div class="row">
             <h2 class="text-heading text-black">
