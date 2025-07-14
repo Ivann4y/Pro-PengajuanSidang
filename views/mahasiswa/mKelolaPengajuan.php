@@ -95,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'application/msword',
     ];
     $dok_laporan_path = $data['dok_laporan'] ?? null; // default to old path if editing
+    $dok_laporan_path = $data['dok_laporan'] ?? null; // default to old path if editing
     if (isset($_FILES['file_laporan']) && $_FILES['file_laporan']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['file_laporan'];
         if ($file['size'] > 10 * 1024 * 1024) { // 10MB
@@ -121,6 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         sqlsrv_begin_transaction($conn);
         try {
             if ($id_sidang_existing) { // UPDATE existing draft/rejected submission
+                $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?" .
+                    ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?" : "") .
+                    " WHERE id_sidang = ?";
                 $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?" .
                     ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?" : "") .
                     " WHERE id_sidang = ?";

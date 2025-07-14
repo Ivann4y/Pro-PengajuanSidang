@@ -1,0 +1,89 @@
+/* Breadcrumb Styles */
+.breadcrumb-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
+
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.breadcrumb-item {
+  color: #6c757d;
+}
+
+.breadcrumb-item a {
+  color: #4b68fb;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  position: relative;
+}
+
+.breadcrumb-item a:hover {
+  color: #3a56d4;
+  text-decoration: none;
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+.breadcrumb-item.active {
+  color: #495057;
+  font-weight: 600;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
+  margin: 0 8px;
+}
+
+/* Responsive breadcrumb */
+@media (max-width: 768px) {
+  .breadcrumb-container {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+  }
+
+  .breadcrumb {
+    font-size: 12px;
+  }
+
+  .breadcrumb-item + .breadcrumb-item::before {
+    margin: 0 5px;
+  }
+
+  .breadcrumb-item a {
+    font-size: 11px;
+  }
+
+  .breadcrumb-item.active {
+    font-size: 11px;
+  }
+}
+
+/* Breadcrumb with icons */
+.breadcrumb-item i {
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+/* Breadcrumb for different user roles */
+.breadcrumb-admin {
+  border-left: 4px solid #dc3545;
+}
+
+.breadcrumb-dosen {
+  border-left: 4px solid #198754;
+}
+
+.breadcrumb-mahasiswa {
+  border-left: 4px solid #4b68fb;
+}

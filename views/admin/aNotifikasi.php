@@ -49,6 +49,8 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
     $read_notifications[] = $row;
 }
 
+$unread_count = count($unread_notifications);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -181,6 +183,18 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
       text-align: center;
       border-radius: 0px 20px 20px 0px;
     }
+    .notif-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: red;
+        color: white;
+        border-radius: 50%;
+        font-size: 0.7em;
+        padding: 2px 6px;
+        z-index: 10;
+        border: 2px solid white;
+    }
   </style>
 </head>
 
@@ -216,6 +230,12 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
+                <a href="aNotifikasi.php" title="Notifikasi" style="position:relative;">
+                    <i class="bi bi-bell-fill"></i>
+                    <?php if ($unread_count > 0): ?>
+                        <span class="notif-badge" style="position:absolute;top:0;right:0;background:red;color:white;border-radius:50%;font-size:0.7em;padding:2px 6px;"> <?= $unread_count ?> </span>
+                    <?php endif; ?>
+                </a>
                 <div class="profile-icon">
                     <a href="aProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-person-fill fs-5"></i>

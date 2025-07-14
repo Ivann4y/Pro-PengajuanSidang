@@ -170,6 +170,22 @@ if ($result === false) {
     die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 $nomor = max(1, $offset + 1); 
+
+// Ambil jumlah notifikasi belum dibaca untuk dosen
+$unread_notifications = [];
+if (isset($_SESSION['user_data']['nomor_dosen'])) {
+    $nomor_dosen = (string)$_SESSION['user_data']['nomor_dosen'];
+    $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nomor_dosen));
+    if ($stmt_unread) {
+        while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+            $unread_notifications[] = $row;
+        }
+    }
+}
+$unread_count = count($unread_notifications);
+// DEBUG: tampilkan nilai $unread_count dan $nomor_dosen
+echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -186,6 +202,26 @@ $nomor = max(1, $offset + 1);
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dPengajuan.css">
+    <style>
+        .notif-badge {
+            position: absolute;
+            top: -2px;
+            right: -8px;
+            background: #4b68fb;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.55em;
+            padding: 0 3px;
+            z-index: 10;
+            border: 2px solid white;
+            font-weight: bold;
+            min-width: 10px;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 0 0 2px #0002;
+        }
+        .position-relative { position: relative; }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Dosen - Pengajuan</title>
 </head>
@@ -222,7 +258,7 @@ $nomor = max(1, $offset + 1);
             </div>
             <div class="header-icons d-flex d-md-none">
                 <a href="dNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
-                    <i class="bi bi-bell-fill"></i>
+                    <i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i>
                 </a>
                 <div class="profile-icon">
                     <a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
@@ -240,7 +276,7 @@ $nomor = max(1, $offset + 1);
                     </h2>
                 </div>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                     <div class="profile-icon">
                         <a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
@@ -320,7 +356,16 @@ $nomor = max(1, $offset + 1);
                                         <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
                                         <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
                                         <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                       <td>
+                                            <?php
+                                            if ($row['tipe_sidang_text'] === 'Tugas Akhir') {
+                                                echo htmlspecialchars($row['nama_dosen']);
+                                            } 
+                                            else { 
+                                                echo htmlspecialchars($_SESSION['user_data']['nama_dosen']);
+                                            }
+                                            ?>
+                                        </td>
                                         <td><?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?></td>
                                         <?php if ($statusFilter !== 'Pending') : ?>
                                             <td>
@@ -524,6 +569,10 @@ $nomor = max(1, $offset + 1);
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
     <script src="../../assets/js/dPengajuan.js"></script>
+    <script>
+        // Define dosen login NIP for filtering in autocomplete
+        window.nomorDosenLogin = "<?php echo $_SESSION['user_data']['nomor_dosen']; ?>";
+    </script>
 </body>
 </html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

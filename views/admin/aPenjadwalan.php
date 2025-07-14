@@ -14,6 +14,26 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="../../assets/css/aPenjadwalan.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+      .notif-badge {
+        position: absolute;
+        top: -2px;
+        right: -8px;
+        background: #4b68fb;
+        color: white;
+        border-radius: 50%;
+        font-size: 0.55em;
+        padding: 0 3px;
+        z-index: 10;
+        border: 2px solid white;
+        font-weight: bold;
+        min-width: 10px;
+        text-align: center;
+        line-height: 1.2;
+        box-shadow: 0 0 2px #0002;
+      }
+      .position-relative { position: relative; }
+    </style>
 </head>
 <body>
   <div id="NavSide">
@@ -44,7 +64,25 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
             <i class="bi bi-x-lg close"></i>
         </div>
         <div class="header-icons-mobile header-icons">
-            <a href="aNotifikasi.php" title="Notifikasi"><i class="fa-solid fa-bell"></i></a>
+            <a href="aNotifikasi.php" title="Notifikasi">
+                <i class="fa-solid fa-bell position-relative">
+                    <?php
+                    $admin_username = $_SESSION['user_data']['username'];
+                    $unread_notifications = [];
+                    $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+                    $stmt_unread = sqlsrv_query($conn, $query_unread, array($admin_username));
+                    if ($stmt_unread) {
+                        while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+                            $unread_notifications[] = $row;
+                        }
+                    }
+                    $unread_count = count($unread_notifications);
+                    ?>
+                    <?php if ($unread_count > 0): ?>
+                        <span class="notif-badge"> <?= $unread_count ?> </span>
+                    <?php endif; ?>
+                </i>
+            </a>
             <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="fa-solid fa-user"></i></a></div>
         </div>
     </div>
@@ -81,7 +119,25 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
             </div>
             <div class="header-right-panel">
                 <div id="desktop-icons-container" class="header-icons">
-                    <a href="aNotifikasi.php" title="Notifikasi"><i class="fa-solid fa-bell"></i></a>
+                    <a href="aNotifikasi.php" title="Notifikasi">
+                        <i class="fa-solid fa-bell position-relative">
+                            <?php
+                            $admin_username = $_SESSION['user_data']['username'];
+                            $unread_notifications = [];
+                            $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+                            $stmt_unread = sqlsrv_query($conn, $query_unread, array($admin_username));
+                            if ($stmt_unread) {
+                                while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+                                    $unread_notifications[] = $row;
+                                }
+                            }
+                            $unread_count = count($unread_notifications);
+                            ?>
+                            <?php if ($unread_count > 0): ?>
+                                <span class="notif-badge"> <?= $unread_count ?> </span>
+                            <?php endif; ?>
+                        </i>
+                    </a>
                     <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="fa-solid fa-user"></i></a></div>
                 </div>
                 <div class="input-group search-input-group">

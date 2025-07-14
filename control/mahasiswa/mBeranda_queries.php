@@ -33,7 +33,6 @@ switch($action) {
         break;
 
     case 'penilaian_status':
-        // ✅ DIPERBAIKI: Mencari perwakilan id_kelompok dengan JOIN yang konsisten
         $query = "SELECT COUNT(DISTINCT s.id_sidang) AS menunggu_penilaian
         FROM Sidang s
         JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
@@ -56,7 +55,6 @@ switch($action) {
         break;
 
     case 'tanggungan':
-        // ✅ DIPERBAIKI: Mencari perwakilan id_kelompok dengan JOIN yang konsisten
         $query = "SELECT DISTINCT s.id_sidang, s.judul
         FROM Sidang s
         JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
