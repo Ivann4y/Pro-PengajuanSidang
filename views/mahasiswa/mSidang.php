@@ -1,5 +1,6 @@
 <?php
 require_once '../../control/mahasiswa/mSidang_logic.php';
+require_once '../../control/get_unread_notif.php';
 ?>
 
 <!DOCTYPE html>
@@ -15,12 +16,15 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
     <link rel="stylesheet" href="../../assets/css/msidang.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
+<<<<<<< HEAD
+=======
     <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <style>
         body {
             background-color: #ffffff;
         }
     </style>
+>>>>>>> 6ef3aabd42b03506e4c5b79ece5c86f8310c25fc
 </head>
 
 <body>
@@ -55,9 +59,9 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
                 <i class="bi bi-x-lg close"></i>
             </div>
             <div class="header-icons">
-                <i class="bi bi-bell-fill"></i>
+                <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                 <div class="profile-icon">
-                    <i class="bi bi-person-fill fs-5"></i>
+                    <a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;"><i class="bi bi-person-fill fs-5"></i></a>
                 </div>
             </div>
         </div>
@@ -74,7 +78,7 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
                     <div class="dashboard-header">
                         <h2 class="text-heading"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
                         <div class="header-icons d-none d-md-flex">
-                            <a href="mNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                            <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                             <div class="profile-icon">
                                 <a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                             </div>

@@ -176,6 +176,60 @@ if ($all_queries_ok) {
 // 6. FINALISASI TRANSAKSI
 // ==============================
 if ($all_queries_ok) {
+    // Kirim notifikasi ke mahasiswa dan dosen terkait
+    require_once __DIR__ . '/../kirimNotifikasi.php';
+    // Ambil info kelompok, judul, tanggal, jam, ruangan
+    $sql_info = "SELECT s.id_kelompok, s.judul, j.tanggal_sidang, j.jam_sidang, j.jam_selesai, j.ruang_sidang FROM Sidang s JOIN Jadwal j ON s.id_sidang = j.id_sidang WHERE s.id_sidang = ?";
+    $stmt_info = sqlsrv_query($conn, $sql_info, [$id_sidang]);
+    $info = ($stmt_info && ($row = sqlsrv_fetch_array($stmt_info, SQLSRV_FETCH_ASSOC))) ? $row : [];
+    $id_kelompok = $info['id_kelompok'] ?? '-';
+    $judul = $info['judul'] ?? '-';
+    $tanggal = $info['tanggal_sidang'] instanceof DateTime ? $info['tanggal_sidang']->format('Y-m-d') : ($info['tanggal_sidang'] ?? '-');
+    $jam = ($info['jam_sidang'] && $info['jam_selesai']) ? $info['jam_sidang']->format('H:i') . ' - ' . $info['jam_selesai']->format('H:i') : '-';
+    $ruangan = $info['ruang_sidang'] ?? '-';
+    $pengirim = 'ad01';
+    // Notif mahasiswa
+    foreach ($list_nim_mahasiswa as $nim) {
+        $pesan_mhs = "Jadwal sidang Anda telah dibuat. Silakan cek detail jadwal di sistem.";
+        kirimNotifikasi($nim, $pesan_mhs, $pengirim, $conn);
+    }
+    // Notif dosen
+    // Pembimbing
+    if (!empty($pembimbing_nama_list)) {
+        foreach ($pembimbing_nama_list as $nama) {
+            if (empty(trim($nama))) continue;
+            $sql_dosen = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
+            $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$nama]);
+            if ($stmt_dosen && ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
+                $pesan = "Anda dijadwalkan sebagai Pembimbing pada sidang kelompok $id_kelompok (judul: $judul) pada tanggal $tanggal jam $jam di ruangan $ruangan.";
+                kirimNotifikasi($row['nomor_dosen'], $pesan, $pengirim, $conn);
+            }
+        }
+    }
+    // Penguji
+    if (!empty($penguji_nama_list)) {
+        foreach ($penguji_nama_list as $nama) {
+            if (empty(trim($nama))) continue;
+            $sql_dosen = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
+            $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$nama]);
+            if ($stmt_dosen && ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
+                $pesan = "Anda dijadwalkan sebagai Penguji pada sidang kelompok $id_kelompok (judul: $judul) pada tanggal $tanggal jam $jam di ruangan $ruangan.";
+                kirimNotifikasi($row['nomor_dosen'], $pesan, $pengirim, $conn);
+            }
+        }
+    }
+    // Pengampu (untuk sidang Semester)
+    if (!empty($pengampu_nama_list)) {
+        foreach ($pengampu_nama_list as $nama) {
+            if (empty(trim($nama))) continue;
+            $sql_dosen = "SELECT nomor_dosen FROM Dosen WHERE nama_dosen = ?";
+            $stmt_dosen = sqlsrv_query($conn, $sql_dosen, [$nama]);
+            if ($stmt_dosen && ($row = sqlsrv_fetch_array($stmt_dosen, SQLSRV_FETCH_ASSOC))) {
+                $pesan = "Anda dijadwalkan sebagai Pengampu pada sidang kelompok $id_kelompok (judul: $judul) pada tanggal $tanggal jam $jam di ruangan $ruangan.";
+                kirimNotifikasi($row['nomor_dosen'], $pesan, $pengirim, $conn);
+            }
+        }
+    }
     sqlsrv_commit($conn);
     echo json_encode(['status' => 'success', 'message' => 'Jadwal berhasil dibuat!']);
 } else {

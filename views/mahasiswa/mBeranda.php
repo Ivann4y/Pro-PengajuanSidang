@@ -20,12 +20,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 }
 
 include '../../koneksi/koneksiAndrew.php';
-if ($_SESSION['role'] !== 'mahasiswa') {
-    header("Location: ../../index.php");
-    exit();
-}
+require_once '../../control/get_unread_notif.php';
 
 $nim = $_SESSION['nim'];
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,7 +58,7 @@ $nim = $_SESSION['nim'];
         </div>
         <div class="NavSide__topbar">
             <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
-            <div class="header-icons"><a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;"><i class="bi bi-bell-fill"></i></a>
+            <div class="header-icons"><a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                 <div class="profile-icon"><a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;"><i class="bi bi-person-fill fs-5"></i></a></div>
             </div>
         </div>
@@ -74,7 +72,7 @@ $nim = $_SESSION['nim'];
             ?>
             <div class="dashboard-header">
                 <h2 class="page-title" style="color:#1F2937">Beranda - Mahasiswa</h2>
-                <div class="header-icons d-none d-md-flex"><a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                <div class="header-icons d-none d-md-flex"><a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                     <div class="profile-icon"><a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a></div>
                 </div>
             </div>

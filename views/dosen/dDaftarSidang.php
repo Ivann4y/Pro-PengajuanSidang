@@ -1,5 +1,6 @@
 <?php
 require_once '../../control/dosen/dDaftarSidang_queries.php';
+require_once '../../control/get_unread_notif.php';
 ?>
 
 <!DOCTYPE html>
@@ -31,14 +32,28 @@ require_once '../../control/dosen/dDaftarSidang_queries.php';
         </div>
         <div class="NavSide__topbar">
             <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
-            <div class="header-icons d-flex d-md-none"><a href="dNotifikasi.php" title="Notifikasi" style="text-decoration:none;color:inherit"><i class="bi bi-bell-fill"></i></a>
+            <div class="header-icons d-flex d-md-none">
+                <a href="dNotifikasi.php" title="Notifikasi" style="text-decoration:none;color:inherit">
+                    <i class="bi bi-bell-fill position-relative">
+                        <?php if ($unread_count > 0): ?>
+                            <span class="notif-badge"> <?= $unread_count ?> </span>
+                        <?php endif; ?>
+                    </i>
+                </a>
                 <div class="profile-icon"><a href="dProfil.php" title="Profil" style="text-decoration:none;color:inherit"><i class="bi bi-person-fill fs-5"></i></a></div>
             </div>
         </div>
         <main class="NavSide__main-content">
             <div class="dashboard-header">
                 <h2 class="bodyHeading">Daftar Sidang</h2>
-                <div class="header-icons d-none d-md-flex"><a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="dNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                        <i class="bi bi-bell-fill position-relative">
+                            <?php if ($unread_count > 0): ?>
+                                <span class="notif-badge"> <?= $unread_count ?> </span>
+                            <?php endif; ?>
+                        </i>
+                    </a>
                     <div class="profile-icon"><a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color:#fff"></i></a></div>
                 </div>
             </div>
