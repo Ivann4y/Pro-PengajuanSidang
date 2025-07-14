@@ -145,12 +145,8 @@ if (isset($conn) && $conn) {
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
     <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
-<<<<<<< HEAD
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-=======
     <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
->>>>>>> 6ef3aabd42b03506e4c5b79ece5c86f8310c25fc
 </head>
 <body>
     <div id="NavSide">
