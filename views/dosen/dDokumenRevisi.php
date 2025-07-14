@@ -518,6 +518,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                             <a href="/SIDANG/Pro-PengajuanSidang/<?= htmlspecialchars($dokumen_revisi) ?>"
                                 class="file-button"
                                 download="<?= htmlspecialchars($nama_file_revisi) ?>">
+                                id="linkDokumenRevisi"
                                 <i class="fa-solid fa-file-zipper"></i>
                                 <?= htmlspecialchars($nama_file_revisi) ?>
                             </a>
@@ -533,8 +534,8 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 
                     <div class="button-group-bottom" id="grup-aksi-dokumen">
                         <div class="button-group">
-                            <button type= "button" class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
-                            <button type= "button" class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
+                            <button type="button" class="btn btn-tolak" onclick="handleAction('Ditolak'); return false;">Tolak</button>
+                            <button type="button" class="btn btn-setujui" onclick="handleAction('Disetujui'); return false;">Setujui</button>
                         </div>
                     </div>
                 </form>
@@ -690,6 +691,22 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                 }
             });
             confirmationModal.show();
+        }
+
+        function handleAction(action) {
+            const dokumenAda = document.getElementById('linkDokumenRevisi') !== null;
+
+            if (!dokumenAda) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Dokumen revisi belum diunggah oleh mahasiswa.',
+                });
+                return;
+            }
+
+            // Kalau dokumen ada, baru munculkan modal
+            showConfirmationModal(action);
         }
     </script>
 </body>
