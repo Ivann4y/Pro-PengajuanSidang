@@ -184,7 +184,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                             </ul>
                         </div>
 
-                        <span class="fw-semibold me-2">Jenis:</span>
+                        <span class="fw-semibold me-2">Filter:</span>
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <?php 
