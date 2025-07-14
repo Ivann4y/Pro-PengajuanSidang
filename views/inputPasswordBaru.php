@@ -83,6 +83,8 @@ include '../control/inputPasswordBaru_queries.php';
                                 <div class="text-danger">Kata sandi tidak boleh kosong.</div>
                             <?php elseif ($errorType === 'short'): ?>
                                 <div class="text-danger">Kata sandi minimal 8 karakter.</div>
+                            <?php elseif ($errorType === 'weak'): ?>
+                                <div class="text-danger">Kata sandi harus mengandung huruf besar, huruf kecil, angka, dan simbol.</div>
                             <?php endif; ?>
                         </div>
                         <div class="mb-3">
