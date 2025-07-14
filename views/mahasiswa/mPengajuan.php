@@ -12,7 +12,6 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true ||
 }
 
 require_once '../../koneksi/koneksiAndrew.php';
-require_once '../../control/get_unread_notif.php';
 $nim = $_SESSION['user_data']['nim'];
 
 // Flash message check
@@ -133,20 +132,31 @@ if (isset($conn) && $conn) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
-    <style>
-        .pengajuan-card-wrapper .card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-
-        .pengajuan-card-wrapper .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
+
+<style>
+        .notif-badge {
+            position: absolute;
+            top: -2px;
+            right: -8px;
+            background: #4b68fb;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.55em;
+            padding: 0 3px;
+            z-index: 10;
+            border: 2px solid white;
+            font-weight: bold;
+            min-width: 10px;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 0 0 2px #0002;
+        }
+    .position-relative { position: relative; }
+</style>
+
 </head>
 <body>
     <div id="NavSide">
@@ -167,12 +177,6 @@ if (isset($conn) && $conn) {
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
-            <?php 
-            // Include the function file
-            require_once '../../control/function.php'; 
-            // Generate breadcrumb
-            echo generateBreadcrumb(getPageTitle('mPengajuan'), 'mahasiswa'); 
-            ?>
             <div class="container-fluid">
                 <div class="dashboard-header">
                     <h2 class="text-heading" style="color:black;">Pengajuan Sidang Anda</h2>
@@ -300,7 +304,7 @@ if (isset($conn) && $conn) {
                             <?php endforeach; ?>
                         </div>
                         
-                        <?php if ($totalPages > 0): ?>
+                        <?php if ($totalPages > 1): ?>
                         <nav aria-label="Page navigation" class="mt-4">
                             <ul class="pagination justify-content-center">
                                 <?php

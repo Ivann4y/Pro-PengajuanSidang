@@ -61,7 +61,6 @@ $unread_count = count($unread_notifications);
   <link rel="stylesheet" href="../../extra/style.css">
   <link rel="stylesheet" href="../../css/button-styles.css">
   <link rel="stylesheet" href="../../assets/css/mNotifikasi.css">
-  <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
   
   <title>Mahasiswa - Notifikasi</title>
 </head>
@@ -111,12 +110,6 @@ $unread_count = count($unread_notifications);
         </div>
 
       <main class="NavSide__main-content">
-        <?php 
-        // Include the function file
-        require_once '../../control/function.php'; 
-        // Generate breadcrumb
-        echo generateBreadcrumb(getPageTitle('mNotifikasi'), 'mahasiswa'); 
-        ?>
         <div class="container-fluid">
           <div class="row">
             <h2 class="text-heading text-black">

@@ -20,10 +20,22 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
 }
 
 include '../../koneksi/koneksiAndrew.php';
-require_once '../../control/get_unread_notif.php';
+if ($_SESSION['role'] !== 'mahasiswa') {
+    header("Location: ../../index.php");
+    exit();
+}
 
 $nim = $_SESSION['nim'];
 
+// Ambil jumlah notifikasi belum dibaca
+$unread_count = 0;
+if (isset($conn) && $conn) {
+    $query_unread = "SELECT COUNT(*) as cnt FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nim));
+    if ($stmt_unread && ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC))) {
+        $unread_count = (int)$row['cnt'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,7 +48,26 @@ $nim = $_SESSION['nim'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/mahasiswa-dashboard.css">
-    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
+    <style>
+.notif-badge {
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    background: #4b68fb;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.55em;
+    padding: 0 3px;
+    z-index: 10;
+    border: 2px solid white;
+    font-weight: bold;
+    min-width: 10px;
+    text-align: center;
+    line-height: 1.2;
+    box-shadow: 0 0 2px #0002;
+}
+.position-relative { position: relative; }
+</style>
 </head>
 
 <body>
@@ -64,12 +95,6 @@ $nim = $_SESSION['nim'];
         </div>
 
         <main class="NavSide__main-content" id="mBeranda">
-            <?php 
-            // Include the function file
-            require_once '../../control/function.php'; 
-            // Generate breadcrumb
-            echo generateBreadcrumb(getPageTitle('mBeranda'), 'mahasiswa'); 
-            ?>
             <div class="dashboard-header">
                 <h2 class="page-title" style="color:#1F2937">Beranda - Mahasiswa</h2>
                 <div class="header-icons d-none d-md-flex"><a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
