@@ -201,17 +201,17 @@ function updateAvailabilityIndicator() {
 
   if (!prodi) {
     indicator.innerHTML =
-      '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
+      '<span style="color: #6c757d;">Pilih Program Studi terlebih dahulu</span>';
     return;
   }
 
   if (count === 0) {
     indicator.innerHTML =
-      '<span style="color: #dc3545;">⚠️ Tidak ada mahasiswa yang tersedia</span>';
+      '<span style="color: #dc3545;">Tidak ada mahasiswa yang tersedia</span>';
   } else if (count <= 5) {
-    indicator.innerHTML = `<span style="color: #ffc107;">⚠️ Hanya ${count} mahasiswa tersedia</span>`;
+    indicator.innerHTML = `<span style="color: #ffc107;">Hanya ${count} mahasiswa tersedia</span>`;
   } else {
-    indicator.innerHTML = `<span style="color: #28a745;">✓ ${count} mahasiswa tersedia</span>`;
+    indicator.innerHTML = `<span style="color: #28a745;">${count} mahasiswa tersedia</span>`;
   }
 }
 
@@ -264,7 +264,7 @@ function openKelompokModal() {
   const indicator = document.getElementById("mahasiswa-availability");
   if (indicator)
     indicator.innerHTML =
-      '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
+      '<span style="color: #6c757d;">Pilih Program Studi terlebih dahulu</span>';
 }
 
 async function setNextKelompokId() {
@@ -276,14 +276,14 @@ async function setNextKelompokId() {
 
     // Validate prodi selection first
     if (!prodi) {
-      document.getElementById("nomor_kelompok").value = "1";
+      document.getElementById("nomor_kelompok").value = "-";
       return;
     }
 
     if (jenisSidang === "Tugas Akhir") idMatkul = "2006";
 
     if (!tahunAjaran || !jenisSidang || !idMatkul) {
-      document.getElementById("nomor_kelompok").value = "1";
+      document.getElementById("nomor_kelompok").value = "-";
       return;
     }
 
@@ -329,7 +329,7 @@ function switchTab(tabName) {
     const indicator = document.getElementById("mahasiswa-availability");
     if (indicator)
       indicator.innerHTML =
-        '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
+        '<span style="color: #6c757d;">Pilih Program Studi terlebih dahulu</span>';
   }
 }
 
@@ -705,7 +705,7 @@ function resetToCreateMode() {
   const indicator = document.getElementById("mahasiswa-availability");
   if (indicator)
     indicator.innerHTML =
-      '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
+      '<span style="color: #6c757d;"> Pilih Program Studi terlebih dahulu</span>';
 }
 
 window.closeKelompokModal = function () {
@@ -957,9 +957,7 @@ async function handleKelompokFormSubmit(event) {
 function validateKelompokForm() {
   let isValid = true;
   document.querySelectorAll(".error-message").forEach((el) => el.remove());
-  document
-    .querySelectorAll(".is-invalid")
-    .forEach((el) => el.classList.remove("is-invalid"));
+  document.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
 
   const showError = (fieldId, message) => {
     isValid = false;

@@ -38,6 +38,7 @@ $nim = $_SESSION['nim'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/mahasiswa-dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 
 <body>
@@ -65,6 +66,12 @@ $nim = $_SESSION['nim'];
         </div>
 
         <main class="NavSide__main-content" id="mBeranda">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mBeranda'), 'mahasiswa'); 
+            ?>
             <div class="dashboard-header">
                 <h2 class="page-title" style="color:#1F2937">Beranda - Mahasiswa</h2>
                 <div class="header-icons d-none d-md-flex"><a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>

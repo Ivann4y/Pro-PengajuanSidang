@@ -83,7 +83,8 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
-    <link rel="stylesheet" href="../../assets/css/mPengajuan.css">    
+    <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 
 <body>
@@ -120,6 +121,12 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mPengajuan'), 'mahasiswa'); 
+            ?>
             <div class="container-fluid">
                 <div class="dashboard-header">
                     <h2 class="text-heading" style="color:black;">Pengajuan Sidang Anda</h2>

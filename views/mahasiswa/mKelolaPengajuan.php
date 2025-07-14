@@ -236,6 +236,7 @@ $is_editable = (is_null($status_ajuan) || $status_ajuan === 'Draft');
     <link rel="stylesheet" href="../../assets/css/mKelolaPengajuan.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 
 </head>
 
@@ -269,6 +270,14 @@ $is_editable = (is_null($status_ajuan) || $status_ajuan === 'Draft');
 
         <!-- 3. KONTEN UTAMA (SEKARANG DI DALAM #NavSide) -->
         <main class="NavSide__main-content" id="mKelolaPengajuan">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mKelolaPengajuan'), 'mahasiswa', [
+                ['url' => 'mPengajuan.php', 'text' => 'Pengajuan']
+            ]); 
+            ?>
             <div class="container-fluid">
                 <div class="dashboard-header">
                     <h2 class="text-heading" style="color:black;"><?= $page_title ?></h2>
