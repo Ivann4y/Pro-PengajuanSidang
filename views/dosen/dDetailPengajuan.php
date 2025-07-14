@@ -223,11 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                 <h5 class="fw-bold section">Informasi Pengajuan</h5>
 
                 <div class="row mt-2">
-                    <div class="col-md-6 section">
-                        <div class="info-group">
-                            <div class="label-row"><i class="fa-solid fa-hashtag me-0"></i><span class="fw-bold ms-0">ID Kelompok</span></div>
-                            <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['id_kelompok'] ?? '-') ?></div>
-                        </div>
+                    <div class="col-md-6 section"> 
                         <div class="info-group">
                             <div class="label-row"><i class="fa-solid fa-users me-0"></i><span class="fw-bold ms-0">Nomor Kelompok</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nomor_kelompok'] ?? '-') ?></div>

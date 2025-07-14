@@ -1,6 +1,5 @@
 <?php
 require_once '../../control/dosen/dDaftarSidang_queries.php';
-require_once '../../control/get_unread_notif.php';
 ?>
 
 <!DOCTYPE html>
@@ -17,6 +16,26 @@ require_once '../../control/get_unread_notif.php';
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDaftarSidang.css">
+    <style>
+        .notif-badge {
+            position: absolute;
+            top: -2px;
+            right: -8px;
+            background: #4b68fb;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.55em;
+            padding: 0 3px;
+            z-index: 10;
+            border: 2px solid white;
+            font-weight: bold;
+            min-width: 10px;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 0 0 2px #0002;
+        }
+        .position-relative { position: relative; }
+    </style>
 </head>
 
 <body>
