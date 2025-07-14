@@ -106,4 +106,18 @@ $headerLabel = 'Pembimbing/Pengampu';
 if ($filter === 'ta') $headerLabel = 'Pembimbing';
 elseif ($filter === 'semester') $headerLabel = 'Pengampu';
 
+// Ambil jumlah notifikasi belum dibaca untuk dosen
+$unread_notifications = [];
+if (isset($_SESSION['user_data']['nomor_dosen'])) {
+    $nomor_dosen = (string)$_SESSION['user_data']['nomor_dosen'];
+    $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nomor_dosen));
+    if ($stmt_unread) {
+        while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+            $unread_notifications[] = $row;
+        }
+    }
+}
+$unread_count = count($unread_notifications);
+
 ?>

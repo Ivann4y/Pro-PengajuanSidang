@@ -1,5 +1,6 @@
 <?php
 require_once '../../control/admin/aPenjadwalan_queries.php';
+require_once '../../control/get_unread_notif.php';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -44,7 +45,16 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
             <i class="bi bi-x-lg close"></i>
         </div>
         <div class="header-icons-mobile header-icons">
-            <a href="aNotifikasi.php" title="Notifikasi"><i class="fa-solid fa-bell"></i></a>
+            <a href="aNotifikasi.php" title="Notifikasi">
+                <i class="fa-solid fa-bell position-relative">
+                    <?php
+                    $unread_count = getUnreadNotificationCount();
+                    ?>
+                    <?php if ($unread_count > 0): ?>
+                        <span class="notif-badge"> <?= $unread_count ?> </span>
+                    <?php endif; ?>
+                </i>
+            </a>
             <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="fa-solid fa-user"></i></a></div>
         </div>
     </div>
@@ -81,7 +91,16 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
             </div>
             <div class="header-right-panel">
                 <div id="desktop-icons-container" class="header-icons">
-                    <a href="aNotifikasi.php" title="Notifikasi"><i class="fa-solid fa-bell"></i></a>
+                    <a href="aNotifikasi.php" title="Notifikasi">
+                        <i class="fa-solid fa-bell position-relative">
+                            <?php
+                            $unread_count = getUnreadNotificationCount();
+                            ?>
+                            <?php if ($unread_count > 0): ?>
+                                <span class="notif-badge"> <?= $unread_count ?> </span>
+                            <?php endif; ?>
+                        </i>
+                    </a>
                     <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="fa-solid fa-user"></i></a></div>
                 </div>
                 <div class="input-group search-input-group">

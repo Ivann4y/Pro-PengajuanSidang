@@ -24,6 +24,18 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 require "../../koneksi/koneksiAndrew.php";
+require_once '../../control/get_unread_notif.php';
+
+$admin_username = $_SESSION['user_data']['username'];
+$unread_notifications = [];
+$query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+$stmt_unread = sqlsrv_query($conn, $query_unread, array($admin_username));
+if ($stmt_unread) {
+    while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+        $unread_notifications[] = $row;
+    }
+}
+$unread_count = count($unread_notifications);
 
 ?>
 
@@ -49,9 +61,6 @@ require "../../koneksi/koneksiAndrew.php";
     <link rel="stylesheet" href="../../assets/css/style.css" />
     <link rel="stylesheet" href="../../assets/css/aBeranda.css" />
     
-    <style>
-      
-    </style>
 </head>
 
 <body>
@@ -101,9 +110,12 @@ require "../../koneksi/koneksiAndrew.php";
             <!-- Judul Halaman -->
               <!-- <h2 class="text-heading-mobile flex-fill">Beranda Admin</h2> -->
             <div class="header-icons">
-                <!-- tugas -->
-                <a href="aNotifikasi.php" title="tugas" style="text-decoration: none; color: inherit;">
-                    <i class="bi bi-bell-fill"></i>
+                <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                    <i class="bi bi-bell-fill position-relative">
+                        <?php if ($unread_count > 0): ?>
+                            <span class="notif-badge"> <?= $unread_count ?> </span>
+                        <?php endif; ?>
+                    </i>
                 </a>
                 <!-- Profil -->
                 <div class="profile-icon">
@@ -119,9 +131,15 @@ require "../../koneksi/koneksiAndrew.php";
             <div class="dashboard-header">
                 <h2 class="text-heading">Beranda Admin</h2>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                    <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                        <i class="bi bi-bell-fill position-relative">
+                            <?php if ($unread_count > 0): ?>
+                                <span class="notif-badge"> <?= $unread_count ?> </span>
+                            <?php endif; ?>
+                        </i>
+                    </a>
                     <div class="profile-icon">
-                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white;"></i></a>
                     </div>
                 </div>
             </div>

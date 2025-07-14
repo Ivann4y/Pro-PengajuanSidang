@@ -1,5 +1,6 @@
 <?php
 require_once '../../control/admin/aDaftarSidang_queries.php';
+require_once '../../control/get_unread_notif.php';
 ?>
 
 
@@ -15,6 +16,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <link rel="stylesheet" href="../../assets/css/aDaftarSidang.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
 
 </head>
 
@@ -83,7 +85,16 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                 <div class="header-right-panel">
                     <div id="desktop-icons-container">
                         <div class="header-icons">
-                            <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                            <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                                <i class="bi bi-bell-fill position-relative">
+                                    <?php
+                                    $unread_count = get_unread_notifications_count($conn, $_SESSION['user_data']['username']);
+                                    ?>
+                                    <?php if ($unread_count > 0): ?>
+                                        <span class="notif-badge"> <?= $unread_count ?> </span>
+                                    <?php endif; ?>
+                                </i>
+                            </a>
                             <div class="profile-icon"><a href="aProfil.php" title="Profil"><i
                                         class="bi bi-person-fill"></i></a></div>
                         </div>

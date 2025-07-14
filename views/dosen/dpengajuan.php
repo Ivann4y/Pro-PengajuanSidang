@@ -11,6 +11,8 @@ if (!isset($_SESSION['user_data']['nomor_dosen'])) {
 $nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
 include '../../koneksi/koneksiAndrew.php';
+require_once '../../control/get_unread_notif.php';
+
 if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
@@ -170,6 +172,10 @@ if ($result === false) {
     die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 $nomor = max(1, $offset + 1); 
+
+// Ambil jumlah notifikasi belum dibaca untuk dosen
+// Hapus seluruh query unread notif lama dan variabel terkait
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -222,7 +228,7 @@ $nomor = max(1, $offset + 1);
             </div>
             <div class="header-icons d-flex d-md-none">
                 <a href="dNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
-                    <i class="bi bi-bell-fill"></i>
+                    <i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i>
                 </a>
                 <div class="profile-icon">
                     <a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
@@ -240,7 +246,7 @@ $nomor = max(1, $offset + 1);
                     </h2>
                 </div>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                     <div class="profile-icon">
                         <a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>

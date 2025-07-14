@@ -12,6 +12,7 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true ||
 }
 
 require_once '../../koneksi/koneksiAndrew.php';
+require_once '../../control/get_unread_notif.php';
 $nim = $_SESSION['user_data']['nim'];
 
 // Flash message check
@@ -110,6 +111,16 @@ $cardsToShow = [];
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     $cardsToShow[] = $row;
 }
+
+// Ambil jumlah notifikasi belum dibaca
+$unread_count = 0;
+if (isset($conn) && $conn) {
+    $query_unread = "SELECT COUNT(*) as cnt FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nim));
+    if ($stmt_unread && ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC))) {
+        $unread_count = (int)$row['cnt'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -125,6 +136,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
     <div id="NavSide">
@@ -139,8 +151,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         </div>
         <div class="NavSide__topbar">
             <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
-            <div class="header-icons d-flex d-md-none">
-                <a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;"><i class="bi bi-bell-fill"></i></a>
+            <div class="header-icons"><a href="mNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                 <div class="profile-icon"><a href="mProfil.php" title="Profil" style="text-decoration: none; color: inherit;"><i class="bi bi-person-fill fs-5"></i></a></div>
             </div>
         </div>
@@ -149,9 +160,8 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
             <div class="container-fluid">
                 <div class="dashboard-header">
                     <h2 class="text-heading" style="color:black;">Pengajuan Sidang Anda</h2>
-                    <div class="header-icons d-none d-md-flex">
-                        <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
-                        <a href="mProfil.php" title="Profil" class="profile-icon"><i class="bi bi-person-fill fs-5" style="color: white;"></i></a>
+                    <div class="header-icons d-none d-md-flex"><a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
+                        <div class="profile-icon"><a href="mProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white;"></i></a></div>
                     </div>
                 </div>
             

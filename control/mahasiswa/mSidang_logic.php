@@ -152,3 +152,13 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
     $row['dosen'] = $row['nama_dosen'] ?? '-';
     $rows[] = $row;
 } 
+
+// Ambil jumlah notifikasi belum dibaca
+$unread_count = 0;
+if (isset($conn) && $conn) {
+    $query_unread = "SELECT COUNT(*) as cnt FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nim_login));
+    if ($stmt_unread && ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC))) {
+        $unread_count = (int)$row['cnt'];
+    }
+}
