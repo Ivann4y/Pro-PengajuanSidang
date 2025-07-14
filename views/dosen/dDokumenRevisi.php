@@ -1,6 +1,7 @@
 <?php
 session_start();
 require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 
 
 // Ambil ID sidang dari GET (sekali) lalu simpan ke session
@@ -101,6 +102,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql_set_sidang = "UPDATE Sidang SET status_revisi = 1 WHERE id_sidang = ?";
                 sqlsrv_query($conn, [$id_sidang]);
             }
+
+            // Kirim notifikasi ke mahasiswa bahwa dokumen revisi disetujui
+            // Ambil nama dosen dari session
+            $nama_dosen = isset($_SESSION['user_data']['nama_dosen']) ? $_SESSION['user_data']['nama_dosen'] : 'Dosen';
+            // Ambil judul sidang (jika tersedia)
+            $judul_sidang = isset($judul) ? $judul : '';
+            $pesan = "Dokumen revisi untuk judul '$judul_sidang' telah disetujui oleh $nama_dosen. Silakan cek status revisi Anda.";
+            kirimNotifikasi($nim_post, $pesan, $nomor_dosen_login, $conn);
 
             echo json_encode([
                 'status' => 'success',
@@ -309,16 +318,25 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
     $nim_download = $_GET['nim'] ?? '';
 
     if ($id_sidang && $nim_download) {
-        $sql_revisi = "SELECT dok_revisi, nama_file FROM Detail_Sidang WHERE id_sidang = ? AND nim = ?";
-        $stmt_revisi = sqlsrv_query($conn, [$id_sidang, $nim_download]);
-        $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
+        $sql_revisi = "
+            SELECT ds.dok_revisi, ds.nama_file
+            FROM Detail_Sidang ds
+            JOIN Sidang s ON ds.id_sidang = s.id_sidang
+            WHERE ds.id_sidang = ? AND EXISTS (
+                SELECT 1 FROM Kelompok k2 WHERE k2.id_kelompok = s.id_kelompok AND k2.nim = ?
+            )
+        ";
 
-        if ($data_revisi && !empty($data_revisi['dok_revisi'])) {
+        $params = [$id_sidang, $nim_download];
+        $stmt_revisi = sqlsrv_query($conn, $sql_revisi, $params);
+
+        if ($stmt_revisi && ($data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC))) {
             $path_revisi = $data_revisi['dok_revisi'];
             $nama_file = $data_revisi['nama_file'] ?? basename($path_revisi);
             $full_path = __DIR__ . '/../../' . $path_revisi;
 
             if (file_exists($full_path)) {
+                // Jangan ada output sebelum header!
                 header('Content-Description: File Transfer');
                 header('Content-Type: application/octet-stream');
                 header('Content-Disposition: attachment; filename="' . $nama_file . '"');
@@ -338,6 +356,9 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 }
 
 
+
+
+
 ?>
 
 
@@ -348,6 +369,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dokumen Revisi - Responsive</title>
+
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -472,10 +494,14 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                     <h3>Dokumen Revisi</h3>
                     <div class="file-buttons-container d-flex flex-wrap">
                         <?php if (!empty($dokumen_revisi)): ?>
-                            <a href="dDokumenRevisi.php?download=revisi&id=<?= $id_sidang ?>&nim=<?= $current_nim ?>" class="file-button">
+                            <a href="/SIDANG/Pro-PengajuanSidang/<?= htmlspecialchars($dokumen_revisi) ?>"
+                                class="file-button"
+                                download="<?= htmlspecialchars($nama_file_revisi) ?>">
                                 <i class="fa-solid fa-file-zipper"></i>
-                                <?= htmlspecialchars(basename($dokumen_revisi)) ?>
+                                <?= htmlspecialchars($nama_file_revisi) ?>
                             </a>
+
+
 
                         <?php else: ?>
                             <p class="text-muted">Belum ada dokumen revisi yang diunggah oleh mahasiswa.</p>

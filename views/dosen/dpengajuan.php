@@ -75,6 +75,7 @@ $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 // Ini filter buat statusnya
 $statusFilter = isset($_GET['status']) ? $_GET['status'] : 'Pending';
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $offset = max(0, ($currentPage - 1) * $rowsPerPage);
 
@@ -133,6 +134,13 @@ if ($filter === 'TA') {
     $whereConditions[] = "tipe_sidang_text = 'Semester'";
 }
 
+if (!empty($search)) {
+    // Cari di beberapa kolom yang relevan
+    $whereConditions[] = "(nomor_kelompok LIKE ? OR judul LIKE ? OR nama_matkul LIKE ?)";
+    // Tambahkan parameter pencarian sebanyak jumlah kolom yang dicari
+    array_push($params, '%' . $search . '%', '%' . $search . '%', '%' . $search . '%');
+}
+
 
 // Gabungin semua kondisi jadi satu string
 $whereClause = "WHERE " . implode(" AND ", $whereConditions);
@@ -161,7 +169,7 @@ $result = sqlsrv_query($conn, $mainSql, $mainParams);
 if ($result === false) {
     die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
-$nomor = max(1, $offset + 1);
+$nomor = max(1, $offset + 1); 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -225,7 +233,12 @@ $nomor = max(1, $offset + 1);
         </div>
         <main class="NavSide__main-content" id="dBeranda">
             <div class="dashboard-header">
-                <h2 class="bodyHeading">Pengajuan Sidang</h2>
+                <div class="header-title-group">
+                    <h2 class="bodyHeading">Pengajuan Sidang</h2>
+                    <h2 class="text-heading mt-3" style="font-size:1.5rem; font-weight:500;">
+                        <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?> (Dosen)
+                    </h2>
+                </div>
                 <div class="header-icons d-none d-md-flex">
                     <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                     <div class="profile-icon">
@@ -353,6 +366,26 @@ $nomor = max(1, $offset + 1);
                     </div>
                 </div>
             </div>
+             <?php if ($totalPages > 0): ?>
+                            <nav aria-label="Page navigation" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <?php
+                                    $queryParams = "status=" . urlencode($statusFilter) . "&filter=" . urlencode($filter) . "&search=" . urlencode($search);
+                                    ?>
+                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $currentPage - 1 ?>&<?= $queryParams ?>">«</a>
+                                    </li>
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $i ?>&<?= $queryParams ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $currentPage + 1 ?>&<?= $queryParams ?>">»</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <?php endif; ?>
 
             <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">

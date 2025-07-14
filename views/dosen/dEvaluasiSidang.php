@@ -1,5 +1,18 @@
     <?php
     require_once '../../control/dosen/dEvaluasiSidang_queries.php';
+    require_once __DIR__ . '/../../control/kirimNotifikasi.php';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
+        // Ambil NIM mahasiswa yang dievaluasi
+        $nim_mhs = $_POST['nim'];
+        // Ambil nama dosen dari session
+        $nama_dosen = isset($_SESSION['user_data']['nama_dosen']) ? $_SESSION['user_data']['nama_dosen'] : 'Dosen';
+        // Ambil judul sidang (jika tersedia)
+        $judul_sidang = isset($judul) ? $judul : '';
+        // Pesan notifikasi
+        $pesan = "Evaluasi sidang untuk judul '$judul_sidang' telah diberikan oleh $nama_dosen. Silakan cek hasil evaluasi Anda.";
+        // Kirim notifikasi ke mahasiswa
+        kirimNotifikasi($nim_mhs, $pesan, $_SESSION['user_data']['nomor_dosen'], $conn);
+    }
     ?>
 
 
