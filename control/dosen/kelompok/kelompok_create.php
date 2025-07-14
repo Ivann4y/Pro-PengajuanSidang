@@ -3,17 +3,23 @@ session_start();
 include '../../../koneksi/koneksiAndrew.php';
 
 if ($conn === false) {
-    die("Connection failed: " . print_r(sqlsrv_errors(), true));
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Connection failed: " . print_r(sqlsrv_errors(), true)]);
+    exit();
 }
 
 // Pastikan hanya dosen yang boleh membuat kelompok
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
-    die("Unauthorized access.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Unauthorized access."]);
+    exit();
 }
 
 $nomor_dosen = $_SESSION['user_data']['nomor_dosen'] ?? null;
 if ($nomor_dosen === null) {
-    die("Nomor dosen tidak ditemukan di session.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Nomor dosen tidak ditemukan di session."]);
+    exit();
 }
 
 // Ambil data dari form
@@ -38,12 +44,16 @@ if (!$nomor_kelompok || !$tahun_ajaran || !$jenis_sidang || !$id_matkul || empty
         'id_matkul' => $id_matkul,
         'anggota_count' => is_array($anggota) ? count($anggota) : 'not_array'
     ]));
-    die("Data tidak lengkap.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Data tidak lengkap."]);
+    exit();
 }
 
 // 2. Data type and format validation
 if (!is_numeric($nomor_kelompok) || $nomor_kelompok <= 0) {
-    die("Nomor kelompok harus berupa angka positif.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Nomor kelompok harus berupa angka positif."]);
+    exit();
 }
 
 // if (!is_numeric($tahun_ajaran) || $tahun_ajaran < 2020 || $tahun_ajaran > 2030) {
@@ -51,32 +61,44 @@ if (!is_numeric($nomor_kelompok) || $nomor_kelompok <= 0) {
 // }
 
 if (!in_array($jenis_sidang, ['Semester', 'Tugas Akhir'])) {
-    die("Jenis sidang harus 'Semester' atau 'Tugas Akhir'.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Jenis sidang harus 'Semester' atau 'Tugas Akhir'."]);
+    exit();
 }
 
 if (!is_numeric($id_matkul) || $id_matkul <= 0) {
-    die("ID Mata Kuliah harus berupa angka positif.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "ID Mata Kuliah harus berupa angka positif."]);
+    exit();
 }
 
 // 3. Validate anggota array
 if (!is_array($anggota)) {
     error_log("Anggota is not array: " . gettype($anggota) . " - " . json_encode($anggota));
-    die("Data anggota harus berupa array.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Data anggota harus berupa array."]);
+    exit();
 }
 
 if (count($anggota) === 0) {
-    die("Minimal harus ada satu anggota kelompok.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Minimal harus ada satu anggota kelompok."]);
+    exit();
 }
 
 if (count($anggota) > 5) {
-    die("Maksimal 5 anggota per kelompok.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Maksimal 5 anggota per kelompok."]);
+    exit();
 }
 
 // 4. Validate each NIM
 $validNIMs = [];
 foreach ($anggota as $nim) {
     if (empty($nim)) {
-        die("NIM tidak boleh kosong.");
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "message" => "NIM tidak boleh kosong."]);
+        exit();
     }
     
     // Remove any whitespace and convert to string
@@ -84,11 +106,15 @@ foreach ($anggota as $nim) {
     
     // More flexible NIM validation - allow alphanumeric NIM (8-20 characters)
     if (strlen($nim) < 8 || strlen($nim) > 20) {
-        die("NIM {$nim} harus berupa 8-20 karakter.");
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "message" => "NIM {$nim} harus berupa 8-20 karakter."]);
+        exit();
     }
     
     if (in_array($nim, $validNIMs)) {
-        die("NIM {$nim} duplikat dalam kelompok.");
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "message" => "NIM {$nim} duplikat dalam kelompok."]);
+        exit();
     }
     
     $validNIMs[] = $nim;
@@ -102,7 +128,9 @@ $checkNimSql = "SELECT nim FROM Mahasiswa WHERE nim IN ($nimList)";
 $checkNimResult = sqlsrv_query($conn, $checkNimSql, $validNIMs);
 
 if ($checkNimResult === false) {
-    die("Gagal memvalidasi NIM: " . json_encode(sqlsrv_errors()));
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Gagal memvalidasi NIM: " . json_encode(sqlsrv_errors())]);
+    exit();
 }
 
 $existingNIMs = [];
@@ -112,7 +140,9 @@ while ($row = sqlsrv_fetch_array($checkNimResult, SQLSRV_FETCH_ASSOC)) {
 
 $missingNIMs = array_diff($validNIMs, $existingNIMs);
 if (!empty($missingNIMs)) {
-    die("NIM berikut tidak ditemukan: " . implode(', ', $missingNIMs));
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "NIM berikut tidak ditemukan: " . implode(', ', $missingNIMs)]);
+    exit();
 }
 
 // 6. Check if MataKuliah exists
@@ -120,11 +150,15 @@ $checkMatkulSql = "SELECT id_matkul FROM MataKuliah WHERE id_matkul = ?";
 $checkMatkulResult = sqlsrv_query($conn, $checkMatkulSql, [$id_matkul]);
 
 if ($checkMatkulResult === false) {
-    die("Gagal memvalidasi Mata Kuliah: " . json_encode(sqlsrv_errors()));
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Gagal memvalidasi Mata Kuliah: " . json_encode(sqlsrv_errors())]);
+    exit();
 }
 
 if (!sqlsrv_fetch_array($checkMatkulResult, SQLSRV_FETCH_ASSOC)) {
-    die("Mata Kuliah dengan ID {$id_matkul} tidak ditemukan.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Mata Kuliah dengan ID {$id_matkul} tidak ditemukan."]);
+    exit();
 }
 
 // 7. Business logic validation - Check dosen permissions
@@ -134,11 +168,15 @@ if ($jenis_sidang === 'Semester') {
     $checkPengampuResult = sqlsrv_query($conn, $checkPengampuSql, [$nomor_dosen, $id_matkul, $tahun_ajaran]);
     
     if ($checkPengampuResult === false) {
-        die("Gagal memvalidasi pengampu kelas: " . json_encode(sqlsrv_errors()));
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "message" => "Gagal memvalidasi pengampu kelas: " . json_encode(sqlsrv_errors())]);
+        exit();
     }
     
     if (!sqlsrv_fetch_array($checkPengampuResult, SQLSRV_FETCH_ASSOC)) {
-        die("Anda tidak memiliki izin untuk membuat kelompok Semester untuk mata kuliah ini.");
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "message" => "Anda tidak memiliki izin untuk membuat kelompok Semester untuk mata kuliah ini."]);
+        exit();
     }
 }
 
@@ -147,17 +185,48 @@ $checkNomorSql = "SELECT 1 FROM Kelompok WHERE nomor_kelompok = ? AND tahun_ajar
 $checkNomorResult = sqlsrv_query($conn, $checkNomorSql, [$nomor_kelompok, $tahun_ajaran, $jenis_sidang, $id_matkul]);
 
 if ($checkNomorResult === false) {
-    die("Gagal memvalidasi nomor kelompok: " . json_encode(sqlsrv_errors()));
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Gagal memvalidasi nomor kelompok: " . json_encode(sqlsrv_errors())]);
+    exit();
 }
 
 if (sqlsrv_fetch_array($checkNomorResult, SQLSRV_FETCH_ASSOC)) {
-    die("Nomor kelompok {$nomor_kelompok} sudah ada untuk tahun ajaran {$tahun_ajaran} dan jenis sidang {$jenis_sidang}.");
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Nomor kelompok {$nomor_kelompok} sudah ada untuk tahun ajaran {$tahun_ajaran} dan jenis sidang {$jenis_sidang}."]);
+    exit();
 }
 
 try {
     sqlsrv_begin_transaction($conn);
 
     $lastInsertedIds = [];
+
+    // Ambil pembimbing tambahan dari input (dan validasi) SEBELUM insert anggota
+    $pembimbing_input = $_POST['nomor_dosen'] ?? [];
+    $pembimbing_list = [];
+    if ($jenis_sidang === "Tugas Akhir") {
+        $pembimbing_list = is_array($pembimbing_input) ? $pembimbing_input : (empty($pembimbing_input) ? [] : [$pembimbing_input]);
+        // Filter kosong, duplikat, dan trim
+        $pembimbing_list = array_filter(array_unique(array_map('trim', $pembimbing_list)), function($nip) { return $nip !== ''; });
+        // Tambahkan dosen login jika belum ada
+        if (!in_array($nomor_dosen, $pembimbing_list)) {
+            $pembimbing_list[] = $nomor_dosen;
+        }
+        // Validasi semua dosen pembimbing ada di tabel Dosen
+        foreach ($pembimbing_list as $nip_pembimbing) {
+            $cekDosenSql = "SELECT 1 FROM Dosen WHERE nomor_dosen = ?";
+            $cekDosenResult = sqlsrv_query($conn, $cekDosenSql, [$nip_pembimbing]);
+            if ($cekDosenResult === false || !sqlsrv_fetch_array($cekDosenResult, SQLSRV_FETCH_ASSOC)) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Dosen pembimbing dengan NIP {$nip_pembimbing} tidak ditemukan."
+                ]);
+                sqlsrv_rollback($conn);
+                exit();
+            }
+        }
+    }
 
     foreach ($anggota as $nim) {
         // Check if mahasiswa already exists in kelompok for this tahun_ajaran and jenis_sidang
@@ -174,7 +243,9 @@ try {
                     'jenis_sidang' => $jenis_sidang,
                     'id_matkul' => $id_matkul
                 ]));
-                throw new Exception("Mahasiswa dengan NIM {$nim} sudah terdaftar dalam kelompok untuk tahun ajaran {$tahun_ajaran} dan jenis sidang {$jenis_sidang}");
+                header('Content-Type: application/json');
+                echo json_encode(["success" => false, "message" => "Mahasiswa dengan NIM {$nim} sudah terdaftar dalam kelompok untuk tahun ajaran {$tahun_ajaran} dan jenis sidang {$jenis_sidang}"]);
+                exit();
             }
         }
 
@@ -232,17 +303,6 @@ try {
 
         // Insert ke tabel Bimbingan hanya untuk Tugas Akhir
         if ($jenis_sidang === "Tugas Akhir") {
-            // Ambil pembimbing tambahan dari input
-            $pembimbing_input = $_POST['nomor_dosen'] ?? [];
-            // Gabungkan dosen login dan pembimbing tambahan, hindari duplikat
-            $pembimbing_list = [];
-            if ($jenis_sidang === "Tugas Akhir") {
-                $pembimbing_list = is_array($pembimbing_input) ? $pembimbing_input : (empty($pembimbing_input) ? [] : [$pembimbing_input]);
-                if (!in_array($nomor_dosen, $pembimbing_list)) {
-                    $pembimbing_list[] = $nomor_dosen; // dosen login selalu masuk
-                }
-            }
-            // Insert semua pembimbing (login + tambahan) ke Bimbingan
             foreach ($pembimbing_list as $nip_pembimbing) {
                 $insertBimbinganSql = "INSERT INTO Bimbingan (nomor_dosen, isPembimbing, id_kelompok) VALUES (?, 1, ?)";
                 $paramsBimbingan = [$nip_pembimbing, $id_kelompok];
