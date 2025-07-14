@@ -517,8 +517,8 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                         <?php if (!empty($dokumen_revisi)): ?>
                             <a href="/SIDANG/Pro-PengajuanSidang/<?= htmlspecialchars($dokumen_revisi) ?>"
                                 class="file-button"
-                                download="<?= htmlspecialchars($nama_file_revisi) ?>">
                                 id="linkDokumenRevisi"
+                                download="<?= htmlspecialchars($nama_file_revisi) ?>">
                                 <i class="fa-solid fa-file-zipper"></i>
                                 <?= htmlspecialchars($nama_file_revisi) ?>
                             </a>
@@ -705,8 +705,45 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                 return;
             }
 
-            // Kalau dokumen ada, baru munculkan modal
-            showConfirmationModal(action);
+            if (action === 'Ditolak') {
+                // Langsung tampilkan alasan penolakan (tanpa konfirmasi)
+                Swal.fire({
+                    title: 'Alasan Penolakan',
+                    input: 'textarea',
+                    inputLabel: 'Catatan:',
+                    inputPlaceholder: 'Masukkan catatan penolakan di sini...',
+                    showCancelButton: true,
+                    confirmButtonText: 'Kirim',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'btn btn-setujui',
+                        cancelButton: 'btn btn-tolak'
+                    },
+                    inputValidator: (value) => {
+                        if (!value || value.trim() === '') {
+                            return 'Alasan penolakan tidak boleh kosong!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed && result.value) {
+                        // Kirim alasan penolakan ke server di sini (TODO)
+                        console.log("Catatan ditolak:", result.value);
+
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Dokumen revisi telah ditolak dan catatan telah disimpan.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = 'dDaftarSidang.php';
+                        });
+                    }
+                });
+            } else {
+                // Untuk "Disetujui", tetap gunakan modal konfirmasi
+                showConfirmationModal(action);
+            }
         }
     </script>
 </body>
