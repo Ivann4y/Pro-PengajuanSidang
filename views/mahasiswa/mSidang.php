@@ -16,6 +16,15 @@ require_once '../../control/get_unread_notif.php';
     <link rel="stylesheet" href="../../assets/css/msidang.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
+<<<<<<< HEAD
+=======
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+>>>>>>> 6ef3aabd42b03506e4c5b79ece5c86f8310c25fc
 </head>
 
 <body>
@@ -58,6 +67,12 @@ require_once '../../control/get_unread_notif.php';
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mSidang'), 'mahasiswa'); 
+            ?>
             <div class="container-fluid"> 
                 <div class="row">
                     <div class="dashboard-header">

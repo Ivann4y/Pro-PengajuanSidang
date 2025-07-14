@@ -248,6 +248,7 @@ if ($stmt_utama && sqlsrv_execute($stmt_utama)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../assets/css/mPerbaikan.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
@@ -270,10 +271,18 @@ if ($stmt_utama && sqlsrv_execute($stmt_utama)) {
                 <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
             </div>
             <main class="NavSide__main-content">
-                <div
-                    class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
-                    <h2>Detail Sidang -
-                        <?php
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mPerbaikan'), 'mahasiswa', [
+                ['url' => 'mSidang.php', 'text' => 'Sidang']
+            ]); 
+            ?>
+            <div
+                class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
+                <h2>Detail Sidang -
+                    <?php
                         if (isset($data_sidang['jenis_sidang']) && $data_sidang['jenis_sidang'] === 'Tugas Akhir') {
                             echo !empty($data_sidang['judul']) ? htmlspecialchars($data_sidang['judul']) : 'Tugas Akhir';
                         } elseif (isset($data_sidang['jenis_sidang']) && $data_sidang['jenis_sidang'] === 'Semester' && !empty($data_matkul)) {

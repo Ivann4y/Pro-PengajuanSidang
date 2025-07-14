@@ -46,9 +46,9 @@ if (!is_numeric($nomor_kelompok) || $nomor_kelompok <= 0) {
     die("Nomor kelompok harus berupa angka positif.");
 }
 
-if (!is_numeric($tahun_ajaran) || $tahun_ajaran < 2020 || $tahun_ajaran > 2030) {
-    die("Tahun ajaran harus antara 2020-2030.");
-}
+// if (!is_numeric($tahun_ajaran) || $tahun_ajaran < 2020 || $tahun_ajaran > 2030) {
+//     die("Tahun ajaran harus antara 2020-2030.");
+// }
 
 if (!in_array($jenis_sidang, ['Semester', 'Tugas Akhir'])) {
     die("Jenis sidang harus 'Semester' atau 'Tugas Akhir'.");

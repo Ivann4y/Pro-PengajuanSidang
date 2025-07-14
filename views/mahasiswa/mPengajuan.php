@@ -133,10 +133,24 @@ if (isset($conn) && $conn) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
-    <link rel="stylesheet" href="../../extra/style.css">
+    <style>
+        .pengajuan-card-wrapper .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .pengajuan-card-wrapper .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
     <link rel="stylesheet" href="../../assets/css/mPengajuan.css">
+<<<<<<< HEAD
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+=======
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
+>>>>>>> 6ef3aabd42b03506e4c5b79ece5c86f8310c25fc
 </head>
 <body>
     <div id="NavSide">
@@ -157,6 +171,12 @@ if (isset($conn) && $conn) {
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mPengajuan'), 'mahasiswa'); 
+            ?>
             <div class="container-fluid">
                 <div class="dashboard-header">
                     <h2 class="text-heading" style="color:black;">Pengajuan Sidang Anda</h2>
@@ -284,7 +304,7 @@ if (isset($conn) && $conn) {
                             <?php endforeach; ?>
                         </div>
                         
-                        <?php if ($totalPages > 1): ?>
+                        <?php if ($totalPages > 0): ?>
                         <nav aria-label="Page navigation" class="mt-4">
                             <ul class="pagination justify-content-center">
                                 <?php

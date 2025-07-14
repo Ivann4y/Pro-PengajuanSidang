@@ -127,6 +127,7 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
 
     <!-- Path ke extra/style.css (jika masih digunakan) -->
     <link rel="stylesheet" href="../../extra/style.css" />
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css" />
     
     <!-- Scripts (These are fine) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
@@ -154,6 +155,14 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
             <div class="header-icons"><i class="bi bi-bell-fill"></i><div class="profile-icon"><i class="bi bi-person-fill fs-5"></i></div></div>
         </div>
            <main class="NavSide__main-content">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mNilaiakhir'), 'mahasiswa', [
+                ['url' => 'mSidang.php', 'text' => 'Sidang']
+            ]); 
+            ?>
             <div class="container-fluid">
                 <div class="row mb-4 title-container"><div class="col-12"><h2 class="main-title">Detail Evaluasi - <?= htmlspecialchars($judul ?? 'Sistem Evaluasi Sidang') ?></h2></div></div>
                 
