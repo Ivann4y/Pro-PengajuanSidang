@@ -196,23 +196,17 @@ if (sqlsrv_fetch_array($checkNomorResult, SQLSRV_FETCH_ASSOC)) {
     exit();
 }
 
-try {
-    sqlsrv_begin_transaction($conn);
-
-    $lastInsertedIds = [];
-
-    // Ambil pembimbing tambahan dari input (dan validasi) SEBELUM insert anggota
-    $pembimbing_input = $_POST['nomor_dosen'] ?? [];
-    $pembimbing_list = [];
-    if ($jenis_sidang === "Tugas Akhir") {
-        $pembimbing_list = is_array($pembimbing_input) ? $pembimbing_input : (empty($pembimbing_input) ? [] : [$pembimbing_input]);
-        // Filter kosong, duplikat, dan trim
-        $pembimbing_list = array_filter(array_unique(array_map('trim', $pembimbing_list)), function($nip) { return $nip !== ''; });
-        // Tambahkan dosen login jika belum ada
-        if (!in_array($nomor_dosen, $pembimbing_list)) {
-            $pembimbing_list[] = $nomor_dosen;
-        }
-        // Validasi semua dosen pembimbing ada di tabel Dosen
+// 9. Validasi dosen pembimbing SEBELUM transaksi dimulai
+$pembimbing_input = $_POST['nomor_dosen'] ?? [];
+$pembimbing_list = [];
+if ($jenis_sidang === "Tugas Akhir") {
+    $pembimbing_list = is_array($pembimbing_input) ? $pembimbing_input : (empty($pembimbing_input) ? [] : [$pembimbing_input]);
+    // Filter kosong, duplikat, dan trim
+    $pembimbing_list = array_filter(array_unique(array_map('trim', $pembimbing_list)), function($nip) { return $nip !== ''; });
+    
+    // Jika user menginput dosen pembimbing lain, validasi semua NIP
+    if (!empty($pembimbing_list)) {
+        // Validasi semua NIP yang diinput user ada di tabel Dosen
         foreach ($pembimbing_list as $nip_pembimbing) {
             $cekDosenSql = "SELECT 1 FROM Dosen WHERE nomor_dosen = ?";
             $cekDosenResult = sqlsrv_query($conn, $cekDosenSql, [$nip_pembimbing]);
@@ -222,11 +216,21 @@ try {
                     "success" => false,
                     "message" => "Dosen pembimbing dengan NIP {$nip_pembimbing} tidak ditemukan."
                 ]);
-                sqlsrv_rollback($conn);
                 exit();
             }
         }
     }
+    
+    // Tambahkan dosen login jika belum ada
+    if (!in_array($nomor_dosen, $pembimbing_list)) {
+        $pembimbing_list[] = $nomor_dosen;
+    }
+}
+
+try {
+    sqlsrv_begin_transaction($conn);
+
+    $lastInsertedIds = [];
 
     foreach ($anggota as $nim) {
         // Check if mahasiswa already exists in kelompok for this tahun_ajaran and jenis_sidang

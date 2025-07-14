@@ -569,6 +569,10 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
     <script src="../../assets/js/dPengajuan.js"></script>
+    <script>
+        // Define dosen login NIP for filtering in autocomplete
+        window.nomorDosenLogin = "<?php echo $_SESSION['user_data']['nomor_dosen']; ?>";
+    </script>
 </body>
 </html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
