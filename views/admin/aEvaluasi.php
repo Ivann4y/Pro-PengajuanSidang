@@ -172,11 +172,19 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
           </div>
         </div>
 
-        <div id="downloadContainer"></div>
+        <div class="d-flex justify-content-between mt-4">
+          <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
+            <span class="icon-circle">
+              <i class="fa-solid fa-arrow-left"></i>
+            </span>
+            Kembali
+          </button>
+          <div id="downloadContainer"></div>
+        </div>
 
         <script>
           const containerDiv = document.createElement("div");
-          containerDiv.className = "d-flex justify-content-end mt-4";
+          containerDiv.className = "d-flex justify-content-end";
 
           const downloadLink = document.createElement("a");
           downloadLink.href = "../../<?= htmlspecialchars($allRows[0]['dok_revisi']) ?>";
@@ -188,15 +196,6 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
           containerDiv.appendChild(downloadLink);
           document.getElementById("downloadContainer").appendChild(containerDiv);
         </script>
-
-        <div class="button-group-bottom mt-4">
-          <button id="btnKembali" class="btn-custom-primary" onclick="location.href= 'aDaftarSidang.php'">
-            <span class="icon-circle">
-              <i class="fa-solid fa-arrow-left"></i>
-            </span>
-            Kembali
-          </button>
-        </div>
 
       <?php else: ?>
         <div class="revision-empty shadow-sm mb-4">

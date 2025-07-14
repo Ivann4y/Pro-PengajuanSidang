@@ -57,6 +57,7 @@ if ($user['jenis_kelamin'] === 'L') {
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/profil.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 
 <body>
@@ -100,6 +101,12 @@ if ($user['jenis_kelamin'] === 'L') {
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mProfil'), 'mahasiswa'); 
+            ?>
             <div class="container">
                 <div class="row">
                     <h1>Profile</h1>

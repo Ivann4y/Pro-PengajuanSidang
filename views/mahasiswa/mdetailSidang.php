@@ -13,6 +13,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/mdetailsidang.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 <body>
     <div id="NavSide">
@@ -57,6 +58,14 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
             <div class="NavSide__topbar"></div>
 
             <main class="NavSide__main-content">
+                <?php 
+                // Include the function file
+                require_once '../../control/function.php'; 
+                // Generate breadcrumb
+                echo generateBreadcrumb(getPageTitle('mdetailSidang'), 'mahasiswa', [
+                    ['url' => 'mSidang.php', 'text' => 'Sidang']
+                ]); 
+                ?>
                 <h2>Detail Sidang -
                     <?php
                         if ($data_sidang['jenis_sidang'] === 'Tugas Akhir') {
