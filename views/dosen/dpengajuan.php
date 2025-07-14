@@ -320,7 +320,18 @@ $nomor = max(1, $offset + 1);
                                         <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
                                         <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
                                         <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                       <td>
+                                            <?php
+                                            // Jika jenis sidang adalah 'Tugas Akhir', tampilkan normal dari database
+                                            if ($row['tipe_sidang_text'] === 'Tugas Akhir') {
+                                                echo htmlspecialchars($row['nama_dosen']);
+                                            } 
+                                            // Jika 'Semester', tampilkan hanya nama dosen yang sedang login dari session
+                                            else { 
+                                                echo htmlspecialchars($_SESSION['user_data']['nama_dosen']);
+                                            }
+                                            ?>
+                                        </td>
                                         <td><?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?></td>
                                         <?php if ($statusFilter !== 'Pending') : ?>
                                             <td>

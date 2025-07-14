@@ -274,7 +274,7 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                             <?php endforeach; ?>
                         </div>
                         
-                        <?php if ($totalPages > 1): ?>
+                        <?php if ($totalPages > 0): ?>
                         <nav aria-label="Page navigation" class="mt-4">
                             <ul class="pagination justify-content-center">
                                 <?php
