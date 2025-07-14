@@ -64,18 +64,6 @@ function validateRole($role) {
     return in_array($role, $validRoles);
 }
 
-// Fungsi untuk validasi session
-function validateSession($requiredRole = null) {
-    if (!isset($_SESSION['is_logged_in']) || !$_SESSION['is_logged_in']) {
-        return false;
-    }
-    
-    if ($requiredRole && $_SESSION['role'] !== $requiredRole) {
-        return false;
-    }
-    
-    return true;
-}
 
 // Fungsi untuk sanitasi input
 function sanitizeInput($input) {

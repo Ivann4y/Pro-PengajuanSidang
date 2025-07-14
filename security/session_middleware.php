@@ -65,25 +65,30 @@ function validateSessionIP() {
 // Fungsi utama untuk validasi session
 function validateSession($requiredRole = null, $timeoutMinutes = 30) {
     // Cek apakah user sudah login
-    if (!validateSession($requiredRole)) {
+    if (!isset($_SESSION['is_logged_in']) || !$_SESSION['is_logged_in']) {
         return false;
     }
-    
+
+    // Cek role jika diperlukan
+    if ($requiredRole !== null && (!isset($_SESSION['role']) || $_SESSION['role'] !== $requiredRole)) {
+        return false;
+    }
+
     // Cek session timeout
     if (!validateSessionTimeout($timeoutMinutes)) {
         return false;
     }
-    
+
     // Cek session integrity
     if (!validateSessionIntegrity()) {
         return false;
     }
-    
+
     // Cek IP address
     if (!validateSessionIP()) {
         return false;
     }
-    
+
     return true;
 }
 

@@ -24,7 +24,7 @@ include '../../koneksi/koneksiAndrew.php';
 $nim_mahasiswa = $_SESSION['user_data']['username'];
 
 // Ambil notifikasi yang belum dibaca
-$query_unread = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL) ORDER BY waktu DESC";
+$query_unread = "SELECT id, judul, pesan, created_at, status FROM notifikasi WHERE user_id = ? AND user_role = 'mahasiswa' AND status = 'unread' ORDER BY created_at DESC";
 $stmt_unread = sqlsrv_query($conn, $query_unread, array($nim_mahasiswa));
 if (!$stmt_unread) {
     die(print_r(sqlsrv_errors(), true));
@@ -35,7 +35,7 @@ while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
 }
 
 // Ambil notifikasi yang sudah dibaca
-$query_read = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND status_baca = 1 ORDER BY waktu DESC";
+$query_read = "SELECT id, judul, pesan, created_at, status FROM notifikasi WHERE user_id = ? AND user_role = 'mahasiswa' AND status = 'read' ORDER BY created_at DESC";
 $stmt_read = sqlsrv_query($conn, $query_read, array($nim_mahasiswa));
 if (!$stmt_read) {
     die(print_r(sqlsrv_errors(), true));
@@ -149,10 +149,10 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
                     </tr>
                 <?php else: ?>
                     <?php foreach ($unread_notifications as $notif): ?>
-                        <tr class="isiTabel jadiBiru" data-id="<?php echo $notif['id_notifikasi']; ?>">
-                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
+                        <tr class="isiTabel jadiBiru" data-id="<?php echo $notif['id']; ?>">
+                            <td><?php echo htmlspecialchars($notif['judul'] ?? 'Sistem'); ?></td>
                             <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
-                            <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
+                            <td><?php echo $notif['created_at'] ? date_format($notif['created_at'], 'd M Y, H:i') : 'N/A'; ?></td>
                             <td>Belum Dibaca</td>
                             <td><span onclick="bacaModal(this)">✔️</span></td>
                         </tr>
@@ -166,10 +166,10 @@ while ($row = sqlsrv_fetch_array($stmt_read, SQLSRV_FETCH_ASSOC)) {
                     </tr>
                 <?php else: ?>
                     <?php foreach ($read_notifications as $notif): ?>
-                        <tr class="isiTabel" data-id="<?php echo $notif['id_notifikasi']; ?>">
-                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
+                        <tr class="isiTabel" data-id="<?php echo $notif['id']; ?>">
+                            <td><?php echo htmlspecialchars($notif['judul'] ?? 'Sistem'); ?></td>
                             <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
-                            <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
+                            <td><?php echo $notif['created_at'] ? date_format($notif['created_at'], 'd M Y, H:i') : 'N/A'; ?></td>
                             <td>Sudah Dibaca</td>
                             <td></td>
                         </tr>
