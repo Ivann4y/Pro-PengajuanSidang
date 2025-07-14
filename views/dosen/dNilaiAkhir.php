@@ -208,9 +208,6 @@ require "../../control/dosen/dNilaiAkhir_queries.php";
 <div class="card-body" id="card-penilaian-body">
      <div class="d-flex justify-content-between align-items-center mb-4">
          <h3 class="card-title text-black mb-0">Detail Penilaian :</h3>
-         <a onclick="bukaKonfirmasiModal()" style="cursor:pointer" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tekan ini jika ingin menggunakan nilai sementara">
-             <i class="bi bi-pencil-fill fs-5" style="color: var(--text-dark);"></i>
-         </a>
      </div>
     
      <div class="penilaian-container">
@@ -266,22 +263,6 @@ require "../../control/dosen/dNilaiAkhir_queries.php";
      
    </div>
    
-   <div class="modal fade" id="konfirmasiModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-dialog-centered">
-     <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
-       <div class="modal-header border-0 justify-content-center">
-                     <h4 class="modal-title fw-bold" id="modalKonfirmasiLabel" style="font-size: 24px;">Perhatian</h4>
-                   </div>
-       <div class="modal-body">
-         <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah nilai akhir sama dengan nilai sementara?</p>
-         <div class="d-flex justify-content-between px-5">
-           <button type="button" class="btnKonfirmasi btn-tolak" id="tidakmodal"onclick="TutupKonfirmasiModal()">Tidak</button>
-           <button type="button" class="btnKonfirmasi btn-setujui" id="iyamodal" onclick="checkAndFillGrades()">Iya</button>
-         </div>
-       </div>
-     </div>
-   </div>
-</div>
    <div class="modal fade" id="konfirmasiModalKirim" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
    <div class="modal-dialog modal-dialog-centered">
      <div class="modal-content border-0 rounded-4 text-center py-4 px-3" style="background-color: #f8f9fa;">
@@ -360,42 +341,6 @@ require "../../control/dosen/dNilaiAkhir_queries.php";
             });
         <?php endif; ?>
     });
-
-    /**
-     * Mengosongkan semua input nilai.
-     */
-    function clearGradeInputs() {
-        // Mengosongkan input nilai desktop
-        document.getElementById('nilaiLaporanInput').value = '';
-        document.getElementById('materiPresentasiInput').value = '';
-        document.getElementById('tanyaJawabInput').value = '';
-        document.getElementById('nilaiProyekInput').value = '';
-
-        // Mengosongkan input nilai mobile/tablet
-        document.getElementById('nilaiLaporanInput_v').value = '';
-        document.getElementById('materiPresentasiInput_v').value = '';
-        document.getElementById('tanyaJawabInput_v').value = '';
-        document.getElementById('nilaiProyekInput_v').value = '';
-
-        // Mengosongkan nilai akhir
-        document.getElementById('nilaiMahasiswa').value = '--';
-    }
-
-    /**
-     * Membuka modal konfirmasi untuk nilai sementara.
-     */
-    function bukaKonfirmasiModal() {
-        var konfirmasiModal = new bootstrap.Modal(document.getElementById('konfirmasiModal'));
-        konfirmasiModal.show();
-    }
-
-    /**
-     * Menutup modal konfirmasi nilai sementara.
-     */
-    function TutupKonfirmasiModal() {
-        var konfirmasiModal = bootstrap.Modal.getInstance(document.getElementById('konfirmasiModal'));
-        konfirmasiModal.hide();
-    }
 
     /**
      * Menghitung rata-rata nilai dari input detail penilaian dan mengonversinya ke nilai huruf.
