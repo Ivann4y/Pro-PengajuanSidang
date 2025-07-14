@@ -601,15 +601,28 @@ function searchDosen(input, index) {
   )
     .map((inp) => inp.value.trim())
     .filter((nip) => nip !== "");
+
   // Filter dosen: tidak boleh dosen login, tidak boleh duplikat, harus cocok query
-  const finalFilteredDosen = dosenData.filter(
-    (dosen) =>
-      // Tambahan: dosen login tidak boleh muncul di autocomplete pembimbing
-      String(dosen.nomor_dosen) !== String(window.nomorDosenLogin) &&
-      !selectedNIPs.includes(String(dosen.nomor_dosen)) &&
-      (String(dosen.nomor_dosen).toLowerCase().includes(query) ||
-        dosen.nama_dosen.toLowerCase().includes(query))
-  );
+  const finalFilteredDosen = dosenData.filter((dosen) => {
+    const dosenNIP = String(dosen.nomor_dosen);
+    const loginNIP = String(window.nomorDosenLogin || "");
+
+    // Exclude dosen login
+    if (dosenNIP === loginNIP) {
+      return false;
+    }
+
+    // Exclude already selected NIPs
+    if (selectedNIPs.includes(dosenNIP)) {
+      return false;
+    }
+
+    // Match query
+    return (
+      dosenNIP.toLowerCase().includes(query) ||
+      dosen.nama_dosen.toLowerCase().includes(query)
+    );
+  });
 
   if (finalFilteredDosen.length > 0) {
     dropdown.innerHTML = "";
@@ -957,7 +970,9 @@ async function handleKelompokFormSubmit(event) {
 function validateKelompokForm() {
   let isValid = true;
   document.querySelectorAll(".error-message").forEach((el) => el.remove());
-  document.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
+  document
+    .querySelectorAll(".is-invalid")
+    .forEach((el) => el.classList.remove("is-invalid"));
 
   const showError = (fieldId, message) => {
     isValid = false;
