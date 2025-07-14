@@ -7,5 +7,6 @@
 *.pdb
 *.env
 .env
+/views/mahasiswa/uploads
 
 /vendor/

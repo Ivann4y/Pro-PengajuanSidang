@@ -13,7 +13,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    
     <link rel="stylesheet" href="../../assets/css/aDaftarSidang.css">
 
 </head>
@@ -121,7 +121,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
         ?>
             <tr class="isiTabel">
                 <td data-label="Nomor"><?= $counter ?></td>
-                <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                 <td data-label="Judul">
                     <?= htmlspecialchars($row['judul']) ?>
                 </td>

@@ -42,6 +42,20 @@ thead th:nth-child(7) {
   text-align: center;
   width: 20%;
 }
+thead th:nth-child(8) {
+  text-align: center;
+  width: 20%;
+}
+
+thead th:first-child,
+.isiTabel td:first-child {
+  border-radius: 20px 0 0 20px;
+}
+
+thead th:last-child,
+.isiTabel td:last-child {
+  border-radius: 0 20px 20px 0;
+}
 
 .isiTabel td {
   padding: 12px 15px;
@@ -55,7 +69,7 @@ thead th:nth-child(7) {
   text-align: center;
 }
 
-.isiTabel td:nth-child(7) {
+.isiTabel td:nth-child(8) {
   border-radius: 0 20px 20px 0;
 }
 
@@ -158,6 +172,17 @@ tr.jadiBiru:hover .detail-btn i {
 }
 .pagination .page-item.disabled .page-link {
   color: #6c757d;
+}
+
+#ddStatus {
+    background-color: #0d6efd;  
+    border-color: #0d6efd;
+    color: white;
+}
+
+#ddStatus:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
 }
 
 /* Kelompok button styles */

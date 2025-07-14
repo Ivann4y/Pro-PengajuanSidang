@@ -53,10 +53,17 @@ if ($resultAllDosen) {
 // FUNGSI 4: AMBIL FILTER DARI URL
 // ==============================
 
+// ==============================
+// FUNGSI 4: AMBIL FILTER DARI URL
+// ==============================
+
 // Ambil filter tipe sidang dari URL, default 'semua'
 $selectedTipe = $_GET['tipe'] ?? 'semua';
 // Ambil filter prodi dari URL, default 'semua'
 $selectedProdi = $_GET['prodi'] ?? 'semua';
+// Tambahan: Ambil filter status dari URL, default 'semua'
+$selectedStatus = $_GET['status'] ?? 'semua';
+
 
 // ==============================
 // FUNGSI 5: AMBIL DAFTAR PRODI UNIK
@@ -109,7 +116,7 @@ if ($selectedTipe == 'Tugas Akhir') {
 }
 // Tambahkan filter prodi jika dipilih
 if ($selectedProdi !== 'semua') {
-    $whereClauses[] = "m_perwakilan.prodi = ?"; 
+    $whereClauses[] = "m.prodi = ?"; 
     $params[] = $selectedProdi;
 }
 
@@ -118,30 +125,56 @@ if ($selectedProdi !== 'semua') {
 // ==============================
 
 // Query utama untuk mengambil daftar sidang yang belum dijadwalkan
-$sql = "SELECT 
-            s.id_sidang,
-            s.id_kelompok,
-            s.judul AS judulSidang,
-            k.jenis_sidang AS tipeSidang,
-            MAX(m.prodi) AS prodi,
-            (SELECT STRING_AGG(ma.nama_mhs, ', ') FROM Mahasiswa ma JOIN Kelas_Mahasiswa km ON ma.nim = km.nim WHERE km.id_kelas = (SELECT TOP 1 id_kelas FROM Kelas_Mahasiswa WHERE nim = k.nim)) AS namaList,
-            MAX(mk.nama_matkul) AS mataKuliah,
-            (SELECT TOP 1 d.nama_dosen FROM Bimbingan b JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = s.id_kelompok) AS pembimbing,
-            (SELECT STRING_AGG(d.nama_dosen, CHAR(13)+CHAR(10)) 
-             FROM Pengampu_Kelas pk 
-             JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen 
-             WHERE pk.id_matkul = MAX(ds.id_matkul) AND pk.id_kelas = (SELECT TOP 1 id_kelas FROM Kelas_Mahasiswa WHERE nim = k.nim)) AS dosenPengampuList
-        FROM Sidang s
-        JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-        -- Join ke Mahasiswa via NIM perwakilan untuk filter prodi
-        JOIN Mahasiswa m ON k.nim = m.nim 
-        -- Left Join ke tabel lain untuk mendapatkan detail
-        LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-        LEFT JOIN MataKuliah mk ON ds.id_matkul = mk.id_matkul
-        WHERE " . implode(' AND ', $whereClauses) . "
-        AND NOT EXISTS (SELECT 1 FROM Jadwal j WHERE j.id_sidang = s.id_sidang)
-        GROUP BY s.id_sidang, s.id_kelompok, s.judul, k.jenis_sidang, k.nim
-        ORDER BY s.id_sidang";
+$sql = "
+    SELECT
+        s.id_sidang,
+        s.id_kelompok,
+        s.judul AS judulSidang,
+        k.jenis_sidang AS tipeSidang,
+        m.prodi,
+        
+        -- Mengambil Nama Mata Kuliah langsung dari tabel Kelompok -> MataKuliah
+        mk.nama_matkul AS mataKuliah,
+        
+        -- Mengambil Nama Dosen Pembimbing (untuk Sidang TA)
+       STRING_AGG(d_pembimbing.nama_dosen, CHAR(13)+CHAR(10)) AS pembimbingList,
+        
+        -- Menggabungkan Nama Dosen Pengampu (untuk Sidang Semester)
+        -- Ditemukan dengan mencocokkan id_matkul DAN id_kelas
+         STRING_AGG(d_pengampu.nama_dosen, CHAR(13)+CHAR(10)) AS dosenPengampuList
+    FROM
+        Sidang s
+    -- Join wajib untuk info dasar
+    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+    
+    -- Join opsional (LEFT JOIN) untuk mendapatkan detail
+    LEFT JOIN Mahasiswa m ON k.nim = m.nim -- Untuk filter prodi
+    LEFT JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul -- << PENTING: Ambil matkul dari Kelompok
+    
+    -- Join untuk mencari Dosen Pembimbing (jika Sidang TA)
+    LEFT JOIN Bimbingan b ON k.id_kelompok = b.id_kelompok
+    LEFT JOIN Dosen d_pembimbing ON b.nomor_dosen = d_pembimbing.nomor_dosen
+    
+    -- Rangkaian Join untuk mencari Dosen Pengampu (jika Sidang Semester)
+    LEFT JOIN Kelas_Mahasiswa km ON m.nim = km.nim -- 1. Dapatkan id_kelas dari nim perwakilan
+    LEFT JOIN Pengampu_Kelas pk ON k.id_matkul = pk.id_matkul AND km.id_kelas = pk.id_kelas -- 2. Cocokkan id_matkul & id_kelas
+    LEFT JOIN Dosen d_pengampu ON pk.nomor_dosen = d_pengampu.nomor_dosen -- 3. Dapatkan nama dosen pengampu
+    
+    WHERE " . implode(' AND ', $whereClauses) . "
+      -- Filter tambahan: hanya tampilkan yang belum ada di tabel Jadwal
+      AND NOT EXISTS (SELECT 1 FROM Jadwal j WHERE j.id_sidang = s.id_sidang)
+      
+    -- Grouping karena join dengan pengampu bisa menghasilkan banyak baris
+    GROUP BY
+        s.id_sidang,
+        s.id_kelompok,
+        s.judul,
+        k.jenis_sidang,
+        m.prodi,
+        mk.nama_matkul
+    ORDER BY
+        s.id_kelompok;
+";
 
 // ==============================
 // FUNGSI 9: EKSEKUSI QUERY DAN AMBIL DATA
@@ -165,16 +198,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
 // FUNGSI 10: VARIABEL DINAMIS UNTUK TAMPILAN
 // ==============================
 
-// Teks dinamis untuk header tabel dan tombol, tergantung filter tipe sidang
-$tipeButtonText = 'Semua Tipe';
-if ($selectedTipe == 'Tugas Akhir') $tipeButtonText = 'Sidang TA';
-elseif ($selectedTipe == 'Semester') $tipeButtonText = 'Sidang Semester';
 
-// Teks dinamis untuk tombol filter prodi
-$prodiButtonText = 'Semua Prodi';
-if ($selectedProdi !== 'semua') {
-    $prodiButtonText = htmlspecialchars($selectedProdi);
-}
 
 // Teks dinamis untuk header kolom tabel
 $dynamicHeaderText = 'Judul/Mata Kuliah';
