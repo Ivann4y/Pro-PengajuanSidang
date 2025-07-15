@@ -650,7 +650,7 @@ tr.jadiBiru:hover .detail-btn i {
   }
 
   .anggota-input-group {
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.5rem;
   }
 
