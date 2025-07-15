@@ -26,12 +26,15 @@ $sqlGetSidang = "
     WHERE k.nim = ?
     ORDER BY s.id_sidang DESC
 ";
+
+
 $stmtGetSidang = sqlsrv_query($conn, $sqlGetSidang, [$nim]);
 
-if (!$stmtGetSidang || !($row = sqlsrv_fetch_array($stmtGetSidang, SQLSRV_FETCH_ASSOC))) {
-    die("Data sidang untuk Anda belum ditemukan. Mohon cek dengan dosen pembimbing.");
+$id_sidang = null;
+
+if ($stmtGetSidang && ($row = sqlsrv_fetch_array($stmtGetSidang, SQLSRV_FETCH_ASSOC))) {
+    $id_sidang = $row['id_sidang'];
 }
-$id_sidang = $row['id_sidang'];
 
 
 
@@ -74,12 +77,13 @@ $sqlDataSidang = "
         s.judul, 
         d.nama_dosen AS dosen_pembimbing
     FROM Mahasiswa m
-    LEFT JOIN Penilaian p ON m.nim = p.nim
-    LEFT JOIN Sidang s ON p.id_sidang = s.id_sidang
+    JOIN Kelompok k ON m.nim = k.nim
+    JOIN Sidang s ON k.id_kelompok = s.id_kelompok
     LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
     LEFT JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
     WHERE m.nim = ? AND s.id_sidang = ?
 ";
+
 $stmtDataSidang = sqlsrv_query($conn, $sqlDataSidang, [$nim, $id_sidang]);
 $dataSidang = [
     'nama' => $_SESSION['user_data']['nama_mhs'] ?? 'Nama Tidak Ditemukan',
@@ -107,28 +111,22 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
-    <!-- === STYLESHEETS & FONTS === -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
-    <!-- Google Fonts (These are fine) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet" />
 
-    <!-- === KOREKSI PATH CSS LOKAL ANDA DI SINI === -->
-    <!-- Path ke style.css utama (untuk layout sidebar) -->
+
     <link rel="stylesheet" href="../../assets/css/style.css" /> 
     
-    <!-- Path ke mNilaiakhir.css (untuk style spesifik halaman ini) -->
     <link rel="stylesheet" href="../../assets/css/mNilaiakhir.css">
 
-    <!-- Path ke button-styles.css -->
     <link rel="stylesheet" href="../../css/button-styles.css" />
 
-    <!-- Path ke extra/style.css (jika masih digunakan) -->
     <link rel="stylesheet" href="../../extra/style.css" />
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css" />
     
-    <!-- Scripts (These are fine) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -138,10 +136,8 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
 </head>
 <body>
     <div id="NavSide">
-        <!-- ... (Bagian Sidebar dan Topbar Anda tetap sama) ... -->
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand img "><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"></div>
-            <!-- CORRECTED CODE for mNilaiAkhir.php -->
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="mdetailSidang.php"><span class="fw-semibold">Detail Pengajuan</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="mPerbaikan.php"><span class="fw-semibold">Perbaikan</span></a></li>
@@ -154,6 +150,14 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
             <div class="header-icons"><i class="bi bi-bell-fill"></i><div class="profile-icon"><i class="bi bi-person-fill fs-5"></i></div></div>
         </div>
            <main class="NavSide__main-content">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('mNilaiakhir'), 'mahasiswa', [
+                ['url' => 'mSidang.php', 'text' => 'Sidang']
+            ]); 
+            ?>
             <div class="container-fluid">
                 <div class="row mb-4 title-container"><div class="col-12"><h2 class="main-title">Detail Evaluasi - <?= htmlspecialchars($judul ?? 'Sistem Evaluasi Sidang') ?></h2></div></div>
                 

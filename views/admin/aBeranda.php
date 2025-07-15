@@ -25,6 +25,17 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 require "../../koneksi/koneksiAndrew.php";
 
+$admin_username = $_SESSION['user_data']['username'];
+$unread_notifications = [];
+$query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+$stmt_unread = sqlsrv_query($conn, $query_unread, array($admin_username));
+if ($stmt_unread) {
+    while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+        $unread_notifications[] = $row;
+    }
+}
+$unread_count = count($unread_notifications);
+
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +61,24 @@ require "../../koneksi/koneksiAndrew.php";
     <link rel="stylesheet" href="../../assets/css/aBeranda.css" />
     
     <style>
-      
+      .notif-badge {
+        position: absolute;
+        top: -2px;
+        right: -8px;
+        background: #4b68fb;
+        color: white;
+        border-radius: 50%;
+        font-size: 0.55em;
+        padding: 0 3px;
+        z-index: 10;
+        border: 2px solid white;
+        font-weight: bold;
+        min-width: 10px;
+        text-align: center;
+        line-height: 1.2;
+        box-shadow: 0 0 2px #0002;
+      }
+      .position-relative { position: relative; }
     </style>
 </head>
 
@@ -101,9 +129,12 @@ require "../../koneksi/koneksiAndrew.php";
             <!-- Judul Halaman -->
               <!-- <h2 class="text-heading-mobile flex-fill">Beranda Admin</h2> -->
             <div class="header-icons">
-                <!-- tugas -->
-                <a href="aNotifikasi.php" title="tugas" style="text-decoration: none; color: inherit;">
-                    <i class="bi bi-bell-fill"></i>
+                <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                    <i class="bi bi-bell-fill position-relative">
+                        <?php if ($unread_count > 0): ?>
+                            <span class="notif-badge"> <?= $unread_count ?> </span>
+                        <?php endif; ?>
+                    </i>
                 </a>
                 <!-- Profil -->
                 <div class="profile-icon">
@@ -119,9 +150,15 @@ require "../../koneksi/koneksiAndrew.php";
             <div class="dashboard-header">
                 <h2 class="text-heading">Beranda Admin</h2>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="aNotifikasi.php" title="tugas"><i class="bi bi-bell-fill"></i></a>
+                    <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                        <i class="bi bi-bell-fill position-relative">
+                            <?php if ($unread_count > 0): ?>
+                                <span class="notif-badge"> <?= $unread_count ?> </span>
+                            <?php endif; ?>
+                        </i>
+                    </a>
                     <div class="profile-icon">
-                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                        <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white;"></i></a>
                     </div>
                 </div>
             </div>

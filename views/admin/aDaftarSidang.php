@@ -13,8 +13,28 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    
     <link rel="stylesheet" href="../../assets/css/aDaftarSidang.css">
+    <style>
+      .notif-badge {
+        position: absolute;
+        top: -2px;
+        right: -8px;
+        background: #4b68fb;
+        color: white;
+        border-radius: 50%;
+        font-size: 0.55em;
+        padding: 0 3px;
+        z-index: 10;
+        border: 2px solid white;
+        font-weight: bold;
+        min-width: 10px;
+        text-align: center;
+        line-height: 1.2;
+        box-shadow: 0 0 2px #0002;
+      }
+      .position-relative { position: relative; }
+    </style>
 
 </head>
 
@@ -83,7 +103,25 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                 <div class="header-right-panel">
                     <div id="desktop-icons-container">
                         <div class="header-icons">
-                            <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                            <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                                <i class="bi bi-bell-fill position-relative">
+                                    <?php
+                                    $admin_username = $_SESSION['user_data']['username'];
+                                    $unread_notifications = [];
+                                    $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+                                    $stmt_unread = sqlsrv_query($conn, $query_unread, array($admin_username));
+                                    if ($stmt_unread) {
+                                        while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+                                            $unread_notifications[] = $row;
+                                        }
+                                    }
+                                    $unread_count = count($unread_notifications);
+                                    ?>
+                                    <?php if ($unread_count > 0): ?>
+                                        <span class="notif-badge"> <?= $unread_count ?> </span>
+                                    <?php endif; ?>
+                                </i>
+                            </a>
                             <div class="profile-icon"><a href="aProfil.php" title="Profil"><i
                                         class="bi bi-person-fill"></i></a></div>
                         </div>
@@ -121,7 +159,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
         ?>
             <tr class="isiTabel">
                 <td data-label="Nomor"><?= $counter ?></td>
-                <td data-label="ID_Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
                 <td data-label="Judul">
                     <?= htmlspecialchars($row['judul']) ?>
                 </td>

@@ -59,7 +59,10 @@ FROM
 JOIN
     Kelompok AS K_mhs ON M.nim = K_mhs.nim
 JOIN
-    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok AND K_sidang.nim = M.nim
+    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok
+    AND K_mhs.tahun_ajaran = K_sidang.tahun_ajaran
+    AND K_mhs.jenis_sidang = K_sidang.jenis_sidang
+    AND K_mhs.id_matkul = K_sidang.id_matkul
 JOIN
     Sidang AS S ON K_sidang.id_kelompok = S.id_kelompok 
 WHERE
@@ -92,9 +95,9 @@ $query = "SELECT DISTINCT S.id_sidang, S.judul, mk.nama_matkul, K_mhs.jenis_sida
 	CASE 
         WHEN K_mhs.jenis_sidang = 'Tugas Akhir' THEN (
             SELECT d1.nama_dosen 
-            FROM Penjadwalan p1 
+            FROM Bimbingan p1 
             JOIN Dosen d1 ON d1.nomor_dosen = p1.nomor_dosen 
-            WHERE p1.id_sidang = S.id_sidang AND p1.peran_dosen = 1
+			WHERE S.id_kelompok = p1.id_kelompok
         )
         WHEN K_mhs.jenis_sidang = 'Semester' THEN (
             SELECT TOP 1 d2.nama_dosen
@@ -109,7 +112,10 @@ FROM
 JOIN
     Kelompok AS K_mhs ON M.nim = K_mhs.nim
 JOIN
-    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok AND K_sidang.nim = M.nim
+    Kelompok AS K_sidang ON K_mhs.nomor_kelompok = K_sidang.nomor_kelompok
+    AND K_mhs.tahun_ajaran = K_sidang.tahun_ajaran
+    AND K_mhs.jenis_sidang = K_sidang.jenis_sidang
+    AND K_mhs.id_matkul = K_sidang.id_matkul
 JOIN
     Sidang AS S ON K_sidang.id_kelompok = S.id_kelompok 
 JOIN 
@@ -123,7 +129,7 @@ if ($filter === 'ta') {
     $query .= " AND K_mhs.jenis_sidang = 'Semester'";
 }
 
-$query .= " GROUP BY S.id_sidang, S.judul, K_mhs.jenis_sidang, K_mhs.id_matkul, mk.nama_matkul ORDER BY S.id_sidang";
+$query .= " GROUP BY S.id_sidang, S.judul, S.id_kelompok, K_mhs.jenis_sidang, K_mhs.id_matkul, mk.nama_matkul ORDER BY S.id_sidang";
 
 $query .= " OFFSET " . (($currentPage - 1) * $rowsPerPage) . " ROWS FETCH NEXT " . $rowsPerPage . " ROWS ONLY";
 
@@ -146,3 +152,13 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
     $row['dosen'] = $row['nama_dosen'] ?? '-';
     $rows[] = $row;
 } 
+
+// Ambil jumlah notifikasi belum dibaca
+$unread_count = 0;
+if (isset($conn) && $conn) {
+    $query_unread = "SELECT COUNT(*) as cnt FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nim_login));
+    if ($stmt_unread && ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC))) {
+        $unread_count = (int)$row['cnt'];
+    }
+}

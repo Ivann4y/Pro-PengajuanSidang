@@ -1,5 +1,13 @@
 <?php 
 require "../../control/dosen/dNilaiAkhir_queries.php";
+require_once __DIR__ . '/../../control/kirimNotifikasi.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
+    $nim_mhs = $_POST['nim'];
+    $nama_dosen = isset($_SESSION['user_data']['nama_dosen']) ? $_SESSION['user_data']['nama_dosen'] : 'Dosen';
+    $judul_sidang = isset($judul) ? $judul : '';
+    $pesan = "Nilai akhir sidang untuk judul '$judul_sidang' telah diberikan oleh $nama_dosen. Silakan cek hasil nilai Anda.";
+    kirimNotifikasi($nim_mhs, $pesan, $_SESSION['user_data']['nomor_dosen'], $conn);
+}
 ?>
 
 <!DOCTYPE html>
@@ -170,13 +178,6 @@ require "../../control/dosen/dNilaiAkhir_queries.php";
              <div class="value-row text-secondary fw-bold">
                  <?php echo htmlspecialchars($dosen_terkait_sidang ?? ''); ?>
              </div>
-             <!-- Debug Info -->
-             <!-- <div style="font-size: 12px; color: #666; margin-top: 5px;">
-                 Debug: jenis_sidang=<?php echo $jenis_sidang; ?>, 
-                 id_kelompok=<?php echo $id_kelompok; ?>, 
-                 id_matkul=<?php echo $id_matkul; ?>, 
-                 dosen_terkait_sidang=<?php echo $dosen_terkait_sidang; ?>
-             </div> -->
            </div>
          </div>
        </div>
@@ -402,7 +403,7 @@ require "../../control/dosen/dNilaiAkhir_queries.php";
      * Kemudian menampilkannya di kolom "Nilai Mahasiswa".
      */
     function calculateAndDisplayAverage() {
-        // Ambil nilai dari input detail penilaian (prioritaskan input desktop)
+        // Ambil nilai dari input detail penilaian (prioritaskan input desktop)>
         const nilaiLaporan = parseFloat(document.getElementById('nilaiLaporanInput').value);
         const materiPresentasi = parseFloat(document.getElementById('materiPresentasiInput').value);
         const tanyaJawab = parseFloat(document.getElementById('tanyaJawabInput').value);

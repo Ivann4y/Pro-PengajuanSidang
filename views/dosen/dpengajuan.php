@@ -75,6 +75,7 @@ $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 // Ini filter buat statusnya
 $statusFilter = isset($_GET['status']) ? $_GET['status'] : 'Pending';
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $offset = max(0, ($currentPage - 1) * $rowsPerPage);
 
@@ -133,6 +134,13 @@ if ($filter === 'TA') {
     $whereConditions[] = "tipe_sidang_text = 'Semester'";
 }
 
+if (!empty($search)) {
+    // Cari di beberapa kolom yang relevan
+    $whereConditions[] = "(nomor_kelompok LIKE ? OR judul LIKE ? OR nama_matkul LIKE ?)";
+    // Tambahkan parameter pencarian sebanyak jumlah kolom yang dicari
+    array_push($params, '%' . $search . '%', '%' . $search . '%', '%' . $search . '%');
+}
+
 
 // Gabungin semua kondisi jadi satu string
 $whereClause = "WHERE " . implode(" AND ", $whereConditions);
@@ -161,7 +169,23 @@ $result = sqlsrv_query($conn, $mainSql, $mainParams);
 if ($result === false) {
     die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
-$nomor = max(1, $offset + 1);
+$nomor = max(1, $offset + 1); 
+
+// Ambil jumlah notifikasi belum dibaca untuk dosen
+$unread_notifications = [];
+if (isset($_SESSION['user_data']['nomor_dosen'])) {
+    $nomor_dosen = (string)$_SESSION['user_data']['nomor_dosen'];
+    $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nomor_dosen));
+    if ($stmt_unread) {
+        while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+            $unread_notifications[] = $row;
+        }
+    }
+}
+$unread_count = count($unread_notifications);
+// DEBUG: tampilkan nilai $unread_count dan $nomor_dosen
+echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -214,7 +238,7 @@ $nomor = max(1, $offset + 1);
             </div>
             <div class="header-icons d-flex d-md-none">
                 <a href="dNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
-                    <i class="bi bi-bell-fill"></i>
+                    <i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i>
                 </a>
                 <div class="profile-icon">
                     <a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
@@ -225,9 +249,14 @@ $nomor = max(1, $offset + 1);
         </div>
         <main class="NavSide__main-content" id="dBeranda">
             <div class="dashboard-header">
-                <h2 class="bodyHeading">Pengajuan Sidang</h2>
+                <div class="header-title-group">
+                    <h2 class="bodyHeading">Pengajuan Sidang</h2>
+                    <h2 class="text-heading mt-3" style="font-size:1.5rem; font-weight:500;">
+                        <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?> (Dosen)
+                    </h2>
+                </div>
                 <div class="header-icons d-none d-md-flex">
-                    <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
+                    <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                     <div class="profile-icon">
                         <a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
                     </div>
@@ -307,7 +336,16 @@ $nomor = max(1, $offset + 1);
                                         <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
                                         <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
                                         <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                       <td>
+                                            <?php
+                                            if ($row['tipe_sidang_text'] === 'Tugas Akhir') {
+                                                echo htmlspecialchars($row['nama_dosen']);
+                                            } 
+                                            else { 
+                                                echo htmlspecialchars($_SESSION['user_data']['nama_dosen']);
+                                            }
+                                            ?>
+                                        </td>
                                         <td><?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?></td>
                                         <?php if ($statusFilter !== 'Pending') : ?>
                                             <td>
@@ -326,6 +364,11 @@ $nomor = max(1, $offset + 1);
                                             <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
                                                 <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
                                                 <input type="hidden" name="tipe" value="<?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?>">
+                                                
+                                                <input type="hidden" name="from_status" value="<?= htmlspecialchars($statusFilter) ?>">
+                                                <input type="hidden" name="from_filter" value="<?= htmlspecialchars($filter) ?>">
+                                                <input type="hidden" name="from_page" value="<?= htmlspecialchars($currentPage) ?>">
+
                                                 <button type="submit" class="detail-btn">
                                                     <i class="bi bi-eye"></i>
                                                 </button>
@@ -348,6 +391,26 @@ $nomor = max(1, $offset + 1);
                     </div>
                 </div>
             </div>
+             <?php if ($totalPages > 0): ?>
+                            <nav aria-label="Page navigation" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <?php
+                                    $queryParams = "status=" . urlencode($statusFilter) . "&filter=" . urlencode($filter) . "&search=" . urlencode($search);
+                                    ?>
+                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $currentPage - 1 ?>&<?= $queryParams ?>">«</a>
+                                    </li>
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $i ?>&<?= $queryParams ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $currentPage + 1 ?>&<?= $queryParams ?>">»</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <?php endif; ?>
 
             <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -483,13 +546,13 @@ $nomor = max(1, $offset + 1);
             </div>
         </main>
     </div> 
-
-
-        </main>
-    </div>
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
     <script src="../../assets/js/dPengajuan.js"></script>
+    <script>
+        // Define dosen login NIP for filtering in autocomplete
+        window.nomorDosenLogin = "<?php echo $_SESSION['user_data']['nomor_dosen']; ?>";
+    </script>
 </body>
 </html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
