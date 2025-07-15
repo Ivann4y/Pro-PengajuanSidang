@@ -70,8 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     // Ambil dokumen revisi
-    $sql_revisi = "SELECT dok_revisi, nama_file FROM Detail_Sidang WHERE id_sidang = ? AND nim = ?";
-    $params_revisi = [$id_sidang, $nim_post];
+    $sql_revisi = "SELECT dok_revisi, nama_file 
+               FROM Detail_Sidang 
+               WHERE id_sidang = ? AND nomor_dosen = ?";
+    $params_revisi = [$id_sidang, $nomor_dosen_login];
+
     $stmt_revisi = sqlsrv_query($conn, $sql_revisi, $params_revisi);
     $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
     $dokumen_revisi = $data_revisi['dok_revisi'] ?? null;
@@ -80,9 +83,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($reject_action && $catatan_sidang) {
         $sql_update_reject = "UPDATE Detail_Sidang 
-                          SET status_revisi = 'Ditolak', catatan_sidang = ? 
-                          WHERE id_sidang = ? AND nomor_dosen = ?";
-        $params_reject = [$catatan_sidang, $id_sidang, $nomor_dosen_login];
+    SET status_revisi = 'Ditolak', catatan_sidang = ? 
+    WHERE id_sidang = ? AND nomor_dosen = ? AND EXISTS (
+        SELECT 1 FROM Kelompok k WHERE k.nim = ? AND k.id_kelompok = (
+            SELECT id_kelompok FROM Sidang WHERE id_sidang = ?
+        )
+    )";
+        $params_reject = [$catatan_sidang, $id_sidang, $nomor_dosen_login, $nim_post, $id_sidang];
+
         $stmt_reject = sqlsrv_query($conn, $sql_update_reject, $params_reject);
 
         if ($stmt_reject) {
