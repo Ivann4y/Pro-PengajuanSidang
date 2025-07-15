@@ -172,6 +172,22 @@ function handleFormSubmit(event) {
   const errorBox = document.getElementById("form-error");
   errorBox.textContent = "";
 
+   const fieldsToValidate = [
+    { id: 'modal_ruangan', message: 'Ruangan harus diisi.' },
+    { id: 'modal_tanggal', message: 'Tanggal harus dipilih.' },
+    { id: 'modal_jam_awal', message: 'Jam awal harus diisi.' },
+    { id: 'modal_jam_akhir', message: 'Jam akhir harus diisi.' },
+  ];
+
+  for (const field of fieldsToValidate) {
+      const inputElement = document.getElementById(field.id);
+      // Periksa apakah elemen ada dan nilainya kosong
+      if (inputElement && inputElement.value.trim() === '') {
+          errorBox.textContent = field.message;
+          return; // Menghentikan eksekusi fungsi jika ada field yang kosong
+      }
+  }
+
   // Validasi total bobot sebelum mengirim
   let totalBobot = 0;
   if (isSidangTA) {

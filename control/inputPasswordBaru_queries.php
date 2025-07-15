@@ -54,6 +54,8 @@ if ($reset) {
             $role = $reset['role'];
         } else {
             $reset = null;
+             header("Location: inputPasswordBaru.php?token=$token&error=invalid");
+             exit;
         }
     }
 }
@@ -71,6 +73,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $reset) {
         exit;
     } elseif ($newPassword !== $confirmPassword) {
         header("Location: inputPasswordBaru.php?token=$token&error=mismatch");
+        exit;
+    }elseif(
+        !preg_match('/[A-Z]/', $newPassword) || 
+        !preg_match('/[a-z]/', $newPassword) || 
+        !preg_match('/[0-9]/', $newPassword) ||
+        !preg_match('/[\W_]/', $newPassword)
+        ) {
+        header("Location: inputPasswordBaru.php?token=$token&error=weak");
         exit;
     } else {
         // Hash password baru dan update ke database
