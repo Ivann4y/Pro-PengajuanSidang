@@ -1,0 +1,6 @@
+Array
+(
+    [reject] => true
+    [catatan_sidang] => aougefwye
+    [nim] => 0920240058
+)

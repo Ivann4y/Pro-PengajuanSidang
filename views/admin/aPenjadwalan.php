@@ -249,50 +249,10 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                           <div class="form-group"><label for="modal_nim-ta">Kelompok</label><input type="text" id="modal_nim-ta" readonly /></div>
                           <div class="form-group"><label for="modal_judul_sidang-ta">Judul Sidang</label><input type="text" id="modal_judul_sidang-ta" readonly /></div>
                           
-                          <div class="form-group">
-                            <label for="modal_pembimbing-ta">Pembimbing</label>
-                            <div class="input-with-buttons">
-                                <div class="autocomplete-container">
-                            <input type="text" id="modal_pembimbing-ta" name="pembimbing_nama" readonly />
-                            </div>
-                         <div class="bobot-nilai-input-group">
-                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-1')">-</button>
-                                          <div class="input-with-percent">
-                                          <input type="number" id="modal_pembimbing_bobot-ta" name="pembimbing_bobot" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
-                                        <span class="percent-sign">%</span>
-                                           </div>
-                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-1')">+</button>
-                                      </div>
-                        </div>
-                        </div>
+                         
                           <div id="penguji-wrapper-ta">
                             <div class="form-group" id="penguji-form-ta-1">
-                                <label for="modal_penguji-ta-1">Penguji 1</label>
-                                <div class="input-with-buttons">
-                                
-                                <div class="autocomplete-container">
-                                <input type="text"
-                                        id="modal_penguji-ta-1"
-                                        name="penguji_nama[]"
-                                        placeholder="Ketik nama dosen penguji"
-                                        oninput="searchPenguji(this, 1)"
-                                        autocomplete="off">
-                                    <div class="autocomplete-dropdown" id="autocomplete_penguji_1"></div>
-                                </div>
-                               <div class="bobot-nilai-input-group">
-                                <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-1')">-</button>
-                                <div class="input-with-percent">
-                                    <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
-                                    <span class="percent-sign">%</span>
-                                </div>
-
-                                <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-1')">+</button>
-                                </div>
-                                <div class="form-toggle-buttons">
-                                    <button type="button" onclick="addPenguji()">+</button>
-                                    <button type="button" onclick="removePenguji()">-</button>
-                                </div>
-                            </div>
+                               
                         </div>
                     </div>
 
@@ -329,34 +289,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                           <div class="form-group"><label for="modal_nim-sem">Kelompok</label><input type="text" id="modal_nim-sem" readonly /></div>
                           <div class="form-group"><label for="modal_matkul-sem">Mata Kuliah</label><input type="text" id="modal_matkul-sem" readonly /></div>
                           <div id="pengampu-wrapper-sem">
-                              <div class="form-group" id="pengampu-form-sem-1">
-                                  <label for="modal_pengampu-sem-1">Pengampu 1</label>
-                                  <div class="input-with-buttons">
-                                      <input type="text" id="modal_pengampu-sem-1" name="pengampu_nama[]" placeholder="Nama Pengampu 1" />
-                                      <div class="bobot-nilai-input-group">
-                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-1')">-</button>
-                                          <div class="input-with-percent">
-                                          <input type="number" id="modal_qty_pengampu-sem-1" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Semester');">/>
-                                          <span class="percent-sign">%</span>
-                                          </div>
-                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-1')">+</button>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div class="form-group" id="pengampu-form-sem-2">
-                                  <label for="modal_pengampu-sem-2">Pengampu 2</label>
-                                  <div class="input-with-buttons">
-                                      <input type="text" id="modal_pengampu-sem-2" name="pengampu_nama[]" placeholder="Nama Pengampu 2" />
-                                      <div class="bobot-nilai-input-group">
-                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-2')">-</button>
-                                          <div class="input-with-percent">
-                                          <input type="number" id="modal_qty_pengampu-sem-2" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Semester');">/>
-                                          <span class="percent-sign">%</span>
-                                          </div>
-                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-2')">+</button>
-                                      </div>
-                                  </div>
-                              </div>
+                             
                           </div>
                           <div class="form-group"><label for="modal_prodi-sem">Prodi</label><input type="text" id="modal_prodi-sem" readonly /></div>
                           <div class="form-group"><label for="modal_ruangan-sem">Ruangan</label><input type="text" id="modal_ruangan-sem" name="ruangan" /></div>
@@ -367,7 +300,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                                   <input type="time" id="modal_jam_awal-sem" name="jam_awal" /><span class="time-separator">-</span><input type="time" id="modal_jam_akhir-sem" name="jam_akhir" />
                               </div>
                           </div>
-                          <div class="realtime-validation-message" id="realtime-validation-ta"></div>
+                          <div class="realtime-validation-message" id="realtime-validation-sem"></div>
                           <div class="form-error-message" id="form-error-sem"></div>
                           <div class="form-actions">
                               <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>
