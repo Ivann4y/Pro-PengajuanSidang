@@ -80,7 +80,7 @@ $sql_utama = "
         mk.nama_matkul
     FROM Sidang s
     JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-    LEFT JOIN Jadwal j ON s.id_sidang = j.id_sidang
+    LEFT JOIN Jadwal j ON s.id_sidang  = j.id_sidang
     LEFT JOIN Mahasiswa m ON k.nim = m.nim
     LEFT JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul
     WHERE s.id_sidang = ?
