@@ -98,7 +98,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                             <?= htmlspecialchars($tipeButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Jenis Sidang</a></li>
+                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Semua Sidang</a></li>
                             <li><a class="dropdown-item" href="?tipe=Tugas Akhir&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang TA</a></li>
                             <li><a class="dropdown-item" href="?tipe=Semester&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang Semester</a></li>
                         </ul>
@@ -167,14 +167,23 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         $nomor_awal = ($currentPage - 1) * $rowsPerPage + 1;$counter = 1;
                         foreach ($data as $entry):
                             // Menyiapkan variabel untuk ditampilkan
-                            $judul_tampil = htmlspecialchars($entry['judulSidang']);
+                           $judul_tampil = htmlspecialchars($entry['judulSidang']);
                             $matkul_tampil = 'N/A';
                             $dosen_tampil = 'N/A';
+                            
+                            // Variabel untuk JSON
+                            $pembimbing_json = '[]';
                             $dosen_pengampu_json = '[]';
                             
                             if ($entry['tipeSidang'] == 'Tugas Akhir') {
-                                $dosen_tampil = htmlspecialchars($entry['pembimbing'] ?? 'N/A');
+                                $pembimbing_list_string = $entry['pembimbingList'] ?? '';
+                                $pembimbing_array = !empty($pembimbing_list_string) ? preg_split('/\r\n|\r|\n/', $pembimbing_list_string, -1, PREG_SPLIT_NO_EMPTY) : [];
+                                $dosen_tampil = !empty($pembimbing_array) ? implode('<br>', array_map('htmlspecialchars', $pembimbing_array)) : 'N/A';
+                                // BUAT JSON UNTUK PEMBIMBING
+                                $pembimbing_json = htmlspecialchars(json_encode($pembimbing_array), ENT_QUOTES, 'UTF-8');
+                                
                                 $matkul_tampil = htmlspecialchars($entry['mataKuliah'] ?? 'N/A');
+
                             } elseif ($entry['tipeSidang'] == 'Semester') {
                                 $matkul_tampil = htmlspecialchars($entry['mataKuliah'] ?? 'N/A');
                                 $dosen_pengampu_list_string = $entry['dosenPengampuList'] ?? '';
@@ -183,18 +192,19 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                                 $dosen_pengampu_json = htmlspecialchars(json_encode($dosen_array), ENT_QUOTES, 'UTF-8');
                             }
 
-                            
+                            // Menyiapkan atribut data untuk baris tabel
                             $row_props_js = "data-id='".htmlspecialchars($entry['id_sidang'])."'"
                                 . " data-kelompok='".htmlspecialchars($entry['id_kelompok'])."'"
-                                . " data-nama-list='".htmlspecialchars($entry['namaList'] ?? '')."'"
                                 . " data-judul='".htmlspecialchars($entry['judulSidang'])."'"
                                 . " data-matkul='".htmlspecialchars($entry['mataKuliah'] ?? 'N/A')."'"
-                                . " data-pembimbing='".htmlspecialchars($entry['pembimbing'] ?? 'N/A')."'"
-                                . " data-prodi='".htmlspecialchars($entry['prodi'])."'"
+                                // UBAH ATRIBUT INI AGAR MENGIRIM JSON
+                                . " data-pembimbing-list='". $pembimbing_json ."'" 
+                                . " data-prodi='".htmlspecialchars($entry['prodi'] ?? 'N/A')."'"
                                 . " data-tipe-sidang='".htmlspecialchars($entry['tipeSidang'])."'"
                                 . " data-pengampu='". $dosen_pengampu_json ."'";
                         ?>
                         <tr class="isiTabel" <?= $row_props_js ?>>
+                            <!-- ... sisa <td> tetap sama ... -->
                             <td data-label="Nomor"><?= $nomor_awal++ ?></td>
                             <td data-label="Kelompok"><?= htmlspecialchars($entry['id_kelompok']) ?></td>
                             <td data-label="Judul"><?= $judul_tampil ?></td>
@@ -208,7 +218,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
-            </tbody>
+                </tbody>
           </table>
         </div>
         

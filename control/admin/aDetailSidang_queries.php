@@ -1,4 +1,51 @@
 <?php
+function formatTanggalIndonesiaManual($date) {
+    // Jika tanggal null atau tidak valid, kembalikan teks default
+    if (!$date || !($date instanceof DateTime)) {
+        return 'Belum Dijadwalkan';
+    }
+
+    // Array untuk nama hari dalam Bahasa Indonesia
+    $namaHari = [
+        'Sunday'    => 'Minggu',
+        'Monday'    => 'Senin',
+        'Tuesday'   => 'Selasa',
+        'Wednesday' => 'Rabu',
+        'Thursday'  => 'Kamis',
+        'Friday'    => 'Jumat',
+        'Saturday'  => 'Sabtu'
+    ];
+
+    // Array untuk nama bulan dalam Bahasa Indonesia
+    $namaBulan = [
+        'January'   => 'Januari',
+        'February'  => 'Februari',
+        'March'     => 'Maret',
+        'April'     => 'April',
+        'May'       => 'Mei',
+        'June'      => 'Juni',
+        'July'      => 'Juli',
+        'August'    => 'Agustus',
+        'September' => 'September',
+        'October'   => 'Oktober',
+        'November'  => 'November',
+        'December'  => 'Desember'
+    ];
+
+    // Ambil komponen tanggal dalam Bahasa Inggris menggunakan format()
+    $hariInggris  = $date->format('l'); // Misal: "Tuesday"
+    $tanggal      = $date->format('d'); // Misal: "21"
+    $bulanInggris = $date->format('F'); // Misal: "May"
+    $tahun        = $date->format('Y'); // Misal: "2024"
+
+    // Terjemahkan hari dan bulan
+    $hariIndonesia  = $namaHari[$hariInggris];
+    $bulanIndonesia = $namaBulan[$bulanInggris];
+
+    // Gabungkan menjadi format yang diinginkan
+    return "$hariIndonesia, $tanggal $bulanIndonesia $tahun";
+}
+
 // ==============================
 // FUNGSI 1: KONTROL SESI DAN KEAMANAN
 // ==============================
@@ -37,6 +84,7 @@ require "../../koneksi/koneksiAndrew.php";
 // ==============================
 // FUNGSI 3: AMBIL ID SIDANG DARI URL/SESSION
 // ==============================
+
 
 if (isset($_GET['id']) && is_numeric($_GET['id']) && isset($_GET['judul'])) {
     
