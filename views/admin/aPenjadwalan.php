@@ -98,7 +98,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                             <?= htmlspecialchars($tipeButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Jenis Sidang</a></li>
+                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Semua Sidang</a></li>
                             <li><a class="dropdown-item" href="?tipe=Tugas Akhir&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang TA</a></li>
                             <li><a class="dropdown-item" href="?tipe=Semester&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang Semester</a></li>
                         </ul>
