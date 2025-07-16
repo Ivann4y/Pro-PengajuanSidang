@@ -202,26 +202,6 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dPengajuan.css">
-    <style>
-        .notif-badge {
-            position: absolute;
-            top: -2px;
-            right: -8px;
-            background: #4b68fb;
-            color: white;
-            border-radius: 50%;
-            font-size: 0.55em;
-            padding: 0 3px;
-            z-index: 10;
-            border: 2px solid white;
-            font-weight: bold;
-            min-width: 10px;
-            text-align: center;
-            line-height: 1.2;
-            box-shadow: 0 0 2px #0002;
-        }
-        .position-relative { position: relative; }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Dosen - Pengajuan</title>
 </head>
@@ -356,7 +336,16 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                                         <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
                                         <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
                                         <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                        <td><?= htmlspecialchars($row['nama_dosen']); ?></td>
+                                       <td>
+                                            <?php
+                                            if ($row['tipe_sidang_text'] === 'Tugas Akhir') {
+                                                echo htmlspecialchars($row['nama_dosen']);
+                                            } 
+                                            else { 
+                                                echo htmlspecialchars($_SESSION['user_data']['nama_dosen']);
+                                            }
+                                            ?>
+                                        </td>
                                         <td><?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?></td>
                                         <?php if ($statusFilter !== 'Pending') : ?>
                                             <td>
@@ -560,6 +549,10 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
     <script src="../../assets/js/dPengajuan.js"></script>
+    <script>
+        // Define dosen login NIP for filtering in autocomplete
+        window.nomorDosenLogin = "<?php echo $_SESSION['user_data']['nomor_dosen']; ?>";
+    </script>
 </body>
 </html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

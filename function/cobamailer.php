@@ -10,7 +10,7 @@ use PHPMailer\PHPMailer\Exception;
 function sendResetPasswordEmail($recipientEmail, $recipientName, $token) {
     
      // Create reset password link
-    $resetLink = 'http://localhost/PRG2/Pro-PengajuanSidang/views/inputPasswordBaru.php?token=' . urlencode($token);
+    $resetLink = 'http://localhost/prgweb/Pro-PengajuanSidang/views/inputPasswordBaru.php?token=' . urlencode($token);
         
     // Validasi input jika email kosong
     if (empty($recipientEmail)) {

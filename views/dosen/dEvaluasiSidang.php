@@ -200,7 +200,7 @@
                         <?php unset($_SESSION['error']); ?>
                     <?php endif; ?>
                     </div> <!-- AKHIR DARI CARD KEDUA -->
-
+__
                     <!-- Tombol Kirim dipindahkan ke dalam card ini -->
                     <div class="col-12 d-flex justify-content-end mt-4">
                         <button type="button" id="btnKirim"
@@ -230,7 +230,8 @@
                     </div>
                     <div class="modal-body custom-modal-body">
                         <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah Anda yakin hendak mengirimkan evaluasi untuk mahasiswa <br><strong><?= htmlspecialchars($current_nama_mhs) ?></strong>?</p>
-                        <div class="d-flex justify-content-between px-5"><button type="button" class="btn btn-tolak fw-semibold" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-setujui fw-semibold" id="btnKonfirmasiKirim">Kirimkan</button></div>
+                        <div class="d-flex justify-content-between px-5"><button type="button" class="btn btn-tolak fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+                        <button type="button" class="btn btn-setujui fw-semibold" id="btnKonfirmasiKirim">Kirimkan</button></div>
                     </div>
                 </div>
             </div>
