@@ -1,5 +1,6 @@
 <?php
 
+
 session_start();
 
 // 1. Validasi Sesi Pengguna
@@ -22,12 +23,12 @@ $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// =========================================================================
-// === [SOLUSI FINAL & TEPAT] MENGGUNAKAN UNION ALL UNTUK ISOLASI LOGIKA ===
-// =========================================================================
+// ==================================================================================
+// === [SOLUSI BARU] MENGGUNAKAN 3 QUERY TERPISAH UNTUK SETIAP PERAN DOSEN ===
+// ==================================================================================
 
+// Query 1: HANYA untuk peran sebagai PEMBIMBING TUGAS AKHIR
 $queryTA = "
-    -- Query ini HANYA dan KHUSUS untuk mengambil data TUGAS AKHIR
     SELECT 
         s.id_sidang, k.nomor_kelompok, s.judul AS judul_sidang, 
         mk.nama_matkul AS nama_matkul_sidang, d.nama_dosen AS nama_penanggung_jawab,
@@ -41,8 +42,8 @@ $queryTA = "
     WHERE b.nomor_dosen = ? AND p.peran_dosen = 0x01
 ";
 
+// Query 2: HANYA untuk peran sebagai PENGAMPU SIDANG SEMESTER
 $querySemester = "
-    -- Query ini HANYA dan KHUSUS untuk mengambil data SIDANG SEMESTER
     SELECT 
         s.id_sidang, k.nomor_kelompok, s.judul AS judul_sidang, 
         mk.nama_matkul AS nama_matkul_sidang, d.nama_dosen AS nama_penanggung_jawab,
@@ -57,6 +58,27 @@ $querySemester = "
     WHERE pk.nomor_dosen = ?
 ";
 
+// === [QUERY BARU] ===
+// Query 3: HANYA untuk peran sebagai PENGUJI (berdasarkan tabel Penjadwalan)
+$queryPenguji = "
+    SELECT 
+        s.id_sidang, 
+        k.nomor_kelompok, 
+        s.judul AS judul_sidang, 
+        mk.nama_matkul AS nama_matkul_sidang, 
+        pembimbing.nama_dosen AS nama_penanggung_jawab, -- Penanggung jawab tetap Pembimbing Utama
+        'Penguji' as jenis_sidang_filter
+    FROM [dbo].[Penjadwalan] pj
+    JOIN [dbo].[Sidang] s ON pj.id_sidang = s.id_sidang
+    JOIN [dbo].[Kelompok] k ON s.id_kelompok = k.id_kelompok
+    JOIN [dbo].[MataKuliah] mk ON k.id_matkul = mk.id_matkul
+    -- Join untuk mencari nama Pembimbing Utama sebagai Penanggung Jawab
+    LEFT JOIN [dbo].[Bimbingan] b ON k.id_kelompok = b.id_kelompok
+    LEFT JOIN [dbo].[Dosen] pembimbing ON b.nomor_dosen = pembimbing.nomor_dosen
+    WHERE pj.nomor_dosen = ? AND pj.peran_dosen = '0x01' -- Kondisi spesifik untuk dosen penguji
+";
+
+
 // --- Tentukan query mana yang akan dijalankan berdasarkan filter ---
 $finalQuery = "";
 $params = [];
@@ -67,9 +89,12 @@ if ($filter === 'ta') {
 } elseif ($filter === 'semester') {
     $finalQuery = $querySemester;
     $params = [$nomor_dosen_login];
-} else { // filter 'all'
-    $finalQuery = "$queryTA UNION ALL $querySemester";
-    $params = [$nomor_dosen_login, $nomor_dosen_login];
+} elseif ($filter === 'penguji') { // Tambahkan filter baru untuk penguji
+    $finalQuery = $queryPenguji;
+    $params = [$nomor_dosen_login];
+} else { // filter 'all' sekarang menggabungkan KETIGA query
+    $finalQuery = "$queryTA UNION ALL $querySemester UNION ALL $queryPenguji";
+    $params = [$nomor_dosen_login, $nomor_dosen_login, $nomor_dosen_login];
 }
 
 // --- Menangani filter pencarian (Search) ---
@@ -80,11 +105,11 @@ if (!empty($search)) {
     array_push($params, $likeParam, $likeParam, $likeParam, $likeParam);
 }
 
-// --- Gabungkan semua untuk query PENGHITUNGAN dan PENGAMBILAN DATA ---
+// --- Gabungkan semua untuk query PENGHITUNGAN dan PENGAMBILAN DATA (Tidak perlu diubah) ---
 $countQuery = "SELECT COUNT(*) as total FROM ($finalQuery) AS CombinedQuery" . $searchClause;
 $mainQuery = "SELECT * FROM ($finalQuery) AS CombinedQuery" . $searchClause . " ORDER BY nomor_kelompok ASC, id_sidang ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 
-// --- Eksekusi Query ---
+// --- Eksekusi Query (Tidak perlu diubah) ---
 $countStmt = sqlsrv_query($conn, $countQuery, $params);
 if ($countStmt === false) die("Error saat menghitung total data: " . print_r(sqlsrv_errors(), true));
 $row = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC);
@@ -96,16 +121,16 @@ if ($currentPage > $totalPages && $totalPages > 0) {
     $offset = ($currentPage - 1) * $rowsPerPage;
 }
 
-// Tambahkan parameter paginasi ke array parameter untuk query utama
 array_push($params, $offset, $rowsPerPage);
 $result = sqlsrv_query($conn, $mainQuery, $params);
 if ($result === false) die("Error pada query utama: " . print_r(sqlsrv_errors(), true));
 
-// --- Logika Tampilan (Tetap Sama) ---
+// --- Logika Tampilan (Diperbarui sedikit) ---
 $nomor = $offset + 1;
-$headerLabel = 'Pembimbing/Pengampu';
+$headerLabel = 'Pembimbing/Pengampu/Penguji'; // Label default yang lebih inklusif
 if ($filter === 'ta') $headerLabel = 'Pembimbing';
 elseif ($filter === 'semester') $headerLabel = 'Pengampu';
+elseif ($filter === 'penguji') $headerLabel = 'Penanggung Jawab'; // Saat kita sebagai penguji, kolom ini menampilkan penanggung jawab
 
 // Ambil jumlah notifikasi belum dibaca untuk dosen
 $unread_notifications = [];
