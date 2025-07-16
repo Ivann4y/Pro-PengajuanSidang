@@ -79,10 +79,14 @@ include '../control/inputPasswordBaru_queries.php';
                                     name="newPassword">
                                 <i class="bi bi-eye-slash-fill toggle-password" id="toggleNewPassword"></i>
                             </div>
-                            <?php if ($errorType === 'empty'): ?>
+                            <?php if (
+                                $errorType === 'empty'
+                            ): ?>
                                 <div class="text-danger">Kata sandi tidak boleh kosong.</div>
                             <?php elseif ($errorType === 'short'): ?>
                                 <div class="text-danger">Kata sandi minimal 8 karakter.</div>
+                            <?php elseif ($errorType === 'complexity'): ?>
+                                <div class="text-danger">Kata sandi harus mengandung huruf besar, huruf kecil, angka, dan simbol.</div>
                             <?php endif; ?>
                         </div>
                         <div class="mb-3">
