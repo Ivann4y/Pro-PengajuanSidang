@@ -108,14 +108,7 @@ include '../control/inputPasswordBaru_queries.php';
                             </button>
                         </div>
 
-                        <div class="button-container d-flex justify-content-start gap-3 mt-4" style="padding-left:0;">
-                            <button type="button" class="btn btn-kembali" onclick="kembaliKeLupaPassword()">
-                                <span class="icon-circle">
-                                    <i class="fa-solid fa-arrow-left"></i>
-                                </span>
-                                Kembali
-                            </button>
-                        </div>
+                       
                     </form>
                 <?php endif; ?>
 
@@ -137,11 +130,7 @@ include '../control/inputPasswordBaru_queries.php';
         </script>
     <?php endif; ?>
     <script src="../assets/js/inputPasswordBaru.js"></script>
-    <script>
-        function kembaliKeLupaPassword() {
-            window.location.href = `lupaPassword.php?role=<?= htmlspecialchars($role) ?>`;
-        }
-    </script>
+   
 </body>
 
 </html>
