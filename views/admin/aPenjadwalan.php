@@ -98,7 +98,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                             <?= htmlspecialchars($tipeButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Semua Tipe</a></li>
+                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Jenis Sidang</a></li>
                             <li><a class="dropdown-item" href="?tipe=Tugas Akhir&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang TA</a></li>
                             <li><a class="dropdown-item" href="?tipe=Semester&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang Semester</a></li>
                         </ul>
@@ -164,7 +164,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         <tr class="no-results-row"><td colspan="6">Tidak ada data untuk dijadwalkan.</td></tr>
                     <?php else: ?>
                         <?php 
-                        $counter = 1;
+                        $nomor_awal = ($currentPage - 1) * $rowsPerPage + 1;$counter = 1;
                         foreach ($data as $entry):
                             // Menyiapkan variabel untuk ditampilkan
                             $judul_tampil = htmlspecialchars($entry['judulSidang']);
@@ -195,7 +195,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                                 . " data-pengampu='". $dosen_pengampu_json ."'";
                         ?>
                         <tr class="isiTabel" <?= $row_props_js ?>>
-                            <td data-label="Nomor"><?= $counter++ ?></td>
+                            <td data-label="Nomor"><?= $nomor_awal++ ?></td>
                             <td data-label="Kelompok"><?= htmlspecialchars($entry['id_kelompok']) ?></td>
                             <td data-label="Judul"><?= $judul_tampil ?></td>
                             <td data-label="Mata Kuliah"><?= $matkul_tampil ?></td>
@@ -212,11 +212,28 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
           </table>
         </div>
         
-        <div class="pagination-container">
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center" id="pagination-controls"></ul>
-            </nav>
-        </div>
+       <div class="pagination-container">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <?php if ($totalPages > 1): ?>
+                <!-- Tombol Previous -->
+                <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?tipe=<?= $selectedTipe ?>&prodi=<?= $selectedProdi ?>&page=<?= $currentPage - 1 ?>">«</a>
+                </li>
+                <!-- Looping untuk nomor halaman -->
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                        <a class="page-link" href="?tipe=<?= $selectedTipe ?>&prodi=<?= $selectedProdi ?>&page=<?= $i ?>"><?= $i ?></a>
+                    </li>
+                <?php endfor; ?>
+                <!-- Tombol Next -->
+                <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?tipe=<?= $selectedTipe ?>&prodi=<?= $selectedProdi ?>&page=<?= $currentPage + 1 ?>">»</a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+</div>
     </main>
   </div>
   

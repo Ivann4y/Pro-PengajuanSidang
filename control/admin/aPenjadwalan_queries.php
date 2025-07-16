@@ -32,6 +32,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // Sertakan file koneksi ke database SQL Server
 require "../../koneksi/koneksiAndrew.php";
 
+
 // ==============================
 // FUNGSI 3: AMBIL DAFTAR DOSEN PENGUJI (untuk autocomplete JS)
 // ==============================
@@ -64,6 +65,10 @@ $selectedProdi = $_GET['prodi'] ?? 'semua';
 // Tambahan: Ambil filter status dari URL, default 'semua'
 $selectedStatus = $_GET['status'] ?? 'semua';
 
+$currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+$rowsPerPage = 10; // Atau angka lain sesuai keinginan
+$offset = ($currentPage - 1) * $rowsPerPage;
+
 
 // ==============================
 // FUNGSI 5: AMBIL DAFTAR PRODI UNIK
@@ -87,7 +92,7 @@ if ($resultProdi) {
 // ==============================
 
 // Teks default untuk tombol filter tipe sidang
-$tipeButtonText = 'Semua Tipe';
+$tipeButtonText = 'Semua Sidang';
 if ($selectedTipe == 'Tugas Akhir') $tipeButtonText = 'Sidang TA';
 elseif ($selectedTipe == 'Semester') $tipeButtonText = 'Sidang Semester';
 
@@ -120,6 +125,20 @@ if ($selectedProdi !== 'semua') {
     $params[] = $selectedProdi;
 }
 
+// Query untuk menghitung total record yang belum dijadwalkan
+$countQuery = "SELECT COUNT(DISTINCT s.id_sidang) as total
+               FROM Sidang s
+               JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+               LEFT JOIN Mahasiswa m ON k.nim = m.nim
+               WHERE " . implode(' AND ', $whereClauses) . "
+               AND NOT EXISTS (SELECT 1 FROM Jadwal j WHERE j.id_sidang = s.id_sidang)";
+
+$countResult = sqlsrv_query($conn, $countQuery, $params);
+if ($countResult === false) {
+    die("Count query gagal: " . print_r(sqlsrv_errors(), true));
+}
+$totalRecords = sqlsrv_fetch_array($countResult, SQLSRV_FETCH_ASSOC)['total'];
+$totalPages = ceil($totalRecords / $rowsPerPage);
 // ==============================
 // FUNGSI 8: QUERY UTAMA DAFTAR SIDANG YANG BELUM DIJADWALKAN
 // ==============================
@@ -173,15 +192,18 @@ $sql = "
         m.prodi,
         mk.nama_matkul
     ORDER BY
-        s.id_kelompok;
+        s.id_kelompok
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
 ";
+
 
 // ==============================
 // FUNGSI 9: EKSEKUSI QUERY DAN AMBIL DATA
 // ==============================
 
 // Jalankan query utama dengan parameter filter
-$result = sqlsrv_query($conn, $sql, $params);
+$params_final = array_merge($params, [$offset, $rowsPerPage]);
+$result = sqlsrv_query($conn, $sql, $params_final);
 if ($result === false) {
     // Jika query gagal, tampilkan error dan hentikan script
     die("Query gagal. Error: " . print_r(sqlsrv_errors(), true));
@@ -193,6 +215,7 @@ $data = [];
 while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
     $data[] = $row;
 }
+
 
 // ==============================
 // FUNGSI 10: VARIABEL DINAMIS UNTUK TAMPILAN

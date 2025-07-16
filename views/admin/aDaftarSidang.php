@@ -69,11 +69,11 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" id="ddAdminSidangTypeButton" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <?= $filter === 'ta' ? 'Sidang TA' : ($filter === 'semester' ? 'Sidang Semester' : 'Jenis Sidang') ?>
+                                <?= $filter === 'ta' ? 'Sidang TA' : ($filter === 'semester' ? 'Sidang Semester' : 'Semua Sidang') ?>
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item"
-                                        href="?filter=all&prodi=<?= urlencode($prodiFilter) ?>&page=1">Semua Jenis</a>
+                                        href="?filter=all&prodi=<?= urlencode($prodiFilter) ?>&page=1">Semua Sidang</a>
                                 </li>
                                 <li><a class="dropdown-item"
                                         href="?filter=ta&prodi=<?= urlencode($prodiFilter) ?>&page=1">Sidang TA</a></li>
@@ -86,7 +86,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                         <div class="dropdown ms-2">
                             <button class="btn btn-primary dropdown-toggle" id="ddAdminSidangTypeButton" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <?= $prodiFilter === 'all' ? 'Pilih Prodi' : htmlspecialchars($prodiFilter) ?>
+                                <?= $prodiFilter === 'all' ? 'Semua Prodi' : htmlspecialchars($prodiFilter) ?>
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="?filter=<?= $filter ?>&prodi=all&page=1">Semua
