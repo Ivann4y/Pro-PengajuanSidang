@@ -31,13 +31,14 @@ $queryTA = "
     SELECT 
         s.id_sidang, k.nomor_kelompok, s.judul AS judul_sidang, 
         mk.nama_matkul AS nama_matkul_sidang, d.nama_dosen AS nama_penanggung_jawab,
-        'Tugas Akhir' as jenis_sidang_filter
+        'Tugas Akhir' as jenis_sidang_filter, p.peran_dosen
     FROM [dbo].[Bimbingan] b
     JOIN [dbo].[Dosen] d ON b.nomor_dosen = d.nomor_dosen
     JOIN [dbo].[Kelompok] k ON b.id_kelompok = k.id_kelompok
     JOIN [dbo].[Sidang] s ON k.id_kelompok = s.id_kelompok
+    JOIN [dbo].[Penjadwalan] p ON p.id_sidang = s.id_sidang 
     LEFT JOIN [dbo].[MataKuliah] mk ON k.id_matkul = mk.id_matkul
-    WHERE b.nomor_dosen = ?
+    WHERE b.nomor_dosen = ? AND p.peran_dosen = 0x01
 ";
 
 $querySemester = "
