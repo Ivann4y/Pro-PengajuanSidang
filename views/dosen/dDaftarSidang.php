@@ -78,29 +78,40 @@ require_once '../../control/dosen/dDaftarSidang_queries.php';
             </div>
             <div class="container-fluid">
                 <div class="row">
-                    <div class="d-flex align-items-center gap-2 mb-4">
-                        <label class="fw-semibold mb-0">Filter:</label>
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
-                                <?php if ($filter === 'ta') echo 'Sidang TA';
-                                elseif ($filter === 'semester') echo 'Sidang Semester';
-                                else echo 'Semua'; ?>
-                            </button>
-                            <ul class="dropdown-menu rounded shadow">
-                                <li><a class="dropdown-item" href="?filter=all&search=<?= urlencode($search) ?>">Semua</a></li>
-                                <li><a class="dropdown-item" href="?filter=ta&search=<?= urlencode($search) ?>">Sidang TA</a></li>
-                                <li><a class="dropdown-item" href="?filter=semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
-                            </ul>
-                        </div>
-                        <form method="GET" action="" class="search-form ms-auto">
-                            <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
-                            <div class="search-input-wrapper">
-                                <i class="bi bi-search search-icon"></i>
-                                <input type="text" name="search" class="form-control search-input" placeholder="Cari Kelompok, Judul..." value="<?= htmlspecialchars($search) ?>">
-                                <button type="submit" class="search-submit-btn"></button>
-                            </div>
-                        </form>
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <label class="fw-semibold mb-0">Filter:</label>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                            <?php 
+                            // --- Logika Teks Tombol Diperbarui ---
+                            if ($filter === 'ta') {
+                                echo 'Sidang TA';
+                            } elseif ($filter === 'semester') {
+                                echo 'Sidang Semester';
+                            } elseif ($filter === 'penguji') { // Kondisi baru ditambahkan
+                                echo 'Sebagai Penguji';
+                            } else {
+                                echo 'Semua Jadwal';
+                            }
+                            ?>
+                        </button>
+                        <ul class="dropdown-menu rounded shadow">
+                            <li><a class="dropdown-item" href="?filter=all&search=<?= urlencode($search) ?>">Semua Jadwal</a></li>
+                            <li><a class="dropdown-item" href="?filter=ta&search=<?= urlencode($search) ?>">Sidang TA</a></li>
+                            <li><a class="dropdown-item" href="?filter=semester&search=<?= urlencode($search) ?>">Sidang Semester</a></li>
+                            <!-- === [ITEM BARU DITAMBAHKAN] === -->
+                            <li><a class="dropdown-item" href="?filter=penguji&search=<?= urlencode($search) ?>">Sebagai Penguji</a></li>
+                        </ul>
                     </div>
+                    <form method="GET" action="" class="search-form ms-auto">
+                        <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+                        <div class="search-input-wrapper">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" name="search" class="form-control search-input" placeholder="Cari Kelompok, Judul..." value="<?= htmlspecialchars($search) ?>">
+                            <button type="submit" class="search-submit-btn"></button>
+                        </div>
+                    </form>
+                </div>
                 </div>
                 <div class="row">
                     <div class="table-responsive">
