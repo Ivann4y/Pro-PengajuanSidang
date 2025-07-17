@@ -87,8 +87,17 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                         <?php if ($data_sidang['jenis_sidang'] === 'Semester'): ?>
                             <div class="info-group">
                                 <div class="label-row">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                    <span class="fw-bold">Judul Sidang</span>
+                                </div>
+                                <div class="value-row">
+                                    <?= htmlspecialchars($data_sidang['judul']) ?>
+                                </div>
+                            </div>
+                            <div class="info-group">
+                                <div class="label-row">
                                     <i class="fa-solid fa-book"></i>
-                                    <span class="fw-bold">Judul Mata Kuliah</span>
+                                    <span class="fw-bold">Mata Kuliah</span>
                                 </div>
                                 <div class="value-row">
                                     <?= htmlspecialchars($data_matkul['nama_matkul'] ?? 'N/A') ?>
