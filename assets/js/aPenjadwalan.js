@@ -361,24 +361,18 @@ function handleFormSubmit(event) {
 /**
  * Memvalidasi form sebelum dikirim.
  */
+// ==========================================================================
+// GANTI FUNGSI INI DENGAN VERSI BARU
+// ==========================================================================
+/**
+ * Memvalidasi form sebelum dikirim (VERSI DENGAN URUTAN YANG BENAR).
+ */
 function validateForm(modalType) {
     const suffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
     const errorBox = document.getElementById(`form-error-${suffix}`);
     errorBox.textContent = '';
-      const tanggalInput = document.getElementById(`modal_tanggal-${suffix}`);
-    const tanggalDipilih = new Date(tanggalInput.value);
-    
-    // Buat objek Date untuk hari ini tanpa jam, menit, detik
-    const hariIni = new Date();
-    hariIni.setHours(0, 0, 0, 0); 
-    
-    if (tanggalDipilih < hariIni) {
-        errorBox.textContent = 'Tanggal tidak boleh sebelum hari ini.';
-        tanggalInput.focus();
-        return false;
-    }
-
-    // Validasi field dasar (tidak berubah)
+     
+    // LANGKAH 1: Validasi bahwa semua field wajib diisi. INI HARUS PERTAMA.
     const fieldsToValidate = [
         { id: `modal_ruangan-${suffix}`, message: 'Ruangan harus diisi.' },
         { id: `modal_tanggal-${suffix}`, message: 'Tanggal harus dipilih.' },
@@ -393,16 +387,17 @@ function validateForm(modalType) {
             return false;
         }
     }
-    const jamAwal = document.getElementById(`modal_jam_awal-${suffix}`).value;
-    const jamAkhir = document.getElementById(`modal_jam_akhir-${suffix}`).value;
-    if (jamAkhir <= jamAwal) {
-        errorBox.textContent = 'Jam akhir harus setelah jam awal.';
+
+    // LANGKAH 2: Setelah yakin semua field terisi, baru lakukan validasi logika waktu.
+    const dateTimeValidation = validateDateTime(suffix);
+    if (!dateTimeValidation.isValid) {
+        errorBox.textContent = dateTimeValidation.message;
         return false;
     }
 
+    // LANGKAH 3: Lanjutkan validasi sisa (bobot, nama penguji, dll)
     if (modalType === 'Tugas Akhir') {
         let totalBobot = 0;
-        // BENAR: Ambil semua nama dan bobot untuk divalidasi
         const bobotPembimbingInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="pembimbing_bobot[]"]');
         const namaPengujiInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="penguji_nama[]"]');
         const bobotPengujiInputs = document.querySelectorAll('#penjadwalanSidangTAModal input[name="penguji_bobot[]"]');
@@ -433,12 +428,11 @@ function validateForm(modalType) {
         }
 
         if (totalBobot !== 100) {
-            errorBox.textContent = `Total bobot (Pembimbing + Penguji) harus tepat 100%. Saat ini totalnya adalah ${totalBobot}%.`;
+            errorBox.textContent = `Total bobot harus tepat 100%. Saat ini totalnya adalah ${totalBobot}%.`;
             return false;
         }
 
     } else if (modalType === 'Semester') {
-        // Validasi untuk Semester (tidak berubah)
         let totalBobotSem = 0;
         const pengampuBobotInputs = document.querySelectorAll('#penjadwalanSidangSemModal input[name="pengampu_bobot[]"]');
         if (pengampuBobotInputs.length === 0) {
@@ -460,7 +454,7 @@ function validateForm(modalType) {
         }
     }
 
-    return true;
+    return true; // Semua validasi berhasil
 }
 // ==========================================================================
 // BAGIAN 2: SCRIPT YANG BERJALAN SETELAH HALAMAN SIAP
@@ -468,6 +462,15 @@ function validateForm(modalType) {
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('formDalamModal-ta')?.addEventListener('submit', handleFormSubmit);
     document.getElementById('formDalamModal-sem')?.addEventListener('submit', handleFormSubmit);
+    ['ta', 'sem'].forEach(suffix => {
+    const tanggalInput = document.getElementById(`modal_tanggal-${suffix}`);
+    const jamAwalInput = document.getElementById(`modal_jam_awal-${suffix}`);
+    const jamAkhirInput = document.getElementById(`modal_jam_akhir-${suffix}`);
+
+    if (tanggalInput) tanggalInput.addEventListener('change', () => validateDateTimeRealtime(suffix));
+    if (jamAwalInput) jamAwalInput.addEventListener('change', () => validateDateTimeRealtime(suffix));
+    if (jamAkhirInput) jamAkhirInput.addEventListener('change', () => validateDateTimeRealtime(suffix));
+});
     // Fungsi untuk mendapatkan tanggal hari ini dalam format YYYY-MM-DD
     const getTodayDateString = () => {
         const today = new Date();
@@ -536,3 +539,31 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+// FUNGSI BARU YANG DITAMBAHKAN
+function validateDateTime(suffix) {
+    const tanggalInput = document.getElementById(`modal_tanggal-${suffix}`);
+    const jamAwalInput = document.getElementById(`modal_jam_awal-${suffix}`);
+    const jamAkhirInput = document.getElementById(`modal_jam_akhir-${suffix}`);
+
+    // Jangan validasi jika field belum terisi
+    if (!tanggalInput.value || !jamAwalInput.value) {
+        return { isValid: true, message: '' };
+    }
+
+    // 1. Gabungkan tanggal dan jam mulai menjadi satu objek Date yang utuh
+    const selectedDateTime = new Date(`${tanggalInput.value}T${jamAwalInput.value}`);
+    const now = new Date(); // Objek Date untuk waktu saat ini
+
+    // 2. Aturan Utama: Waktu yang dipilih tidak boleh di masa lalu
+    if (selectedDateTime < now) {
+        return { isValid: false, message: 'Waktu sidang tidak boleh di masa lalu.' };
+    }
+    
+    // 3. Aturan Tambahan: Jam akhir harus setelah jam mulai
+    if (jamAkhirInput.value && (jamAkhirInput.value <= jamAwalInput.value)) {
+        return { isValid: false, message: 'Jam akhir harus setelah jam awal.' };
+    }
+
+    // Jika semua aturan lolos
+    return { isValid: true, message: '' };
+}

@@ -120,9 +120,9 @@ $dosen_list_penguji = []; // Untuk autocomplete
 // ==============================
 $sql_utama = "
     SELECT 
-        s.id_sidang, s.judul, s.id_kelompok,
+        s.id_sidang, s.judul, s.id_kelompok,s.status_sidang,
         k.jenis_sidang, k.nomor_kelompok, k.id_matkul, k.nim AS nim_perwakilan,
-        CASE s.status_sidang WHEN 1 THEN 'Disetujui' WHEN 0 THEN 'Ditolak' ELSE 'Menunggu' END AS status_sidang_text,
+        CASE s.status_ajuan WHEN 'Approved' THEN 'Disetujui' WHEN 'Reject' THEN 'Ditolak' ELSE 'Menunggu' END AS status_sidang_text,
         j.ruang_sidang, j.tanggal_sidang, j.jam_sidang, j.jam_selesai,
         m.prodi,
         mk.nama_matkul
