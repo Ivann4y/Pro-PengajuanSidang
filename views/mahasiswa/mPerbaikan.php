@@ -167,46 +167,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 error_log("Jumlah dosen yang ditemukan: " . count($daftar_dosen));
                 error_log("Daftar dosen: " . print_r($daftar_dosen, true));
 
-                foreach ($daftar_dosen as $nomor_dosen) {
-                    // Cek apakah sudah ada
-                    $cek_sql = "SELECT 1 FROM Detail_Sidang WHERE id_sidang = ? AND nomor_dosen = ?";
-                    $cek_stmt = sqlsrv_query($conn, $cek_sql, [$id_sidang, $nomor_dosen]);
-                    $cek_exist = $cek_stmt && sqlsrv_fetch_array($cek_stmt, SQLSRV_FETCH_ASSOC);
+                // Ambil semua nomor_dosen dari Detail_Sidang untuk id_sidang ini
+                $sql_dosen_sidang = "SELECT nomor_dosen FROM Detail_Sidang WHERE id_sidang = ?";
+                $stmt_dosen_sidang = sqlsrv_query($conn, $sql_dosen_sidang, [$id_sidang]);
+                $daftar_dosen = [];
 
-                    if (!$cek_exist) {
-                        error_log(">> Menjalankan INSERT untuk dosen $nomor_dosen");
-
-                        // Insert baru
-                        $insert_sql = "INSERT INTO Detail_Sidang (id_sidang, nomor_dosen, dok_revisi, nama_file, status_revisi, id_matkul) 
-                                       VALUES (?, ?, ?, ?, ?, ?)";
-                        $insert_params = [$id_sidang, $nomor_dosen, $path_relatif, $file_asli, 'Pending', $id_matkul];
-                        $stmt_insert = sqlsrv_query($conn, $insert_sql, $insert_params);
-
-                        if (!$stmt_insert) {
-                            error_log("Gagal insert Detail_Sidang: " . print_r(sqlsrv_errors(), true));
-                            error_log("Query: $insert_sql");
-                            error_log("Params: " . print_r($insert_params, true));
-                        } else {
-                            error_log("INSERT Detail_Sidang berhasil untuk dosen: $nomor_dosen");
-                        }
-                    } else {
-                        // Update revisi
-                        $update_sql = "UPDATE Detail_Sidang 
-                                       SET dok_revisi = ?, nama_file = ?, status_revisi = 'Pending' 
-                                       WHERE id_sidang = ? AND nomor_dosen = ?";
-                        $update_params = [$path_relatif, $file_asli, $id_sidang, $nomor_dosen];
-                        $stmt_update = sqlsrv_query($conn, $update_sql, $update_params);
-
-                        if (!$stmt_update) {
-                            error_log("Gagal update Detail_Sidang: " . print_r(sqlsrv_errors(), true));
-                        }
-                    }
-                    // === Kirim notifikasi ke dosen ===
-                    $nama_mahasiswa = $nama_mahasiswa ?? ($data_info['nama_mhs'] ?? $nim_mahasiswa);
-                    $nim_pengirim = $nim_mahasiswa;
-                    $pesan_notif = "Mahasiswa $nama_mahasiswa ($nim_pengirim) telah mengunggah revisi dokumen sidang. Silakan cek revisi di sistem.";
-                    kirimNotifikasi($nomor_dosen, $pesan_notif, $nim_pengirim, $conn);
+                while ($row = sqlsrv_fetch_array($stmt_dosen_sidang, SQLSRV_FETCH_ASSOC)) {
+                    $daftar_dosen[] = $row['nomor_dosen'];
                 }
+
+                foreach ($daftar_dosen as $nomor_dosen) {
+                    // Update dokumen revisi ke semua dosen yang sudah punya baris Detail_Sidang
+                    $update_sql = "UPDATE Detail_Sidang 
+                   SET dok_revisi = ?, nama_file = ?, status_revisi = 'Pending'
+                   WHERE id_sidang = ? AND nomor_dosen = ?";
+                    $update_params = [$path_relatif, $file_asli, $id_sidang, $nomor_dosen];
+                    $stmt_update = sqlsrv_query($conn, $update_sql, $update_params);
+
+                    if (!$stmt_update) {
+                        error_log("Gagal update Detail_Sidang untuk dosen $nomor_dosen: " . print_r(sqlsrv_errors(), true));
+                    } else {
+                        // Kirim notifikasi
+                        $nama_mahasiswa = $nama_mahasiswa ?? ($data_info['nama_mhs'] ?? $nim_mahasiswa);
+                        $pesan_notif = "Mahasiswa $nama_mahasiswa ($nim_mahasiswa) telah mengunggah revisi dokumen sidang. Silakan cek di sistem.";
+                        kirimNotifikasi($nomor_dosen, $pesan_notif, $nim_mahasiswa, $conn);
+                    }
+                }
+
 
                 $_SESSION['pesan'] = "Sukses: File revisi '" . htmlspecialchars($file_asli) . "' berhasil diunggah.";
             } else {
@@ -351,21 +338,21 @@ if ($stmt_utama && sqlsrv_execute($stmt_utama)) {
         <?php endforeach; ?>
 
         <div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="modalKonfirmasiLabel">Konfirmasi Unggah</h4>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin mengunggah file revisi ini?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-tolak" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-kirim" id="confirmSubmitBtn">Kirim</button>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modalKonfirmasiLabel">Konfirmasi Unggah</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin mengunggah file revisi ini?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-tolak" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-kirim" id="confirmSubmitBtn">Kirim</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
         <script src="../../assets/js/mPerbaikan.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

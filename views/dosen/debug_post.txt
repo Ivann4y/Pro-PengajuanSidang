@@ -1,6 +1,5 @@
 Array
 (
-    [reject] => true
-    [catatan_sidang] => aougefwye
+    [approve] => true
     [nim] => 0920240058
 )

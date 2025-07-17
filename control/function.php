@@ -20,6 +20,9 @@ function generateBreadcrumb($current_page, $role, $additional_items = []) {
         case 'mahasiswa':
             $breadcrumb_items[] = '<a href="mBeranda.php"><i class="bi bi-house"></i>Beranda</a>';
             break;
+        case 'aEvaluasi':
+            $breadcrumb_items[] = '<a href="aDaftarSidang.php"><i class="fa-solid fa-file-signature"></i>Daftar Sidang</a>';
+            break;
     }
     
     // Add additional items

@@ -1,4 +1,4 @@
-<?php
+    <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 $path_to_root = '../../';
@@ -22,8 +22,8 @@ require "../../koneksi/koneksiAndrew.php";
 $sqlGetSidang = "
     SELECT TOP 1 s.id_sidang
     FROM Sidang s
-    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-    WHERE k.nim = ?
+    JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+    WHERE km.nim = ?
     ORDER BY s.id_sidang DESC
 ";
 
@@ -35,8 +35,6 @@ $id_sidang = null;
 if ($stmtGetSidang && ($row = sqlsrv_fetch_array($stmtGetSidang, SQLSRV_FETCH_ASSOC))) {
     $id_sidang = $row['id_sidang'];
 }
-
-
 
 // === 2. Hitung Nilai Akhir MAHASISWA (Weighted Average) ===
 $sqlNilai = "
@@ -69,7 +67,6 @@ if ($stmtNilai && ($rowNilai = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC
     }
 }
 
-
 // === 3. Ambil Data Mahasiswa + Judul Sidang + Pembimbing ===
 $sqlDataSidang = "
     SELECT  
@@ -77,12 +74,13 @@ $sqlDataSidang = "
         s.judul, 
         d.nama_dosen AS dosen_pembimbing
     FROM Mahasiswa m
-    JOIN Kelompok k ON m.nim = k.nim
-    JOIN Sidang s ON k.id_kelompok = s.id_kelompok
+    JOIN Kelompok_Mahasiswa km ON m.nim = km.nim
+    JOIN Sidang s ON km.id_kelompok = s.id_kelompok
     LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
     LEFT JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
     WHERE m.nim = ? AND s.id_sidang = ?
 ";
+
 
 $stmtDataSidang = sqlsrv_query($conn, $sqlDataSidang, [$nim, $id_sidang]);
 $dataSidang = [
@@ -99,8 +97,6 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
     $judul = $dataSidang['judul'];
 
 }
-
-
 ?>
 
 

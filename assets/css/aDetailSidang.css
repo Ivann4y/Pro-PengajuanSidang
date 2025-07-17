@@ -163,7 +163,13 @@ body {
 .NavSide__toggle .open { display: block; }
 .NavSide__toggle.NavSide__toggle--active .open { display: none; }
 .NavSide__toggle.NavSide__toggle--active .close { display: block; }
-
+.form-error-message {
+    color: red; 
+    margin-bottom: 15px;
+    text-align: left;
+    font-weight: 500;
+    padding-left: 175px;
+}
 
 .NavSide__toggle i.bi {
   font-size: 28px;

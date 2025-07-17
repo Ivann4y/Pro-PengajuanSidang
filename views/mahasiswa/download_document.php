@@ -1,11 +1,19 @@
 <?php
 session_start();
-require "../../koneksi/koneksiAndrew.php"; // Adjust this path if your koneksi file is elsewhere
+require "../../koneksi/koneksiAndrew.php"; // Pastikan path koneksi ini benar
 
+// Ambil ID Sidang dari URL
 if (isset($_GET['id_sidang']) && !empty($_GET['id_sidang'])) {
-    $id_sidang = $_GET['id_sidang'];
+    $id_sidang = (int)$_GET['id_sidang'];
 
-    $sql = "SELECT dok_laporan, id_kelompok FROM Sidang WHERE id_sidang = ?";
+    // 1. QUERY DIUBAH
+    // Mengambil path file (dok_laporan) dari tabel Sidang dan
+    // nama asli file (nama_file) dari tabel Detail_Sidang.
+    $sql = "SELECT s.dok_laporan, ds.nama_file 
+            FROM Sidang s
+            LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
+            WHERE s.id_sidang = ?";
+    
     $stmt = sqlsrv_prepare($conn, $sql, array(&$id_sidang));
 
     if ($stmt === false) {
@@ -17,27 +25,42 @@ if (isset($_GET['id_sidang']) && !empty($_GET['id_sidang'])) {
 
     $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 
+    // 2. BLOK LOGIC DOWNLOAD DIUBAH TOTAL
     if ($row && !empty($row['dok_laporan'])) {
-        $file_content = $row['dok_laporan'];
-        $id_kelompok = $row['id_kelompok'];
+        // Ambil path dan nama file dari hasil query
+        $file_path_from_db = $row['dok_laporan'];
+        $original_filename = $row['nama_file'] ?? basename($file_path_from_db);
+        
+        // Buat path lengkap menuju file di server
+        $full_file_path = __DIR__ . '/../../' . $file_path_from_db;
+        
+        // Periksa apakah file benar-benar ada di folder server
+        if (file_exists($full_file_path)) {
+            if (ob_get_level()) {
+                ob_end_clean(); // Hapus output buffer untuk mencegah file rusak
+            }
 
-        // IMPORTANT: Set the correct MIME type based on your stored file.
-        // Assuming it's a ZIP file as per your original code.
-        // If it can be PDF, DOCX, etc., you'll need to store the actual MIME type in your DB.
-        $filename = "Dokumen_Laporan_Kelompok_" . htmlspecialchars($id_kelompok) . ".zip";
-        $file_mime_type = 'application/zip'; // Example: 'application/pdf', 'application/msword'
-
-        // Set HTTP headers for file download
-        header('Content-Type: ' . $file_mime_type);
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: ' . strlen($file_content)); // Tell the browser the file size
-        echo $file_content; // Output the binary content
-        exit; // Stop further execution
+            // Atur header untuk memaksa download
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . basename($original_filename) . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($full_file_path));
+            
+            // Baca file dari disk dan kirim ke browser
+            flush();
+            readfile($full_file_path);
+            exit; // Hentikan skrip
+        } else {
+            die("Error: File tidak ditemukan di server pada path: " . htmlspecialchars($full_file_path));
+        }
     } else {
-        echo "Dokumen tidak ditemukan atau kosong.";
+        echo "Dokumen tidak ditemukan di database.";
     }
 } else {
     echo "ID Sidang tidak valid.";
 }
-sqlsrv_close($conn); // Close the database connection
+sqlsrv_close($conn); // Tutup koneksi database
 ?>
