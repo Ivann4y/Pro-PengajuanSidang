@@ -37,6 +37,7 @@ $no_telepon = $user['no_telepon'];
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/profil.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 
 <body>
@@ -78,6 +79,12 @@ $no_telepon = $user['no_telepon'];
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('aProfil'), 'admin'); 
+            ?>
             <div class="container">
                 <div class="row">
                     <h1>Profil</h1>

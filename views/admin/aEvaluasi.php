@@ -37,6 +37,7 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
   <script src="main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="../../assets/css/aEvaluasi.css?v=<?= time() ?>">
+  <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 
 <body>
@@ -97,14 +98,12 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
       </div>
     </div>
     <main class="NavSide__main-content">
-
-      <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="aDaftarSidang.php">Daftar Sidang</a></li>
-          <li class="breadcrumb-item"><a href="aDetailSidang.php">Detail Sidang</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Evaluasi</li>
-        </ol>
-      </nav>
+      <?php
+      // Include the function file
+      require_once '../../control/function.php';
+      // Generate breadcrumb
+      echo generateBreadcrumb(getPageTitle('aEvaluasi'), 'aEvaluasi');
+      ?>
       <div>
         <h2 class="judul text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= $judulSidang ?></h2>
       </div>
