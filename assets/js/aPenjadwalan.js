@@ -67,6 +67,23 @@ function resetAndPopulateTAModal(el) {
     pengujiCount = 0;
     addPenguji();
 }
+function formatTanggalIndonesia(dateString) {
+    if (!dateString) {
+        return ''; // Kembalikan string kosong jika input null atau kosong
+    }
+
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    try {
+        const tanggal = new Date(dateString);
+        // Menambahkan penanganan untuk zona waktu agar tidak mundur satu hari
+        const offset = tanggal.getTimezoneOffset();
+        const tanggalLokal = new Date(tanggal.valueOf() + offset * 60 * 1000);
+        return tanggalLokal.toLocaleDateString('id-ID', options);
+    } catch (e) {
+        console.error("Format tanggal tidak valid:", dateString);
+        return dateString; // Kembalikan tanggal asli jika terjadi error
+    }
+}
 
 /**
  * Mengisi modal Sidang Semester.
@@ -348,6 +365,18 @@ function validateForm(modalType) {
     const suffix = modalType === 'Tugas Akhir' ? 'ta' : 'sem';
     const errorBox = document.getElementById(`form-error-${suffix}`);
     errorBox.textContent = '';
+      const tanggalInput = document.getElementById(`modal_tanggal-${suffix}`);
+    const tanggalDipilih = new Date(tanggalInput.value);
+    
+    // Buat objek Date untuk hari ini tanpa jam, menit, detik
+    const hariIni = new Date();
+    hariIni.setHours(0, 0, 0, 0); 
+    
+    if (tanggalDipilih < hariIni) {
+        errorBox.textContent = 'Tanggal tidak boleh sebelum hari ini.';
+        tanggalInput.focus();
+        return false;
+    }
 
     // Validasi field dasar (tidak berubah)
     const fieldsToValidate = [
@@ -439,6 +468,27 @@ function validateForm(modalType) {
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('formDalamModal-ta')?.addEventListener('submit', handleFormSubmit);
     document.getElementById('formDalamModal-sem')?.addEventListener('submit', handleFormSubmit);
+    // Fungsi untuk mendapatkan tanggal hari ini dalam format YYYY-MM-DD
+    const getTodayDateString = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        // `slice(-2)` memastikan format dua digit (misal: 05, 09, 12)
+        const month = ('0' + (today.getMonth() + 1)).slice(-2); 
+        const day = ('0' + today.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
+    };
+
+    // Ambil tanggal hari ini sekali saja
+    const todayString = getTodayDateString();
+
+    // Temukan semua input tanggal di halaman (untuk modal TA dan Semester)
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    
+    // Loop setiap input tanggal dan atur atribut 'min' nya
+    dateInputs.forEach(input => {
+        input.setAttribute('min', todayString);
+    });
+
 
     document.addEventListener('click', function(event) {
         const allDropdowns = document.querySelectorAll('.autocomplete-dropdown');

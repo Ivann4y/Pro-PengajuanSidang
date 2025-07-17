@@ -11,6 +11,7 @@ require_once '../../control/admin/aDetailSidang_queries.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../assets/css/aDetailSidang.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 <body>
     <div id="NavSide">
@@ -35,6 +36,14 @@ require_once '../../control/admin/aDetailSidang_queries.php';
             </div>
 
             <main class="NavSide__main-content">
+               <?php 
+                
+                //require_once '../../control/function.php'; 
+              
+                //echo generateBreadcrumb(getPageTitle('aDetailSidang'), 'admin', [
+                //    ['url' => 'aDaftarSidang.php', 'text' => 'Daftar Sidang'],
+                //]); 
+                ?>
                <div class="main-header">
                 <div class="header-left-panel">
                     <h2>Detail Sidang - <?php echo htmlspecialchars($data_sidang['judul']); ?></h2>
@@ -42,12 +51,12 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                 </div>
                 <div class="header-right-panel">
                     <div id="desktop-icons-container">
-                        <div class="header-icons">
+                        <!--<div class="header-icons">
                             <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
                             <div class="profile-icon">
                                 <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill"></i></a>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
@@ -75,7 +84,9 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                     <div class="section">
                         <p><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br><?php echo htmlspecialchars($data_jadwal['ruang_sidang'] ?? 'Belum Dijadwalkan'); ?></p>
                         <p><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>
-                            <?php echo !empty($data_jadwal['tanggal_sidang']) ? $data_jadwal['tanggal_sidang']->format('l, d F Y') : 'Belum Dijadwalkan'; ?>
+                             <?php 
+      echo formatTanggalIndonesiaManual($data_jadwal['tanggal_sidang'] ?? null); 
+    ?>
                         </p>
                         <p><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>
                             <?php echo !empty($data_jadwal['jam_sidang']) ? $data_jadwal['jam_sidang']->format('H.i') . ' - ' . $data_jadwal['jam_selesai']->format('H.i') : 'Belum Dijadwalkan'; ?>
