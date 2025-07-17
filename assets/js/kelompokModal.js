@@ -370,14 +370,17 @@ function searchMahasiswa(input, anggotaIndex) {
 
   // Validate prodi selection first
   if (!prodi) {
-    dropdown.style.display = "none";
-    namaDisplay.textContent = "Pilih Program Studi terlebih dahulu";
+    dropdown.innerHTML =
+      '<div class="autocomplete-item">Pilih Program Studi terlebih dahulu</div>';
+    dropdown.style.display = "block";
+    if (namaDisplay)
+      namaDisplay.textContent = "Pilih Program Studi terlebih dahulu";
     return;
   }
 
   if (query.length === 0) {
     dropdown.style.display = "none";
-    namaDisplay.textContent = "Nama akan muncul otomatis";
+    if (namaDisplay) namaDisplay.textContent = "Nama akan muncul otomatis";
     return;
   }
 
@@ -578,20 +581,23 @@ function searchDosen(input, index) {
   const query = input.value.trim().toLowerCase();
   const dropdown = document.getElementById(`autocomplete_dosen_${index}`);
   const prodi = document.getElementById("kelompok_prodi")?.value;
+  const namaDisplay = document.getElementById(`dosen_nama_display_${index}`);
 
   // Validate prodi selection first
   if (!prodi) {
-    dropdown.style.display = "none";
-    document.getElementById(`dosen_nama_display_${index}`).textContent =
-      "Pilih Program Studi terlebih dahulu";
+    dropdown.innerHTML =
+      '<div class="autocomplete-item">Pilih Program Studi terlebih dahulu</div>';
+    dropdown.style.display = "block";
+    if (namaDisplay)
+      namaDisplay.textContent = "Pilih Program Studi terlebih dahulu";
     document.getElementById(`dosen_nomor_hidden_${index}`).value = "";
     return;
   }
 
   if (query.length === 0) {
     dropdown.style.display = "none";
-    document.getElementById(`dosen_nama_display_${index}`).textContent =
-      "Nama dosen akan muncul otomatis";
+    if (namaDisplay)
+      namaDisplay.textContent = "Nama dosen akan muncul otomatis";
     document.getElementById(`dosen_nomor_hidden_${index}`).value = "";
     return;
   }
@@ -843,9 +849,21 @@ function setupKelompokFilters() {
   document
     .querySelectorAll("#filter-semester, #filter-tugas-akhir")
     .forEach((el) => {
+      el.removeEventListener("change", enforceAtLeastOneFilter);
+      el.addEventListener("change", enforceAtLeastOneFilter);
       el.removeEventListener("change", applyKelompokFilters); // prevent multiple listeners
       el.addEventListener("change", applyKelompokFilters);
     });
+}
+
+function enforceAtLeastOneFilter(e) {
+  const semester = document.getElementById("filter-semester");
+  const ta = document.getElementById("filter-tugas-akhir");
+  // Jika user mencoba uncheck dan yang lain juga sudah uncheck, batalkan
+  if (!semester.checked && !ta.checked) {
+    // Kembalikan checkbox yang baru saja di-uncheck ke checked
+    e.target.checked = true;
+  }
 }
 
 function applyKelompokFilters() {

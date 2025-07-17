@@ -98,7 +98,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                             <?= htmlspecialchars($tipeButtonText) ?>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Semua Tipe</a></li>
+                            <li><a class="dropdown-item" href="?tipe=semua&prodi=<?= htmlspecialchars($selectedProdi) ?>">Semua Sidang</a></li>
                             <li><a class="dropdown-item" href="?tipe=Tugas Akhir&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang TA</a></li>
                             <li><a class="dropdown-item" href="?tipe=Semester&prodi=<?= htmlspecialchars($selectedProdi) ?>">Sidang Semester</a></li>
                         </ul>
@@ -164,17 +164,26 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         <tr class="no-results-row"><td colspan="6">Tidak ada data untuk dijadwalkan.</td></tr>
                     <?php else: ?>
                         <?php 
-                        $counter = 1;
+                        $nomor_awal = ($currentPage - 1) * $rowsPerPage + 1;$counter = 1;
                         foreach ($data as $entry):
                             // Menyiapkan variabel untuk ditampilkan
-                            $judul_tampil = htmlspecialchars($entry['judulSidang']);
+                           $judul_tampil = htmlspecialchars($entry['judulSidang']);
                             $matkul_tampil = 'N/A';
                             $dosen_tampil = 'N/A';
+                            
+                            // Variabel untuk JSON
+                            $pembimbing_json = '[]';
                             $dosen_pengampu_json = '[]';
                             
                             if ($entry['tipeSidang'] == 'Tugas Akhir') {
-                                $dosen_tampil = htmlspecialchars($entry['pembimbing'] ?? 'N/A');
+                                $pembimbing_list_string = $entry['pembimbingList'] ?? '';
+                                $pembimbing_array = !empty($pembimbing_list_string) ? preg_split('/\r\n|\r|\n/', $pembimbing_list_string, -1, PREG_SPLIT_NO_EMPTY) : [];
+                                $dosen_tampil = !empty($pembimbing_array) ? implode('<br>', array_map('htmlspecialchars', $pembimbing_array)) : 'N/A';
+                                // BUAT JSON UNTUK PEMBIMBING
+                                $pembimbing_json = htmlspecialchars(json_encode($pembimbing_array), ENT_QUOTES, 'UTF-8');
+                                
                                 $matkul_tampil = htmlspecialchars($entry['mataKuliah'] ?? 'N/A');
+
                             } elseif ($entry['tipeSidang'] == 'Semester') {
                                 $matkul_tampil = htmlspecialchars($entry['mataKuliah'] ?? 'N/A');
                                 $dosen_pengampu_list_string = $entry['dosenPengampuList'] ?? '';
@@ -183,19 +192,20 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                                 $dosen_pengampu_json = htmlspecialchars(json_encode($dosen_array), ENT_QUOTES, 'UTF-8');
                             }
 
-                            
+                            // Menyiapkan atribut data untuk baris tabel
                             $row_props_js = "data-id='".htmlspecialchars($entry['id_sidang'])."'"
                                 . " data-kelompok='".htmlspecialchars($entry['id_kelompok'])."'"
-                                . " data-nama-list='".htmlspecialchars($entry['namaList'] ?? '')."'"
                                 . " data-judul='".htmlspecialchars($entry['judulSidang'])."'"
                                 . " data-matkul='".htmlspecialchars($entry['mataKuliah'] ?? 'N/A')."'"
-                                . " data-pembimbing='".htmlspecialchars($entry['pembimbing'] ?? 'N/A')."'"
-                                . " data-prodi='".htmlspecialchars($entry['prodi'])."'"
+                                // UBAH ATRIBUT INI AGAR MENGIRIM JSON
+                                . " data-pembimbing-list='". $pembimbing_json ."'" 
+                                . " data-prodi='".htmlspecialchars($entry['prodi'] ?? 'N/A')."'"
                                 . " data-tipe-sidang='".htmlspecialchars($entry['tipeSidang'])."'"
                                 . " data-pengampu='". $dosen_pengampu_json ."'";
                         ?>
                         <tr class="isiTabel" <?= $row_props_js ?>>
-                            <td data-label="Nomor"><?= $counter++ ?></td>
+                            <!-- ... sisa <td> tetap sama ... -->
+                            <td data-label="Nomor"><?= $nomor_awal++ ?></td>
                             <td data-label="Kelompok"><?= htmlspecialchars($entry['id_kelompok']) ?></td>
                             <td data-label="Judul"><?= $judul_tampil ?></td>
                             <td data-label="Mata Kuliah"><?= $matkul_tampil ?></td>
@@ -208,15 +218,32 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
-            </tbody>
+                </tbody>
           </table>
         </div>
         
-        <div class="pagination-container">
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center" id="pagination-controls"></ul>
-            </nav>
-        </div>
+       <div class="pagination-container">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <?php if ($totalPages > 1): ?>
+                <!-- Tombol Previous -->
+                <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?tipe=<?= $selectedTipe ?>&prodi=<?= $selectedProdi ?>&page=<?= $currentPage - 1 ?>">«</a>
+                </li>
+                <!-- Looping untuk nomor halaman -->
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                        <a class="page-link" href="?tipe=<?= $selectedTipe ?>&prodi=<?= $selectedProdi ?>&page=<?= $i ?>"><?= $i ?></a>
+                    </li>
+                <?php endfor; ?>
+                <!-- Tombol Next -->
+                <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?tipe=<?= $selectedTipe ?>&prodi=<?= $selectedProdi ?>&page=<?= $currentPage + 1 ?>">»</a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+</div>
     </main>
   </div>
   
@@ -249,50 +276,10 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                           <div class="form-group"><label for="modal_nim-ta">Kelompok</label><input type="text" id="modal_nim-ta" readonly /></div>
                           <div class="form-group"><label for="modal_judul_sidang-ta">Judul Sidang</label><input type="text" id="modal_judul_sidang-ta" readonly /></div>
                           
-                          <div class="form-group">
-                            <label for="modal_pembimbing-ta">Pembimbing</label>
-                            <div class="input-with-buttons">
-                                <div class="autocomplete-container">
-                            <input type="text" id="modal_pembimbing-ta" name="pembimbing_nama" readonly />
-                            </div>
-                         <div class="bobot-nilai-input-group">
-                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-1')">-</button>
-                                          <div class="input-with-percent">
-                                          <input type="number" id="modal_pembimbing_bobot-ta" name="pembimbing_bobot" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
-                                        <span class="percent-sign">%</span>
-                                           </div>
-                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-1')">+</button>
-                                      </div>
-                        </div>
-                        </div>
+                         
                           <div id="penguji-wrapper-ta">
                             <div class="form-group" id="penguji-form-ta-1">
-                                <label for="modal_penguji-ta-1">Penguji 1</label>
-                                <div class="input-with-buttons">
-                                
-                                <div class="autocomplete-container">
-                                <input type="text"
-                                        id="modal_penguji-ta-1"
-                                        name="penguji_nama[]"
-                                        placeholder="Ketik nama dosen penguji"
-                                        oninput="searchPenguji(this, 1)"
-                                        autocomplete="off">
-                                    <div class="autocomplete-dropdown" id="autocomplete_penguji_1"></div>
-                                </div>
-                               <div class="bobot-nilai-input-group">
-                                <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_penguji-ta-1')">-</button>
-                                <div class="input-with-percent">
-                                    <input type="number" id="modal_qty_penguji-ta-1" name="penguji_bobot[]" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Tugas Akhir');">
-                                    <span class="percent-sign">%</span>
-                                </div>
-
-                                <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_penguji-ta-1')">+</button>
-                                </div>
-                                <div class="form-toggle-buttons">
-                                    <button type="button" onclick="addPenguji()">+</button>
-                                    <button type="button" onclick="removePenguji()">-</button>
-                                </div>
-                            </div>
+                               
                         </div>
                     </div>
 
@@ -329,34 +316,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                           <div class="form-group"><label for="modal_nim-sem">Kelompok</label><input type="text" id="modal_nim-sem" readonly /></div>
                           <div class="form-group"><label for="modal_matkul-sem">Mata Kuliah</label><input type="text" id="modal_matkul-sem" readonly /></div>
                           <div id="pengampu-wrapper-sem">
-                              <div class="form-group" id="pengampu-form-sem-1">
-                                  <label for="modal_pengampu-sem-1">Pengampu 1</label>
-                                  <div class="input-with-buttons">
-                                      <input type="text" id="modal_pengampu-sem-1" name="pengampu_nama[]" placeholder="Nama Pengampu 1" />
-                                      <div class="bobot-nilai-input-group">
-                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-1')">-</button>
-                                          <div class="input-with-percent">
-                                          <input type="number" id="modal_qty_pengampu-sem-1" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Semester');">/>
-                                          <span class="percent-sign">%</span>
-                                          </div>
-                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-1')">+</button>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div class="form-group" id="pengampu-form-sem-2">
-                                  <label for="modal_pengampu-sem-2">Pengampu 2</label>
-                                  <div class="input-with-buttons">
-                                      <input type="text" id="modal_pengampu-sem-2" name="pengampu_nama[]" placeholder="Nama Pengampu 2" />
-                                      <div class="bobot-nilai-input-group">
-                                          <button type="button" class="btn-bobot-new" onclick="decrementValue('modal_qty_pengampu-sem-2')">-</button>
-                                          <div class="input-with-percent">
-                                          <input type="number" id="modal_qty_pengampu-sem-2" name="pengampu_bobot[]" class="bobot-input-new" value="0" min="0" oninput="cleanNumberInput(this); validateTotalWeightRealtime('Semester');">/>
-                                          <span class="percent-sign">%</span>
-                                          </div>
-                                          <button type="button" class="btn-bobot-new" onclick="incrementValue('modal_qty_pengampu-sem-2')">+</button>
-                                      </div>
-                                  </div>
-                              </div>
+                             
                           </div>
                           <div class="form-group"><label for="modal_prodi-sem">Prodi</label><input type="text" id="modal_prodi-sem" readonly /></div>
                           <div class="form-group"><label for="modal_ruangan-sem">Ruangan</label><input type="text" id="modal_ruangan-sem" name="ruangan" /></div>
@@ -367,7 +327,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                                   <input type="time" id="modal_jam_awal-sem" name="jam_awal" /><span class="time-separator">-</span><input type="time" id="modal_jam_akhir-sem" name="jam_akhir" />
                               </div>
                           </div>
-                          <div class="realtime-validation-message" id="realtime-validation-ta"></div>
+                          <div class="realtime-validation-message" id="realtime-validation-sem"></div>
                           <div class="form-error-message" id="form-error-sem"></div>
                           <div class="form-actions">
                               <button type="button" class="btn btn-batal" data-bs-dismiss="modal">Batalkan</button>

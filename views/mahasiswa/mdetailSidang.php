@@ -181,7 +181,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                     <?php if (!empty($dok_laporan)): ?>
                         <a href="download_document.php?id_sidang=<?= htmlspecialchars($id_sidang) ?>" class="file-button">
                             <i class="fa-solid fa-file-zipper"></i>
-                            Dokumen_Laporan_Kelompok_<?= htmlspecialchars($nomor_kelompok) ?>.zip </a>
+                            Projek_SO<?= htmlspecialchars($nomor_kelompok) ?>.pdf </a>
                     <?php else: ?>
                         <p>Dokumen tidak tersedia.</p>
                     <?php endif; ?>

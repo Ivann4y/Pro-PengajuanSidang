@@ -48,7 +48,7 @@ switch($action) {
     case 'pengajuan':
        
         // Query untuk menghitung jumlah pengajuan yang perlu aksi
-        $query = "SELECT COUNT(*) AS jumlah_pengajuan_perlu_aksi FROM Sidang WHERE status_ajuan IS NULL";
+        $query = "SELECT COUNT(*) AS jumlah_pengajuan_perlu_aksi FROM Sidang WHERE status_ajuan = 'Pending'";
         $stmt = sqlsrv_query($conn, $query);
         
         if ($stmt === false) {

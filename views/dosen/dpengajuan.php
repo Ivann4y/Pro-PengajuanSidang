@@ -202,26 +202,6 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dPengajuan.css">
-    <style>
-        .notif-badge {
-            position: absolute;
-            top: -2px;
-            right: -8px;
-            background: #4b68fb;
-            color: white;
-            border-radius: 50%;
-            font-size: 0.55em;
-            padding: 0 3px;
-            z-index: 10;
-            border: 2px solid white;
-            font-weight: bold;
-            min-width: 10px;
-            text-align: center;
-            line-height: 1.2;
-            box-shadow: 0 0 2px #0002;
-        }
-        .position-relative { position: relative; }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Dosen - Pengajuan</title>
 </head>

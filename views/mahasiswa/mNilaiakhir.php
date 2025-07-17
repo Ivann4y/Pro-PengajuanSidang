@@ -1,4 +1,4 @@
-<?php
+    <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 $path_to_root = '../../';
@@ -22,18 +22,19 @@ require "../../koneksi/koneksiAndrew.php";
 $sqlGetSidang = "
     SELECT TOP 1 s.id_sidang
     FROM Sidang s
-    JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-    WHERE k.nim = ?
+    JOIN Kelompok_Mahasiswa km ON s.id_kelompok = km.id_kelompok
+    WHERE km.nim = ?
     ORDER BY s.id_sidang DESC
 ";
+
+
 $stmtGetSidang = sqlsrv_query($conn, $sqlGetSidang, [$nim]);
 
-if (!$stmtGetSidang || !($row = sqlsrv_fetch_array($stmtGetSidang, SQLSRV_FETCH_ASSOC))) {
-    die("Data sidang untuk Anda belum ditemukan. Mohon cek dengan dosen pembimbing.");
+$id_sidang = null;
+
+if ($stmtGetSidang && ($row = sqlsrv_fetch_array($stmtGetSidang, SQLSRV_FETCH_ASSOC))) {
+    $id_sidang = $row['id_sidang'];
 }
-$id_sidang = $row['id_sidang'];
-
-
 
 // === 2. Hitung Nilai Akhir MAHASISWA (Weighted Average) ===
 $sqlNilai = "
@@ -66,7 +67,6 @@ if ($stmtNilai && ($rowNilai = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC
     }
 }
 
-
 // === 3. Ambil Data Mahasiswa + Judul Sidang + Pembimbing ===
 $sqlDataSidang = "
     SELECT  
@@ -74,12 +74,14 @@ $sqlDataSidang = "
         s.judul, 
         d.nama_dosen AS dosen_pembimbing
     FROM Mahasiswa m
-    LEFT JOIN Penilaian p ON m.nim = p.nim
-    LEFT JOIN Sidang s ON p.id_sidang = s.id_sidang
+    JOIN Kelompok_Mahasiswa km ON m.nim = km.nim
+    JOIN Sidang s ON km.id_kelompok = s.id_kelompok
     LEFT JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok AND b.isPembimbing = 1
     LEFT JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen
     WHERE m.nim = ? AND s.id_sidang = ?
 ";
+
+
 $stmtDataSidang = sqlsrv_query($conn, $sqlDataSidang, [$nim, $id_sidang]);
 $dataSidang = [
     'nama' => $_SESSION['user_data']['nama_mhs'] ?? 'Nama Tidak Ditemukan',
@@ -95,8 +97,6 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
     $judul = $dataSidang['judul'];
 
 }
-
-
 ?>
 
 
@@ -107,29 +107,22 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
-    <!-- === STYLESHEETS & FONTS === -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
-    <!-- Google Fonts (These are fine) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet" />
 
-    <!-- === KOREKSI PATH CSS LOKAL ANDA DI SINI === -->
-    <!-- Path ke style.css utama (untuk layout sidebar) -->
+
     <link rel="stylesheet" href="../../assets/css/style.css" /> 
     
-    <!-- Path ke mNilaiakhir.css (untuk style spesifik halaman ini) -->
     <link rel="stylesheet" href="../../assets/css/mNilaiakhir.css">
 
-    <!-- Path ke button-styles.css -->
     <link rel="stylesheet" href="../../css/button-styles.css" />
 
-    <!-- Path ke extra/style.css (jika masih digunakan) -->
     <link rel="stylesheet" href="../../extra/style.css" />
     <link rel="stylesheet" href="../../assets/css/breadcrumb.css" />
     
-    <!-- Scripts (These are fine) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -139,10 +132,8 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
 </head>
 <body>
     <div id="NavSide">
-        <!-- ... (Bagian Sidebar dan Topbar Anda tetap sama) ... -->
         <div id="main-sidebar" class="NavSide__sidebar">
             <div class="NavSide__sidebar-brand img "><img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo"></div>
-            <!-- CORRECTED CODE for mNilaiAkhir.php -->
             <ul class="NavSide__sidebar-nav">
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="mdetailSidang.php"><span class="fw-semibold">Detail Pengajuan</span></a></li>
                 <li class="NavSide__sidebar-item"><b></b><b></b><a href="mPerbaikan.php"><span class="fw-semibold">Perbaikan</span></a></li>
