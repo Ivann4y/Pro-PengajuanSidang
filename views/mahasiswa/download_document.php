@@ -6,9 +6,6 @@ require "../../koneksi/koneksiAndrew.php"; // Pastikan path koneksi ini benar
 if (isset($_GET['id_sidang']) && !empty($_GET['id_sidang'])) {
     $id_sidang = (int)$_GET['id_sidang'];
 
-<<<<<<< HEAD
-    $sql = "SELECT dok_laporan, id_kelompok, dok_laporan FROM Sidang WHERE id_sidang = ?";
-=======
     // 1. QUERY DIUBAH
     // Mengambil path file (dok_laporan) dari tabel Sidang dan
     // nama asli file (nama_file) dari tabel Detail_Sidang.
@@ -17,7 +14,6 @@ if (isset($_GET['id_sidang']) && !empty($_GET['id_sidang'])) {
             LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
             WHERE s.id_sidang = ?";
     
->>>>>>> 66451757a8587745e4eacc5511515127d9c68f02
     $stmt = sqlsrv_prepare($conn, $sql, array(&$id_sidang));
 
     if ($stmt === false) {
@@ -31,30 +27,6 @@ if (isset($_GET['id_sidang']) && !empty($_GET['id_sidang'])) {
 
     // 2. BLOK LOGIC DOWNLOAD DIUBAH TOTAL
     if ($row && !empty($row['dok_laporan'])) {
-<<<<<<< HEAD
-        $file_path = $row['dok_laporan']; // path relatif/absolut ke file di server
-        $id_kelompok = $row['id_kelompok'];
-
-        if (file_exists($file_path)) {
-            $filename = basename($file_path);
-            $file_extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-            $mime_types = [
-                'pdf' => 'application/pdf',
-                'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'doc' => 'application/msword',
-                'zip' => 'application/zip',
-                // tambahkan sesuai kebutuhan
-            ];
-            $file_mime_type = $mime_types[$file_extension] ?? 'application/octet-stream';
-
-            header('Content-Type: ' . $file_mime_type);
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
-            header('Content-Length: ' . filesize($file_path));
-            readfile($file_path);
-            exit;
-        } else {
-            echo "File tidak ditemukan di server.";
-=======
         // Ambil path dan nama file dari hasil query
         $file_path_from_db = $row['dok_laporan'];
         $original_filename = $row['nama_file'] ?? basename($file_path_from_db);
@@ -83,7 +55,6 @@ if (isset($_GET['id_sidang']) && !empty($_GET['id_sidang'])) {
             exit; // Hentikan skrip
         } else {
             die("Error: File tidak ditemukan di server pada path: " . htmlspecialchars($full_file_path));
->>>>>>> 66451757a8587745e4eacc5511515127d9c68f02
         }
     } else {
         echo "Dokumen tidak ditemukan di database.";
