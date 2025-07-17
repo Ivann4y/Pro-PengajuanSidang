@@ -102,7 +102,7 @@ if ($user['jenis_kelamin'] === 'L') {
         <main class="NavSide__main-content" id="mSidang">
             <div class="container">
                 <div class="row">
-                    <h1>Profile</h1>
+                    <h1>Profil</h1>
                 </div>
                 <div class="row">
                     <div class="col-md-6 profil-img">

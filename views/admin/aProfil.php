@@ -80,14 +80,14 @@ $no_telepon = $user['no_telepon'];
         <main class="NavSide__main-content" id="mSidang">
             <div class="container">
                 <div class="row">
-                    <h1>Profile</h1>
+                    <h1>Profil</h1>
                 </div>
                 <div class="row">
                     <div class="col-md-6 profil-img">
                         <img src="../../assets/img/profil_default.jpg" alt="">
                     </div>
                     <div class="col-md-6 data-all">
-                        <h2>Data admin</h2>
+                        <h2>Data Admin</h2>
                         <div class="row allData">
                             <div class="col-12">
                                 <p>Nama</p>
