@@ -94,11 +94,15 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                     </div>
                 </div>
 
+                 <?php
+            if ($data_sidang['status_sidang'] != '0x00') :
+            ?>
                 <h5 class="mt-4">Aksi</h5>
                 <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
                 <button class="btn-hapus" onclick="confirmDelete(<?php echo $id_sidang; ?>)">Batalkan Sidang</button>
-
-
+            <?php 
+            endif; 
+            ?>
                 <!-- MODAL UBAH JADWAL -->
       <div class="modal fade" id="penjadwalanSidangModal" tabindex="-1" aria-labelledby="penjadwalanSidangModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
