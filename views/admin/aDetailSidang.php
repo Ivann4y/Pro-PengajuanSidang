@@ -85,8 +85,8 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                         <p><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br><?php echo htmlspecialchars($data_jadwal['ruang_sidang'] ?? 'Belum Dijadwalkan'); ?></p>
                         <p><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>
                              <?php 
-      echo formatTanggalIndonesiaManual($data_jadwal['tanggal_sidang'] ?? null); 
-    ?>
+                            echo formatTanggalIndonesiaManual($data_jadwal['tanggal_sidang'] ?? null); 
+                            ?>
                         </p>
                         <p><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>
                             <?php echo !empty($data_jadwal['jam_sidang']) ? $data_jadwal['jam_sidang']->format('H.i') . ' - ' . $data_jadwal['jam_selesai']->format('H.i') : 'Belum Dijadwalkan'; ?>
@@ -95,8 +95,8 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                 </div>
 
                  <?php
-            if ($data_sidang['status_sidang'] != '0x00') :
-            ?>
+                if ($data_sidang['status_sidang'] != '0x00') :
+                ?>
                 <h5 class="mt-4">Aksi</h5>
                 <button class="btn-ubah" onclick="openModal()">Ubah Jadwal Sidang</button>
                 <button class="btn-hapus" onclick="confirmDelete(<?php echo $id_sidang; ?>)">Batalkan Sidang</button>
