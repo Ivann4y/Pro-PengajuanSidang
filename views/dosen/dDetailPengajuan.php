@@ -318,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                         <input type="hidden" name="tipe" value="<?= htmlspecialchars($jenis_sidang_url) ?>">
                         <input type="hidden" name="download" value="main">
                         <button type="submit" class="text-decoration-none base-tombol berkas-laporan">
-                            <i class="fa-solid fa-file-lines me-2"></i><?= htmlspecialchars($doc_data['dok_laporan']) ?>
+                            <i class="fa-solid fa-file-lines me-2"></i><?= htmlspecialchars(basename($doc_data['dok_laporan'])) ?>
                         </button>
                     </form>
                     <?php else : ?>
