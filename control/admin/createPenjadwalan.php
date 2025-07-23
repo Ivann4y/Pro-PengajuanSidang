@@ -4,7 +4,10 @@
 // ==============================
 // KONEKSI & HEADER
 // ==============================
-require "../../koneksi/koneksiAndrew.php";
+include "../../koneksi/koneksiJoin.php";
+if ($conn === false) {
+    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

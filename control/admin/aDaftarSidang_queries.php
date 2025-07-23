@@ -33,7 +33,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // --- FUNGSI 4: KONEKSI & PENGAMBILAN DATA DARI DATABASE ---
 
 // 4.1. Sertakan file koneksi database.
-require "../../koneksi/koneksiAndrew.php";
+include "../../koneksi/koneksiJoin.php";
+if ($conn === false) {
+    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
+}
 
 // 4.2. Ambil parameter dari URL untuk filter dan paginasi.
 // Menggunakan `isset()` untuk mengecek apakah parameter ada di URL. Jika ada, gunakan nilainya. Jika tidak, berikan nilai default.
@@ -52,6 +55,7 @@ if ($prodiResult) {
         $prodiList[] = $row['prodi'];
     }
 }
+
 
 // --- FUNGSI 5: PEMBUATAN QUERY SQL DINAMIS ---
 
@@ -111,6 +115,7 @@ $query = "
         s.id_sidang,
         s.judul,
         k.id_kelompok,
+        k.nomor_kelompok,
         k.jenis_sidang,
         mk.nama_matkul,
         
