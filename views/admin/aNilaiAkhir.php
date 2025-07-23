@@ -16,57 +16,11 @@ require_once '../../control/admin/aNilaiAkhir_queries.php';
   <link rel="stylesheet" href="../../css/style.css" />
   <link rel="stylesheet" href="../../css/button-styles.css" />
   <link rel="stylesheet" href="../../extra/style.css" />
+  <link rel="stylesheet" href="../../assets/css/aNilaiakhir.css">
+
   <title>Admin - Nilai Akhir</title>
 
   <style>
-    #NavSide { display: flex; min-height: 100vh; position: relative; }
-    .label-row i { font-size: 1.5rem; }
-    body, .card, .form-control, h1, h2, h3, h4, h5, h6 { font-family: "Poppins", sans-serif !important; color: #464869; }
-    #cardNilai, #carddataMahasiswa, #carddetailPenilaian, #cardcatatan {
-      background-color: rgb(235, 238, 245);
-      border-radius: 50px;
-      border: none !important;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 100%;
-    }
-    .nilai-mahasiswa-display {
-      font-size: 5rem !important; 
-      font-weight: bold;
-      text-align: center;
-      background-color: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      padding: 0;
-      cursor: default;
-    }
-    #carddetailPenilaian label { font-weight: 550; }
-    .detail-penilaian-input {
-      font-size: 1.2rem; 
-      font-weight: 600;
-      text-align: center;
-      border: none;
-      background-color: transparent;
-      padding: 5px;
-      cursor: default;
-    }
-    #catatan {
-      background-color: rgb(235, 238, 245);
-      border: none;
-      
-      padding: 15px;
-      font-size: 1rem;
-      resize: vertical;
-      cursor: default;
-      white-space: pre-wrap; 
-    }
-    textarea[readonly], input[readonly] { background-color: #e9ecef; }
-    
-    /* Style untuk tab aktif */
-    .nav-link.active-student-tab {
-      font-weight: bold;
-      color: var(--primary-color) !important;
-      border-bottom: 2px solid var(--primary-color) !important;
-    }
   </style>
 </head>
 <body>
@@ -172,7 +126,7 @@ require_once '../../control/admin/aNilaiAkhir_queries.php';
                           </div>
                           <div class="col-sm-6 text-black">
                               <div class="info-group mb-5"> <div class="label-row d-flex align-items-center gap-2 mb-1">
-                                      <i class="fa-solid fa-book"></i><span class="fw-bold">Judul Proyek</span>
+                                      <i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span>
                                   </div>
                                   <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataMahasiswa['nama_matkul']) ?></div>
                               </div>
@@ -238,27 +192,6 @@ require_once '../../control/admin/aNilaiAkhir_queries.php';
   </div>
 
 
-<script>
-    // Kode untuk toggle sidebar (tidak diubah)
-    let menuToggle = document.querySelector(".NavSide__toggle");
-    let sidebar = document.getElementById("main-sidebar");
-    menuToggle.onclick = function() {
-      menuToggle.classList.toggle("NavSide__toggle--active");
-      sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-    };
-
-    // Kode untuk active item di sidebar (tidak diubah)
-    let listItems = document.querySelectorAll(".NavSide__sidebar-item");
-    for (let i = 0; i < listItems.length; i++) {
-      listItems[i].onclick = function() {
-        if (!this.classList.contains("NavSide__sidebar-item--active")) {
-          for (let j = 0; j < listItems.length; j++) {
-            listItems[j].classList.remove("NavSide__sidebar-item--active");
-          }
-          this.classList.add("NavSide__sidebar-item--active");
-        }
-      };
-    }
-</script>
+<script src="../../assets/js/aNilaiakhir.js"></script>
 </body>
 </html>
