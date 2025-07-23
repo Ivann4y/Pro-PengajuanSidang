@@ -22,31 +22,38 @@ $currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $rowsPerPage = 10;
 $offset = ($currentPage - 1) * $rowsPerPage;
 
-// ==========================================================================================
-// === [KODE FINAL YANG BENAR - MENAMPILKAN NAMA DOSEN YANG LOGIN] ===
-// ==========================================================================================
+/*
+ * =========================================================================================
+ * PENJELASAN LOGIKA QUERY
+ *
+ * Logika JOIN di bawah ini sengaja dipertahankan menggunakan `id_kelompok` karena itu adalah
+ * Primary Key yang unik dan menjamin integritas data saat menghubungkan tabel.
+ *
+ * Sementara itu, `nomor_kelompok` sudah diambil di klausa SELECT untuk ditampilkan,
+ * digunakan di ORDER BY untuk pengurutan, dan di klausa WHERE untuk pencarian.
+ * Dengan demikian, fungsionalitasnya sudah sepenuhnya berbasis "Nomor Kelompok"
+ * dari sisi pengguna.
+ * =========================================================================================
+ */
 
-// Query untuk TUGAS AKHIR: Selalu menampilkan nama dosen yang login
+// Query untuk TUGAS AKHIR
 $queryTA = "
     SELECT DISTINCT
         s.id_sidang, 
-        k.nomor_kelompok, 
+        k.nomor_kelompok, -- INI YANG DIAMBIL: `nomor_kelompok` untuk ditampilkan ke pengguna
         s.judul AS judul_sidang, 
         mk.nama_matkul AS nama_matkul_sidang, 
-        
-        -- INI KUNCINYA: Secara eksplisit ambil nama dosen yang sedang login.
         d_login.nama_dosen AS nama_penanggung_jawab,
-
         'Tugas Akhir' as jenis_sidang_filter
         
     FROM [dbo].[Sidang] s
+    -- JOIN ke tabel Kelompok tetap menggunakan `id_kelompok` untuk akurasi maksimal
     JOIN [dbo].[Kelompok] k ON s.id_kelompok = k.id_kelompok
-    LEFT JOIN [dbo].[MataKuliah] mk ON k.id_matkul = mk.id_matkul
     
-    -- Bergabung dengan tabel Dosen untuk mendapatkan nama dosen yang login
+    LEFT JOIN [dbo].[MataKuliah] mk ON k.id_matkul = mk.id_matkul
     CROSS JOIN (SELECT nama_dosen FROM [dbo].[Dosen] WHERE nomor_dosen = ?) AS d_login
-
-    -- LEFT JOIN ini HANYA untuk memeriksa keterlibatan
+    
+    -- Pengecekan ke tabel Bimbingan dan Penjadwalan juga berdasarkan relasi kunci yang benar
     LEFT JOIN [dbo].[Bimbingan] b_check ON k.id_kelompok = b_check.id_kelompok
     LEFT JOIN [dbo].[Penjadwalan] pj_check ON s.id_sidang = pj_check.id_sidang
 
@@ -54,62 +61,64 @@ $queryTA = "
         k.jenis_sidang = 'Tugas Akhir' 
         AND 
         (
-            -- Cek keterlibatan sebagai Pembimbing
             b_check.nomor_dosen = ?
             OR
-            -- Cek keterlibatan sebagai Penguji
             (pj_check.nomor_dosen = ? AND pj_check.peran_dosen = 0x00)
         )
 ";
 
-// Query untuk SIDANG SEMESTER (dosen sebagai Pengampu) - INI SUDAH BENAR
+// Query untuk SIDANG SEMESTER
 $querySemester = "
     SELECT 
-        s.id_sidang, k.nomor_kelompok, s.judul AS judul_sidang, 
-        mk.nama_matkul AS nama_matkul_sidang, d.nama_dosen AS nama_penanggung_jawab,
+        s.id_sidang, 
+        k.nomor_kelompok, -- INI YANG DIAMBIL: `nomor_kelompok` untuk ditampilkan ke pengguna
+        s.judul AS judul_sidang, 
+        mk.nama_matkul AS nama_matkul_sidang, 
+        d.nama_dosen AS nama_penanggung_jawab,
         'Semester' as jenis_sidang_filter
     FROM [dbo].[Pengampu_Kelas] pk
     JOIN [dbo].[Dosen] d ON pk.nomor_dosen = d.nomor_dosen
     JOIN [dbo].[Kelas_Mahasiswa] km ON pk.id_kelas = km.id_kelas
     JOIN [dbo].[Mahasiswa] m ON km.nim = m.nim
     JOIN [dbo].[Kelompok] k ON m.nim = k.nim AND pk.id_matkul = k.id_matkul
+    
+    -- JOIN dari Kelompok ke Sidang juga menggunakan `id_kelompok` sebagai kunci penghubung yang paling valid
     JOIN [dbo].[Sidang] s ON k.id_kelompok = s.id_kelompok
+
     LEFT JOIN [dbo].[MataKuliah] mk ON k.id_matkul = mk.id_matkul
     WHERE pk.nomor_dosen = ? AND k.jenis_sidang = 'Semester'
 ";
 
 
-// --- Tentukan query mana yang akan dijalankan berdasarkan filter ---
+// --- Menentukan query mana yang akan dijalankan berdasarkan filter ---
 $finalQuery = "";
 $params = [];
 
 if ($filter === 'ta') {
     $finalQuery = $queryTA;
-    // [PENTING] Parameter untuk TA sekarang ada 3 (?)
     $params = [$nomor_dosen_login, $nomor_dosen_login, $nomor_dosen_login];
 } elseif ($filter === 'semester') {
     $finalQuery = $querySemester;
     $params = [$nomor_dosen_login];
 } else { // filter 'all'
     $finalQuery = "($queryTA) UNION ALL ($querySemester)";
-    // [PENTING] Parameter untuk ALL sekarang ada 4 (3 untuk TA, 1 untuk Semester)
     $params = [$nomor_dosen_login, $nomor_dosen_login, $nomor_dosen_login, $nomor_dosen_login];
 }
 
-// --- Sisa kode dari sini ke bawah tetap sama persis ---
-// ... (salin sisa kode dari file Anda)
-// --- Menangani filter pencarian (Search) ---
+// --- Menangani filter pencarian (Search) berdasarkan `nomor_kelompok` dan data lainnya ---
 $searchClause = "";
 $likeParam = "";
 if (!empty($search)) {
+    // Klausa pencarian ini sudah benar, karena mencari berdasarkan `nomor_kelompok`
     $searchClause = " WHERE (CAST(nomor_kelompok AS VARCHAR(255)) LIKE ? OR judul_sidang LIKE ? OR nama_matkul_sidang LIKE ? OR nama_penanggung_jawab LIKE ?)";
     $likeParam = "%" . $search . "%";
 }
 
 // --- Gabungkan semua untuk query PENGHITUNGAN dan PENGAMBILAN DATA ---
 $countQuery = "SELECT COUNT(*) as total FROM ($finalQuery) AS CombinedQuery" . $searchClause;
-$mainQuery = "SELECT * FROM ($finalQuery) AS CombinedQuery" . $searchClause . " ORDER BY nomor_kelompok ASC, id_sidang ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 
+// Pengurutan sudah dilakukan berdasarkan `nomor_kelompok` yang diinginkan
+$mainQuery = "SELECT * FROM ($finalQuery) AS CombinedQuery" . $searchClause . " ORDER BY nomor_kelompok ASC, id_sidang ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;";
 
 // --- Eksekusi Query ---
 // Siapkan parameter untuk query count
