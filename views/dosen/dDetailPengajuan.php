@@ -15,7 +15,7 @@ if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
 
-$id_sidang = $_POST['id_sidang'] ?? $_GET['id_sidang'] ?? null;
+$id_sidang = $_POST['id_sidang'] ?? $_GET['id_sidang'] ?? $_GET['id'] ?? null;
 if (empty($id_sidang)) {
     die("Error: ID Sidang tidak valid atau tidak diberikan.");
 }
@@ -161,10 +161,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             $_SESSION['error'] = "Silakan isi alasan penolakan.";
         } else {
             // BARU: Tambahkan kolom alasan_tolak ke query UPDATE
-            $sql_update = "UPDATE Sidang SET status_ajuan = 'Rejected', alasan_tolak = ? WHERE id_sidang = ?";
-            // BARU: Tambahkan $catatan ke parameter query
-            $params_update = [$catatan, $id_sidang];
-            $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
+            $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?, dok_laporan = ?, dok_final = ? WHERE id_sidang = ?";
+            $params = [$judul, $status_ajuan, $dok_laporan_path, $nama_file_asli, $id_sidang_existing];
+            $stmt_update = sqlsrv_query($conn, $sql_update, $params);
 
             if ($stmt_update) {
                 $_SESSION['success'] = "Sidang berhasil ditolak";
