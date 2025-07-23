@@ -195,6 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
   <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css">
   <!-- <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css"> -->
   <link rel="stylesheet" href="../../extra/style.css">
+  <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
   <title>Detail Pengajuan</title>
 </head>
 <body class="p-4">
@@ -226,6 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             </li>
         </ul>
         </div>
+        
         <div class="NavSide__topbar">
             <div class="NavSide__toggle">
                 <i class="bi bi-list open"></i>
@@ -233,24 +235,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             </div>
         </div>
         <main class="NavSide__main-content" id="dPengajuan">
+            <?php 
+            require_once '../../control/function.php'; 
+            echo generateBreadcrumb(getPageTitle('dDetailPengajuan'), 'dosen', [
+                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
+            ]); 
+            ?>
             <h2 class="text-heading text-black" style="font-weight: 700;">Detail Pengajuan - <?= htmlspecialchars($judul) ?></h2>
             <div class="card mb-3 info-pengajuan">
                 <h5 class="fw-bold section">Informasi Pengajuan</h5>
 
                 <div class="row mt-2">
                     <div class="col-md-6 section"> 
+                        
                         <div class="info-group">
                             <div class="label-row"><i class="fa-solid fa-users me-0"></i><span class="fw-bold ms-0">Nomor Kelompok</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nomor_kelompok'] ?? '-') ?></div>
                         </div>
+
                         <div class="info-group">
                             <div class="label-row"><i class="fa-solid fa-calendar-days me-0"></i><span class="fw-bold ms-0">Tahun Ajaran</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['tahun_ajaran'] ?? '-') ?></div>
                         </div>
+                        
                         <div class="info-group">
                             <div class="label-row"><i class="fa-solid fa-book me-0"></i><span class="fw-bold ms-0">Mata Kuliah</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nama_matkul'] ?? 'N/A') ?></div>
                         </div>
+                        
                         <div class="info-group">
                             <div class="label-row"><i class="fa-solid fa-people-group me-0"></i><span class="fw-bold ms-0">Anggota Kelompok</span></div>
                             <div class="value-row ms-4">
@@ -281,7 +293,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                                         <li><?= htmlspecialchars($nama) ?></li>
                                     <?php endforeach; ?>
                                 </ul>
-                            </div>
+                            </div>  
                         </div>
                         <?php endif; ?>
                         <div class="info-group">
@@ -291,8 +303,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                     </div>
                 </div>
             </div>
-            <div class="card mb-3 dokumen-sidang">
-                <h5 class="fw-semibold">Dokumen Laporan</h5>
+
+            <h5 class="fw-semibold">Dokumen Laporan</h5>
+            <div class="file-buttons-container d-flex flex-wrap">
                 <div class="mt-2">
                     <?php
                     $sql_check_doc = "SELECT dok_laporan FROM Sidang WHERE id_sidang = ?";
@@ -304,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                         <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($id_sidang) ?>">
                         <input type="hidden" name="tipe" value="<?= htmlspecialchars($jenis_sidang_url) ?>">
                         <input type="hidden" name="download" value="main">
-                        <button type="submit" class="text-decoration-none base-tombol berkas-laporan" style="border: 1px solid #212529 !important;">
+                        <button type="submit" class="text-decoration-none base-tombol berkas-laporan">
                             <i class="fa-solid fa-file-lines me-2"></i><?= htmlspecialchars($doc_data['dok_laporan']) ?>
                         </button>
                     </form>
@@ -313,6 +326,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                     <?php endif; ?>
                 </div>
             </div>
+
             <?php if ($data_sidang['status_ajuan'] === 'Pending'): ?>
             <div class="action-buttons mt-4 d-flex justify-content-between align-items-center">
                 <a href="<?= $kembali_url ?>" class="btn btn-secondary btn-circle">
@@ -326,7 +340,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                     <button type="button" class="btn btn-success btn-circle" id="btnSetujuiOpenModal">Setujui</button>
                 </form>
                 </div>
-            </div>  
+            </div>
             <?php else: ?>
             <div class="mt-4">
                 <a href="<?= $kembali_url ?>" class="btn btn-secondary btn-circle">

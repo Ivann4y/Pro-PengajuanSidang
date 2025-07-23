@@ -88,6 +88,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
     </div>
 
     <main class="NavSide__main-content">
+        <!-- No breadcrumb for Penjadwalan (first layer) -->
         <div class="main-header">
             <div class="header-left-panel">
                 <h1 class="main-title">Penjadwalan Sidang</h1>

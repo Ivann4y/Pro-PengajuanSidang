@@ -15,6 +15,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <link rel="stylesheet" href="../../assets/css/aDaftarSidang.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 
 <body>
@@ -40,6 +41,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
         </div>
 
         <main class="NavSide__main-content" id="adminDaftarSidangContent">
+            <!-- No breadcrumb for Daftar Sidang (first layer) -->
             <div class="main-header">
                 <div class="header-left-panel">
                     <h1 class="main-title">Daftar Sidang</h1>

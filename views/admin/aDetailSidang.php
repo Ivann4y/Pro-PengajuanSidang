@@ -37,12 +37,10 @@ require_once '../../control/admin/aDetailSidang_queries.php';
 
             <main class="NavSide__main-content">
                <?php 
-                
-                //require_once '../../control/function.php'; 
-              
-                //echo generateBreadcrumb(getPageTitle('aDetailSidang'), 'admin', [
-                //    ['url' => 'aDaftarSidang.php', 'text' => 'Daftar Sidang'],
-                //]); 
+                require_once '../../control/function.php'; 
+                echo generateBreadcrumb(getPageTitle('aDetailSidang'), 'admin', [
+                    ['url' => 'aDaftarSidang.php', 'text' => 'Daftar Sidang']
+                ]); 
                 ?>
                <div class="main-header">
                 <div class="header-left-panel">
