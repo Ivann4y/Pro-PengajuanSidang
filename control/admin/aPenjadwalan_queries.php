@@ -142,6 +142,7 @@ $sql = "
         s.id_sidang,
         s.judul AS judulSidang,
         k.id_kelompok,
+        k.nomor_kelompok,
         k.jenis_sidang AS tipeSidang,
         m.prodi,
         mk.nama_matkul AS mataKuliah,

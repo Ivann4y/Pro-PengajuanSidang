@@ -201,7 +201,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
 
                             // Menyiapkan atribut data untuk baris tabel
                             $row_props_js = "data-id='".htmlspecialchars($entry['id_sidang'])."'"
-                                . " data-kelompok='".htmlspecialchars($entry['id_kelompok'])."'"
+                                . " data-kelompok='".htmlspecialchars($entry['nomor_kelompok'])."'"
                                 . " data-judul='".htmlspecialchars($entry['judulSidang'])."'"
                                 . " data-matkul='".htmlspecialchars($entry['mataKuliah'] ?? 'N/A')."'"
                                 // UBAH ATRIBUT INI AGAR MENGIRIM JSON
@@ -213,7 +213,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         <tr class="isiTabel" <?= $row_props_js ?>>
                             <!-- ... sisa <td> tetap sama ... -->
                             <td data-label="Nomor"><?= $nomor_awal++ ?></td>
-                            <td data-label="Kelompok"><?= htmlspecialchars($entry['id_kelompok']) ?></td>
+                            <td data-label="Kelompok"><?= htmlspecialchars($entry['nomor_kelompok']) ?></td>
                             <td data-label="Judul"><?= $judul_tampil ?></td>
                             <td data-label="Mata Kuliah"><?= $matkul_tampil ?></td>
                             <td data-label="Pembimbing/Pengampu"><?= $dosen_tampil ?></td>
