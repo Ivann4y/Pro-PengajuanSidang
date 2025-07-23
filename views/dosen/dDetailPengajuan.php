@@ -147,21 +147,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
         }
         header("Location: dPengajuan.php"); exit();
     }
-    if (isset($_POST['reject'])) {
+    if (isset($_POST['reject']) || isset($_POST['catatan'])) { // Trigger dari tombol utama atau dari modal
         $catatan = trim($_POST['catatan'] ?? '');
-        if (empty($catatan)) $_SESSION['error'] = "Silakan isi alasan penolakan.";
-        else {
-            $sql_update = "UPDATE Sidang SET status_ajuan = 'Rejected' WHERE id_sidang = ?";
-            sqlsrv_query($conn, $sql_update, [$id_sidang]);
-            $_SESSION['success'] = "Sidang berhasil ditolak";
-            // Kirim notifikasi ke mahasiswa untuk evaluasi pengajuan
-            $judul_sidang = $data_sidang['judul'] ?? '';
-            $nomor_kelompok = $data_sidang['nomor_kelompok'] ?? '';
-            $pesan_mhs = "Pengajuan sidang kelompok $nomor_kelompok dengan judul '$judul_sidang' ditolak. Silakan lakukan evaluasi dan ajukan kembali.";
-            foreach ($nims_mahasiswa as $nim_mhs) {
-                kirimNotifikasi($nim_mhs, $pesan_mhs, $nomorDosen, $conn);
+        if (empty($catatan)) {
+            $_SESSION['error'] = "Silakan isi alasan penolakan.";
+        } else {
+            // BARU: Tambahkan kolom alasan_tolak ke query UPDATE
+            $sql_update = "UPDATE Sidang SET status_ajuan = 'Rejected', alasan_tolak = ? WHERE id_sidang = ?";
+            
+            // BARU: Tambahkan $catatan ke parameter query
+            $params_update = [$catatan, $id_sidang];
+            $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
+
+            if ($stmt_update) {
+                $_SESSION['success'] = "Sidang berhasil ditolak";
+                
+                // Kirim notifikasi yang lebih informatif ke mahasiswa
+                $judul_sidang = $data_sidang['judul'] ?? '';
+                $nomor_kelompok = $data_sidang['nomor_kelompok'] ?? '';
+                
+                // BARU: Sertakan alasan penolakan di notifikasi
+                $pesan_mhs = "Pengajuan sidang kelompok $nomor_kelompok dengan judul '$judul_sidang' DITOLAK. Alasan: \"$catatan\". Silakan perbaiki dan ajukan kembali.";
+                
+                foreach ($nims_mahasiswa as $nim_mhs) {
+                    kirimNotifikasi($nim_mhs, $pesan_mhs, $nomorDosen, $conn);
+                }
+                header("Location: dPengajuan.php"); 
+                exit();
+            } else {
+                 $_SESSION['error'] = "Gagal memperbarui database.";
             }
-            header("Location: dPengajuan.php"); exit();
         }
     }
 }

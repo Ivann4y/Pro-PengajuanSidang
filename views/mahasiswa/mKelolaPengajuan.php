@@ -31,7 +31,7 @@ $sql_data = "
     SELECT TOP 1
         k_base.nomor_kelompok, k_base.tahun_ajaran, k_base.jenis_sidang,
         m.nama_matkul, k_base.id_matkul,
-        s.id_sidang, s.judul, s.status_ajuan, s.dok_laporan
+        s.id_sidang, s.judul, s.status_ajuan, s.dok_laporan, s.alasan_tolak -- BARU: Tambahkan kolom ini
     FROM (
         SELECT TOP 1 * FROM Kelompok
         WHERE nomor_kelompok = ? AND tahun_ajaran = ? AND jenis_sidang = ? AND id_matkul = ?
@@ -294,9 +294,16 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
                                     <h5 class="mb-0">Detail Pengajuan</h5>
                                 </div>
                                 <div class="card-body d-flex flex-column">
-                                    <?php if ($status_ajuan === 'Rejected'): ?>
-                                        <div class="alert alert-warning">
-                                            <i class="fas fa-info-circle me-2"></i><strong>Pengajuan Ditolak.</strong> Silakan perbaiki detail di bawah dan submit ulang.
+                                     <?php if ($status_ajuan === 'Rejected'): ?>
+                                        <div class="alert alert-danger">
+                                            <h6 class="alert-heading fw-bold"><i class="fas fa-times-circle me-2"></i>Pengajuan Ditolak</h6>
+                                            
+                                            <?php if (!empty($data['alasan_tolak'])): ?>
+                                                <p class="mb-1"><strong>Alasan dari Dosen:</strong></p>
+                                                <p class="fst-italic" style="background-color: #f8d7da; border-left: 4px solid #721c24; padding: 10px; border-radius: 4px;"><?= htmlspecialchars($data['alasan_tolak']) ?></p>
+                                            <?php endif; ?>
+                                            <hr>
+                                            <p class="mb-0">Silakan perbaiki detail pengajuan di bawah ini dan lakukan submit ulang.</p>
                                         </div>
                                     <?php endif; ?>
 
