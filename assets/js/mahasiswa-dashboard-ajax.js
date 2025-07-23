@@ -20,11 +20,11 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       // Load sidang status
       const sidangResponse = await fetch(
-        "../../control/mahasiswa/mBeranda_queries.php?action=sidang_status"
+        "../../control/mahasiswa/mBeranda_queries.php?action=sidang_berlangsung"
       );
       const sidangData = await sidangResponse.json();
-      if (sidangData.sidang_berlangsung !== undefined) {
-        dashboardData.sidang_status = sidangData.sidang_berlangsung;
+      if (sidangData.total !== undefined) {
+        dashboardData.sidang_status = sidangData.total;
       }
 
       // Load penilaian status
@@ -170,11 +170,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    function renderSidangMendatang(data) {
+        function renderSidangMendatang(data) {
       const sidangContainer = document.querySelector(".sidang-mendatang-card");
-      sidangContainer
-        .querySelectorAll(".item, .text-muted")
-        .forEach((e) => e.remove());
+      // Clear previous items including forms
+      sidangContainer.querySelectorAll(".item, .text-muted, form").forEach((e) => e.remove());
+
       if (!data.length) {
         const p = document.createElement("p");
         p.className = "text-center text-muted mt-3";
@@ -182,26 +182,52 @@ document.addEventListener("DOMContentLoaded", function () {
         sidangContainer.appendChild(p);
         return;
       }
+
       data.forEach((item) => {
         const tgl = new Date(item.tanggal_sidang);
         const day = String(tgl.getDate()).padStart(2, "0");
         const month = tgl.toLocaleString("default", { month: "short" });
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-                    <div class="date-bubble">
-                        <span class="day">${day}</span>
-                        <span class="month">${month}</span>
-                    </div>
-                    <span class="info">${item.judul}</span>
-                    <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                `;
-        const a = document.createElement("a");
-        a.href = `mdetailsidangta.php?id_sidang=${item.id_sidang}`;
-        a.style.textDecoration = "none";
-        a.style.color = "inherit";
-        a.appendChild(div);
-        sidangContainer.appendChild(a);
+
+        // Create a form for each item
+        const form = document.createElement("form");
+        form.action = "mdetailSidang.php"; // Correct destination
+        form.method = "POST";             // Use POST method
+        form.style.margin = "0";
+
+        // Create a hidden input to hold the sidang ID
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "id_sidang";
+        hiddenInput.value = item.id_sidang;
+
+        // Create a submit button that looks like your original item
+        const submitButton = document.createElement("button");
+        submitButton.type = "submit";
+        submitButton.className = "item"; // Use the 'item' class for styling
+        // Remove default button styles to make it look like a div
+        submitButton.style.border = "none";
+        submitButton.style.background = "none";
+        submitButton.style.padding = "0";
+        submitButton.style.textAlign = "left";
+        submitButton.style.width = "100%";
+        submitButton.style.cursor = "pointer";
+
+        // Set the inner HTML of the button
+        submitButton.innerHTML = `
+            <div class="date-bubble">
+                <span class="day">${day}</span>
+                <span class="month">${month}</span>
+            </div>
+            <span class="info">${item.judul}</span>
+            <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+        `;
+        
+        // Append hidden input and the submit button to the form
+        form.appendChild(hiddenInput);
+        form.appendChild(submitButton);
+
+        // Append the complete form to the container
+        sidangContainer.appendChild(form);
       });
     }
 
