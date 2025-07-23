@@ -23,7 +23,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit(); 
 }
 
-require "../../koneksi/koneksiAndrew.php";
+require "../../koneksi/koneksiJoin.php";
 
 $admin_username = $_SESSION['user_data']['username'];
 

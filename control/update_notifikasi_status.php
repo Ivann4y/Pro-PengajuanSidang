@@ -19,7 +19,7 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     exit();
 }
 
-require_once '../koneksi/koneksiAndrew.php';
+require_once '../koneksi/koneksiJoin.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 

@@ -92,6 +92,10 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
         <div class="main-header">
             <div class="header-left-panel">
                 <h1 class="main-title">Penjadwalan Sidang</h1>
+                 <h2 style="font-size:1.5rem; font-weight:500;">
+                        <?php echo isset($_SESSION['user_data']['nama']) ? htmlspecialchars($_SESSION['user_data']['nama']) : 'Admin'; ?> (Admin)
+                    </h2>
+                    <br>
                 <div class="filter-container">
                     <span class="filter-label fw-semibold">Filter:</span>
                     <div class="dropdown me-2">
@@ -141,6 +145,8 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                     </a>
                     <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="fa-solid fa-user"></i></a></div>
                 </div>
+                <br>
+                <br>
                 <div class="input-group search-input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                     <input type="text" class="form-control" id="searchInput" placeholder="Cari" aria-label="Cari">
@@ -195,7 +201,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
 
                             // Menyiapkan atribut data untuk baris tabel
                             $row_props_js = "data-id='".htmlspecialchars($entry['id_sidang'])."'"
-                                . " data-kelompok='".htmlspecialchars($entry['id_kelompok'])."'"
+                                . " data-kelompok='".htmlspecialchars($entry['nomor_kelompok'])."'"
                                 . " data-judul='".htmlspecialchars($entry['judulSidang'])."'"
                                 . " data-matkul='".htmlspecialchars($entry['mataKuliah'] ?? 'N/A')."'"
                                 // UBAH ATRIBUT INI AGAR MENGIRIM JSON
@@ -207,7 +213,7 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                         <tr class="isiTabel" <?= $row_props_js ?>>
                             <!-- ... sisa <td> tetap sama ... -->
                             <td data-label="Nomor"><?= $nomor_awal++ ?></td>
-                            <td data-label="Kelompok"><?= htmlspecialchars($entry['id_kelompok']) ?></td>
+                            <td data-label="Kelompok"><?= htmlspecialchars($entry['nomor_kelompok']) ?></td>
                             <td data-label="Judul"><?= $judul_tampil ?></td>
                             <td data-label="Mata Kuliah"><?= $matkul_tampil ?></td>
                             <td data-label="Pembimbing/Pengampu"><?= $dosen_tampil ?></td>

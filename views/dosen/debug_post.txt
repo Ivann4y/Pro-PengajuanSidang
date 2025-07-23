@@ -1,5 +1,0 @@
-Array
-(
-    [approve] => true
-    [nim] => 0920240058
-)

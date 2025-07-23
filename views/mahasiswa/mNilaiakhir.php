@@ -32,7 +32,7 @@ require_once '../../control/mahasiswa/mNilaiAkhir_queries.php';
     
     <link rel="stylesheet" href="../../assets/css/mNilaiakhir.css">
 
-    <link rel="stylesheet" href="../../css/button-styles.css" />
+    <link rel="stylesheet" href="../../assets/css/button-styles.css" />
 
     <link rel="stylesheet" href="../../extra/style.css" />
     <link rel="stylesheet" href="../../assets/css/breadcrumb.css" />

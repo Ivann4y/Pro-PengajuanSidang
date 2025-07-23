@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once "../../koneksi/koneksiAndrew.php"; 
+require_once "../../koneksi/koneksiJoin.php"; 
 
 if ($conn === false) {
     die("Koneksi ke database gagal: " . print_r(sqlsrv_errors(), true));
