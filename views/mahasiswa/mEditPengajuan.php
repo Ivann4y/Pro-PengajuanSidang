@@ -83,6 +83,12 @@ if (empty($nomor_kelompok) || empty($tahun_ajaran) || empty($jenis_sidang) || em
         
 
         <main class="NavSide__main-content" id="mEditPengajuan">
+            <?php 
+            require_once '../../control/function.php'; 
+            echo generateBreadcrumb(getPageTitle('mEditPengajuan'), 'mahasiswa', [
+                ['url' => 'mPengajuan.php', 'text' => 'Pengajuan']
+            ]); 
+            ?>
             <div class="container-fluid">
                 <div class="row">
                     <div class="dashboard-header">

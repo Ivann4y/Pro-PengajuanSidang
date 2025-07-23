@@ -101,15 +101,10 @@ if ($user['jenis_kelamin'] === 'L') {
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
-            <?php 
-            // Include the function file
-            require_once '../../control/function.php'; 
-            // Generate breadcrumb
-            echo generateBreadcrumb(getPageTitle('mProfil'), 'mahasiswa'); 
-            ?>
+            <!-- No breadcrumb for Profil (first layer) -->
             <div class="container">
                 <div class="row">
-                    <h1>Profile</h1>
+                    <h1>Profil</h1>
                 </div>
                 <div class="row">
                     <div class="col-md-6 profil-img">

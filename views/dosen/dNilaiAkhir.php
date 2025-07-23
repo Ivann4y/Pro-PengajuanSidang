@@ -88,7 +88,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
       <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
       </div>
 
-      <main class="NavSide__main-content">
+      <main class="NavSide__main-content" id="dNilaiAkhir">
+            <?php 
+            require_once '../../control/function.php'; 
+            echo generateBreadcrumb(getPageTitle('dNilaiAkhir'), 'dosen', [
+                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
+            ]); 
+            ?>
         <div class="col-12">
           <h2 class="text-heading text-black" style="font-weight: 700;">Nilai Akhir - <?= htmlspecialchars($judul) ?></h2>
         </div>
@@ -178,13 +184,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
              <div class="value-row text-secondary fw-bold">
                  <?php echo htmlspecialchars($dosen_terkait_sidang ?? ''); ?>
              </div>
-             <!-- Debug Info -->
-             <!-- <div style="font-size: 12px; color: #666; margin-top: 5px;">
-                 Debug: jenis_sidang=<?php echo $jenis_sidang; ?>, 
-                 id_kelompok=<?php echo $id_kelompok; ?>, 
-                 id_matkul=<?php echo $id_matkul; ?>, 
-                 dosen_terkait_sidang=<?php echo $dosen_terkait_sidang; ?>
-             </div> -->
            </div>
          </div>
        </div>
@@ -410,7 +409,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
      * Kemudian menampilkannya di kolom "Nilai Mahasiswa".
      */
     function calculateAndDisplayAverage() {
-        // Ambil nilai dari input detail penilaian (prioritaskan input desktop)
+        // Ambil nilai dari input detail penilaian (prioritaskan input desktop)>
         const nilaiLaporan = parseFloat(document.getElementById('nilaiLaporanInput').value);
         const materiPresentasi = parseFloat(document.getElementById('materiPresentasiInput').value);
         const tanyaJawab = parseFloat(document.getElementById('tanyaJawabInput').value);

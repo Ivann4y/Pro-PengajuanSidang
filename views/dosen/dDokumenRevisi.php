@@ -4,14 +4,8 @@ require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
 require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 
 
-// Ambil ID sidang dari GET (sekali) lalu simpan ke session
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $_SESSION['id_sidang_aktif'] = (int)$_GET['id'];
-    // Hapus nim lama jika id sidang baru dipilih
-    unset($_SESSION['nim_aktif']);
-    header("Location: dDokumenRevisi.php");
-    exit;
-}
+// Tetapkan variabel $id_sidang dari session agar bisa digunakan di seluruh skrip
+$id_sidang = $_SESSION['id_sidang_aktif'];
 
 // Ambil ID sidang dari GET (sekali) lalu simpan ke session
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
@@ -36,26 +30,11 @@ if (!isset($_SESSION['id_sidang_aktif'])) {
     // Jika tidak ada, hentikan eksekusi atau redirect ke halaman daftar
     die("Sesi sidang tidak ditemukan. Silakan kembali ke daftar sidang dan pilih kembali.");
 }
-// Tetapkan variabel $id_sidang dari session agar bisa digunakan di seluruh skrip
-$id_sidang = $_SESSION['id_sidang_aktif'];
 // ===================================================================================
-
-
-// ===================================================================================
-// SIMULASI DOSEN LOGIN (GANTI DENGAN SESSION ASLI NANTI)
-// ===================================================================================
-
 if (!isset($_SESSION['user_data']['nomor_dosen'])) {
     die("Akses ditolak.");
 }
 $nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
-
-// ===================================================================================
-// BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
-// ===================================================================================
-// ===================================================================================
-// BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
-// ===================================================================================
 // ===================================================================================
 // BAGIAN 2: PROSES PENYIMPANAN DATA (SAAT FORM DI-SUBMIT)
 // ===================================================================================
@@ -64,20 +43,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $nim_post = $_POST['nim'] ?? '';
     $approve_action = isset($_POST['approve']) ? true : false;
+    $reject_action = isset($_POST['reject']) ? true : false;
+    $catatan_sidang = $_POST['catatan_sidang'] ?? null;
+
 
     // Ambil dokumen revisi
-    $sql_revisi = "SELECT ds.dok_revisi, ds.nama_file 
-               FROM Detail_Sidang ds
-               JOIN Kelompok k ON ds.id_sidang = ?
-               JOIN Mahasiswa m ON k.nim = m.nim
-               WHERE ds.id_sidang = ? AND m.nim = ?";
-    $params_revisi = [$id_sidang, $id_sidang, $nim_post];
-    $stmt_revisi = sqlsrv_query($conn, $sql_revisi, $params_revisi);
+    $sql_revisi = "SELECT dok_revisi, nama_file 
+               FROM Detail_Sidang 
+               WHERE id_sidang = ? AND nomor_dosen = ?";
+    $params_revisi = [$id_sidang, $nomor_dosen_login];
 
+    $stmt_revisi = sqlsrv_query($conn, $sql_revisi, $params_revisi);
     $data_revisi = sqlsrv_fetch_array($stmt_revisi, SQLSRV_FETCH_ASSOC);
     $dokumen_revisi = $data_revisi['dok_revisi'] ?? null;
     $nama_file = $data_revisi['nama_file'] ?? basename($dokumen_revisi);
 
+
+    if ($reject_action && $catatan_sidang) {
+        $sql_update_reject = "UPDATE Detail_Sidang 
+    SET status_revisi = 'Ditolak', catatan_sidang = ? 
+    WHERE id_sidang = ? AND nomor_dosen = ? AND EXISTS (
+        SELECT 1 FROM Kelompok k WHERE k.nim = ? AND k.id_kelompok = (
+            SELECT id_kelompok FROM Sidang WHERE id_sidang = ?
+        )
+    )";
+        $params_reject = [$catatan_sidang, $id_sidang, $nomor_dosen_login, $nim_post, $id_sidang];
+
+        $stmt_reject = sqlsrv_query($conn, $sql_update_reject, $params_reject);
+
+        if ($stmt_reject) {
+            // Notifikasi
+            $nama_dosen = $_SESSION['user_data']['nama_dosen'] ?? 'Dosen';
+            $judul_sidang = $judul ?? '';
+            $pesan = "Dokumen revisi untuk judul '$judul_sidang' ditolak oleh $nama_dosen. Silakan perbaiki dan upload ulang.";
+            kirimNotifikasi($nim_post, $pesan, $conn, $nomor_dosen_login);
+
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Dokumen revisi ditolak.',
+                'redirectUrl' => 'dDaftarSidang.php'
+            ]);
+            exit;
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Gagal menyimpan alasan penolakan.'
+            ]);
+        }
+        exit;
+    }
 
 
     if ($approve_action && $dokumen_revisi) {
@@ -95,12 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Cek apakah SEMUA dosen sudah menyetujui
             $sql_cek_all = "SELECT COUNT(*) AS total, SUM(CASE WHEN status_revisi = 'Disetujui' THEN 1 ELSE 0 END) AS disetujui 
                             FROM Detail_Sidang WHERE id_sidang = ?";
-            $stmt_cek_all = sqlsrv_query($conn, [$id_sidang]);
+            $stmt_cek_all = sqlsrv_query($conn, $sql_cek_all, [$id_sidang]);
             $result_all = sqlsrv_fetch_array($stmt_cek_all, SQLSRV_FETCH_ASSOC);
 
             if ($result_all && $result_all['total'] == $result_all['disetujui']) {
                 $sql_set_sidang = "UPDATE Sidang SET status_revisi = 1 WHERE id_sidang = ?";
-                sqlsrv_query($conn, [$id_sidang]);
+                sqlsrv_query($conn, $sql_set_sidang, [$id_sidang]);
             }
 
             // Kirim notifikasi ke mahasiswa bahwa dokumen revisi disetujui
@@ -190,12 +204,6 @@ if ($data_sidang = sqlsrv_fetch_array($result_sidang, SQLSRV_FETCH_ASSOC)) {
     // ==========================================================
     // ===== AKHIR DARI [FIX] =====
     // ==========================================================
-
-    // ===============================================================================
-    // ===== BAGIAN YANG DIUBAH (LOGIKA PENGAMBILAN MAHASISWA) =====
-    // ===============================================================================
-    // Logika ini disamakan dengan file dNilaiAkhir.php, yaitu mengambil mahasiswa
-    // dari tabel 'Kelompok' berdasarkan 'nomor_kelompok'.
     if (isset($nomor_kelompok)) {
         $sql_mhs = "SELECT DISTINCT k.nim, m.nama_mhs
                     FROM Kelompok k
@@ -354,11 +362,6 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
         die("Parameter download tidak lengkap.");
     }
 }
-
-
-
-
-
 ?>
 
 
@@ -368,7 +371,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dokumen Revisi - Responsive</title>
+    <title>Dokumen Revisi</title>
 
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -379,6 +382,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for pop-up notifications -->
+        <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 
 </head>
 
@@ -423,7 +427,13 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
-            <main class="NavSide__main-content">
+            <main class="NavSide__main-content" id="dDokumenRevisi">
+            <?php 
+            require_once '../../control/function.php'; 
+            echo generateBreadcrumb(getPageTitle('dDokumenRevisi'), 'dosen', [
+                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
+            ]); 
+            ?>
                 <h2 class="text-heading text-black" style="font-weight: 700;">Dokumen Revisi - <?= htmlspecialchars($judul) ?></h2>
                 <form id="dokumenRevisiForm" method="POST" action="dDokumenRevisi.php">
                     <input type="hidden" name="nim" value="<?= htmlspecialchars($current_nim) ?>">
@@ -496,6 +506,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                         <?php if (!empty($dokumen_revisi)): ?>
                             <a href="/SIDANG/Pro-PengajuanSidang/<?= htmlspecialchars($dokumen_revisi) ?>"
                                 class="file-button"
+                                id="linkDokumenRevisi"
                                 download="<?= htmlspecialchars($nama_file_revisi) ?>">
                                 <i class="fa-solid fa-file-zipper"></i>
                                 <?= htmlspecialchars($nama_file_revisi) ?>
@@ -512,8 +523,8 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 
                     <div class="button-group-bottom" id="grup-aksi-dokumen">
                         <div class="button-group">
-                            <button class="btn btn-tolak" onclick="showConfirmationModal('Ditolak')">Tolak</button>
-                            <button class="btn btn-setujui" onclick="showConfirmationModal('Disetujui')">Setujui</button>
+                            <button type="button" class="btn btn-tolak" onclick="handleAction('Ditolak')">Tolak</button>
+                            <button type="button" class="btn btn-setujui" onclick="handleAction('Disetujui')">Setujui</button>
                         </div>
                     </div>
                 </form>
@@ -552,73 +563,45 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
         }
 
         // --- Modal Logic ---
-        function showConfirmationModal(action) {
-            const confirmationModalElement = document.getElementById('confirmationModal');
-            if (!confirmationModalElement) {
-                console.error('Modal HTML dengan id "confirmationModal" tidak ditemukan!');
+        function handleAction(action) {
+            const dokumenAda = document.getElementById('linkDokumenRevisi') !== null;
+
+            // Jika tidak ada dokumen, tampilkan error
+            if (!dokumenAda) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Dokumen revisi belum diunggah oleh mahasiswa.',
+                });
                 return;
             }
 
-            const confirmationModal = new bootstrap.Modal(confirmationModalElement);
-            const modalText = document.getElementById('confirmationModalText');
-            const confirmButton = document.getElementById('btnConfirmAction');
-
-            let actionText = action === 'Disetujui' ? 'menyetujui' : 'menolak';
-            modalText.innerText = `Apakah Anda yakin ingin ${actionText} dokumen revisi ini?`;
-
-            // Penting: Hapus event listener lama untuk menghindari eksekusi ganda
-            const newConfirmButton = confirmButton.cloneNode(true);
-            confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
-
-            newConfirmButton.addEventListener('click', async function() { // Gunakan async
-                confirmationModal.hide();
-
-                // Beri jeda sedikit agar modal sempat tertutup
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                if (action === 'Ditolak') {
-                    const {
-                        value: catatan,
-                        isConfirmed
-                    } = await Swal.fire({
-                        title: 'Alasan Penolakan',
-                        input: 'textarea',
-                        inputLabel: 'Catatan:',
-                        inputPlaceholder: 'Masukan catatan penolakan di sini...',
-                        showCancelButton: true,
-                        confirmButtonText: 'Kirim',
-                        cancelButtonText: 'Batal',
-                        reverseButtons: true,
-                        customClass: {
-                            confirmButton: 'btn btn-setujui',
-                            cancelButton: 'btn btn-tolak'
-                        },
-                        inputValidator: (value) => {
-                            if (!value || value.trim() === '') {
-                                return 'Alasan penolakan tidak boleh kosong!';
-                            }
+            // Untuk "Ditolak", langsung munculkan input alasan
+            if (action === 'Ditolak') {
+                Swal.fire({
+                    title: 'Alasan Penolakan',
+                    input: 'textarea',
+                    inputLabel: 'Catatan:',
+                    inputPlaceholder: 'Masukkan catatan penolakan di sini...',
+                    showCancelButton: true,
+                    confirmButtonText: 'Kirim',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'btn btn-setujui',
+                        cancelButton: 'btn btn-tolak'
+                    },
+                    inputValidator: (value) => {
+                        if (!value || value.trim() === '') {
+                            return 'Alasan penolakan tidak boleh kosong!';
                         }
-                    });
-
-                    if (isConfirmed && catatan) {
-                        // Di sini Anda bisa menambahkan logika fetch untuk mengirim data penolakan ke server
-                        console.log('Catatan Penolakan:', catatan); // Untuk saat ini kita log saja
-
-                        await Swal.fire({
-                            title: 'Berhasil!',
-                            text: 'Dokumen revisi telah ditolak dan catatan telah disimpan.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                        // Redirect ke daftar sidang setelah menolak
-                        window.location.href = 'dDaftarSidang.php';
                     }
-
-                } else { // Jika aksi adalah 'Disetujui'
-                    try {
+                }).then(async (result) => {
+                    if (result.isConfirmed && result.value) {
                         const postData = new URLSearchParams({
-                            approve: true,
-                            id_sidang: <?= $id_sidang ?>
+                            reject: true,
+                            catatan_sidang: result.value,
+                            nim: '<?= $current_nim ?>'
                         });
 
                         const response = await fetch(window.location.href, {
@@ -629,45 +612,83 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
                             body: postData
                         });
 
-                        // Periksa apakah respons adalah JSON yang valid
-                        const contentType = response.headers.get("content-type");
-                        if (!response.ok || !contentType || !contentType.includes("application/json")) {
-                            const errorText = await response.text();
-                            throw new Error(`Server memberikan respon yang tidak valid. Isi respon: \n${errorText}`);
-                        }
-
-                        const result = await response.json();
-
-                        if (result.status === 'success') {
-                            await Swal.fire({
-                                title: 'Berhasil!',
-                                text: result.message,
-                                icon: 'success',
-                                confirmButtonText: 'OK',
-                                confirmButtonColor: '#4B68FB'
+                        const resultData = await response.json();
+                        if (resultData.status === 'success') {
+                            Swal.fire('Ditolak', resultData.message, 'success').then(() => {
+                                window.location.href = resultData.redirectUrl;
                             });
-                            // Redirect ke URL yang diberikan oleh server
-                            window.location.href = result.redirectUrl;
                         } else {
-                            // Tampilkan pesan error spesifik dari server
-                            Swal.fire({
-                                title: 'Gagal!',
-                                text: result.message,
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
+                            Swal.fire('Gagal', resultData.message, 'error');
                         }
-                    } catch (error) {
-                        console.error("Terjadi error saat proses persetujuan:", error);
-                        Swal.fire({
-                            title: 'Error Teknis!',
-                            text: 'Tidak dapat terhubung ke server atau terjadi kesalahan. Silakan cek konsol untuk detail.',
-                            icon: 'error'
-                        });
                     }
+                });
+
+            } else if (action === 'Disetujui') {
+                showConfirmationModal('Disetujui');
+            }
+        }
+
+        function showConfirmationModal(action) {
+            const confirmationModalElement = document.getElementById('confirmationModal');
+            const modalText = document.getElementById('confirmationModalText');
+            const modalInstance = new bootstrap.Modal(confirmationModalElement);
+
+            modalText.innerText = "Apakah Anda yakin ingin menyetujui dokumen revisi ini?";
+            modalInstance.show();
+
+            // Reset tombol biar tidak double listener
+            const oldBtn = document.getElementById('btnConfirmAction');
+            const newBtn = oldBtn.cloneNode(true);
+            oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+            // Tambahkan listener baru
+            newBtn.addEventListener('click', async function() {
+                modalInstance.hide();
+
+                const postData = new URLSearchParams({
+                    approve: true,
+                    nim: '<?= $current_nim ?>'
+                });
+
+                try {
+                    const response = await fetch(window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: postData
+                    });
+
+                    const text = await response.text();
+                    let result;
+                    try {
+                        result = JSON.parse(text);
+                    } catch (e) {
+                        console.error('Gagal parsing JSON:', text);
+                        Swal.fire('Kesalahan', 'Respon dari server tidak valid.', 'error');
+                        return;
+                    }
+
+                    if (result.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: result.message
+                        }).then(() => {
+                            window.location.href = result.redirectUrl;
+                        });
+                    } else {
+                        Swal.fire('Gagal', result.message, 'error');
+                    }
+
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    Swal.fire('Kesalahan', 'Gagal mengirim data ke server.', 'error');
                 }
             });
-            confirmationModal.show();
+
+            modalText.innerText = "Apakah Anda yakin ingin menyetujui dokumen revisi ini?";
+            modalInstance.show();
         }
     </script>
 </body>

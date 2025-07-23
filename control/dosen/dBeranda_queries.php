@@ -25,7 +25,7 @@ switch($action) {
         $sqlPengajuan = "SELECT COUNT(*) AS total 
                             FROM Sidang s
                             JOIN Bimbingan b ON s.id_kelompok = b.id_kelompok
-                            WHERE s.status_ajuan = 'Draft' AND b.nomor_dosen = ?";
+                            WHERE s.status_ajuan = 'Pending' AND b.nomor_dosen = ?";
         $stmtPengajuan = sqlsrv_query($conn, $sqlPengajuan, [$nomor_dosen]);
         if ($stmtPengajuan === false) {
             echo json_encode(['error' => sqlsrv_errors()]);

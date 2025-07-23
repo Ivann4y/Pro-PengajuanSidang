@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
             sidebar.classList.toggle("NavSide__sidebar--active-mobile");
         });
     }
+   
 
     // Fungsi untuk memindahkan ikon di layar mobile/desktop
     function handleIconPlacement() {
@@ -96,6 +97,36 @@ document.addEventListener("DOMContentLoaded", function () {
       navSide.classList.toggle("NavSide--toggled");
     });
   }
+    const modalElement = document.getElementById("penjadwalanSidangModal");
+    if (modalElement) {
+        jadwalModalInstance = new bootstrap.Modal(modalElement);
+    }
+
+    // 2. Tambahkan event listener untuk submit form modal.
+    const form = document.getElementById("formDalamModal");
+    if (form) {
+        form.addEventListener("submit", handleFormSubmit);
+  }
+   const getTodayDateString = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        // `slice(-2)` memastikan format dua digit (misal: 05, 09, 12)
+        const month = ('0' + (today.getMonth() + 1)).slice(-2); 
+        const day = ('0' + today.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
+    };
+
+    // Ambil tanggal hari ini sekali saja
+    const todayString = getTodayDateString();
+
+    // Temukan semua input tanggal di halaman (untuk modal TA dan Semester)
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    
+    // Loop setiap input tanggal dan atur atribut 'min' nya
+    dateInputs.forEach(input => {
+        input.setAttribute('min', todayString);
+    });
+
 });
 
 // ==========================================================================
@@ -172,6 +203,27 @@ function handleFormSubmit(event) {
   const errorBox = document.getElementById("form-error");
   errorBox.textContent = "";
 
+   const fieldsToValidate = [
+    { id: 'modal_ruangan', message: 'Ruangan harus diisi.' },
+    { id: 'modal_tanggal', message: 'Tanggal harus dipilih.' },
+    { id: 'modal_jam_awal', message: 'Jam awal harus diisi.' },
+    { id: 'modal_jam_akhir', message: 'Jam akhir harus diisi.' },
+  ];
+
+  for (const field of fieldsToValidate) {
+      const inputElement = document.getElementById(field.id);
+      // Periksa apakah elemen ada dan nilainya kosong
+      if (inputElement && inputElement.value.trim() === '') {
+          errorBox.textContent = field.message;
+          return; // Menghentikan eksekusi fungsi jika ada field yang kosong
+      }
+  }
+  const dateTimeValidation = validateDateTime();
+    if (!dateTimeValidation.isValid) {
+        errorBox.textContent = dateTimeValidation.message;
+        return;
+    }
+
   // Validasi total bobot sebelum mengirim
   let totalBobot = 0;
   if (isSidangTA) {
@@ -228,6 +280,34 @@ function handleFormSubmit(event) {
       submitButton.textContent = "Ubah Penjadwalan";
     });
 }
+function validateDateTime() {
+    const tanggalInput = document.getElementById('modal_tanggal');
+    const jamAwalInput = document.getElementById('modal_jam_awal');
+    const jamAkhirInput = document.getElementById('modal_jam_akhir');
+
+    // Karena validasi field kosong sudah dilakukan di handleFormSubmit, 
+    // kita bisa asumsikan di sini nilainya ada.
+    
+    // 1. Gabungkan tanggal dan jam mulai menjadi satu objek Date yang utuh
+    const selectedDateTime = new Date(`${tanggalInput.value}T${jamAwalInput.value}`);
+    const now = new Date(); // Objek Date untuk waktu saat ini
+
+    // 2. Aturan Utama: Waktu yang dipilih tidak boleh di masa lalu
+    if (selectedDateTime < now) {
+        return { isValid: false, message: 'Waktu sidang tidak boleh di masa lalu.' };
+    }
+    
+    // 3. Aturan Tambahan: Jam akhir harus setelah jam mulai
+    if (jamAkhirInput.value <= jamAwalInput.value) {
+        return { isValid: false, message: 'Jam akhir harus setelah jam awal.' };
+    }
+
+    return { isValid: true, message: '' };
+}
+
+/**
+ * Menjalankan validasi tanggal & jam secara real-time.
+ */
 
 // ==========================================================================
 // FUNGSI-FUNGSI PEMBANTU (HELPER)
@@ -341,4 +421,31 @@ function validateTotalWeightRealtime() {
   } else {
     messageElement.textContent = "";
   }
+}
+
+ function validateDateTime() {
+    const tanggalInput = document.getElementById('modal_tanggal');
+    const jamAwalInput = document.getElementById('modal_jam_awal');
+    const jamAkhirInput = document.getElementById('modal_jam_akhir');
+
+    // Jangan validasi jika field belum terisi
+    if (!tanggalInput.value || !jamAwalInput.value) {
+        return { isValid: true, message: '' };
+    }
+
+    // 1. Gabungkan tanggal dan jam mulai menjadi satu objek Date yang utuh
+    const selectedDateTime = new Date(`${tanggalInput.value}T${jamAwalInput.value}`);
+    const now = new Date(); // Objek Date untuk waktu saat ini
+
+    // 2. Aturan Utama: Waktu yang dipilih tidak boleh di masa lalu
+    if (selectedDateTime < now) {
+        return { isValid: false, message: 'Waktu sidang tidak boleh di masa lalu.' };
+    }
+    
+    // 3. Aturan Tambahan: Jam akhir harus setelah jam mulai
+    if (jamAkhirInput.value && (jamAkhirInput.value <= jamAwalInput.value)) {
+        return { isValid: false, message: 'Jam akhir harus setelah jam awal.' };
+    }
+
+    return { isValid: true, message: '' };
 }
