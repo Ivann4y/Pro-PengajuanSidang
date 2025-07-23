@@ -256,7 +256,13 @@ if ($stmt_utama && sqlsrv_execute($stmt_utama)) {
             <div class="NavSide__topbar">
                 <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
             </div>
-            <main class="NavSide__main-content">
+            <main class="NavSide__main-content" id="mPerbaikan">
+                <?php 
+                require_once '../../control/function.php'; 
+                echo generateBreadcrumb(getPageTitle('mPerbaikan'), 'mahasiswa', [
+                    ['url' => 'mSidang.php', 'text' => 'Sidang']
+                ]); 
+                ?>
                 <div
                     class="page-content-header-wrapper d-flex flex-column flex-md-row justify-content-md-between align-items-md-start">
                     <h2>Detail Sidang -

@@ -41,6 +41,7 @@ if (isset($_SESSION['id_sidang_aktif']) && is_numeric($_SESSION['id_sidang_aktif
     exit();
 }
 
+
 // 3. PENGAMBILAN DETAIL SIDANG (ID KELOMPOK, JENIS, ID MATKUL)
 if ($id_sidang > 0) {
   $sql_detail = "SELECT 

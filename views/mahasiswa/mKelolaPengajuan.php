@@ -243,6 +243,12 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
 
                     <!-- 3. KONTEN UTAMA (SEKARANG DI DALAM #NavSide) -->
             <main class="NavSide__main-content" id="mKelolaPengajuan">
+                <?php 
+                require_once '../../control/function.php'; 
+                echo generateBreadcrumb(getPageTitle('mKelolaPengajuan'), 'mahasiswa', [
+                    ['url' => 'mPengajuan.php', 'text' => 'Pengajuan']
+                ]); 
+                ?>
                 <div class="container-fluid">
                     <div class="dashboard-header">
                         <h2 class="text-heading" style="color:black;"><?= $page_title ?></h2>

@@ -15,6 +15,7 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
     <link rel="stylesheet" href="../../assets/css/msidang.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <style>
         .notif-badge {
             position: absolute;
@@ -77,6 +78,7 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
+            <!-- No breadcrumb for Sidang (first layer) -->
             <div class="container-fluid"> 
                 <div class="row">
                     <div class="dashboard-header">
