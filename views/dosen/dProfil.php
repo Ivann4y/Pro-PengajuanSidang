@@ -57,6 +57,7 @@ if ($user['jenis_kelamin'] === 'L') {
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/profil.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 
 <body>
@@ -100,9 +101,10 @@ if ($user['jenis_kelamin'] === 'L') {
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
+            <!-- No breadcrumb for Profil (first layer) -->
             <div class="container">
                 <div class="row">
-                    <h1>Profile</h1>
+                    <h1>Profil</h1>
                 </div>
                 <div class="row">
                     <div class="col-md-6 profil-img">
