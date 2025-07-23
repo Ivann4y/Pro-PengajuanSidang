@@ -15,6 +15,7 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
     <link rel="stylesheet" href="../../assets/css/msidang.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <style>
         .notif-badge {
             position: absolute;
@@ -77,6 +78,13 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
+        <?php 
+                // Include the function file
+                require_once '../../control/function.php'; 
+                // Generate breadcrumb
+                echo generateBreadcrumb(getPageTitle('mSidang'), 'mahasiswa', [
+                ]); 
+                ?>
             <div class="container-fluid"> 
                 <div class="row">
                     <div class="dashboard-header">

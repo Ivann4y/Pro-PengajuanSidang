@@ -97,7 +97,7 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
             </div>
         </div>
 
-        <div class="NavSide__main-content" id="mainContent">
+        <main class="NavSide__main-content" id="mainContent">
             <div class="dashboard-header">
                 <div class="page-title">Beranda Dosen</div>
                 <div class="header-icons d-none d-md-flex">
@@ -186,7 +186,7 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

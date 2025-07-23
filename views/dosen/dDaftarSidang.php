@@ -16,6 +16,7 @@ require_once '../../control/dosen/dDaftarSidang_queries.php';
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDaftarSidang.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <style>
         .notif-badge {
             position: absolute;
@@ -63,6 +64,13 @@ require_once '../../control/dosen/dDaftarSidang_queries.php';
             </div>
         </div>
         <main class="NavSide__main-content">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('dDaftarSidang'), 'dosen', [
+            ]); 
+            ?>
             <div class="dashboard-header">
                 <h2 class="bodyHeading">Daftar Sidang</h2>
                 <div class="header-icons d-none d-md-flex">

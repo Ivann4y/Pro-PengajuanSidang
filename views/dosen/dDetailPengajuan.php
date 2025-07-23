@@ -180,6 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
   <link rel="stylesheet" href="../../assets/css/dDetailPengajuan.css">
   <!-- <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css"> -->
   <link rel="stylesheet" href="../../extra/style.css">
+  <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
   <title>Detail Pengajuan</title>
 </head>
 <body class="p-4">
@@ -218,6 +219,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             </div>
         </div>
         <main class="NavSide__main-content" id="dPengajuan">
+            <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('dDetailPengajuan'), 'dosen', [
+                ['url' => 'dPengajuan.php', 'text' => 'Daftar Sidang']
+            ]); 
+            ?>
             <h2 class="text-heading text-black" style="font-weight: 700;">Detail Pengajuan - <?= htmlspecialchars($judul) ?></h2>
             <div class="card mb-3 info-pengajuan">
                 <h5 class="fw-bold section">Informasi Pengajuan</h5>
