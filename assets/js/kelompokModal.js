@@ -60,6 +60,51 @@ document.addEventListener("DOMContentLoaded", function () {
   updateToggleButtonsVisibility();
 });
 
+// NEW FUNCTION to get and display suggested nomor kelompok
+async function fetchAndSuggestNomorKelompok() {
+    const suggestionContainer = document.getElementById('nomor-kelompok-suggestion');
+    const suggestionLink = document.getElementById('apply-suggestion-link');
+    const nomorKelompokInput = document.getElementById('nomor_kelompok');
+
+    const tahunAjaran = document.getElementById("tahun_ajaran")?.value;
+    const jenisSidang = document.getElementById("jenis_sidang")?.value;
+    let idMatkul = document.getElementById("id_matkul")?.value;
+    
+    // For TA, matkul is always 2006
+    if (jenisSidang === "Tugas Akhir") {
+        idMatkul = "2006";
+    }
+
+    // Hide suggestion if context is not complete
+    if (!tahunAjaran || !jenisSidang || !idMatkul) {
+        suggestionContainer.style.display = 'none';
+        return;
+    }
+
+    try {
+        const url = `../../control/dosen/kelompok/get_suggested_kelompok_id.php?tahun_ajaran=${tahunAjaran}&jenis_sidang=${jenisSidang}&id_matkul=${idMatkul}`;
+        const response = await fetch(url);
+        const result = await response.json();
+
+        if (result && result.suggestion) {
+            suggestionLink.textContent = result.suggestion;
+            suggestionContainer.style.display = 'block';
+
+            // Make the suggestion clickable
+            suggestionLink.onclick = (e) => {
+                e.preventDefault();
+                nomorKelompokInput.value = result.suggestion;
+                suggestionContainer.style.display = 'none'; // Hide after applying
+            };
+        } else {
+            suggestionContainer.style.display = 'none';
+        }
+    } catch (error) {
+        console.error("Error fetching suggestion:", error);
+        suggestionContainer.style.display = 'none';
+    }
+}
+
 function showMatkulField(show) {
   const matkulGroup = document.getElementById("matkul-group");
   const idMatkul = document.getElementById("id_matkul");
@@ -102,15 +147,15 @@ function handleJenisSidangChange() {
     showMatkulField(false);
     showPembimbingField(true);
     resetDosenInputs();
-    // Set id_matkul to 2006 for Tugas Akhir
     const idMatkul = document.getElementById("id_matkul");
     if (idMatkul) idMatkul.value = "2006";
+    // Call the suggestion function as the context is now complete for TA
+    fetchAndSuggestNomorKelompok();
   } else {
     showMatkulField(false);
     showPembimbingField(false);
     resetDosenInputs();
   }
-  setNextKelompokId();
 }
 
 async function fetchMahasiswaData() {
@@ -267,41 +312,6 @@ function openKelompokModal() {
       '<span style="color: #6c757d;">Pilih Program Studi terlebih dahulu</span>';
 }
 
-async function setNextKelompokId() {
-  try {
-    const tahunAjaran = document.getElementById("tahun_ajaran")?.value;
-    const jenisSidang = document.getElementById("jenis_sidang")?.value;
-    const prodi = document.getElementById("kelompok_prodi")?.value;
-    let idMatkul = document.getElementById("id_matkul")?.value;
-
-    // Validate prodi selection first
-    if (!prodi) {
-      document.getElementById("nomor_kelompok").value = "-";
-      return;
-    }
-
-    if (jenisSidang === "Tugas Akhir") idMatkul = "2006";
-
-    if (!tahunAjaran || !jenisSidang || !idMatkul) {
-      document.getElementById("nomor_kelompok").value = "-";
-      return;
-    }
-
-    const response = await fetch(
-      `../../control/dosen/kelompok/get_next_kelompok_id.php?tahun_ajaran=${tahunAjaran}&jenis_sidang=${jenisSidang}&id_matkul=${idMatkul}`
-    );
-    if (!response.ok) throw new Error("Failed to fetch next Kelompok ID");
-
-    const data = await response.json();
-    if (data.next_nomor) {
-      document.getElementById("nomor_kelompok").value = data.next_nomor;
-    }
-  } catch (e) {
-    console.error("Error setting next kelompok ID:", e);
-    document.getElementById("nomor_kelompok").value = "1";
-  }
-}
-
 function switchTab(tabName) {
   document
     .querySelectorAll(".modal-tab-content")
@@ -351,6 +361,11 @@ function filterMahasiswaByProdi() {
   currentProdi = prodi;
   selectedMahasiswa = {};
   refreshMahasiswaData();
+
+  // If "Tugas Akhir" is already selected, re-fetch the suggestion
+  if (document.getElementById("jenis_sidang").value === 'Tugas Akhir') {
+      fetchAndSuggestNomorKelompok();
+  }
 }
 
 function highlightText(text, query) {
@@ -706,6 +721,8 @@ function resetKelompokForm() {
   anggotaCount = 1;
   dosenCount = 1;
   selectedMahasiswa = {};
+  document.getElementById('nomor-kelompok-suggestion').style.display = 'none';
+
   const indicator = document.getElementById("mahasiswa-availability");
   if (indicator)
     indicator.innerHTML =
@@ -718,7 +735,7 @@ function resetKelompokForm() {
 
 function resetToCreateMode() {
   resetKelompokForm();
-  setNextKelompokId();
+  document.getElementById("nomor_kelompok").value = ""; // Clear the input field
 
   // Show initial message for prodi selection
   const indicator = document.getElementById("mahasiswa-availability");
@@ -897,7 +914,8 @@ async function fetchMataKuliah() {
     data.forEach((matkul) => {
       idMatkul.add(new Option(matkul.nama_matkul, matkul.id_matkul));
     });
-    idMatkul.onchange = setNextKelompokId;
+    // Add onchange event to trigger suggestion
+    idMatkul.onchange = fetchAndSuggestNomorKelompok;
   } catch (e) {
     console.error("Error fetching mata kuliah:", e);
     idMatkul.innerHTML = '<option value="">(Gagal memuat data)</option>';
@@ -1011,8 +1029,14 @@ function validateKelompokForm() {
     );
   if (!document.getElementById("tahun_ajaran").value)
     showError("tahun_ajaran", "Tahun Ajaran harus dipilih.");
-  if (!document.getElementById("nomor_kelompok").value)
+  
+  const nomorKelompokInput = document.getElementById("nomor_kelompok");
+  if (!nomorKelompokInput.value) {
     showError("nomor_kelompok", "Nomor Kelompok harus diisi.");
+  } else if (!/^[1-9]\d*$/.test(nomorKelompokInput.value)) {
+    showError("nomor_kelompok", "Nomor Kelompok harus berupa angka positif.");
+  }
+
   const jenisSidang = document.getElementById("jenis_sidang").value;
   if (!jenisSidang) showError("jenis_sidang", "Jenis Sidang harus dipilih.");
 
@@ -1043,6 +1067,7 @@ function validateKelompokForm() {
 
   return isValid;
 }
+
 
 document.addEventListener("click", function (event) {
   document.querySelectorAll(".autocomplete-dropdown").forEach((dropdown) => {

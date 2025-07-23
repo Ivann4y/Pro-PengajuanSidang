@@ -88,7 +88,7 @@ require_once '../../control/mahasiswa/mNilaiAkhir_queries.php';
                             </div>
                             <div class="col-sm-6 text-black">
                                 <div class="info-group mb-5">
-                                    <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-book"></i><span class="fw-bold">Judul Proyek</span></div>
+                                    <div class="label-row d-flex align-items-center gap-2 mb-1"><i class="fa-solid fa-book"></i><span class="fw-bold">Mata Kuliah</span></div>
                                     <div class="value-row text-secondary fw-bold"><?= htmlspecialchars($dataSidang['judul']) ?></div>
                                 </div>
                                 <div class="info-group mb-5">

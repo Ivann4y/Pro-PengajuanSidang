@@ -30,7 +30,11 @@ if ($id_sidang === null) {
         SELECT TOP 1 s.id_sidang
         FROM Sidang s
         JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
-        WHERE k.nim = ?
+        JOIN Kelompok k_member ON k_member.nomor_kelompok = k.nomor_kelompok
+            AND k_member.tahun_ajaran = k.tahun_ajaran
+            AND k_member.jenis_sidang = k.jenis_sidang
+            AND k_member.id_matkul = k.id_matkul
+        WHERE k_member.nim = ?
         ORDER BY s.id_sidang DESC
     ";
     $stmtGetLastSidang = sqlsrv_query($conn, $sqlGetLastSidang, [$nim]);
@@ -58,9 +62,18 @@ $jenis_sidang = null;
 
 // 4. Jika ID Sidang ditemukan, ambil data detail dan nilai
 if ($id_sidang !== null) {
-    // Ambil detail sidang dan kelompok
-    $sql_detail = "SELECT k.nomor_kelompok, k.id_kelompok, k.jenis_sidang, k.id_matkul, s.judul FROM Sidang s JOIN Kelompok k ON s.id_kelompok = k.id_kelompok WHERE s.id_sidang = ?";
-    $stmt_detail = sqlsrv_query($conn, $sql_detail, [$id_sidang]);
+    // Ambil detail sidang dan kelompok, pastikan mahasiswa login adalah anggota kelompok
+    $sql_detail = "
+        SELECT k.nomor_kelompok, k.id_kelompok, k.jenis_sidang, k.id_matkul, s.judul
+        FROM Sidang s
+        JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+        JOIN Kelompok k_member ON k_member.nomor_kelompok = k.nomor_kelompok
+            AND k_member.tahun_ajaran = k.tahun_ajaran
+            AND k_member.jenis_sidang = k.jenis_sidang
+            AND k_member.id_matkul = k.id_matkul
+        WHERE s.id_sidang = ? AND k_member.nim = ?
+    ";
+    $stmt_detail = sqlsrv_query($conn, $sql_detail, [$id_sidang, $nim]);
     if ($stmt_detail && ($detail = sqlsrv_fetch_array($stmt_detail, SQLSRV_FETCH_ASSOC))) {
         $nomor_kelompok = $detail['nomor_kelompok'];
         $id_kelompok = $detail['id_kelompok'];
@@ -85,7 +98,7 @@ if ($id_sidang !== null) {
         }
     }
     $dataSidang['pembimbing'] = $pembimbing;
-    // Hitung nilai akhir
+    // Hitung nilai akhir hanya untuk mahasiswa login dan sidang terpilih
     $sqlNilai = "WITH NilaiPerDosen AS (SELECT (n_dokumen * 0.25 + n_presentasi * 0.25 + n_tanyajawab * 0.30 + n_proyek * 0.20) AS nilai_dosen, bobot_penilaian FROM Penilaian WHERE id_sidang = ? AND nim = ?) SELECT SUM(nilai_dosen * bobot_penilaian) / SUM(bobot_penilaian) AS nilai_akhir_weighted FROM NilaiPerDosen;";
     $stmtNilai = sqlsrv_query($conn, $sqlNilai, [$id_sidang, $nim]);
     if ($stmtNilai && ($rowNilai = sqlsrv_fetch_array($stmtNilai, SQLSRV_FETCH_ASSOC))) {
