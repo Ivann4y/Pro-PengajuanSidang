@@ -200,7 +200,7 @@
                         <?php unset($_SESSION['error']); ?>
                     <?php endif; ?>
                     </div> <!-- AKHIR DARI CARD KEDUA -->
-__
+
                     <!-- Tombol Kirim dipindahkan ke dalam card ini -->
                     <div class="col-12 d-flex justify-content-end mt-4">
                         <button type="button" id="btnKirim"
