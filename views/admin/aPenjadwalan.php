@@ -92,6 +92,10 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
         <div class="main-header">
             <div class="header-left-panel">
                 <h1 class="main-title">Penjadwalan Sidang</h1>
+                 <h2 style="font-size:1.5rem; font-weight:500;">
+                        <?php echo isset($_SESSION['user_data']['nama']) ? htmlspecialchars($_SESSION['user_data']['nama']) : 'Admin'; ?> (Admin)
+                    </h2>
+                    <br>
                 <div class="filter-container">
                     <span class="filter-label fw-semibold">Filter:</span>
                     <div class="dropdown me-2">
@@ -141,6 +145,8 @@ require_once '../../control/admin/aPenjadwalan_queries.php';
                     </a>
                     <div class="profile-icon"><a href="aProfil.php" title="Profil"><i class="fa-solid fa-user"></i></a></div>
                 </div>
+                <br>
+                <br>
                 <div class="input-group search-input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                     <input type="text" class="form-control" id="searchInput" placeholder="Cari" aria-label="Cari">
