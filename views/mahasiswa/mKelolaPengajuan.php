@@ -106,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
             $unique_name = 'laporan_' . uniqid() . '.' . $ext;
             $upload_path = __DIR__ . '/../../uploads/' . $unique_name;
+            $nama_file_asli = $file['name'];
             if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
                 $error_message = "Gagal menyimpan file ke server.";
             } else {
@@ -123,14 +124,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             if ($id_sidang_existing) { // UPDATE existing draft/rejected submission
                 $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?" .
-                    ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?" : "") .
+                    ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?, dok_final = ?" : "") .
                     " WHERE id_sidang = ?";
                 $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?" .
-                    ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?" : "") .
+                    ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?, dok_final = ?" : "") .
                     " WHERE id_sidang = ?";
                 $params = [$judul, $status_ajuan];
-                if ($dok_laporan_path !== $data['dok_laporan']) 
-                $params[] = $dok_laporan_path;
+                if ($dok_laporan_path !== $data['dok_laporan']) {
+                    $params[] = $dok_laporan_path;
+                    $params[] = $nama_file_asli;
+                }
                 $params[] = $id_sidang_existing;
                 $stmt = sqlsrv_query($conn, $sql_update, $params);
             } else { // INSERT new submission
@@ -141,8 +144,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $next_id_sidang = ($row_max_id['max_id'] ?? 0) + 1;
                 }
 
-                $sql_insert = "INSERT INTO Sidang (id_sidang, judul, waktu_pengumpulan, dok_laporan, status_ajuan, id_kelompok) VALUES (?, ?, GETDATE(), ?, ?, ?)";
-                $params = [$next_id_sidang, $judul, $dok_laporan_path, $status_ajuan, $id_kelompok];
+                $sql_insert = "INSERT INTO Sidang (id_sidang, judul, waktu_pengumpulan, dok_laporan, dok_final, status_ajuan, id_kelompok)
+                            VALUES (?, ?, GETDATE(), ?, ?, ?, ?)";
+                $params = [$next_id_sidang, $judul, $dok_laporan_path, $nama_file_asli, $status_ajuan, $id_kelompok];
                 $stmt = sqlsrv_query($conn, $sql_insert, $params);
             }
 
