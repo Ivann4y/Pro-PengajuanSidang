@@ -25,7 +25,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="mdetailSidang.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
+                        <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
