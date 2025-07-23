@@ -1,7 +1,7 @@
 <?php
 // get_kelompok_list.php
 session_start();
-include_once '../../../koneksi/koneksiAndrew.php'; // Sesuaikan path koneksi
+include_once '../../../koneksi/koneksiJoin.php'; // Sesuaikan path koneksi
 
 // Set proper headers
 header('Content-Type: application/json');

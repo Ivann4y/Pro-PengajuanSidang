@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../../../koneksi/koneksiAndrew.php'; // Sesuaikan path jika perlu
+include '../../../koneksi/koneksiJoin.php'; // Sesuaikan path jika perlu
 header('Content-Type: application/json');
 
 // Get parameters with defaults

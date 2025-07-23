@@ -11,7 +11,7 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true ||
     exit();
 }
 
-require_once '../../koneksi/koneksiAndrew.php';
+require_once '../../koneksi/koneksiJoin.php';
 $nim = $_SESSION['user_data']['nim'];
 
 // Flash message check

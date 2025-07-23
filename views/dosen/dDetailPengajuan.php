@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_data']['nomor_dosen'])) {
     die("Error: Data dosen tidak ditemukan di session. Silakan login kembali.");
 }
 
-include '../../koneksi/koneksiAndrew.php';
+include '../../koneksi/koneksiJoin.php';
 require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
@@ -37,55 +37,48 @@ $back_query_string = http_build_query([
 
 $kembali_url = "dPengajuan.php?" . $back_query_string;
 
-// [REPLACE THIS BLOCK]
-// ------------------------------
-// Handle Download Dokumen
-// ------------------------------
-if (isset($_POST['download']) && $_POST['download'] === 'main') {
-    // Join with Detail_Sidang to get the original filename
-    $sql_download = "SELECT s.dok_laporan, ds.nama_file 
-                     FROM Sidang s
-                     LEFT JOIN Detail_Sidang ds ON s.id_sidang = ds.id_sidang
-                     WHERE s.id_sidang = ?";
-    $stmt_download = sqlsrv_query($conn, $sql_download, [$id_sidang]);
-    
-    if ($stmt_download && $row = sqlsrv_fetch_array($stmt_download, SQLSRV_FETCH_ASSOC)) {
-        if (!empty($row['dok_laporan'])) {
-            $file_path_from_db = $row['dok_laporan']; // e.g., 'uploads/somefile.pdf'
-            $original_filename = $row['nama_file'] ?? basename($file_path_from_db);
-            
-            // Construct the full server path to the file
-            $full_file_path = __DIR__ . '/../../' . $file_path_from_db;
-            
-            if (file_exists($full_file_path)) {
-                // Set generic headers to force download for any file type
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="' . $original_filename . '"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($full_file_path));
-                
-                // Read the file and send it to the output buffer
-                flush(); // Flush system output buffer
-                readfile($full_file_path);
-                exit;
-            } else {
-                die("Error: File tidak ditemukan di server pada path: " . htmlspecialchars($full_file_path));
-            }
+if (isset($_GET['download']) && $_GET['download'] === 'laporan' && isset($_GET['id'])) {
+    $id_sidang_download = (int)$_GET['id'];
+
+    // Ambil path file dan nama file asli dari database
+    $sql_file = "SELECT dok_laporan, dok_final FROM Sidang WHERE id_sidang = ?";
+    $stmt_file = sqlsrv_query($conn, $sql_file, [$id_sidang_download]);
+
+    if ($stmt_file && $file_data = sqlsrv_fetch_array($stmt_file, SQLSRV_FETCH_ASSOC)) {
+        $path_laporan = $file_data['dok_laporan'];
+        $nama_file_asli = $file_data['dok_final'] ?? basename($path_laporan); // fallback kalau kosong
+
+        $full_path = __DIR__ . '/../../' . $path_laporan;
+
+        if (file_exists($full_path)) {
+            // Set headers untuk download
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="' . basename($nama_file_asli) . '"');
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($full_path));
+
+            // Flush output buffer dan kirim file
+            flush();
+            readfile($full_path);
+            exit;
+        } else {
+            die(" File tidak ditemukan di server. Path: " . htmlspecialchars($full_path));
         }
-        die("Dokumen tidak ditemukan di database.");
     } else {
-        die("Gagal mengambil data dokumen.");
+        die("Gagal mengambil data file dari database.");
     }
 }
 
 // ------------------------------
 // Ambil detail sidang dan cek hak akses dosen
 // ------------------------------
+// ... (setelah blok handle download)
 $sql_sidang = "
-SELECT s.id_sidang, s.id_kelompok, s.judul, k.jenis_sidang, s.status_ajuan, 
+SELECT s.id_sidang, s.id_kelompok, s.judul, k.jenis_sidang, s.status_ajuan, s.alasan_tolak,
        mk.nama_matkul, k.nomor_kelompok, k.tahun_ajaran, k.id_matkul,
        CASE WHEN k.jenis_sidang = 'Tugas Akhir' THEN 'TA' ELSE 'Semester' END AS label_sidang
 FROM Sidang s
@@ -94,11 +87,26 @@ LEFT JOIN MataKuliah mk ON k.id_matkul = mk.id_matkul
 WHERE s.id_sidang = ?
 ";
 $stmt_sidang = sqlsrv_query($conn, $sql_sidang, [$id_sidang]);
+if ($stmt_sidang === false) {
+    die("Error saat mengambil data sidang: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
 $data_sidang = sqlsrv_fetch_array($stmt_sidang, SQLSRV_FETCH_ASSOC);
 if (!$data_sidang) die("Data sidang tidak ditemukan.");
 
 $judul = $data_sidang['judul'];
 
+$sql_check_doc = "SELECT dok_laporan, dok_final FROM Sidang WHERE id_sidang = ?";
+$stmt_check_doc = sqlsrv_query($conn, $sql_check_doc, [$id_sidang]);
+if ($stmt_check_doc === false) {
+    die("Error saat mengambil data dokumen: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+$doc_data = sqlsrv_fetch_array($stmt_check_doc, SQLSRV_FETCH_ASSOC);
+
+// Tentukan nama file yang akan ditampilkan nanti di HTML
+$nama_file_tampil = '';
+if ($doc_data && !empty($doc_data['dok_laporan'])) {
+    $nama_file_tampil = !empty($doc_data['dok_final']) ? $doc_data['dok_final'] : basename($doc_data['dok_laporan']);
+}
 // Ambil anggota kelompok
 $sql_anggota = "
     SELECT k.nim, m.nama_mhs
@@ -154,7 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
         } else {
             // BARU: Tambahkan kolom alasan_tolak ke query UPDATE
             $sql_update = "UPDATE Sidang SET status_ajuan = 'Rejected', alasan_tolak = ? WHERE id_sidang = ?";
-            
             // BARU: Tambahkan $catatan ke parameter query
             $params_update = [$catatan, $id_sidang];
             $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
@@ -241,29 +248,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                 ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
             ]); 
             ?>
-            <h2 class="text-heading text-black" style="font-weight: 700;">Detail Pengajuan - <?= htmlspecialchars($judul) ?></h2>
-            <div class="card mb-3 info-pengajuan">
+            <div class="mb-4">
+                <h2 class="text-heading text-black" style="font-weight: 700;">Detail Pengajuan - <?= htmlspecialchars($judul) ?></h2>
+            </div>
+                <div class="card mb-4 info-pengajuan">
                 <h5 class="fw-bold section">Informasi Pengajuan</h5>
 
                 <div class="row mt-2">
                     <div class="col-md-6 section"> 
                         
-                        <div class="info-group">
+                        <div class="info-group mb-3">
                             <div class="label-row"><i class="fa-solid fa-users me-0"></i><span class="fw-bold ms-0">Nomor Kelompok</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nomor_kelompok'] ?? '-') ?></div>
                         </div>
 
-                        <div class="info-group">
+                        <div class="info-group mb-3">
                             <div class="label-row"><i class="fa-solid fa-calendar-days me-0"></i><span class="fw-bold ms-0">Tahun Ajaran</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['tahun_ajaran'] ?? '-') ?></div>
                         </div>
                         
-                        <div class="info-group">
+                        <div class="info-group mb-3">
                             <div class="label-row"><i class="fa-solid fa-book me-0"></i><span class="fw-bold ms-0">Mata Kuliah</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['nama_matkul'] ?? 'N/A') ?></div>
                         </div>
                         
-                        <div class="info-group">
+                        <div class="info-group mb-3">
                             <div class="label-row"><i class="fa-solid fa-people-group me-0"></i><span class="fw-bold ms-0">Anggota Kelompok</span></div>
                             <div class="value-row ms-4">
                                 <ul class="list-unstyled mb-0">
@@ -276,16 +285,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                     </div>
 
                     <div class="col-md-6 section">
-                        <div class="info-group">
+                        <div class="info-group mb-3">
                             <div class="label-row"><i class="fa-solid fa-file-invoice me-0"></i><span class="fw-bold ms-0">Judul Sidang</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['judul'] ?? '-') ?></div>
                         </div>
-                        <div class="info-group">
+                        <div class="info-group mb-3">
                             <div class="label-row"><i class="fa-solid fa-tag me-0"></i><span class="fw-bold ms-0">Jenis Sidang</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['label_sidang']) ?></div>
                         </div>
                         <?php if ($data_sidang['jenis_sidang'] === 'Tugas Akhir' && !empty($dosen_pembimbing)): ?>
-                        <div class="info-group">
+                        <div class="info-group mb-3">
                             <div class="label-row"><i class="fa-solid fa-user-tie me-0"></i><span class="fw-bold ms-0">Dosen Pembimbing</span></div>
                             <div class="value-row ms-4">
                                 <ul class="list-unstyled mb-0">
@@ -296,7 +305,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
                             </div>  
                         </div>
                         <?php endif; ?>
-                        <div class="info-group">
+                        <div class="info-group mb-3">
                             <div class="label-row"><i class="fa-solid fa-clipboard-question me-0"></i><span class="fw-bold ms-0">Status Pengajuan</span></div>
                             <div class="value-row ms-4"><?= htmlspecialchars($data_sidang['status_ajuan']) ?></div>
                         </div>
@@ -307,26 +316,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             <h5 class="fw-semibold">Dokumen Laporan</h5>
             <div class="file-buttons-container d-flex flex-wrap">
                 <div class="mt-2">
-                    <?php
-                    $sql_check_doc = "SELECT dok_laporan FROM Sidang WHERE id_sidang = ?";
-                    $stmt_check_doc = sqlsrv_query($conn, $sql_check_doc, [$id_sidang]);
-                    $doc_data = sqlsrv_fetch_array($stmt_check_doc, SQLSRV_FETCH_ASSOC);
-                    ?>
-                    <?php if (!empty($doc_data['dok_laporan'])) : ?>
-                        <form action="dDetailPengajuan.php" method="POST" style="display: inline-block;">
-                        <input type="hidden" name="id_sidang" value="<?= htmlspecialchars($id_sidang) ?>">
-                        <input type="hidden" name="tipe" value="<?= htmlspecialchars($jenis_sidang_url) ?>">
-                        <input type="hidden" name="download" value="main">
-                        <button type="submit" class="text-decoration-none base-tombol berkas-laporan">
-                            <i class="fa-solid fa-file-lines me-2"></i><?= htmlspecialchars(basename($doc_data['dok_laporan'])) ?>
-                        </button>
-                    </form>
+                    <?php if (!empty($doc_data) && !empty($doc_data['dok_laporan'])) : ?>
+                        <a href="dDetailPengajuan.php?download=laporan&id=<?= htmlspecialchars($id_sidang) ?>" class="text-decoration-none base-tombol berkas-laporan">
+                            <i class="fa-solid fa-file-lines me-2"></i><?= htmlspecialchars($nama_file_tampil) ?>
+                        </a>
                     <?php else : ?>
                         <p class="text-muted">Tidak ada dokumen yang diunggah</p>
                     <?php endif; ?>
                 </div>
             </div>
 
+            <?php if (
+                isset($data_sidang['status_ajuan']) &&
+                strtolower($data_sidang['status_ajuan']) === 'rejected' &&
+                !empty($data_sidang['alasan_tolak'])
+            ): ?>
+                    <div class="alert alert-danger mt-4">
+                        <h6 class="alert-heading fw-bold">
+                            <i class="fas fa-times-circle me-2"></i>Pengajuan Ditolak
+                        </h6>
+                        <hr>
+                        <p class="mb-1"><strong>Alasan Penolakan:</strong></p>
+                        <p class="fst-italic p-2 rounded" style="background-color: #f8d7da;">
+                            <?= htmlspecialchars($data_sidang['alasan_tolak']) ?>
+                        </p>
+                    </div>
+            <?php endif; ?>
+            
             <?php if ($data_sidang['status_ajuan'] === 'Pending'): ?>
             <div class="action-buttons mt-4 d-flex justify-content-between align-items-center">
                 <a href="<?= $kembali_url ?>" class="btn btn-secondary btn-circle">

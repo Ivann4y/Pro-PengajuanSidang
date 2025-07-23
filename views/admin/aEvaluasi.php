@@ -17,7 +17,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   exit();
 }
 
-require $path_to_root . "koneksi/koneksiAndrew.php";
+require $path_to_root . "koneksi/koneksiJoin.php";
 include $path_to_root . "control/admin/aEvaluasi_queries.php";
 ?>
 <!DOCTYPE html>
@@ -31,7 +31,7 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
 
   <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="../../css/button-styles.css">
+  <link rel="stylesheet" href="../../assets/css/button-styles.css">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="main.js"></script>

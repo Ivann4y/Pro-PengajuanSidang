@@ -19,7 +19,7 @@ if (!isset($_SESSION['user_data']['nim'])) {
 $nim = $_SESSION['user_data']['nim'];
 $nama_mhs = $_SESSION['user_data']['nama_mhs'] ?? 'Nama Tidak Ditemukan';
 
-require "../../koneksi/koneksiAndrew.php";
+require "../../koneksi/koneksiJoin.php";
 
 // 2. Tentukan ID Sidang yang akan ditampilkan
 $id_sidang = isset($_GET['id_sidang']) ? (int)$_GET['id_sidang'] : null;
