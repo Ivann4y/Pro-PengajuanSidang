@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "../../koneksi/koneksiAndrew.php"; // Pastikan path ini benar
+require "../../koneksi/koneksiJoin.php"; // Pastikan path ini benar
 
 
 // Ambil ID sidang dari GET (sekali) lalu simpan ke session

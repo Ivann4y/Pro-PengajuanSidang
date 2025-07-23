@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
     />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../../assets/css/style.css" />
-    <link rel="stylesheet" href="../../css/button-styles.css" />
+    <link rel="stylesheet" href="../../assets/css/button-styles.css" />
     <link rel="stylesheet" href="../../extra/style.css" />
     <link rel="stylesheet" href="../../assets/css/dNilaiAkhir.css" />
     <title>Dosen - Nilai Akhir</title>

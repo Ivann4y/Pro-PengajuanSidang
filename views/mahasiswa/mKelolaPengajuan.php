@@ -10,7 +10,7 @@ if (!isset($_SESSION['is_logged_in']) || !isset($_SESSION['role']) || $_SESSION[
     exit();
 }
 
-require_once '../../koneksi/koneksiAndrew.php';
+require_once '../../koneksi/koneksiJoin.php';
 $nim_mahasiswa_logged_in = $_SESSION['nim'];
 
 // --- 1. GET THE URL PARAMETERS ---

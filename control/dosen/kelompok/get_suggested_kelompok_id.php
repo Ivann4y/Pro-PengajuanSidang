@@ -1,6 +1,6 @@
 <?php
 // get_suggested_kelompok_id.php
-include '../../../koneksi/koneksiAndrew.php';
+include '../../../koneksi/koneksiJoin.php';
 header('Content-Type: application/json');
 
 // Get the context from the GET parameters

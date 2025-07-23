@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../koneksi/koneksiAndrew.php'; 
+require_once '../koneksi/koneksiJoin.php'; 
 require_once '../function/cobamailer.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
