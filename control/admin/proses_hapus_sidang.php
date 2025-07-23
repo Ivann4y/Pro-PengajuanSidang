@@ -1,7 +1,10 @@
 <?php
 // FILE: proses_hapus_sidang.php (VERSI FINAL YANG LEBIH AMAN)
 
-require "../../koneksi/koneksiAndrew.php";
+include "../../koneksi/koneksiJoin.php";
+if ($conn === false) {
+    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
+}
 
 header('Content-Type: application/json');
 

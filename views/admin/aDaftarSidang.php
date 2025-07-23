@@ -45,6 +45,10 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
             <div class="main-header">
                 <div class="header-left-panel">
                     <h1 class="main-title">Daftar Sidang</h1>
+                     <h2 style="font-size:1.5rem; font-weight:500;">
+                        <?php echo isset($_SESSION['user_data']['nama']) ? htmlspecialchars($_SESSION['user_data']['nama']) : 'Admin'; ?> (Admin)
+                    </h2>
+                    <br>
                     <div class="filter-container">
                         <span class="filter-label fw-semibold">Filter:</span>
                         <div class="dropdown">
@@ -107,6 +111,8 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                                         class="bi bi-person-fill"></i></a></div>
                         </div>
                     </div>
+                    <br>
+                    <br>
                     <div class="input-group search-input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control" placeholder="Cari..." aria-label="Cari"
@@ -140,7 +146,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                             ?>
                                 <tr class="isiTabel">
                                     <td data-label="Nomor"><?= $counter ?></td>
-                                    <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                                    <td data-label="Kelompok"><?= htmlspecialchars($row['nomor_kelompok']) ?></td>
                                     <td data-label="Judul">
                                         <?= htmlspecialchars($row['judul']) ?>
                                     </td>

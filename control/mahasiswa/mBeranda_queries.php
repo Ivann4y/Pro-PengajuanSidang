@@ -47,7 +47,7 @@ switch($action) {
     case 'sidang_berlangsung':
         $sql = "SELECT COUNT(s.id_sidang) AS total
                 FROM dbo.Sidang s
-                WHERE s.status_sidang = 0x00
+                WHERE s.status_ajuan = 'Approved' 
                   AND s.id_kelompok IN ($subQueryKelompok)";
         
         $stmt = sqlsrv_query($conn, $sql, [$nim_mahasiswa]);

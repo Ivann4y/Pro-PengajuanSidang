@@ -10,6 +10,7 @@ require_once '../../control/admin/aDetailSidang_queries.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/aDetailSidang.css">
     <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
@@ -44,50 +45,41 @@ require_once '../../control/admin/aDetailSidang_queries.php';
                 ?>
                <div class="main-header">
                 <div class="header-left-panel">
-                    <h2>Detail Sidang - <?php echo htmlspecialchars($data_sidang['judul']); ?></h2>
-                    <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['id_kelompok']); ?></p>
+                    <h2 class="judul text-heading text-black" style="font-weight: 700;">Detail Sidang - <?php echo htmlspecialchars($data_sidang['judul']); ?></h2>
+                    <p class="page-nama">Kelompok <?php echo htmlspecialchars($data_sidang['nomor_kelompok']); ?></p>
                 </div>
-                <div class="header-right-panel">
-                    <div id="desktop-icons-container">
-                        <!--<div class="header-icons">
-                            <a href="aNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill"></i></a>
-                            <div class="profile-icon">
-                                <a href="aProfil.php" title="Profil"><i class="bi bi-person-fill"></i></a>
-                            </div>
-                        </div>-->
-                    </div>
-                </div>
+               
             </div>
 
-            <div class="status-badge">Status Sidang : <?php echo htmlspecialchars($data_sidang['status_sidang_text']); ?></div>
+            <div class="status-badge">Status Ajuan : <?php echo htmlspecialchars($data_sidang['status_sidang_text']); ?></div>
                 <div class="info-card">
                     <div class="section">
                         <?php if ($data_sidang['jenis_sidang'] == 'Tugas Akhir'): ?>
-                            <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo htmlspecialchars($data_sidang['judul']); ?></p>
-                            <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo htmlspecialchars($data_matkul['nama_matkul'] ?? 'Tugas Akhir'); ?></p>
+                            <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><span class="info-data"><?php echo htmlspecialchars($data_sidang['judul']); ?></span></p>
+                            <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><span class="info-data"><?php echo htmlspecialchars($data_matkul['nama_matkul'] ?? 'Tugas Akhir'); ?></span></p>
                             <p><i class="fa-solid fa-user"></i><strong>Dosen Pembimbing</strong><br>
-                                <?php echo !empty($dosen_pembimbing) ? implode('<br>', array_map(fn($p) => htmlspecialchars($p['nama_dosen']), $dosen_pembimbing)) : 'Belum ditentukan'; ?>
+                                <span class="info-data"><?php echo !empty($dosen_pembimbing) ? implode('<br>', array_map(fn($p) => htmlspecialchars($p['nama_dosen']), $dosen_pembimbing)) : 'Belum ditentukan'; ?></span>
                             </p>
                             <p><i class="fa-solid fa-users"></i><strong>Dosen Penguji</strong><br>
-                                <?php echo !empty($dosen_penguji_data) ? implode('<br>', array_map(fn($p) => htmlspecialchars($p['nama_dosen']), $dosen_penguji_data)) : 'Belum ditentukan'; ?>
+                                <span class="info-data"><?php echo !empty($dosen_penguji_data) ? implode('<br>', array_map(fn($p) => htmlspecialchars($p['nama_dosen']), $dosen_penguji_data)) : 'Belum ditentukan'; ?></span>
                             </p>
                         <?php elseif ($data_sidang['jenis_sidang'] == 'Semester'): ?>
-                            <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><?php echo htmlspecialchars($data_sidang['judul']); ?></p>
-                            <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><?php echo htmlspecialchars($data_matkul['nama_matkul'] ?? 'N/A'); ?></p>
+                            <p><i class="fa-solid fa-book"></i><strong>Judul Sidang</strong><br><span class="info-data"><?php echo htmlspecialchars($data_sidang['judul']); ?></span></p>
+                            <p><i class="fa-solid fa-book"></i><strong>Mata Kuliah</strong><br><span class="info-data"><?php echo htmlspecialchars($data_matkul['nama_matkul'] ?? 'N/A'); ?></span></p>
                             <p><i class="fa-solid fa-users"></i><strong>Dosen Pengampu</strong><br>
-                                <?php echo !empty($dosen_pengampu_data) ? implode('<br>', array_map(fn($p) => htmlspecialchars($p['nama_dosen']), $dosen_pengampu_data)) : 'Belum ditentukan'; ?>
+                                <span class="info-data"><?php echo !empty($dosen_pengampu_data) ? implode('<br>', array_map(fn($p) => htmlspecialchars($p['nama_dosen']), $dosen_pengampu_data)) : 'Belum ditentukan'; ?></span>
                             </p>
                         <?php endif; ?>
                     </div>
                     <div class="section">
-                        <p><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br><?php echo htmlspecialchars($data_jadwal['ruang_sidang'] ?? 'Belum Dijadwalkan'); ?></p>
+                        <p><i class="fa-solid fa-door-open"></i><strong>Ruangan</strong><br><span class="info-data"><?php echo htmlspecialchars($data_jadwal['ruang_sidang'] ?? 'Belum Dijadwalkan'); ?></span></p>
                         <p><i class="fa-solid fa-calendar-days"></i><strong>Tanggal</strong><br>
-                             <?php 
+                            <span class="info-data"> <?php 
                             echo formatTanggalIndonesiaManual($data_jadwal['tanggal_sidang'] ?? null); 
-                            ?>
+                            ?></span>
                         </p>
                         <p><i class="fa-solid fa-clock"></i><strong>Jam</strong><br>
-                            <?php echo !empty($data_jadwal['jam_sidang']) ? $data_jadwal['jam_sidang']->format('H.i') . ' - ' . $data_jadwal['jam_selesai']->format('H.i') : 'Belum Dijadwalkan'; ?>
+                            <span class="info-data"><?php echo !empty($data_jadwal['jam_sidang']) ? $data_jadwal['jam_sidang']->format('H.i') . ' - ' . $data_jadwal['jam_selesai']->format('H.i') : 'Belum Dijadwalkan'; ?></span>
                         </p>
                     </div>
                 </div>
