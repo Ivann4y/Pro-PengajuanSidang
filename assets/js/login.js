@@ -13,3 +13,7 @@ togglePassword.addEventListener("click", function (e) {
   this.classList.toggle("bi-eye-slash-fill");
   this.classList.toggle("bi-eye-fill");
 });
+
+function toLupaPassword() {
+  window.location.href = "../../views/lupaPassword.php?role=<?= $role ?>";
+}
