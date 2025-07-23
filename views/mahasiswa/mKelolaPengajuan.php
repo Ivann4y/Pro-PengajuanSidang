@@ -95,13 +95,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'application/msword',
     ];
     $dok_laporan_path = $data['dok_laporan'] ?? null; // default to old path if editing
+    $dok_laporan_path = $data['dok_laporan'] ?? null; // default to old path if editing
     if (isset($_FILES['file_laporan']) && $_FILES['file_laporan']['error'] == UPLOAD_ERR_OK) {
         $file = $_FILES['file_laporan'];
         if ($file['size'] > 10 * 1024 * 1024) { // 10MB
             $error_message = "Ukuran file tidak boleh melebihi 10MB.";
         } elseif (!in_array(mime_content_type($file['tmp_name']), $allowedTypes)) {
             $error_message = "Tipe file tidak diizinkan. Gunakan PDF, DOCX, atau ZIP.";
-        } else {
+        } else {    
             $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
             $unique_name = 'laporan_' . uniqid() . '.' . $ext;
             $upload_path = __DIR__ . '/../../uploads/' . $unique_name;
@@ -124,8 +125,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?" .
                     ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?" : "") .
                     " WHERE id_sidang = ?";
+                $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?" .
+                    ($dok_laporan_path !== $data['dok_laporan'] ? ", dok_laporan = ?" : "") .
+                    " WHERE id_sidang = ?";
                 $params = [$judul, $status_ajuan];
-                if ($dok_laporan_path !== $data['dok_laporan']) $params[] = $dok_laporan_path;
+                if ($dok_laporan_path !== $data['dok_laporan']) 
+                $params[] = $dok_laporan_path;
                 $params[] = $id_sidang_existing;
                 $stmt = sqlsrv_query($conn, $sql_update, $params);
             } else { // INSERT new submission
@@ -401,81 +406,30 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- =================================================================== -->
+    <!-- START: CODE TO ADD                                                  -->
+    <!-- =================================================================== -->
+    
     <script>
+        // This block will now correctly execute in the browser because PHP has processed it.
+        <?php if (!empty($error_message)): ?>
         document.addEventListener('DOMContentLoaded', function() {
-            // Sidebar Toggle Logic
-            const menuToggle = document.querySelector(".NavSide__toggle");
-            const sidebar = document.getElementById("main-sidebar");
-            if (menuToggle) {
-                menuToggle.onclick = function() {
-                    menuToggle.classList.toggle("NavSide__toggle--active");
-                    sidebar.classList.toggle("NavSide__sidebar--active-mobile");
-                };
-            }
-
-            // File Upload UI Logic
-            const fileInput = document.getElementById('file_laporan');
-            if (fileInput) {
-                const uploadBox = document.getElementById('upload-box-label');
-                const fileNameDisplay = document.getElementById('file-name-display');
-                const uploadIcon = document.getElementById('upload-icon');
-                const uploadText = document.getElementById('upload-text');
-
-                fileInput.addEventListener('change', function() {
-                    if (this.files.length > 0) {
-                        fileNameDisplay.textContent = this.files[0].name;
-                        uploadIcon.style.display = 'none';
-                        uploadText.style.display = 'none';
-                        uploadBox.classList.add('file-selected');
-                    } else {
-                        fileNameDisplay.textContent = '';
-                        uploadIcon.style.display = 'block';
-                        uploadText.style.display = 'block';
-                        uploadBox.classList.remove('file-selected');
-                    }
-                });
-            }
-
-            // Submit Confirmation with SweetAlert
-            const submitBtn = document.getElementById('btn-submit-final');
-            const form = document.getElementById('pengajuan-form');
-            if (submitBtn && form) {
-                submitBtn.addEventListener('click', function(e) {
-                    e.preventDefault(); // Prevent form submission
-                    Swal.fire({
-                        title: 'Anda Yakin?',
-                        text: "Setelah submit, pengajuan tidak dapat diedit lagi.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#4b68fb',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Ya, Submit Final!',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Add a hidden input to signify final submission
-                            let hiddenInput = document.createElement('input');
-                            hiddenInput.type = 'hidden';
-                            hiddenInput.name = 'submit_final';
-                            hiddenInput.value = '1';
-                            form.appendChild(hiddenInput);
-                            form.submit();
-                        }
-                    });
-                });
-            }
-
-            // Display PHP errors with SweetAlert
-            <?php if ($error_message): ?>
             Swal.fire({
                 icon: 'error',
                 title: 'Terjadi Kesalahan',
                 text: '<?= addslashes(htmlspecialchars($error_message)) ?>',
                 confirmButtonColor: '#4b68fb'
             });
-            <?php endif; ?>
         });
+        <?php endif; ?>
     </script>
+
+    <!-- =================================================================== -->
+    <!-- END: CODE TO ADD                                                    -->
+    <!-- =================================================================== -->
+    
+    <script src="../../assets/js/mKelolaPengajuan.js"></script>
 </body>
 
 </html>
