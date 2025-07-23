@@ -78,13 +78,7 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
-        <?php 
-                // Include the function file
-                require_once '../../control/function.php'; 
-                // Generate breadcrumb
-                echo generateBreadcrumb(getPageTitle('mSidang'), 'mahasiswa', [
-                ]); 
-                ?>
+            <!-- No breadcrumb for Sidang (first layer) -->
             <div class="container-fluid"> 
                 <div class="row">
                     <div class="dashboard-header">

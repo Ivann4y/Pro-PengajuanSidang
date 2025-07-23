@@ -427,12 +427,10 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
-            <main class="NavSide__main-content">
-                <?php 
-            // Include the function file
+            <main class="NavSide__main-content" id="dDokumenRevisi">
+            <?php 
             require_once '../../control/function.php'; 
-            // Generate breadcrumb
-            echo generateBreadcrumb(getPageTitle('Dokumen Sidang'), 'dosen', [
+            echo generateBreadcrumb(getPageTitle('dDokumenRevisi'), 'dosen', [
                 ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
             ]); 
             ?>

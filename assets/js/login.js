@@ -15,5 +15,5 @@ togglePassword.addEventListener("click", function (e) {
 });
 
 function toLupaPassword() {
-  window.location.href = "../../views/lupaPassword.php?role=<?= $role ?>";
+  window.location.href = "../../views/lupaPassword.php?role=" + ROLE;
 }

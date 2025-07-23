@@ -41,13 +41,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
         </div>
 
         <main class="NavSide__main-content" id="adminDaftarSidangContent">
-            <?php 
-            // Include the function file
-            require_once '../../control/function.php'; 
-            // Generate breadcrumb
-            echo generateBreadcrumb(getPageTitle('aDaftarSidang'), 'admin', [
-            ]); 
-            ?>
+            <!-- No breadcrumb for Daftar Sidang (first layer) -->
             <div class="main-header">
                 <div class="header-left-panel">
                     <h1 class="main-title">Daftar Sidang</h1>

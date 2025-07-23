@@ -99,12 +99,10 @@ include $path_to_root . "control/admin/aEvaluasi_queries.php";
     </div>
     <main class="NavSide__main-content">
       <?php
-      // Include the function file
       require_once '../../control/function.php';
-      // Generate breadcrumb
-      echo generateBreadcrumb(getPageTitle('aEvaluasi'), 'aEvaluasi', [
+      echo generateBreadcrumb(getPageTitle('aEvaluasi'), 'admin', [
         ['url' => 'aDaftarSidang.php', 'text' => 'Daftar Sidang']
-    ]);
+      ]);
       ?>
       <div>
         <h2 class="judul text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= $judulSidang ?></h2>

@@ -98,6 +98,7 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
         </div>
 
         <main class="NavSide__main-content" id="mainContent">
+            <!-- No breadcrumb for Beranda (first layer) -->
             <div class="dashboard-header">
                 <div class="page-title">Beranda Dosen</div>
                 <div class="header-icons d-none d-md-flex">
