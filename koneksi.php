@@ -4,7 +4,7 @@ $serverName = "MYBOOKHYPE\SQLEXPRESS"; // Ganti dengan nama server SQL Server An
 $connectionOptions = [
     "Database" => "SistemSidang1",
     // "Uid" => "sqladmin",  
-    // "PWD" => "sistemsidang",  
+    "PWD" => "sistemsidang",  
     "TrustServerCertificate" => true,
 ];
 

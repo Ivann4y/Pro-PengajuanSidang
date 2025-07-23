@@ -6,7 +6,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen') {
     header("Location: ../../index.php");
     exit(); 
 }
-include "../../koneksi/koneksiAndrew.php";
+include "../../koneksi/koneksiJoin.php";
 
 // Ambil jumlah notifikasi belum dibaca untuk dosen
 $unread_notifications = [];

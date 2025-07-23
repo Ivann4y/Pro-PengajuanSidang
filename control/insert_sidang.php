@@ -7,7 +7,7 @@ if ($_SESSION['role'] !== 'dosen') {
     exit();
 }
 
-include '../koneksi/koneksiAndrew.php';
+include '../koneksi/koneksiJoin.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_kelompok = $_POST['id_kelompok'] ?? '';

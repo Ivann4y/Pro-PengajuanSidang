@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../../../koneksi/koneksiAndrew.php';
+include '../../../koneksi/koneksiJoin.php';
 
 if ($conn === false) {
     header('Content-Type: application/json');

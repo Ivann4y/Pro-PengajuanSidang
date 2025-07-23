@@ -10,7 +10,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'dosen' || !isset($_SESSI
 $nomor_dosen_login = $_SESSION['user_data']['nomor_dosen'];
 
 // 2. Koneksi ke Database
-include "../../koneksi/koneksiAndrew.php";
+include "../../koneksi/koneksiJoin.php";
 if ($conn === false) {
     die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
 }

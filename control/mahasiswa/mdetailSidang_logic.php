@@ -19,7 +19,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     exit(); 
 }
 
-include '../../koneksi/koneksiAndrew.php';
+include '../../koneksi/koneksiJoin.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

@@ -1,7 +1,7 @@
 <?php
 // get_pengajuan_pending.php
 session_start();
-include_once '../koneksi/koneksiAndrew.php';
+include_once '../koneksi/koneksiJoin.php';
 
 // Set proper headers
 header('Content-Type: application/json');

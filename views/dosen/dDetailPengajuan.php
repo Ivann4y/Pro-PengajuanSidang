@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_data']['nomor_dosen'])) {
     die("Error: Data dosen tidak ditemukan di session. Silakan login kembali.");
 }
 
-include '../../koneksi/koneksiAndrew.php';
+include '../../koneksi/koneksiJoin.php';
 require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");

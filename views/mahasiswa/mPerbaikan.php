@@ -19,7 +19,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     exit();
 }
 
-include '../../koneksi/koneksiAndrew.php';
+include '../../koneksi/koneksiJoin.php';
 require_once __DIR__ . '/../../control/kirimNotifikasi.php';
 $pesan = '';
 if (isset($_SESSION['pesan'])) {
