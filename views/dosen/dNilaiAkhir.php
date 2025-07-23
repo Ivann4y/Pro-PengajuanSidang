@@ -88,13 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nim'])) {
       <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
       </div>
 
-      <main class="NavSide__main-content" id="dNilaiAkhir">
-            <?php 
-            require_once '../../control/function.php'; 
-            echo generateBreadcrumb(getPageTitle('dNilaiAkhir'), 'dosen', [
-                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
-            ]); 
-            ?>
+      <main class="NavSide__main-content">
         <div class="col-12">
           <h2 class="text-heading text-black" style="font-weight: 700;">Nilai Akhir - <?= htmlspecialchars($judul) ?></h2>
         </div>

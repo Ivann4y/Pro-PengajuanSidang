@@ -10,8 +10,11 @@
 
 // echo "Mahasiswa";
 
-// echo password_hash('mhs123', PASSWORD_DEFAULT);
-// // $2y$10$cudHdtyr1eIpuWHUE7R22uMXYDf/a6jUaTTZk2QIO/W7hywYeJosy
+echo password_hash('adm123', PASSWORD_DEFAULT);
+// // $2y$10$fSyDCmQHy3.HlJz0IwHBe.m3yctHlvgL4ZLln4is4qBZ9ptDbOfE2$2y$10$d3L8yjMZVhLH6/EQkwxl8OmuSmoQLaaxXusI5ziOM2pkz8/GmxmCa -> mhs
+// $2y$10$tgPysn.5/sliojL.qKJHxu/0lBD5ih3OI5UV3csyvqLrdJPKo8YIO$2y$10$ZS.MUTSjtE11IgrZtFZmyexJk9JPHiYERegxXvGcFQC9Hg3/wSzIC -> dosen
+// $2y$10$IZlQ5xSOsvXZLLo0U98RiuPJpYZ7zJKHp.2Bdx8o/E3l8bEd3RQKe$2y$10$MMjRsHlO0R7bsu.p73mC8OXOfW47Z340tRKnnibFOPk3rJnMdZgh2 -> admin
+
 
 // echo "\nDosen\n";
 // echo password_hash('dp12345678', PASSWORD_DEFAULT);
