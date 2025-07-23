@@ -109,7 +109,7 @@ $unread_count = count($unread_notifications);
             </div>
         </div>
 
-      <main class="NavSide__main-content">
+      <main class="NavSide__main-content" id="mNotifikasi">
         <div class="container-fluid">
           <div class="row">
             <h2 class="text-heading text-black">

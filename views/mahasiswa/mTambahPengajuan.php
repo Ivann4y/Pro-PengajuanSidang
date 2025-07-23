@@ -281,7 +281,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aksi'])) {
             </div>
         </div>
 
-        <main class="NavSide__main-content" id="mPengajuan">
+        <main class="NavSide__main-content" id="mTambahPengajuan">
+            <?php 
+            require_once '../../control/function.php'; 
+            echo generateBreadcrumb(getPageTitle('mTambahPengajuan'), 'mahasiswa', [
+                ['url' => 'mPengajuan.php', 'text' => 'Pengajuan']
+            ]); 
+            ?>
             <div class="container-fluid">
                 <div class="dashboard-header">
                     <h2 class="text-heading"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>

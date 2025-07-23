@@ -1,0 +1,4540 @@
+--- START OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\views\dosen\dpengajuan.php ---
+
+<?php
+session_start();
+if ($_SESSION['role'] !== 'dosen') {
+    header("Location: ../../index.php");
+    exit();
+}
+
+if (!isset($_SESSION['user_data']['nomor_dosen'])) {
+    die("Error: Data dosen tidak ditemukan di session. Silakan login kembali.");
+}
+$nomorDosen = $_SESSION['user_data']['nomor_dosen'];
+
+include '../../koneksi/koneksiAndrew.php';
+if ($conn === false) {
+    die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id_sidang'])) {
+    
+    $id_sidang = (int)$_POST['id_sidang'];
+    $action = $_POST['action'];
+    $newStatus = $action === 'accept' ? 'Approved' : ($action === 'reject' ? 'Rejected' : null);
+
+    if (!$newStatus) {
+        echo json_encode(['success' => false, 'message' => 'Aksi tidak valid.']);
+        exit();
+    }
+
+    // --- Ambil info Sidang ---
+    $sql = "SELECT s.id_sidang, s.id_kelompok, k.jenis_sidang, k.id_matkul, k.tahun_ajaran
+            FROM Sidang s
+            JOIN Kelompok k ON s.id_kelompok = k.id_kelompok
+            WHERE s.id_sidang = ?";
+    $stmt = sqlsrv_query($conn, $sql, [$id_sidang]);
+    $sidang = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+
+    if (!$sidang) {
+        echo json_encode(['success' => false, 'message' => 'Sidang tidak tersedia.']);
+        exit();
+    }
+
+    $authorized = false;
+    if ($sidang['jenis_sidang'] === 'Tugas Akhir') {
+        $sqlAuth = "SELECT 1 FROM Bimbingan WHERE id_kelompok = ? AND nomor_dosen = ? AND isPembimbing = 1";
+        $stmtAuth = sqlsrv_query($conn, $sqlAuth, [$sidang['id_kelompok'], $nomorDosen]);
+        $authorized = sqlsrv_fetch($stmtAuth) !== false;
+    } elseif ($sidang['jenis_sidang'] === 'Semester') {
+        $sqlAuth = "SELECT 1 FROM Pengampu_Kelas WHERE id_matkul = ? AND tahun_ajaran = ? AND nomor_dosen = ?";
+        $stmtAuth = sqlsrv_query($conn, $sqlAuth, [$sidang['id_matkul'], $sidang['tahun_ajaran'], $nomorDosen]);
+        $authorized = sqlsrv_fetch($stmtAuth) !== false;
+    }
+
+    if (!$authorized) {
+        echo json_encode(['success' => false, 'message' => 'Kamu nggak berhak ngubah status pengajuan ini.']);
+        exit();
+    }
+
+    // --- Update status ajuannya ---
+    $updateSql = "UPDATE Sidang SET status_ajuan = ? WHERE id_sidang = ?";
+    $updateStmt = sqlsrv_query($conn, $updateSql, [$newStatus, $id_sidang]);
+    if ($updateStmt === false) {
+        echo json_encode(['success' => false, 'message' => 'Gagal ngubah status.']);
+        exit();
+    }
+    echo json_encode(['success' => true, 'message' => 'Status pengajuan berhasil diubah.']);
+    exit();
+}
+
+
+// Atur paginasinya (buat halaman-halaman)
+$rowsPerPage = 10;
+$currentPage = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+// Ini filter buat statusnya
+$statusFilter = isset($_GET['status']) ? $_GET['status'] : 'Pending';
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'Semua';
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+$offset = max(0, ($currentPage - 1) * $rowsPerPage);
+
+// Langkah 1: Bikin query dasarnya dulu, isinya semua join sama kolom yang dibutuhin.
+$querySource = "
+(
+    SELECT
+        s.id_sidang,
+        s.status_ajuan,
+        ku.id_kelompok,
+        ku.nomor_kelompok,
+        s.judul,
+        mk.nama_matkul,
+        ku.jenis_sidang AS tipe_sidang_text,
+        CASE
+            WHEN ku.jenis_sidang = 'Tugas Akhir' THEN
+                (SELECT STRING_AGG(d.nama_dosen, ', ') FROM Bimbingan b JOIN Dosen d ON b.nomor_dosen = d.nomor_dosen WHERE b.id_kelompok = ku.id_kelompok AND b.isPembimbing = 1)
+            ELSE
+                (SELECT STRING_AGG(d.nama_dosen, ', ') FROM Pengampu_Kelas pk JOIN Dosen d ON pk.nomor_dosen = d.nomor_dosen WHERE pk.id_matkul = ku.id_matkul)
+        END AS nama_dosen,
+        CASE
+            WHEN ku.jenis_sidang = 'Tugas Akhir' THEN
+                (SELECT STRING_AGG(CAST(b.nomor_dosen AS VARCHAR), ',') FROM Bimbingan b WHERE b.id_kelompok = ku.id_kelompok AND b.isPembimbing = 1)
+            ELSE
+                (SELECT STRING_AGG(CAST(pk.nomor_dosen AS VARCHAR), ',') FROM Pengampu_Kelas pk WHERE pk.id_matkul = ku.id_matkul)
+        END AS list_nomor_dosen
+    FROM
+        Sidang s
+    JOIN
+        (SELECT DISTINCT id_kelompok, nomor_kelompok, tahun_ajaran, jenis_sidang, id_matkul FROM dbo.Kelompok) AS ku ON s.id_kelompok = ku.id_kelompok
+    JOIN
+        MataKuliah mk ON ku.id_matkul = mk.id_matkul
+) AS FullDataSet
+";
+
+// Langkah 2: Bikin klausa WHERE sama parameternya secara dinamis.
+$whereConditions = [];
+$params = [];
+
+// Kondisi dasar: Dosen yang lagi login
+$whereConditions[] = "list_nomor_dosen LIKE ?";
+array_push($params, '%' . $nomorDosen . '%');
+
+// [MODIFIKASI] Terapin kondisi filter statusnya secara dinamis
+if ($statusFilter === 'History') {
+    $whereConditions[] = "status_ajuan IN ('Approved', 'Rejected')";
+} else if (in_array($statusFilter, ['Pending', 'Approved', 'Rejected'])) {
+    $whereConditions[] = "status_ajuan = ?";
+    array_push($params, $statusFilter);
+}
+
+// Terapin kondisi filter jenis sidang
+if ($filter === 'TA') {
+    $whereConditions[] = "tipe_sidang_text = 'Tugas Akhir'";
+} elseif ($filter === 'Semester') {
+    $whereConditions[] = "tipe_sidang_text = 'Semester'";
+}
+
+if (!empty($search)) {
+    // Cari di beberapa kolom yang relevan
+    $whereConditions[] = "(nomor_kelompok LIKE ? OR judul LIKE ? OR nama_matkul LIKE ?)";
+    // Tambahkan parameter pencarian sebanyak jumlah kolom yang dicari
+    array_push($params, '%' . $search . '%', '%' . $search . '%', '%' . $search . '%');
+}
+
+
+// Gabungin semua kondisi jadi satu string
+$whereClause = "WHERE " . implode(" AND ", $whereConditions);
+
+// ... (Sisa kode PHP untuk pagination dan eksekusi query tetap sama) ...
+$countSql = "SELECT COUNT(*) as total FROM " . $querySource . " " . $whereClause;
+$countStmt = sqlsrv_query($conn, $countSql, $params);
+if ($countStmt === false) {
+    die("Error saat menghitung data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+$totalRecords = sqlsrv_fetch_array($countStmt, SQLSRV_FETCH_ASSOC)['total'] ?? 0;
+$totalPages = ($rowsPerPage > 0) ? ceil($totalRecords / $rowsPerPage) : 1;
+
+if ($totalPages > 0 && $currentPage > $totalPages) {
+    $currentPage = $totalPages;
+    $offset = max(0, ($currentPage - 1) * $rowsPerPage);
+}
+
+$mainSql = "SELECT * FROM " . $querySource . " " . $whereClause . "
+            ORDER BY id_sidang DESC
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+$mainParams = array_merge($params, [$offset, $rowsPerPage]);
+$result = sqlsrv_query($conn, $mainSql, $mainParams);
+
+if ($result === false) {
+    die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
+}
+$nomor = max(1, $offset + 1); 
+
+// Ambil jumlah notifikasi belum dibaca untuk dosen
+$unread_notifications = [];
+if (isset($_SESSION['user_data']['nomor_dosen'])) {
+    $nomor_dosen = (string)$_SESSION['user_data']['nomor_dosen'];
+    $query_unread = "SELECT id_notifikasi FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL)";
+    $stmt_unread = sqlsrv_query($conn, $query_unread, array($nomor_dosen));
+    if ($stmt_unread) {
+        while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
+            $unread_notifications[] = $row;
+        }
+    }
+}
+$unread_count = count($unread_notifications);
+// DEBUG: tampilkan nilai $unread_count dan $nomor_dosen
+echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/dPengajuan.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Dosen - Pengajuan</title>
+</head>
+
+<body>
+    <div id="NavSide">
+        <div id="main-sidebar" class="NavSide__sidebar">
+            <div class="NavSide__sidebar-brand">
+                <img src="../../assets/img/WhiteAstra.png" alt="AstraTech Logo">
+            </div>
+            <ul class="NavSide__sidebar-nav">
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="dBeranda.php"><span class="NavSide__sidebar-title fw-semibold">Beranda</span></a>
+                </li>
+                <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
+                    <b></b><b></b>
+                    <a href="dPengajuan.php"><span class="NavSide__sidebar-title fw-semibold">Pengajuan</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="dDaftarSidang.php"><span class="NavSide__sidebar-title fw-semibold">Daftar Sidang</span></a>
+                </li>
+                <li class="NavSide__sidebar-item">
+                    <b></b><b></b>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logout"><span class="NavSide__sidebar-title fw-semibold">Keluar</span></a>
+                </li>
+            </ul>
+        </div>
+        <div class="NavSide__topbar">
+            <div class="NavSide__toggle">
+                <i class="bi bi-list open"></i>
+                <i class="bi bi-x-lg close"></i>
+            </div>
+            <div class="header-icons d-flex d-md-none">
+                <a href="dNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
+                    <i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i>
+                </a>
+                <div class="profile-icon">
+                    <a href="dProfil.php" title="Profil" style="text-decoration: none; color: inherit;">
+                        <i class="bi bi-person-fill fs-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <main class="NavSide__main-content" id="dBeranda">
+            <div class="dashboard-header">
+                <div class="header-title-group">
+                    <h2 class="bodyHeading">Pengajuan Sidang</h2>
+                    <h2 class="text-heading mt-3" style="font-size:1.5rem; font-weight:500;">
+                        <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?> (Dosen)
+                    </h2>
+                </div>
+                <div class="header-icons d-none d-md-flex">
+                    <a href="dNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
+                    <div class="profile-icon">
+                        <a href="dProfil.php" title="Profil"><i class="bi bi-person-fill fs-5" style="color: white"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row"></div><br><br>
+                <div class="row">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <label for="ddStatus" class="fw-semibold mb-0">Status:</label>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddStatus">
+                                <?php
+                                if ($statusFilter === 'Pending') echo 'Pengajuan Aktif';
+                                elseif ($statusFilter === 'History') echo 'Semua';
+                                elseif ($statusFilter === 'Approved') echo 'Disetujui';
+                                elseif ($statusFilter === 'Rejected') echo 'Ditolak';
+                                ?>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?status=Pending&filter=<?= urlencode($filter) ?>">Pengajuan Aktif</a></li>
+                                <li><a class="dropdown-item" href="?status=History&filter=<?= urlencode($filter) ?>">Semua</a></li>
+                                <li><a class="dropdown-item" href="?status=Approved&filter=<?= urlencode($filter) ?>">Disetujui</a></li>
+                                <li><a class="dropdown-item" href="?status=Rejected&filter=<?= urlencode($filter) ?>">Ditolak</a></li>
+                            </ul>
+                        </div>
+
+                        <label for="ddMsidang" class="fw-semibold mb-0 ms-3">Filter:</label>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="ddMSidang">
+                                <?php
+                                if ($filter === 'TA') echo 'Sidang TA';
+                                elseif ($filter === 'Semester') echo 'Sidang Semester';
+                                else echo 'Semua';
+                                ?>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?status=<?= urlencode($statusFilter) ?>&filter=Semua">Semua</a></li>
+                                <li><a class="dropdown-item" href="?status=<?= urlencode($statusFilter) ?>&filter=TA">Sidang TA</a></li>
+                                <li><a class="dropdown-item" href="?status=<?= urlencode($statusFilter) ?>&filter=Semester">Sidang Semester</a></li>
+                            </ul>
+                        </div>
+                        <div class="search-input-group ms-auto d-flex align-items-center">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Cari Kelompok, Judul, Matkul...">
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12 d-flex justify-content-end">
+                        <button class="btn kelompok-btn" style="max-width:300px;" onclick="openKelompokModal()" id="kelompokBtn">
+                            <i class="bi bi-people-fill me-2"></i>Kelompok
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Nomor Kelompok</th>
+                                <th scope="col">Judul</th>
+                                <th scope="col">Mata Kuliah</th>
+                                <th scope="col">Dosen Pembimbing / Pengampu</th>
+                                <th scope="col">Jenis Sidang</th>
+                                <?php if ($statusFilter !== 'Pending') : ?>
+                                    <th scope="col">Status</th>
+                                <?php endif; ?>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($totalRecords > 0 && sqlsrv_has_rows($result)) : ?>
+                                <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) : ?>
+                                    <tr class="isiTabel jadiBiru">
+                                        <td><?= $nomor++; ?></td>
+                                        <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
+                                        <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
+                                        <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
+                                       <td>
+                                            <?php
+                                            if ($row['tipe_sidang_text'] === 'Tugas Akhir') {
+                                                echo htmlspecialchars($row['nama_dosen']);
+                                            } 
+                                            else { 
+                                                echo htmlspecialchars($_SESSION['user_data']['nama_dosen']);
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?></td>
+                                        <?php if ($statusFilter !== 'Pending') : ?>
+                                            <td>
+                                                <?php
+                                                $statusClass = '';
+                                                if ($row['status_ajuan'] == 'Approved') {
+                                                    $statusClass = 'text-success fw-bold';
+                                                } elseif ($row['status_ajuan'] == 'Rejected') {
+                                                    $statusClass = 'text-danger fw-bold';
+                                                }
+                                                echo '<span class="' . $statusClass . '">' . htmlspecialchars($row['status_ajuan']) . '</span>';
+                                                ?>
+                                            </td>
+                                        <?php endif; ?>
+                                        <td style="text-align: center;">
+                                            <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
+                                                <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
+                                                <input type="hidden" name="tipe" value="<?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?>">
+                                                
+                                                <input type="hidden" name="from_status" value="<?= htmlspecialchars($statusFilter) ?>">
+                                                <input type="hidden" name="from_filter" value="<?= htmlspecialchars($filter) ?>">
+                                                <input type="hidden" name="from_page" value="<?= htmlspecialchars($currentPage) ?>">
+
+                                                <button type="submit" class="detail-btn">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan="<?= ($statusFilter !== 'Pending') ? '8' : '7' ?>" class="text-center" style="padding: 20px;">Tidak ada data ditemukan.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                    <div class="pagination-container" id="paginationContainer" style="display: none;">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center" id="paginationList">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+             <?php if ($totalPages > 0): ?>
+                            <nav aria-label="Page navigation" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <?php
+                                    $queryParams = "status=" . urlencode($statusFilter) . "&filter=" . urlencode($filter) . "&search=" . urlencode($search);
+                                    ?>
+                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $currentPage - 1 ?>&<?= $queryParams ?>">«</a>
+                                    </li>
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                                            <a class="page-link" href="?page=<?= $i ?>&<?= $queryParams ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="?page=<?= $currentPage + 1 ?>&<?= $queryParams ?>">»</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <?php endif; ?>
+
+            <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div style="background-color: rgb(67, 54, 240);">
+                            <div class="modal-header">
+                                <h1 class="modal-title mx-auto fs-5 text-light" id="exampleModalLabel">Perhatian!</h1>
+                            </div>
+                        </div>
+                        <div class="modal-body mx-auto">Apakah anda yakin ingin keluar?</div>
+                        <div class="modal-footer justify-content-center border-0"><button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-success" onclick="window.location.href='../../logout.php'">Lanjutkan</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="kelompokModal" tabindex="-1" aria-labelledby="kelompokModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered ">
+                    <div class="modal-content">
+                        <div class="modal-header modal-header-custom">
+                            <h5 class="modal-title" id="kelompokModalLabel">Kelompok Mahasiswa</h5>
+                            <div class="modal-header-actions">
+                                <button type="button" class="btn btn-outline-light btn-sm me-2" id="newKelompokBtn" onclick="resetToCreateMode()" style="display: none;">
+                                    <i class="bi bi-plus-circle me-1"></i>Kelompok Baru
+                                </button>
+                                <button type="button" class="btn-close btn-close-white" onclick="closeKelompokModal()" aria-label="Close"></button>
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                            <div class="modal-tab-container">
+                                <button class="modal-tab active" id="tambah-tab-btn" onclick="switchTab('tambah')">Tambah Kelompok</button>
+                                <button class="modal-tab" onclick="switchTab('daftar')">Daftar Kelompok</button>
+                            </div>
+                            <div id="tambah-tab" class="modal-tab-content active">
+                                <div class="kelompok-form-container">
+                                    <form id="kelompokForm" autocomplete="off">
+                                        <div class="kelompok-form-group">
+                                            <label for="nomor_kelompok">Nomor Kelompok:</label>
+                                            <input type="text" id="nomor_kelompok" name="nomor_kelompok" readonly />
+                                        </div>
+
+                                        <div class="kelompok-form-group">
+                                            <label for="tahun_ajaran">Tahun Ajaran:</label>
+                                            <input type="text" id="tahun_ajaran" name="tahun_ajaran" value="<?= date('Y') ?>" readonly />
+                                        </div>
+
+                                        <div class="kelompok-form-group">
+                                            <label for="kelompok_prodi">Prodi:</label>
+                                            <div class="custom-select-wrapper">
+                                                <select id="kelompok_prodi" name="kelompok_prodi" onchange="filterMahasiswaByProdi()">
+                                                    <option value="">Pilih Prodi</option>
+                                                    <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+                                                    <option value="Manajemen Informatika">Manajemen Informatika</option>
+                                                </select>
+                                                <i class="bi bi-caret-down-fill custom-select-arrow"></i>
+                                            </div>
+                                        </div>
+
+                                        <div class="kelompok-form-group">
+                                            <label for="jenis_sidang">Jenis Sidang:</label>
+                                            <div class="custom-select-wrapper">
+                                                <select id="jenis_sidang" name="jenis_sidang" required>
+                                                    <option value="">Pilih Jenis Sidang</option>
+                                                    <option value="Tugas Akhir">Tugas Akhir</option>
+                                                    <option value="Semester">Semester</option>
+                                                </select>
+                                                <i class="bi bi-caret-down-fill custom-select-arrow"></i>
+                                            </div>
+                                        </div>
+
+                                        <div class="kelompok-form-group" id="matkul-group" style="display:none;">
+                                            <label for="id_matkul">Mata Kuliah:</label>
+                                            <select id="id_matkul" name="id_matkul"></select>
+                                        </div>
+
+                                        <div class="form-section-card" id="dosen-wrapper-group" style="display:none;">
+                                            <div class="form-section-title">Dosen Pembimbing <span class="text-muted">(Opsional - Anda otomatis menjadi pembimbing)</span></div>
+                                            <div class="dosen-wrapper" id="dosen-wrapper"></div>
+                                        </div>
+
+                                        <div class="form-section-card">
+                                            <div class="form-section-title">Anggota Mahasiswa</div>
+                                            <div class="anggota-wrapper" id="anggota-wrapper">
+                                                <div class="anggota-form-group" id="anggota-form-1">
+                                                    <label for="anggota_1">Anggota 1:</label>
+                                                    <div class="anggota-input-group">
+                                                        <div class="input-container">
+                                                            <input type="text" id="anggota_1" name="anggota[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" />
+                                                            <div class="autocomplete-dropdown" id="autocomplete_1" style="display: none;"></div>
+                                                        </div>
+                                                        <div class="anggota-nama-display" id="anggota_nama_1">Nama akan muncul otomatis</div>
+                                                        <div class="form-toggle-buttons">
+                                                            <button type="button" onclick="addAnggota()">+</button>
+                                                            <button type="button" onclick="removeAnggota()" style="display: none;">-</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="kelompok-form-actions modal-footer border-0">
+                                            <button type="button" class="btn btn-danger" onclick="closeKelompokModal()">Batalkan</button>
+                                            <button type="submit" class="btn btn-success">Simpan</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="daftar-tab" class="modal-tab-content">
+                                <div class="kelompok-filter-container mb-3">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="filter-semester" value="Semester" checked>
+                                            <label class="form-check-label" for="filter-semester">
+                                                Semester
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="filter-tugas-akhir" value="Tugas Akhir" checked>
+                                            <label class="form-check-label" for="filter-tugas-akhir">
+                                                Tugas Akhir
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="kelompok-list-container" id="kelompok-list-container">
+                                    <p class="text-center text-muted">Memuat daftar kelompok...</p>
+                                </div>
+                                <div class="kelompok-form-actions modal-footer justify-content-center border-0">
+                                    <button type="button" class="btn btn-danger" onclick="closeKelompokModal()">Tutup</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div> 
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/kelompokModal.js"></script>
+    <script src="../../assets/js/dPengajuan.js"></script>
+    <script>
+        // Define dosen login NIP for filtering in autocomplete
+        window.nomorDosenLogin = "<?php echo $_SESSION['user_data']['nomor_dosen']; ?>";
+    </script>
+</body>
+</html>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+--- END OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\views\dosen\dpengajuan.php ---
+
+================================================================================
+
+--- START OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\css\style.css ---
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.sideNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 15vw;
+  height: 100%;
+  background-color: #4b68fb;
+  padding: 2%;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.bodyContainer {
+  margin-left: 15vw;
+  padding: 5vh;
+  width: 80vw;
+}
+
+.text-heading {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.jadiBiru {
+  background-color: rgb(235, 238, 245);
+  color: black;
+  transition: 300ms;
+}
+
+.forM {
+  background-color: #f5f5f5;
+}
+
+.jadiBiru:hover {
+  background-color: #4b68fb;
+  color: white !important;
+}
+
+.btn-link {
+  color: inherit;
+}
+
+.btn-link:hover {
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 700px) {
+  .container-fluid {
+    padding: 3vw;
+  }
+
+  .bodyContainer {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  thead th:nth-child(1),
+  thead th:nth-child(5) {
+    width: auto;
+  }
+}
+
+/* Sidebar */
+
+#NavSide {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.NavSide__sidebar-brand {
+  padding: 10% 5% 50% 5%;
+  text-align: center;
+}
+
+.NavSide__sidebar-brand img {
+  width: 90%;
+  max-width: 180px;
+  height: auto;
+  display: inline-block;
+}
+
+.NavSide__sidebar {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  width: 280px;
+  border-radius: 1px;
+  box-sizing: border-box;
+  border-left: 5px solid #4b68fb;
+  background: #4b68fb;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
+}
+
+.NavSide__sidebar-nav {
+  width: 100%;
+  padding-left: 0;
+  padding-top: 0;
+  list-style: none;
+  flex-grow: 1;
+}
+
+.NavSide__sidebar-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-bottom: 10px;
+  /* Kept from user's last version */
+}
+
+.NavSide__sidebar-item a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+  color: rgb(252, 252, 252);
+  padding: 5% 2%;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.NavSide__sidebar-title {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active {
+  background: #ffffff;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active a {
+  color: #4b68fb;
+}
+
+.NavSide__sidebar-item b:nth-child(1) {
+  position: absolute;
+  top: -20px;
+  height: 20px;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  display: none;
+  right: 0;
+}
+
+.NavSide__sidebar-item b:nth-child(1)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-bottom-right-radius: 20px;
+  background: #4b68fb;
+  display: block;
+}
+
+.NavSide__sidebar-item b:nth-child(2) {
+  position: absolute;
+  bottom: -20px;
+  height: 20px;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  display: none;
+  right: 0;
+}
+
+.NavSide__sidebar-item b:nth-child(2)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 20px;
+  background: #4b68fb;
+  display: block;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+  display: block;
+}
+
+.NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 280px;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  padding-top: 3vh;
+  background-color: #ffffff;
+  /* Default for larger screens */
+}
+
+.NavSide__toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  z-index: 1100;
+  transition: left 0.5s ease-in-out;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: none;
+  /* Hidden by default for larger screens */
+}
+
+.NavSide__toggle i.bi {
+  position: absolute;
+  font-size: 28px;
+  display: none;
+}
+
+.NavSide__toggle i.bi.open {
+  color: #4b68fb;
+}
+
+.NavSide__toggle i.bi.close {
+  color: #4b68fb;
+}
+
+.NavSide__toggle.NavSide__toggle--active i.bi.open {
+  display: none;
+}
+
+.NavSide__toggle.NavSide__toggle--active i.bi.close {
+  display: block;
+}
+
+/* NEW: Top Bar for smaller screens */
+.NavSide__topbar {
+  display: none;
+  /* Hidden by default for larger screens */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  /* Adjust height as needed */
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  /* Below sidebar, above main content */
+  align-items: center;
+  /* Vertically align items */
+  padding: 0 15px;
+  /* Add horizontal padding */
+  justify-content: space-between;
+  /* Space between toggle and icons */
+}
+
+.NavSide__topbar .header-icons {
+  display: flex;
+  align-items: center;
+}
+
+/* --- STYLES FOR ICONS IN TOPBAR TO MATCH DESKTOP --- */
+.NavSide__topbar .header-icons .bi-bell-fill {
+  font-size: 1.5rem;
+  color: #555;
+  margin-right: 1.5rem;
+  cursor: pointer;
+}
+
+.NavSide__topbar .profile-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+/* --- END ICON STYLES --- */
+
+@media (max-width: 700px) {
+  .NavSide__sidebar {
+    width: 50%;
+    transform: translateX(-100%);
+    border-left-width: 0;
+  }
+
+  .NavSide__sidebar.NavSide__sidebar--active-mobile {
+    transform: translateX(0);
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .NavSide__sidebar-brand {
+    padding: 20px 10px 30px 10px;
+  }
+
+  .NavSide__sidebar-brand img {
+    width: 90%;
+  }
+
+  .NavSide__sidebar-nav {
+    padding-top: 20%;
+  }
+
+  .NavSide__sidebar-item a {
+    padding: 12% 10%;
+    height: auto;
+  }
+
+  .NavSide__main-content {
+    margin-left: 0;
+    padding: 15px;
+    padding-top: 75px;
+    /* Adjust this to create space for the fixed top bar */
+  }
+
+  .NavSide__toggle {
+    display: flex;
+    position: relative;
+    top: auto;
+    background-color: transparent;
+    box-shadow: none;
+    left: 0;
+  }
+
+  .NavSide__toggle i.bi.open {
+    display: block;
+  }
+
+  .NavSide__toggle.NavSide__toggle--active {
+    left: calc(50% + 10px);
+    color: #4b68fb;
+    background-color: aliceblue;
+  }
+
+  .NavSide__topbar {
+    display: flex;
+  }
+
+  .dashboard-header .header-icons {
+    display: none;
+  }
+
+  .dashboard-header {
+    margin-top: 0;
+  }
+
+  /* .text-heading {
+    font-size: 30px;
+    font-weight: 700;
+  } */
+
+  .text-heading-mobile {
+    font-weight: 550;
+
+    margin: auto;
+  }
+}
+
+/* Responsivitas mobile fold */
+@media (max-width: 350px) {
+  .text-heading-mobile {
+    color: #4b68fb;
+    font-weight: 550;
+    margin: auto;
+    font-size: 1.2rem;
+  }
+}
+
+/* =======================
+      Dashboard  Styles
+  ======================== */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboardTitle {
+  color: #4b68fb;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.dashboard-header .page-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #000000;
+}
+
+.dashboard-header .header-icons {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-header .header-icons .bi-bell-fill {
+  font-size: 1.5rem;
+  color: #555;
+  margin-right: 1.5rem;
+  cursor: pointer;
+}
+
+.dashboard-header .profile-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.welcome-text {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2rem;
+}
+
+.dashboard-card {
+  border-radius: 22px;
+  padding: 1.5rem;
+  margin: 2vh 2vh;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Base Button Styles */
+.btn {
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+
+/* Button Colors */
+.btn-setujui {
+  background-color: #4fd382;
+  color: white;
+}
+
+.btn-tolak {
+  background-color: #fd7d7d;
+}
+
+.btn-kembali {
+  background-color: #4b68fb;
+}
+
+/* Hover States */
+.btn-setujui:hover {
+  background-color: #3ab070;
+  transform: translateY(-2px);
+}
+
+.btn-tolak:hover {
+  background-color: #e56b6b;
+  transform: translateY(-2px);
+}
+
+.btn-kembali:hover {
+  background-color: #3a4fb8;
+  transform: translateY(-2px);
+}
+
+/* Icon Circle for Buttons */
+.btn .icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover .icon-circle {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn .icon-circle i {
+  color: #4b68fb !important;
+}
+
+.btn:hover .icon-circle i {
+  color: white !important;
+}
+
+/* Button Groups */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.2cm;
+}
+
+.button-group-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.2cm;
+}
+
+/* Modal Buttons */
+.btnKonfirmasi {
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  height: 40px;
+  min-width: 100px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btnKonfirmasi:hover {
+  background-color: #3a4fb8;
+  transform: translateY(-2px);
+}
+
+/* Disabled State */
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading State */
+.btn.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: button-loading-spinner 0.8s linear infinite;
+}
+
+@keyframes button-loading-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+button.btn-kembali .icon-circle i.fa-arrow-left {
+  color: #4b68fb !important;
+}
+button.btn-kembali:hover .icon-circle i.fa-arrow-left {
+  color: white !important;
+}
+
+/* Modal heading color warna biru*/
+.modal-heading-color {
+  background-color: #4b68fb;
+  color: white;
+}
+
+/* Kalender Card Styles*/
+
+.calendar-card {
+  background-color: #4b68fb;
+  color: white;
+  display: flex;
+  /* This is correct, it makes the card a flex container */
+  flex-direction: column;
+  /* This is correct, it stacks children vertically */
+  padding: 1rem;
+  border-radius: 5vh;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  min-height: 300px;
+}
+
+.calendar-card .section-title-container {
+  /* No changes needed here, this is fine */
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  flex-shrink: 0;
+  /* Prevents this header from shrinking */
+}
+
+.calendar-card .calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.calendar-card .section-title {
+  color: white;
+  margin-bottom: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.calendar-card .calendar-nav i {
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  color: #c7d2fe;
+}
+
+.calendar-card .calendar-nav i:hover {
+  color: white;
+}
+
+.calendar-card .calendar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  flex-grow: 1;
+  /* This is key: it makes the <table> fill available space */
+  display: flex;
+  /* IMPORTANT: Treat the table itself as a flex container */
+  flex-direction: column;
+  /* Stack its children (thead, tbody) vertically */
+}
+
+.calendar-card .calendar thead,
+.calendar-card .calendar tbody {
+  display: flex;
+  /* Treat thead and tbody as flex containers */
+  flex-direction: column;
+  width: 100%;
+}
+
+.calendar-card .calendar tbody {
+  flex-grow: 1;
+  /* Make the body grow to fill the table's space */
+}
+
+.calendar-card .calendar tr {
+  display: flex;
+  /* Treat each row as a flex container */
+  flex-grow: 1;
+  /* Make each row take up equal vertical space in tbody */
+  width: 100%;
+}
+
+.calendar-card .calendar th,
+.calendar-card .calendar td {
+  flex: 1;
+  /* This is the magic! Makes each cell take up equal horizontal space */
+  display: flex;
+  /* Use flex to center the content inside the cell */
+  align-items: center;
+  justify-content: center;
+  padding: 0rem;
+  /* Keep your padding for the cell */
+  text-align: center;
+}
+
+.calendar-card .calendar th {
+  /* Styles specific to header cells */
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #c7d2fe;
+  text-transform: uppercase;
+  padding: 0.3rem 0.25rem;
+}
+
+.calendar-card .calendar-day.has-sidang {
+  background-color: rgba(255, 255, 255, 0.25);
+  font-weight: 600;
+}
+
+.calendar-card .calendar-day.has-sidang:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+.calendar-card .calendar-day {
+  /* No changes needed here, this styling is for the bubble inside the cell */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.calendar-card .calendar-day.current-day {
+  background-color: white;
+  color: #4b68fb;
+  font-weight: 700;
+}
+
+.calendar-card .calendar-day:hover:not(.current-day) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Tugas Card Styles --- */
+
+.tugas-card {
+  overflow-y: auto;
+  max-height: 60vh;
+  height: 100%;
+  padding-top: 0rem;
+  padding-bottom: 1rem;
+}
+
+.tugas-card .section-title {
+  position: sticky;
+  top: 0px;
+  background-color: #f3f4f6;
+  z-index: 10;
+  padding-top: 0.3rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.tugas-card .tugas-item {
+  background-color: white;
+  color: #4b5563;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.tugas-card .tugas-item:last-child {
+  margin-bottom: 0;
+}
+
+.content-card {
+  background-color: #f3f4f6;
+}
+
+.content-card .section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+/* --- Sidang Mendatang Card Styles --- */
+
+.sidang-mendatang-card {
+  overflow-y: auto;
+  max-height: 36vh;
+  height: 100%;
+  padding-top: 0rem;
+  padding-bottom: 1rem;
+}
+
+.sidang-mendatang-card .section-title {
+  position: sticky;
+  top: 0px;
+  background-color: #f3f4f6;
+  z-index: 10;
+  padding-top: 0.3rem;
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.sidang-mendatang-card .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e0e7ff;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.sidang-mendatang-card .item:last-child {
+  margin-bottom: 0;
+}
+
+.sidang-mendatang-card .date-bubble {
+  background-color: white;
+  border-radius: 8px;
+  padding: 0.4rem 0rem;
+  text-align: center;
+  margin-right: 1rem;
+  min-width: 48px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidang-mendatang-card .date-bubble .day {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4b68fb;
+  line-height: 1.1;
+}
+
+.sidang-mendatang-card .date-bubble .month {
+  font-size: 0.7rem;
+  color: #6b7280;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.sidang-mendatang-card .info {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.sidang-mendatang-card .arrow i {
+  font-size: 1.2rem;
+  color: #4b68fb;
+}
+
+.modal-footer .btn-danger {
+  background-color: #fd7d7d;
+  border-color: #fd7d7d;
+}
+
+.modal-footer .btn-success {
+  background-color: #4fd382;
+  border-color: #4fd382;
+}
+
+.dashboard-header .header-title-group .text-heading {
+  margin-top: 1cm;
+}
+
+/* Badge notifikasi merah di ikon lonceng */
+.notif-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.55em;
+    padding: 0 3px;
+    z-index: 10;
+    border: 2px solid white;
+    font-weight: bold;
+    min-width: 10px;
+    text-align: center;
+    line-height: 1.2;
+    box-shadow: 0 0 2px #0002;
+}
+.position-relative { position: relative; }
+
+
+--- END OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\css\style.css ---
+
+================================================================================
+
+--- START OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\extra\style.css ---
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+#NavSide {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.NavSide__sidebar-brand {
+  padding: 10% 5% 50% 5%;
+  text-align: center;
+}
+
+.NavSide__sidebar-brand img {
+  width: 90%;
+  max-width: 180px;
+  height: auto;
+  display: inline-block;
+}
+
+.NavSide__sidebar {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  width: 280px;
+  border-radius: 1px;
+  box-sizing: border-box;
+  border-left: 5px solid #4b68fb;
+  background: #4b68fb;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s ease-in-out, width 0.5s ease-in-out;
+}
+
+.NavSide__sidebar-nav {
+  width: 100%;
+  padding-left: 0;
+  padding-top: 0;
+  list-style: none;
+  flex-grow: 1;
+}
+
+.NavSide__sidebar-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-bottom: 10px;
+  /* Kept from user's last version */
+}
+
+.NavSide__sidebar-item a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+  color: rgb(252, 252, 252);
+  padding: 5% 2%;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.NavSide__sidebar-title {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active {
+  background: #ffffff;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active a {
+  color: #4b68fb;
+}
+
+.NavSide__sidebar-item b:nth-child(1) {
+  position: absolute;
+  top: -20px;
+  height: 20px;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  display: none;
+  right: 0;
+}
+
+.NavSide__sidebar-item b:nth-child(1)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-bottom-right-radius: 20px;
+  background: #4b68fb;
+  display: block;
+}
+
+.NavSide__sidebar-item b:nth-child(2) {
+  position: absolute;
+  bottom: -20px;
+  height: 20px;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  display: none;
+  right: 0;
+}
+
+.NavSide__sidebar-item b:nth-child(2)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 20px;
+  background: #4b68fb;
+  display: block;
+}
+
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(1),
+.NavSide__sidebar-item.NavSide__sidebar-item--active b:nth-child(2) {
+  display: block;
+}
+
+.NavSide__main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 280px;
+  overflow-y: auto;
+  transition: margin-left 0.5s ease-in-out;
+  background-color: #f9fafb;
+  padding-top: 3vh;
+  /* Default for larger screens */
+}
+
+.NavSide__toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  z-index: 1100;
+  transition: left 0.5s ease-in-out;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: none;
+  /* Hidden by default for larger screens */
+}
+
+.NavSide__toggle i.bi {
+  position: absolute;
+  font-size: 28px;
+  display: none;
+}
+
+.NavSide__toggle i.bi.open {
+  color: #4b68fb;
+}
+
+.NavSide__toggle i.bi.close {
+  color: #4b68fb;
+}
+
+.NavSide__toggle.NavSide__toggle--active i.bi.open {
+  display: none;
+}
+
+.NavSide__toggle.NavSide__toggle--active i.bi.close {
+  display: block;
+}
+
+/* NEW: Top Bar for smaller screens */
+.NavSide__topbar {
+  display: none;
+  /* Hidden by default for larger screens */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  /* Adjust height as needed */
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  /* Below sidebar, above main content */
+  align-items: center;
+  /* Vertically align items */
+  padding: 0 15px;
+  /* Add horizontal padding */
+  justify-content: space-between;
+  /* Space between toggle and icons */
+}
+
+.NavSide__topbar .header-icons {
+  display: flex;
+  align-items: center;
+}
+
+/* --- STYLES FOR ICONS IN TOPBAR TO MATCH DESKTOP --- */
+.NavSide__topbar .header-icons .bi-bell-fill {
+  font-size: 1.5rem;
+  color: #555;
+  margin-right: 1.5rem;
+  cursor: pointer;
+}
+
+.NavSide__topbar .profile-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+/* --- END ICON STYLES --- */
+
+@media (max-width: 700px) {
+  .NavSide__sidebar {
+    width: 50%;
+    transform: translateX(-100%);
+    border-left-width: 0;
+  }
+
+  .NavSide__sidebar.NavSide__sidebar--active-mobile {
+    transform: translateX(0);
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .NavSide__sidebar-brand {
+    padding: 20px 10px 30px 10px;
+  }
+
+  .NavSide__sidebar-brand img {
+    width: 90%;
+  }
+
+  .NavSide__sidebar-nav {
+    padding-top: 20%;
+  }
+
+  .NavSide__sidebar-item a {
+    padding: 12% 10%;
+    height: auto;
+  }
+
+  .NavSide__main-content {
+    margin-left: 0;
+    padding: 15px;
+    padding-top: 75px;
+    /* Adjust this to create space for the fixed top bar */
+  }
+
+  .NavSide__toggle {
+    display: flex;
+    position: relative;
+    top: auto;
+    background-color: transparent;
+    box-shadow: none;
+    left: 0;
+  }
+
+  .NavSide__toggle i.bi.open {
+    display: block;
+  }
+
+  .NavSide__toggle.NavSide__toggle--active {
+    left: calc(50% + 10px);
+    color: #4b68fb;
+    background-color: aliceblue;
+  }
+
+  .NavSide__topbar {
+    display: flex;
+  }
+
+  .dashboard-header .header-icons {
+    display: none;
+  }
+
+  .dashboard-header {
+    margin-top: 0;
+  }
+}
+
+/* DASHBOARD STYLES */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-header .page-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #000000;
+}
+
+.dashboard-header .header-icons {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-header .header-icons .bi-bell-fill {
+  font-size: 1.5rem;
+  color: #555;
+  margin-right: 1.5rem;
+  cursor: pointer;
+}
+
+.dashboard-header .profile-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.welcome-text {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2rem;
+}
+
+.dashboard-card {
+  border-radius: 22px;
+  padding: 1.5rem;
+  margin: 2vh 2vh;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Button Styles */
+.button-group-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.2cm;
+}
+
+.btn-kembali {
+  background-color: #4b68fb;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-kembali:hover {
+  position: relative;
+  background-color: white;
+  color: #4b68fb;
+}
+
+.btn-kembali .icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-kembali:hover .icon-circle {
+  background-color: #4b68fb;
+}
+
+.btn-kembali .icon-circle i {
+  color: #4b68fb;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.btn-kembali:hover .icon-circle i {
+  color: white;
+}
+
+.btn-setuju {
+  background-color: #4fd382;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  height: 45px;
+}
+
+.btn-setuju:hover {
+  background-color: #3ab070;
+  color: white;
+}
+
+.btn-tolak {
+  background-color: #fd7d7d;
+  color: white;
+  border: none;
+  
+  padding: 0 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+ 
+}
+
+.btn-tolak:hover {
+  background-color: #e56a6a;
+  color: white;
+}
+
+@media (max-width: 700px) {
+  .button-group-bottom {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+ 
+}
+
+
+--- END OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\extra\style.css ---
+
+================================================================================
+
+--- START OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\css\dPengajuan.css ---
+
+table {
+  border-spacing: 0 10px;
+  border-collapse: separate;
+  width: 100%;
+}
+
+thead {
+  border-bottom: 2px solid rgb(0, 0, 0) !important;
+}
+
+thead th {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+thead th:nth-child(1) {
+  text-align: center;
+  width: 5%;
+}
+
+thead th:nth-child(2) {
+  width: 20%;
+}
+
+thead th:nth-child(3) {
+  width: 20%;
+}
+
+thead th:nth-child(4) {
+  width: 20%;
+}
+
+thead th:nth-child(5) {
+  width: 20%;
+}
+
+thead th:nth-child(6) {
+  text-align: center;
+  width: 20%;
+}
+thead th:nth-child(7) {
+  text-align: center;
+  width: 20%;
+}
+thead th:nth-child(8) {
+  text-align: center;
+  width: 20%;
+}
+
+thead th:first-child,
+.isiTabel td:first-child {
+  border-radius: 20px 0 0 20px;
+}
+
+thead th:last-child,
+.isiTabel td:last-child {
+  border-radius: 0 20px 20px 0;
+}
+
+.isiTabel td {
+  padding: 12px 15px;
+  font-family: "Poppins";
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+.isiTabel td:nth-child(1) {
+  border-radius: 20px 0 0 20px;
+  text-align: center;
+}
+
+.isiTabel td:nth-child(8) {
+  border-radius: 0 20px 20px 0;
+}
+
+/* CSS BARU untuk tombol tanpa border */
+.detail-btn {
+  border: none !important;
+  background-color: transparent !important;
+  color: #4b68fb; /* Warna ikon */
+  padding: 0.25rem 0.5rem; /* Menyesuaikan padding agar tidak terlalu besar */
+}
+
+/* Efek saat hover pada tombol */
+.detail-btn:hover {
+  opacity: 0.7;
+}
+
+/* Memastikan warna ikon menjadi putih saat baris di-hover */
+.table-admin-custom tbody tr.isiTabel:hover .detail-btn {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.modal-header-custom {
+  background-color: #4b68fb;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+/* Saat baris di-hover, ubah warna ikon di tombol aksi */
+tr.jadiBiru:hover .detail-btn i {
+  color: white !important;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  margin-bottom: 30px;
+}
+
+.dashboard-header .bodyHeading {
+  font-weight: bold;
+  font-size: 40px;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.modal-footer .btn-danger {
+  background-color: #fd7d7d;
+  border-color: #fd7d7d;
+}
+
+.modal-footer .btn-success {
+  background-color: #4fd382;
+  border-color: #4fd382;
+}
+
+.search-input-group {
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  width: 250px; /* Standardize width as seen in aDaftarSidang.php */
+  margin-top: 0.19vh -1px;
+  margin-right: 1vh;
+}
+
+.search-input-group input.form-control {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding-left: 1rem; /* Adjust padding as search icon is inside span */
+}
+
+.search-input-group .input-group-text {
+  background-color: transparent;
+  border: none;
+  padding-right: 0; /* No padding on right as input has left padding */
+}
+
+.pagination-container {
+  margin-top: 2rem;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #4b68fb;
+  border-color: #4b68fb;
+  z-index: 2;
+  color: white;
+}
+
+.pagination .page-link {
+  color: #4b68fb;
+}
+.pagination .page-link:hover {
+  color: #2c45c9;
+}
+.pagination .page-item.disabled .page-link {
+  color: #6c757d;
+}
+
+#ddStatus {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}
+
+#ddStatus:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+/* Kelompok button styles */
+.kelompok-btn {
+  background-color: #4b68fb;
+  border-color: #4b68fb;
+  color: white;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.kelompok-btn:hover {
+  background-color: #3a5ce8;
+  border-color: #3a5ce8;
+  color: white;
+}
+
+/* Modal header actions */
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Ensure modal title doesn't interfere */
+.modal-header-custom .modal-title {
+  margin: 0;
+  flex-grow: 1;
+  margin-right: 1rem;
+}
+
+.modal-header-actions .btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.modal-header-actions .btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.8);
+  color: white;
+}
+
+/* Ensure close button is properly positioned */
+.modal-header-actions .btn-close {
+  margin-left: 0.5rem;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.modal-header-actions .btn-close:hover {
+  opacity: 1;
+}
+
+/* Modal tab styles */
+.modal-tab-container {
+  display: flex;
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 20px;
+}
+
+.modal-tab {
+  flex: 1;
+  padding: 12px 20px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: #6c757d;
+  transition: all 0.3s ease;
+}
+
+.modal-tab.active {
+  background-color: #4b68fb;
+  color: white;
+}
+
+.modal-tab:hover:not(.active) {
+  background-color: #e9ecef;
+}
+
+.modal-tab-content {
+  display: none;
+}
+
+.modal-tab-content.active {
+  display: block;
+}
+
+/* Form styles for kelompok modal */
+.kelompok-form-container {
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 20px;
+}
+
+.kelompok-form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.kelompok-form-group label {
+  width: 120px;
+  flex-shrink: 0;
+  color: #333;
+  font-weight: bold;
+  font-size: 14px;
+  margin-right: 15px;
+  text-align: left;
+}
+
+.kelompok-form-group input,
+.kelompok-form-group select {
+  flex-grow: 1;
+  width: 100%;
+  height: 35px;
+  padding: 0 15px;
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: #374151;
+  border-radius: 26px;
+}
+
+.kelompok-form-group input[readonly] {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.anggota-wrapper {
+  margin-bottom: 15px;
+}
+
+.anggota-form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.anggota-form-group label {
+  width: 120px;
+  flex-shrink: 0;
+  color: #333;
+  font-weight: bold;
+  font-size: 14px;
+  margin-right: 15px;
+  text-align: left;
+}
+
+.anggota-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.anggota-input-group input {
+  flex-grow: 1;
+  height: 35px;
+  padding: 0 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 26px;
+  font-size: 14px;
+}
+
+.anggota-nama-display {
+  flex-shrink: 1;
+  min-width: 150px;
+  max-width: 250px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-height: 48px;
+  padding: 8px 15px;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 26px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  color: #374151;
+}
+
+.form-toggle-buttons {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.form-toggle-buttons button {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  border-radius: 35px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background-color: white;
+}
+
+.form-toggle-buttons button:hover {
+  background-color: #ddd;
+}
+
+.kelompok-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+  gap: 10px;
+}
+
+.kelompok-form-actions .btn-batal {
+  background-color: #ff5f5f;
+  color: white;
+  border-radius: 20px;
+  width: 120px;
+  border: none;
+  padding: 8px 15px;
+}
+
+.kelompok-form-actions .btn-simpan {
+  background-color: #4b68fb;
+  color: white;
+  border-radius: 20px;
+  width: 120px;
+  border: none;
+  padding: 8px 15px;
+}
+
+.kelompok-form-actions .btn-simpan:hover {
+  background-color: #3a5ce8;
+}
+
+.kelompok-form-actions .btn-kembali {
+  background-color: #6c757d;
+  color: white;
+  border-radius: 20px;
+  width: 120px;
+  border: none;
+  padding: 8px 15px;
+}
+
+.kelompok-filter-container {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.kelompok-filter-container .form-check-inline {
+  margin-right: 20px;
+}
+
+.kelompok-filter-container .form-check-input:checked {
+  background-color: #4b68fb;
+  border-color: #4b68fb;
+}
+
+.kelompok-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+.kelompok-list-item {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.kelompok-list-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kelompok-list-item.kelompok-locked {
+  background-color: #d5f6dc;
+  border-color: #3ab070;
+}
+
+.kelompok-list-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.kelompok-list-prodi {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.kelompok-list-anggota {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.kelompok-list-pengajuan {
+  font-size: 0.85em;
+}
+
+/* Form section styles */
+.form-section-card {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.form-section-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 0.95em;
+}
+
+/* Input container for autocomplete */
+.input-container {
+  position: relative;
+  flex-grow: 1;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.autocomplete-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover {
+  background-color: #f3f4f6;
+}
+
+.autocomplete-item .nim {
+  font-weight: 600;
+  color: #4b68fb;
+  font-size: 14px;
+}
+
+.autocomplete-item .nama {
+  color: #374151;
+  font-size: 13px;
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+.autocomplete-item mark {
+  background: transparent;
+  color: #fd7d7d;
+  font-weight: bold;
+}
+
+/* Modal backdrop fallback */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+}
+
+.modal-open {
+  overflow: hidden;
+}
+
+/* Error message styles */
+.error-message {
+  color: #dc3545;
+  font-size: 0.875em;
+  margin-top: 0.25rem;
+}
+
+.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.is-invalid:focus {
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Modal styles */
+@media (max-width: 768px) {
+  .modal-dialog.modal-lg {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-tab-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-tab {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .kelompok-form-container {
+    padding: 0;
+  }
+
+  .kelompok-form-group {
+    margin-bottom: 1rem;
+  }
+
+  .kelompok-form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .kelompok-form-group input,
+  .kelompok-form-group select {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+
+  .form-section-card {
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+
+  .form-section-title {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .anggota-input-group {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .input-container {
+    width: 100%;
+  }
+
+  .anggota-nama-display {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .form-toggle-buttons {
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .form-toggle-buttons button {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .autocomplete-dropdown {
+    max-height: 200px;
+    font-size: 0.85rem;
+  }
+
+  .autocomplete-item {
+    padding: 0.5rem;
+  }
+
+  .autocomplete-item .nim {
+    font-size: 0.8rem;
+  }
+
+  .autocomplete-item .nama {
+    font-size: 0.85rem;
+  }
+
+  .kelompok-form-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .kelompok-form-actions .btn {
+    width: 100%;
+    padding: 0.75rem;
+  }
+
+  .modal-header-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-left: 0;
+  }
+
+  .modal-header-actions .btn-outline-light {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .modal-dialog.modal-lg {
+    max-width: 90%;
+  }
+
+  .anggota-input-group {
+    gap: 0.75rem;
+  }
+
+  .input-container {
+    flex: 1;
+  }
+
+  .anggota-nama-display {
+    flex: 0 0 200px;
+  }
+
+  .form-toggle-buttons {
+    flex: 0 0 auto;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .modal-dialog.modal-lg {
+    margin: 0.25rem;
+    max-width: calc(100% - 0.5rem);
+  }
+
+  .modal-header {
+    padding: 0.75rem;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+  }
+
+  .modal-body {
+    padding: 0.75rem;
+  }
+
+  .kelompok-form-group input,
+  .kelompok-form-group select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .form-section-card {
+    padding: 0.75rem;
+  }
+
+  .anggota-form-group {
+    margin-bottom: 0.75rem;
+  }
+
+  .autocomplete-dropdown {
+    max-height: 150px;
+  }
+
+  .kelompok-list-item {
+    padding: 0.75rem;
+  }
+
+  .kelompok-list-title {
+    font-size: 1rem;
+  }
+
+  .kelompok-list-prodi {
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .modal-dialog.modal-lg {
+    max-height: 90vh;
+    margin: 0.5rem;
+  }
+
+  .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .autocomplete-dropdown {
+    max-height: 120px;
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .form-toggle-buttons button {
+    border-width: 1px;
+  }
+
+  .autocomplete-item {
+    border-bottom-width: 1px;
+  }
+}
+
+/* Main Page Responsive Styles */
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .container-fluid {
+    padding: 0 0.5rem;
+  }
+
+  /* Search and Filter Section */
+  .d-flex.align-items-center.gap-2.mb-4 {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+
+  .search-input-group {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .search-input-group .form-control {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Table Responsive */
+  table {
+    font-size: 0.85rem;
+  }
+
+  table th,
+  table td {
+    padding: 0.5rem 0.25rem;
+  }
+
+  /* Hide less important columns on mobile */
+  table th:nth-child(4), /* Mata Kuliah */
+  table td:nth-child(4) {
+    display: none;
+  }
+
+  /* Make action button larger for touch */
+  .detail-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    margin-top: 1rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pagination .page-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  /* Kelompok Button */
+  .kelompok-btn {
+    width: 100%;
+    max-width: none !important;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+/* Tablet Styles for Main Page */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container-fluid {
+    padding: 0 1rem;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  .search-input-group {
+    max-width: 300px;
+  }
+
+  .kelompok-btn {
+    max-width: 250px !important;
+  }
+}
+
+/* Small Mobile Styles for Main Page */
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 0.75rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .container-fluid {
+    padding: 0 0.25rem;
+  }
+
+  /* Further hide columns on very small screens */
+  table th:nth-child(3), /* Judul */
+  table td:nth-child(3) {
+    display: none;
+  }
+
+  table th:nth-child(5), /* Dosen Pembimbing */
+  table td:nth-child(5) {
+    display: none;
+  }
+
+  /* Show only essential columns */
+  table th:nth-child(1), /* No */
+  table th:nth-child(2), /* Kelompok */
+  table th:nth-child(6), /* Jenis Sidang */
+  table th:nth-child(7) {
+    /* Aksi */
+    display: table-cell;
+  }
+
+  table td:nth-child(1),
+  table td:nth-child(2),
+  table td:nth-child(6),
+  table td:nth-child(7) {
+    display: table-cell;
+  }
+
+  .pagination .page-link {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape Mobile for Main Page */
+@media (max-width: 768px) and (orientation: landscape) {
+  .dashboard-header {
+    padding: 0.5rem 1rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .container-fluid {
+    padding: 0 0.5rem;
+  }
+
+  /* Show more columns in landscape */
+  table th:nth-child(4),
+  table td:nth-child(4) {
+    display: table-cell;
+  }
+}
+
+/* Kelompok Filter Container */
+.kelompok-filter-container {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.kelompok-filter-container .form-check-input {
+  cursor: pointer;
+}
+
+.kelompok-filter-container .form-check-input:checked {
+  background-color: #4b68fb;
+  border-color: #4b68fb;
+}
+
+.kelompok-filter-container .form-check-label {
+  cursor: pointer;
+  font-weight: 500;
+  color: #495057;
+}
+
+.kelompok-filter-container .form-check-input:checked + .form-check-label {
+  color: #4b68fb;
+}
+
+/* Responsive filter container */
+@media (max-width: 768px) {
+  .kelompok-filter-container {
+    padding: 0.75rem;
+  }
+
+  .kelompok-filter-container .d-flex {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+
+  .kelompok-filter-container .form-check-inline {
+    margin-right: 0;
+  }
+}
+
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+.custom-select-wrapper select {
+  width: 100%;
+  padding-right: 2.5rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #f2f2f6;
+  border-radius: 2rem;
+  height: 35px;
+  font-size: 14px;
+}
+.custom-select-arrow {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+/* Styling card berdasarkan status pengajuan */
+.kelompok-list-item.kelompok-status-draft {
+  border-left: 4px solid #6c757d; /* Abu-abu */
+  background-color: #f8f9fa;
+}
+
+.kelompok-list-item.kelompok-status-pending {
+  border-left: 4px solid #ffc107; /* Kuning */
+  background-color: #fff3cd;
+}
+
+.kelompok-list-item.kelompok-status-approved {
+  border-left: 4px solid #198754; /* Hijau */
+  background-color: #d1e7dd;
+}
+
+.kelompok-list-item.kelompok-status-rejected {
+  border-left: 4px solid #dc3545; /* Merah */
+  background-color: #f8d7da;
+}
+
+/* Hover effect untuk card */
+.kelompok-list-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Transisi smooth untuk perubahan status */
+.kelompok-list-item {
+  transition: all 0.3s ease;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -2px;
+  right: -8px;
+  background: #4b68fb;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.55em;
+  padding: 0 3px;
+  z-index: 10;
+  border: 2px solid white;
+  font-weight: bold;
+  min-width: 10px;
+  text-align: center;
+  line-height: 1.2;
+  box-shadow: 0 0 2px #0002;
+}
+.position-relative {
+  position: relative;
+}
+
+@media (max-width: 576px) {
+  .anggota-input-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+  .anggota-nama-display {
+    order: 2;
+    margin-left: 0 !important;
+    margin-top: 0.25rem;
+    font-size: 1rem;
+    word-break: break-word;
+    text-align: left;
+  }
+  .input-container {
+    order: 1;
+  }
+  .input-container input {
+    width: 100%;
+    min-width: 0;
+  }
+  .form-toggle-buttons {
+    order: 3;
+    display: flex !important;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  .form-toggle-buttons button {
+    width: 48%;
+    min-width: 0;
+  }
+}
+
+
+--- END OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\css\dPengajuan.css ---
+
+================================================================================
+
+--- START OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\img\WhiteAstra.png ---
+
+NOTE: An image file is referenced at this path.
+PATH: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\img\WhiteAstra.png
+
+--- END OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\img\WhiteAstra.png ---
+
+================================================================================
+
+--- START OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\js\main.js ---
+
+// FUNGSI UNTUK ADMIN
+// --- Tulis fungsi di sini ---
+document.addEventListener("DOMContentLoaded", function () {
+  // =================================================
+  // BAGIAN 1: PENGAMBILAN ELEMEN DARI HTML
+  // =================================================
+  const fileInput = document.getElementById("fileInput");
+  const submitBtn = document.getElementById("submitBtn");
+  const revisionForm = document.getElementById("revisionForm");
+  const btnKembali = document.getElementById("btnKembali");
+
+  // Elemen spesifik untuk UI upload
+  const initialState = document.getElementById("initial-state");
+  const selectedState = document.getElementById("selected-state");
+  const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+  // Cek apakah semua elemen penting ada
+  if (
+    !fileInput ||
+    !submitBtn ||
+    !revisionForm ||
+    !initialState ||
+    !selectedState ||
+    !fileNameDisplay
+  ) {
+    console.error(
+      "Peringatan: Salah satu elemen HTML untuk fungsionalitas upload tidak ditemukan. Pastikan semua ID sudah benar."
+    );
+    return; // Hentikan script jika ada yang kurang
+  }
+
+  // =================================================
+  // BAGIAN 2: LOGIKA SAAT PENGGUNA MEMILIH FILE
+  // =================================================
+  fileInput.addEventListener("change", function () {
+    if (this.files.length > 0) {
+      // --- JIKA FILE DIPILIH ---
+      const selectedFile = this.files[0];
+
+      // Ganti ikon
+      initialState.classList.add("d-none");
+      selectedState.classList.remove("d-none");
+
+      // Tampilkan nama file
+      fileNameDisplay.textContent = selectedFile.name;
+
+      // Aktifkan tombol Kirim (CSS akan otomatis mengubah stylenya)
+      submitBtn.disabled = false;
+    } else {
+      // --- JIKA PEMILIHAN DIBATALKAN ---
+
+      // Kembalikan ikon
+      initialState.classList.remove("d-none");
+      selectedState.classList.add("d-none");
+
+      // Kosongkan nama file
+      fileNameDisplay.textContent = "";
+
+      // Non-aktifkan lagi tombol Kirim
+      submitBtn.disabled = true;
+    }
+  });
+
+  // =================================================
+  // BAGIAN 3: LOGIKA SAAT TOMBOL "KIRIM" DITEKAN
+  // =================================================
+  revisionForm.addEventListener("submit", function (event) {
+    // Selalu hentikan pengiriman form secara otomatis untuk menampilkan konfirmasi
+    event.preventDefault();
+
+    // Tampilkan modal konfirmasi SweetAlert2
+    Swal.fire({
+      title: "Perhatian",
+      text: "Apakah anda sudah yakin ingin mengupload dokumen?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#198754", // Warna hijau
+      cancelButtonColor: "#dc3545", // Warna merah
+      confirmButtonText: "Lanjutkan",
+      cancelButtonText: "Batalkan",
+      customClass: {
+        popup: "rounded-4", // Membuat modal lebih rounded
+      },
+    }).then((result) => {
+      // Cek jika pengguna menekan tombol "Lanjutkan"
+      if (result.isConfirmed) {
+        // Jika dikonfirmasi, baru kita kirim form-nya secara manual ke PHP
+        revisionForm.submit();
+      }
+    });
+  });
+
+  // =================================================
+  // BAGIAN 4: LOGIKA TOMBOL "KEMBALI"
+  // =================================================
+  if (btnKembali) {
+    btnKembali.addEventListener("click", function () {
+      history.back(); // Perintah untuk kembali ke halaman sebelumnya
+    });
+  }
+});
+
+// FUNGSI UNTUK DOSEN
+function goToDetail(id_sidang) {
+    window.location.href = "detail_sidang.php?id_sidang=" + encodeURIComponent(id_sidang);
+}
+
+function goToEvaluasi(nim, tipe) {
+  // Fungsi ini sekarang mengirimkan nim DAN tipe ke URL
+  window.location.href = `dEvaluasiSidang.php?nim=${nim}&tipe=${tipe}`;
+}
+
+const notifModalElement = document.getElementById("notifModal");
+const modal = new bootstrap.Modal(notifModalElement);
+
+function showModal(status) {
+  const modalLabel = document.getElementById("notifModalLabel");
+  modalLabel.innerText = `Sidang berhasil ${status.toLowerCase()}`;
+  modal.show();
+}
+
+notifModalElement.addEventListener("hidden.bs.modal", (event) => {
+  window.location.href = "dpengajuan.php";
+});
+
+
+
+// FUNGSI UNTUK MAHASISWA
+
+
+--- END OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\js\main.js ---
+
+================================================================================
+
+--- START OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\js\kelompokModal.js ---
+
+// Add SweetAlert2 import at the top if not present
+if (typeof Swal === "undefined") {
+  var script = document.createElement("script");
+  script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+  document.head.appendChild(script);
+}
+
+let kelompokModalInstance;
+let anggotaCount = 1;
+let currentProdi = "";
+let mahasiswaData = [];
+let kelompokData = [];
+let dosenData = [];
+let matkulData = [];
+let dosenCount = 1;
+let selectedMahasiswa = {};
+
+document.addEventListener("DOMContentLoaded", function () {
+  const kelompokModalEl = document.getElementById("kelompokModal");
+  const jenisSidang = document.getElementById("jenis_sidang");
+
+  if (kelompokModalEl) {
+    try {
+      if (typeof bootstrap !== "undefined" && bootstrap.Modal) {
+        kelompokModalInstance = new bootstrap.Modal(kelompokModalEl, {
+          backdrop: true,
+          keyboard: true,
+          focus: true,
+        });
+      } else {
+        console.error("Bootstrap Modal is not available");
+        // Fallback for environments without Bootstrap JS
+        kelompokModalInstance = {
+          show: () => (kelompokModalEl.style.display = "block"),
+          hide: () => (kelompokModalEl.style.display = "none"),
+        };
+      }
+      kelompokModalEl.addEventListener("hidden.bs.modal", function () {
+        if (!window.modalClosedByFunction) {
+          resetKelompokForm();
+        }
+        window.modalClosedByFunction = false;
+      });
+    } catch (error) {
+      console.error("Error initializing modal:", error);
+    }
+  }
+
+  const kelompokForm = document.getElementById("kelompokForm");
+  if (kelompokForm) {
+    kelompokForm.addEventListener("submit", handleKelompokFormSubmit);
+  }
+
+  if (jenisSidang) {
+    jenisSidang.addEventListener("change", handleJenisSidangChange);
+  }
+
+  fetchMahasiswaData();
+  fetchDosenData();
+  updateToggleButtonsVisibility();
+});
+
+function showMatkulField(show) {
+  const matkulGroup = document.getElementById("matkul-group");
+  const idMatkul = document.getElementById("id_matkul");
+  if (matkulGroup) matkulGroup.style.display = show ? "block" : "none";
+  if (idMatkul) idMatkul.required = !!show;
+  if (!show && idMatkul) idMatkul.value = "";
+}
+
+function showPembimbingField(show) {
+  const dosenWrapperGroup = document.getElementById("dosen-wrapper-group");
+  if (dosenWrapperGroup)
+    dosenWrapperGroup.style.display = show ? "block" : "none";
+}
+
+function handleJenisSidangChange() {
+  const jenisSidang = document.getElementById("jenis_sidang").value;
+  const prodi = document.getElementById("kelompok_prodi").value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Prodi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu sebelum memilih jenis sidang.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+
+    // Reset jenis sidang selection
+    document.getElementById("jenis_sidang").value = "";
+    return;
+  }
+
+  if (jenisSidang === "Semester") {
+    showMatkulField(true);
+    showPembimbingField(false);
+    fetchMataKuliah();
+    resetDosenInputs();
+  } else if (jenisSidang === "Tugas Akhir") {
+    showMatkulField(false);
+    showPembimbingField(true);
+    resetDosenInputs();
+    // Set id_matkul to 2006 for Tugas Akhir
+    const idMatkul = document.getElementById("id_matkul");
+    if (idMatkul) idMatkul.value = "2006";
+  } else {
+    showMatkulField(false);
+    showPembimbingField(false);
+    resetDosenInputs();
+  }
+  setNextKelompokId();
+}
+
+async function fetchMahasiswaData() {
+  try {
+    const tahunAjaran = document.getElementById("tahun_ajaran")?.value || "";
+    const jenisSidang = document.getElementById("jenis_sidang")?.value || "";
+    const prodi = document.getElementById("kelompok_prodi")?.value || "";
+    let idMatkul = document.getElementById("id_matkul")?.value || "";
+
+    // Validate prodi selection first
+    if (!prodi) {
+      mahasiswaData = [];
+      updateAvailabilityIndicator();
+      return; // Don't fetch data if prodi is not selected
+    }
+
+    if (jenisSidang === "Tugas Akhir") idMatkul = "2006";
+
+    const form = document.getElementById("kelompokForm");
+    const isEditMode = form?.dataset.mode === "edit";
+
+    let url = "../../control/dosen/kelompok/get_mahasiswa.php?";
+    const params = [];
+
+    if (tahunAjaran)
+      params.push(`tahun_ajaran=${encodeURIComponent(tahunAjaran)}`);
+    if (jenisSidang)
+      params.push(`jenis_sidang=${encodeURIComponent(jenisSidang)}`);
+    if (idMatkul) params.push(`id_matkul=${encodeURIComponent(idMatkul)}`);
+    if (prodi) params.push(`prodi=${encodeURIComponent(prodi)}`);
+
+    if (isEditMode) {
+      params.push(`edit_mode=true`);
+      params.push(
+        `current_nomor_kelompok=${encodeURIComponent(
+          form.dataset.nomor_kelompok || ""
+        )}`
+      );
+      params.push(
+        `current_tahun_ajaran=${encodeURIComponent(
+          form.dataset.tahun_ajaran || ""
+        )}`
+      );
+      params.push(
+        `current_jenis_sidang=${encodeURIComponent(
+          form.dataset.jenis_sidang || ""
+        )}`
+      );
+      params.push(
+        `current_id_matkul=${encodeURIComponent(form.dataset.id_matkul || "")}`
+      );
+    }
+
+    url += params.join("&");
+    console.log("Fetching mahasiswa data with URL:", url);
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const responseText = await response.text();
+    try {
+      mahasiswaData = JSON.parse(responseText);
+      updateAvailabilityIndicator();
+    } catch (parseError) {
+      console.error(
+        "JSON Parse Error for mahasiswa data:",
+        parseError,
+        "\nResponse:",
+        responseText
+      );
+      mahasiswaData = [];
+      updateAvailabilityIndicator();
+    }
+  } catch (error) {
+    console.error("Error fetching mahasiswa data:", error);
+    mahasiswaData = [];
+    updateAvailabilityIndicator();
+    alert("Gagal memuat data mahasiswa untuk autocomplete.");
+  }
+}
+
+function updateAvailabilityIndicator() {
+  const indicator = document.getElementById("mahasiswa-availability");
+  if (!indicator) return;
+
+  const count = mahasiswaData.length;
+  const prodi = document.getElementById("kelompok_prodi")?.value || "";
+
+  if (!prodi) {
+    indicator.innerHTML =
+      '<span style="color: #6c757d;">Pilih Program Studi terlebih dahulu</span>';
+    return;
+  }
+
+  if (count === 0) {
+    indicator.innerHTML =
+      '<span style="color: #dc3545;">Tidak ada mahasiswa yang tersedia</span>';
+  } else if (count <= 5) {
+    indicator.innerHTML = `<span style="color: #ffc107;">Hanya ${count} mahasiswa tersedia</span>`;
+  } else {
+    indicator.innerHTML = `<span style="color: #28a745;">${count} mahasiswa tersedia</span>`;
+  }
+}
+
+async function refreshMahasiswaData() {
+  await fetchMahasiswaData();
+  resetAnggotaInputs();
+  updateToggleButtonsVisibility();
+}
+
+function setupFormChangeListeners() {
+  const tahunAjaranSelect = document.getElementById("tahun_ajaran");
+  const jenisSidangSelect = document.getElementById("jenis_sidang");
+  const idMatkulSelect = document.getElementById("id_matkul");
+  const prodiSelect = document.getElementById("kelompok_prodi");
+
+  if (tahunAjaranSelect)
+    tahunAjaranSelect.addEventListener("change", refreshMahasiswaData);
+  if (jenisSidangSelect)
+    jenisSidangSelect.addEventListener("change", refreshMahasiswaData);
+  if (idMatkulSelect)
+    idMatkulSelect.addEventListener("change", refreshMahasiswaData);
+  if (prodiSelect)
+    prodiSelect.addEventListener("change", filterMahasiswaByProdi);
+}
+
+async function fetchDosenData() {
+  try {
+    const response = await fetch("../../control/dosen/kelompok/get_dosen.php");
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    dosenData = await response.json();
+  } catch (error) {
+    console.error("Error fetching dosen data:", error);
+    dosenData = [];
+    alert("Gagal memuat data dosen untuk autocomplete.");
+  }
+}
+
+function openKelompokModal() {
+  resetToCreateMode();
+  switchTab("tambah");
+
+  if (kelompokModalInstance) {
+    kelompokModalInstance.show();
+  } else {
+    document.getElementById("kelompokModal").style.display = "block";
+  }
+  setupFormChangeListeners();
+
+  // Show initial message for prodi selection
+  const indicator = document.getElementById("mahasiswa-availability");
+  if (indicator)
+    indicator.innerHTML =
+      '<span style="color: #6c757d;">Pilih Program Studi terlebih dahulu</span>';
+}
+
+async function setNextKelompokId() {
+  try {
+    const tahunAjaran = document.getElementById("tahun_ajaran")?.value;
+    const jenisSidang = document.getElementById("jenis_sidang")?.value;
+    const prodi = document.getElementById("kelompok_prodi")?.value;
+    let idMatkul = document.getElementById("id_matkul")?.value;
+
+    // Validate prodi selection first
+    if (!prodi) {
+      document.getElementById("nomor_kelompok").value = "-";
+      return;
+    }
+
+    if (jenisSidang === "Tugas Akhir") idMatkul = "2006";
+
+    if (!tahunAjaran || !jenisSidang || !idMatkul) {
+      document.getElementById("nomor_kelompok").value = "-";
+      return;
+    }
+
+    const response = await fetch(
+      `../../control/dosen/kelompok/get_next_kelompok_id.php?tahun_ajaran=${tahunAjaran}&jenis_sidang=${jenisSidang}&id_matkul=${idMatkul}`
+    );
+    if (!response.ok) throw new Error("Failed to fetch next Kelompok ID");
+
+    const data = await response.json();
+    if (data.next_nomor) {
+      document.getElementById("nomor_kelompok").value = data.next_nomor;
+    }
+  } catch (e) {
+    console.error("Error setting next kelompok ID:", e);
+    document.getElementById("nomor_kelompok").value = "1";
+  }
+}
+
+function switchTab(tabName) {
+  document
+    .querySelectorAll(".modal-tab-content")
+    .forEach((content) => content.classList.remove("active"));
+  document
+    .querySelectorAll(".modal-tab")
+    .forEach((tab) => tab.classList.remove("active"));
+
+  document.getElementById(tabName + "-tab").classList.add("active");
+  document
+    .querySelector(`.modal-tab[onclick="switchTab('${tabName}')"]`)
+    .classList.add("active");
+
+  if (tabName === "daftar") {
+    loadKelompokList();
+    setupKelompokFilters();
+  } else if (tabName === "tambah") {
+    const form = document.getElementById("kelompokForm");
+    if (form?.dataset.mode !== "edit") {
+      resetToCreateMode();
+    }
+    setupFormChangeListeners();
+
+    // Show initial message for prodi selection when switching to tambah tab
+    const indicator = document.getElementById("mahasiswa-availability");
+    if (indicator)
+      indicator.innerHTML =
+        '<span style="color: #6c757d;">Pilih Program Studi terlebih dahulu</span>';
+  }
+}
+
+function filterMahasiswaByProdi() {
+  const prodi = document.getElementById("kelompok_prodi").value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Prodi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+    return;
+  }
+
+  currentProdi = prodi;
+  selectedMahasiswa = {};
+  refreshMahasiswaData();
+}
+
+function highlightText(text, query) {
+  if (!query) return text;
+  const regex = new RegExp(
+    `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+    "gi"
+  );
+  return text.replace(regex, "<mark>$1</mark>");
+}
+
+function searchMahasiswa(input, anggotaIndex) {
+  const query = input.value.trim().toLowerCase();
+  const dropdown = document.getElementById(`autocomplete_${anggotaIndex}`);
+  const namaDisplay = document.getElementById(`anggota_nama_${anggotaIndex}`);
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    dropdown.innerHTML =
+      '<div class="autocomplete-item">Pilih Program Studi terlebih dahulu</div>';
+    dropdown.style.display = "block";
+    if (namaDisplay)
+      namaDisplay.textContent = "Pilih Program Studi terlebih dahulu";
+    return;
+  }
+
+  if (query.length === 0) {
+    dropdown.style.display = "none";
+    if (namaDisplay) namaDisplay.textContent = "Nama akan muncul otomatis";
+    return;
+  }
+
+  const selectedNIMs = Array.from(
+    document.querySelectorAll('input[name="anggota[]"]')
+  )
+    .map((inp) => inp.value.trim())
+    .filter((nim) => nim !== "" && nim !== input.value.trim());
+
+  const finalFilteredMahasiswa = mahasiswaData.filter(
+    (mhs) =>
+      !selectedNIMs.includes(String(mhs.nim)) &&
+      (String(mhs.nim).toLowerCase().includes(query) ||
+        mhs.nama_mhs.toLowerCase().includes(query))
+  );
+
+  if (finalFilteredMahasiswa.length > 0) {
+    dropdown.innerHTML = "";
+    finalFilteredMahasiswa.forEach((mhs) => {
+      const item = document.createElement("div");
+      item.className = "autocomplete-item";
+      item.innerHTML = `<div class="nim">${highlightText(
+        String(mhs.nim),
+        query
+      )}</div><div class="nama">${highlightText(mhs.nama_mhs, query)}</div>`;
+      item.onclick = () => selectMahasiswa(mhs, anggotaIndex);
+      dropdown.appendChild(item);
+    });
+    dropdown.style.display = "block";
+  } else {
+    dropdown.innerHTML = '<div class="autocomplete-item">Tidak ada hasil</div>';
+    dropdown.style.display = "block";
+  }
+}
+
+function selectMahasiswa(mahasiswa, anggotaIndex) {
+  document.getElementById(`anggota_${anggotaIndex}`).value = mahasiswa.nim;
+  document.getElementById(`anggota_nama_${anggotaIndex}`).textContent =
+    mahasiswa.nama_mhs;
+  document.getElementById(`autocomplete_${anggotaIndex}`).style.display =
+    "none";
+  selectedMahasiswa[anggotaIndex] = {
+    nim: mahasiswa.nim,
+    nama: mahasiswa.nama_mhs,
+  };
+}
+
+function addAnggota() {
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Prodi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu sebelum menambahkan anggota.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+    return;
+  }
+
+  anggotaCount++;
+  const wrapper = document.getElementById("anggota-wrapper");
+  const div = document.createElement("div");
+  div.className = "anggota-form-group";
+  div.id = `anggota-form-${anggotaCount}`;
+  div.innerHTML = `
+        <label for="anggota_${anggotaCount}">Anggota ${anggotaCount}:</label>
+        <div class="anggota-input-group">
+            <div class="input-container">
+        <input type="text" id="anggota_${anggotaCount}" name="anggota[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, ${anggotaCount})" autocomplete="off" />
+        <div class="autocomplete-dropdown" id="autocomplete_${anggotaCount}"></div>
+            </div>
+            <div class="anggota-nama-display" id="anggota_nama_${anggotaCount}">Nama akan muncul otomatis</div>
+            <div class="form-toggle-buttons">
+                <button type="button" onclick="addAnggota()">+</button>
+                <button type="button" onclick="removeAnggota()">-</button>
+            </div>
+        </div>`;
+  wrapper.appendChild(div);
+  updateToggleButtonsVisibility();
+}
+
+function removeAnggota() {
+  if (anggotaCount > 1) {
+    document.getElementById(`anggota-form-${anggotaCount}`).remove();
+    delete selectedMahasiswa[anggotaCount];
+    anggotaCount--;
+    updateToggleButtonsVisibility();
+  }
+}
+
+function resetAnggotaInputs() {
+  const wrapper = document.getElementById("anggota-wrapper");
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+  const defaultMessage = prodi
+    ? "Nama akan muncul otomatis"
+    : "Pilih Program Studi terlebih dahulu";
+
+  wrapper.innerHTML = `
+        <div class="anggota-form-group" id="anggota-form-1">
+            <label for="anggota_1">Anggota 1:</label>
+            <div class="anggota-input-group">
+                <div class="input-container">
+          <input type="text" id="anggota_1" name="anggota[]" placeholder="Masukkan NIM atau nama" oninput="searchMahasiswa(this, 1)" autocomplete="off" />
+          <div class="autocomplete-dropdown" id="autocomplete_1"></div>
+                </div>
+                <div class="anggota-nama-display" id="anggota_nama_1">${defaultMessage}</div>
+                <div class="form-toggle-buttons">
+                    <button type="button" onclick="addAnggota()">+</button>
+                    <button type="button" onclick="removeAnggota()" style="display: none;">-</button>
+                </div>
+            </div>
+        </div>`;
+  anggotaCount = 1;
+  selectedMahasiswa = {};
+  updateToggleButtonsVisibility();
+}
+
+// Dosen (Pembimbing) Section
+function resetDosenInputs() {
+  const dosenWrapper = document.getElementById("dosen-wrapper");
+  if (!dosenWrapper) return;
+
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+  const defaultMessage = prodi
+    ? "Nama dosen akan muncul otomatis"
+    : "Pilih Program Studi terlebih dahulu";
+
+  dosenWrapper.innerHTML = `
+    <div class="anggota-form-group" id="dosen-form-1">
+      <label for="dosen_pembimbing_1">Pembimbing 1:</label>
+      <div class="anggota-input-group">
+        <div class="input-container">
+          <input type="text" id="dosen_pembimbing_1" name="dosen_pembimbing[]" placeholder="Masukkan NIP atau nama dosen" autocomplete="off" oninput="searchDosen(this, 1)" />
+          <div class="autocomplete-dropdown" id="autocomplete_dosen_1"></div>
+        </div>
+        <div class="anggota-nama-display" id="dosen_nama_display_1">${defaultMessage}</div>
+        <div class="form-toggle-buttons">
+          <button type="button" onclick="addDosen()">+</button>
+          <button type="button" onclick="removeDosen()" style="display:none;">-</button>
+        </div>
+      </div>
+      <input type="hidden" id="dosen_nomor_hidden_1" name="dosen_nomor_hidden[]" />
+    </div>`;
+  dosenCount = 1;
+  updateToggleButtonsVisibility();
+}
+
+function addDosen() {
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Prodi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu sebelum menambahkan pembimbing.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+    return;
+  }
+
+  dosenCount++;
+  const wrapper = document.getElementById("dosen-wrapper");
+  const div = document.createElement("div");
+  div.className = "anggota-form-group";
+  div.id = `dosen-form-${dosenCount}`;
+  div.innerHTML = `
+      <label for="dosen_pembimbing_${dosenCount}">Pembimbing ${dosenCount}:</label>
+      <div class="anggota-input-group">
+        <div class="input-container">
+          <input type="text" id="dosen_pembimbing_${dosenCount}" name="dosen_pembimbing[]" placeholder="Masukkan NIP atau nama dosen" autocomplete="off" oninput="searchDosen(this, ${dosenCount})" />
+        <div class="autocomplete-dropdown" id="autocomplete_dosen_${dosenCount}"></div>
+        </div>
+        <div class="anggota-nama-display" id="dosen_nama_display_${dosenCount}">Nama dosen akan muncul otomatis</div>
+        <div class="form-toggle-buttons">
+          <button type="button" onclick="addDosen()">+</button>
+          <button type="button" onclick="removeDosen()">-</button>
+        </div>
+      </div>
+    <input type="hidden" id="dosen_nomor_hidden_${dosenCount}" name="dosen_nomor_hidden[]" />`;
+  wrapper.appendChild(div);
+  updateToggleButtonsVisibility();
+}
+
+function removeDosen() {
+  if (dosenCount > 1) {
+    document.getElementById(`dosen-form-${dosenCount}`).remove();
+    dosenCount--;
+    updateToggleButtonsVisibility();
+  }
+}
+
+function searchDosen(input, index) {
+  const query = input.value.trim().toLowerCase();
+  const dropdown = document.getElementById(`autocomplete_dosen_${index}`);
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+  const namaDisplay = document.getElementById(`dosen_nama_display_${index}`);
+
+  // Validate prodi selection first
+  if (!prodi) {
+    dropdown.innerHTML =
+      '<div class="autocomplete-item">Pilih Program Studi terlebih dahulu</div>';
+    dropdown.style.display = "block";
+    if (namaDisplay)
+      namaDisplay.textContent = "Pilih Program Studi terlebih dahulu";
+    document.getElementById(`dosen_nomor_hidden_${index}`).value = "";
+    return;
+  }
+
+  if (query.length === 0) {
+    dropdown.style.display = "none";
+    if (namaDisplay)
+      namaDisplay.textContent = "Nama dosen akan muncul otomatis";
+    document.getElementById(`dosen_nomor_hidden_${index}`).value = "";
+    return;
+  }
+
+  const selectedNIPs = Array.from(
+    document.querySelectorAll('input[name="dosen_nomor_hidden[]"]')
+  )
+    .map((inp) => inp.value.trim())
+    .filter((nip) => nip !== "");
+
+  // Filter dosen: tidak boleh dosen login, tidak boleh duplikat, harus cocok query
+  const finalFilteredDosen = dosenData.filter((dosen) => {
+    const dosenNIP = String(dosen.nomor_dosen);
+    const loginNIP = String(window.nomorDosenLogin || "");
+
+    // Exclude dosen login
+    if (dosenNIP === loginNIP) {
+      return false;
+    }
+
+    // Exclude already selected NIPs
+    if (selectedNIPs.includes(dosenNIP)) {
+      return false;
+    }
+
+    // Match query
+    return (
+      dosenNIP.toLowerCase().includes(query) ||
+      dosen.nama_dosen.toLowerCase().includes(query)
+    );
+  });
+
+  if (finalFilteredDosen.length > 0) {
+    dropdown.innerHTML = "";
+    finalFilteredDosen.forEach((dosen) => {
+      const item = document.createElement("div");
+      item.className = "autocomplete-item";
+      item.innerHTML = `<div class="nim">${highlightText(
+        String(dosen.nomor_dosen),
+        query
+      )}</div><div class="nama">${highlightText(
+        dosen.nama_dosen,
+        query
+      )}</div>`;
+      item.onclick = () => selectDosen(dosen, index);
+      dropdown.appendChild(item);
+    });
+    dropdown.style.display = "block";
+  } else {
+    dropdown.innerHTML = '<div class="autocomplete-item">Tidak ada hasil</div>';
+    dropdown.style.display = "block";
+  }
+}
+
+function selectDosen(dosen, index) {
+  document.getElementById(`dosen_pembimbing_${index}`).value =
+    dosen.nomor_dosen;
+  document.getElementById(`dosen_nama_display_${index}`).textContent =
+    dosen.nama_dosen;
+  document.getElementById(`dosen_nomor_hidden_${index}`).value =
+    dosen.nomor_dosen;
+  document.getElementById(`autocomplete_dosen_${index}`).style.display = "none";
+}
+
+function updateToggleButtonsVisibility() {
+  document
+    .querySelectorAll("#anggota-wrapper .form-toggle-buttons")
+    .forEach((btnGroup, index, arr) => {
+      btnGroup.style.display =
+        index === arr.length - 1 ? "inline-flex" : "none";
+      const removeBtn = btnGroup.querySelector(
+        'button[onclick="removeAnggota()"]'
+      );
+      if (removeBtn)
+        removeBtn.style.display = anggotaCount > 1 ? "block" : "none";
+    });
+
+  document
+    .querySelectorAll("#dosen-wrapper .form-toggle-buttons")
+    .forEach((btnGroup, index, arr) => {
+      btnGroup.style.display =
+        index === arr.length - 1 ? "inline-flex" : "none";
+      const removeBtn = btnGroup.querySelector(
+        'button[onclick="removeDosen()"]'
+      );
+      if (removeBtn)
+        removeBtn.style.display = dosenCount > 1 ? "block" : "none";
+    });
+}
+
+function resetKelompokForm() {
+  const form = document.getElementById("kelompokForm");
+  if (form) {
+    form.reset();
+    delete form.dataset.mode;
+    delete form.dataset.nomor_kelompok;
+    delete form.dataset.tahun_ajaran;
+    delete form.dataset.jenis_sidang;
+    delete form.dataset.id_matkul;
+  }
+  updateModalUI("create");
+  resetAnggotaInputs();
+  resetDosenInputs();
+  showMatkulField(false);
+  showPembimbingField(false);
+  anggotaCount = 1;
+  dosenCount = 1;
+  selectedMahasiswa = {};
+  const indicator = document.getElementById("mahasiswa-availability");
+  if (indicator)
+    indicator.innerHTML =
+      '<span style="color: #6c757d;">ℹ️ Pilih Program Studi terlebih dahulu</span>';
+  document.querySelectorAll(".error-message").forEach((el) => el.remove());
+  document
+    .querySelectorAll(".is-invalid")
+    .forEach((el) => el.classList.remove("is-invalid"));
+}
+
+function resetToCreateMode() {
+  resetKelompokForm();
+  setNextKelompokId();
+
+  // Show initial message for prodi selection
+  const indicator = document.getElementById("mahasiswa-availability");
+  if (indicator)
+    indicator.innerHTML =
+      '<span style="color: #6c757d;"> Pilih Program Studi terlebih dahulu</span>';
+}
+
+window.closeKelompokModal = function () {
+  window.modalClosedByFunction = true;
+  resetToCreateMode();
+  if (kelompokModalInstance) {
+    kelompokModalInstance.hide();
+  }
+};
+
+async function loadKelompokList() {
+  const container = document.getElementById("kelompok-list-container");
+  container.innerHTML =
+    '<p class="text-center text-muted">Memuat daftar kelompok...</p>';
+  try {
+    const timestamp = new Date().getTime();
+    const response = await fetch(
+      `../../control/dosen/kelompok/get_kelompok_list.php?t=${timestamp}`
+    );
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+    if (!Array.isArray(data)) throw new Error("Expected array response");
+    window.allKelompokData = data;
+    renderKelompokList(data);
+  } catch (error) {
+    console.error("Error fetching kelompok data:", error);
+    container.innerHTML = `<p class="text-center text-danger">Gagal memuat daftar kelompok: ${error.message}</p>`;
+  }
+}
+
+function renderKelompokList(kelompokData) {
+  const container = document.getElementById("kelompok-list-container");
+  const filterSemester = document.getElementById("filter-semester")?.checked;
+  const filterTugasAkhir =
+    document.getElementById("filter-tugas-akhir")?.checked;
+
+  let filteredData = kelompokData;
+  if (filterSemester !== filterTugasAkhir) {
+    // Only one is checked
+    filteredData = kelompokData.filter(
+      (k) =>
+        (filterSemester && k.jenis_sidang === "Semester") ||
+        (filterTugasAkhir && k.jenis_sidang === "Tugas Akhir")
+    );
+  }
+
+  if (filteredData.length === 0) {
+    container.innerHTML = `<p class="text-center text-muted">${
+      kelompokData.length === 0
+        ? "Belum ada kelompok yang dibuat."
+        : "Tidak ada kelompok yang sesuai filter."
+    }</p>`;
+    return;
+  }
+
+  container.innerHTML = filteredData
+    .map((kelompok) => {
+      const anggotaList = kelompok.anggota
+        .map((a) => `${a.nim} - ${a.nama_mhs}`)
+        .join("<br>");
+      let pengajuanInfo =
+        "<span class='badge bg-secondary'>Belum Ada Pengajuan</span>";
+      let locked = false;
+
+      if (kelompok.pengajuan_status) {
+        const { status_ajuan, nama_pengaju, nim_pengaju } =
+          kelompok.pengajuan_status;
+        if (status_ajuan === "Pending") {
+          pengajuanInfo = `<span class='badge bg-warning text-dark'>Status: ${status_ajuan}</span> <br><small>Oleh: ${nama_pengaju} (${nim_pengaju})</small>`;
+          locked = true;
+        } else if (status_ajuan === "Draft") {
+          pengajuanInfo = `<span class='badge bg-secondary'>Draft</span> <br><small>Oleh: ${nama_pengaju} (${nim_pengaju})</small>`;
+          // locked = false; // Draft tidak mengunci
+        } else if (status_ajuan === "Approved") {
+          pengajuanInfo = `<span class='badge text-bg-success'>Status: ${status_ajuan}</span> <br><small>Oleh: ${nama_pengaju} (${nim_pengaju})</small>`;
+          locked = true;
+        } else if (status_ajuan === "Rejected") {
+          pengajuanInfo = `<span class='badge bg-danger'>Ditolak</span> <br><small>Oleh: ${nama_pengaju} (${nim_pengaju})</small>`;
+        }
+      }
+
+      return `
+      <div class="kelompok-list-item ${locked ? "kelompok-locked" : ""} ${
+        kelompok.pengajuan_status
+          ? `kelompok-status-${kelompok.pengajuan_status.status_ajuan?.toLowerCase()}`
+          : ""
+      }">
+      <div class="kelompok-list-header d-flex justify-content-between align-items-center">
+        <div>
+            <div class="kelompok-list-title">Kelompok ${
+              kelompok.nomor_kelompok
+            } (${kelompok.jenis_sidang})</div>
+            <div class="kelompok-list-prodi">${kelompok.nama_matkul} - ${
+        kelompok.tahun_ajaran
+      }</div>
+        </div>
+        <div class="btn-group" role="group">
+            <button class="btn btn-link text-primary p-0 me-2" title="Edit Kelompok" onclick="editKelompok(${
+              kelompok.nomor_kelompok
+            }, '${kelompok.tahun_ajaran}', '${kelompok.jenis_sidang}', ${
+        kelompok.id_matkul
+      })" ${locked ? "disabled" : ""}>
+            <i class="bi bi-pencil-fill"></i>
+          </button>
+            <button class="btn btn-link text-danger p-0" title="Hapus Kelompok" onclick="deleteKelompok(${
+              kelompok.nomor_kelompok
+            }, '${kelompok.tahun_ajaran}', '${kelompok.jenis_sidang}', ${
+        kelompok.id_matkul
+      })" ${locked ? "disabled" : ""}>
+            <i class="bi bi-trash-fill"></i>
+          </button>
+        </div>
+      </div>
+        <div class="kelompok-list-anggota"><strong>Anggota:</strong><br>${anggotaList}</div>
+        <div class="kelompok-list-pengajuan mt-2">${pengajuanInfo}</div>
+      </div>`;
+    })
+    .join("");
+}
+
+function setupKelompokFilters() {
+  document
+    .querySelectorAll("#filter-semester, #filter-tugas-akhir")
+    .forEach((el) => {
+      el.removeEventListener("change", enforceAtLeastOneFilter);
+      el.addEventListener("change", enforceAtLeastOneFilter);
+      el.removeEventListener("change", applyKelompokFilters); // prevent multiple listeners
+      el.addEventListener("change", applyKelompokFilters);
+    });
+}
+
+function enforceAtLeastOneFilter(e) {
+  const semester = document.getElementById("filter-semester");
+  const ta = document.getElementById("filter-tugas-akhir");
+  // Jika user mencoba uncheck dan yang lain juga sudah uncheck, batalkan
+  if (!semester.checked && !ta.checked) {
+    // Kembalikan checkbox yang baru saja di-uncheck ke checked
+    e.target.checked = true;
+  }
+}
+
+function applyKelompokFilters() {
+  if (window.allKelompokData) {
+    renderKelompokList(window.allKelompokData);
+  }
+}
+
+async function fetchMataKuliah() {
+  const idMatkul = document.getElementById("id_matkul");
+  if (!idMatkul) return;
+
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+
+  // Validate prodi selection first
+  if (!prodi) {
+    idMatkul.innerHTML =
+      '<option value="">-- Pilih Prodi Terlebih Dahulu --</option>';
+    return;
+  }
+
+  const tahunAjaran =
+    document.getElementById("tahun_ajaran")?.value || new Date().getFullYear();
+  try {
+    const response = await fetch(
+      `../../control/dosen/kelompok/get_matkul_by_jenis.php?jenis_sidang=Semester&tahun_ajaran=${tahunAjaran}`
+    );
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+    idMatkul.innerHTML = '<option value="">-- Pilih Mata Kuliah --</option>';
+    data.forEach((matkul) => {
+      idMatkul.add(new Option(matkul.nama_matkul, matkul.id_matkul));
+    });
+    idMatkul.onchange = setNextKelompokId;
+  } catch (e) {
+    console.error("Error fetching mata kuliah:", e);
+    idMatkul.innerHTML = '<option value="">(Gagal memuat data)</option>';
+  }
+}
+
+async function handleKelompokFormSubmit(event) {
+  event.preventDefault();
+
+  // Additional prodi validation before form validation
+  const prodi = document.getElementById("kelompok_prodi")?.value;
+  if (!prodi) {
+    Swal.fire({
+      title: "Pilih Program Studi Terlebih Dahulu",
+      text: "Silakan pilih Program Studi terlebih dahulu sebelum menyimpan kelompok.",
+      icon: "warning",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+    return;
+  }
+
+  if (!validateKelompokForm()) return;
+
+  const kelompokForm = document.getElementById("kelompokForm");
+  const formMode = kelompokForm.dataset.mode || "create";
+  const formData = new FormData(kelompokForm);
+
+  if (document.getElementById("jenis_sidang").value === "Tugas Akhir") {
+    formData.set("id_matkul", 2006);
+    const dosenInputs = document.querySelectorAll(
+      'input[name="dosen_nomor_hidden[]"]'
+    );
+    formData.delete("nomor_dosen[]");
+    dosenInputs.forEach((input) => {
+      if (input.value.trim() !== "")
+        formData.append("nomor_dosen[]", input.value.trim());
+    });
+  }
+
+  let url = `../../control/dosen/kelompok/kelompok_${formMode}.php`;
+  if (formMode === "edit") {
+    formData.append("nomor_kelompok", kelompokForm.dataset.nomor_kelompok);
+    formData.append("tahun_ajaran", kelompokForm.dataset.tahun_ajaran);
+    formData.append("jenis_sidang", kelompokForm.dataset.jenis_sidang);
+    formData.append("id_matkul_original", kelompokForm.dataset.id_matkul); // original ID for WHERE clause
+  }
+
+  try {
+    const response = await fetch(url, { method: "POST", body: formData });
+    const result = await response.json();
+
+    if (result.success || result.status === "ok") {
+      Swal.fire({
+        title: "Sukses!",
+        text:
+          result.message ||
+          `Kelompok berhasil di${formMode === "edit" ? "perbarui" : "buat"}!`,
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#4B68FB",
+      }).then(() => {
+        if (kelompokModalInstance) kelompokModalInstance.hide();
+        loadKelompokList(); // Refresh list
+        switchTab("daftar"); // Switch to list view
+      });
+    } else {
+      Swal.fire({
+        title: "Gagal",
+        text: result.message || "Gagal memproses kelompok.",
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#4B68FB",
+      });
+    }
+  } catch (error) {
+    console.error("Error processing kelompok:", error);
+    Swal.fire({
+      title: "Terjadi Kesalahan",
+      text: "Tidak dapat terhubung ke server. " + error.message,
+      icon: "error",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#4B68FB",
+    });
+  }
+}
+
+function validateKelompokForm() {
+  let isValid = true;
+  document.querySelectorAll(".error-message").forEach((el) => el.remove());
+  document
+    .querySelectorAll(".is-invalid")
+    .forEach((el) => el.classList.remove("is-invalid"));
+
+  const showError = (fieldId, message) => {
+    isValid = false;
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.classList.add("is-invalid");
+      const errorDiv = document.createElement("div");
+      errorDiv.className = "error-message text-danger small mt-1";
+      errorDiv.textContent = message;
+      field.parentElement.append(errorDiv);
+    }
+  };
+
+  if (!document.getElementById("kelompok_prodi").value)
+    showError(
+      "kelompok_prodi",
+      "Program Studi harus dipilih terlebih dahulu sebelum melanjutkan."
+    );
+  if (!document.getElementById("tahun_ajaran").value)
+    showError("tahun_ajaran", "Tahun Ajaran harus dipilih.");
+  if (!document.getElementById("nomor_kelompok").value)
+    showError("nomor_kelompok", "Nomor Kelompok harus diisi.");
+  const jenisSidang = document.getElementById("jenis_sidang").value;
+  if (!jenisSidang) showError("jenis_sidang", "Jenis Sidang harus dipilih.");
+
+  if (
+    jenisSidang === "Semester" &&
+    !document.getElementById("id_matkul").value
+  ) {
+    showError("id_matkul", "Mata Kuliah harus dipilih untuk Sidang Semester.");
+  }
+
+  const nimInputs = document.querySelectorAll('input[name="anggota[]"]');
+  const nimSet = new Set();
+  let hasAnggota = false;
+  nimInputs.forEach((input) => {
+    const nim = input.value.trim();
+    if (nim) {
+      hasAnggota = true;
+      if (nimSet.has(nim)) {
+        showError(input.id, "NIM tidak boleh duplikat.");
+      }
+      nimSet.add(nim);
+    }
+  });
+
+  if (!hasAnggota) showError("anggota_1", "Minimal harus ada satu anggota.");
+  if (nimSet.size > 5)
+    showError("anggota-wrapper", "Maksimal 5 anggota per kelompok.");
+
+  return isValid;
+}
+
+document.addEventListener("click", function (event) {
+  document.querySelectorAll(".autocomplete-dropdown").forEach((dropdown) => {
+    const input = dropdown.previousElementSibling;
+    if (!dropdown.contains(event.target) && event.target !== input) {
+      dropdown.style.display = "none";
+    }
+  });
+});
+
+window.deleteKelompok = async function (
+  nomor_kelompok,
+  tahun_ajaran,
+  jenis_sidang,
+  id_matkul
+) {
+  Swal.fire({
+    title: "Yakin ingin menghapus kelompok ini?",
+    text: "Tindakan ini tidak dapat dibatalkan!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#dc3545",
+    cancelButtonColor: "#6c757d",
+    confirmButtonText: "Ya, hapus!",
+    cancelButtonText: "Batal",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          "../../control/dosen/kelompok/kelompok_delete.php",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nomor_kelompok,
+              tahun_ajaran,
+              jenis_sidang,
+              id_matkul,
+            }),
+          }
+        );
+        const res = await response.json();
+        if (res.status === "ok") {
+          Swal.fire("Sukses!", "Kelompok berhasil dihapus!", "success");
+          loadKelompokList(); // Refresh the list
+        } else {
+          Swal.fire(
+            "Gagal",
+            res.message || "Gagal menghapus kelompok",
+            "error"
+          );
+        }
+      } catch (error) {
+        Swal.fire(
+          "Terjadi Kesalahan",
+          "Tidak dapat terhubung ke server.",
+          "error"
+        );
+      }
+    }
+  });
+};
+
+window.editKelompok = async function (
+  nomor_kelompok,
+  tahun_ajaran,
+  jenis_sidang,
+  id_matkul
+) {
+  try {
+    const url = `../../control/dosen/kelompok/kelompok_read.php?nomor_kelompok=${nomor_kelompok}&tahun_ajaran=${tahun_ajaran}&jenis_sidang=${jenis_sidang}&id_matkul=${id_matkul}`;
+    const response = await fetch(url);
+    const result = await response.json();
+
+    if (result.status !== "ok" || !result.data || result.data.length === 0) {
+      throw new Error(result.message || "Kelompok data tidak ditemukan");
+    }
+
+    switchTab("tambah");
+    await populateEditForm(result.data, {
+      nomor_kelompok,
+      tahun_ajaran,
+      jenis_sidang,
+      id_matkul,
+    });
+
+    if (kelompokModalInstance) kelompokModalInstance.show();
+  } catch (error) {
+    console.error("Error loading kelompok for edit:", error);
+    Swal.fire("Terjadi Kesalahan", error.message, "error");
+  }
+};
+
+function updateModalUI(mode) {
+  const modalTitle = document.querySelector("#kelompokModal .modal-title");
+  const submitButton = document.querySelector(
+    "#kelompokForm button[type='submit']"
+  );
+  const tambahTabBtn = document.getElementById("tambah-tab-btn");
+
+  if (mode === "edit") {
+    if (modalTitle) modalTitle.textContent = "Edit Kelompok";
+    if (submitButton) submitButton.textContent = "Update Kelompok";
+    if (tambahTabBtn) tambahTabBtn.textContent = "Edit Kelompok";
+  } else {
+    if (modalTitle) modalTitle.textContent = "Tambah Kelompok Baru";
+    if (submitButton) submitButton.textContent = "Buat Kelompok";
+    if (tambahTabBtn) tambahTabBtn.textContent = "Tambah Kelompok";
+  }
+}
+
+async function populateEditForm(kelompokData, keys) {
+  const { nomor_kelompok, tahun_ajaran, jenis_sidang, id_matkul } = keys;
+  const form = document.getElementById("kelompokForm");
+  form.dataset.mode = "edit";
+  form.dataset.nomor_kelompok = nomor_kelompok;
+  form.dataset.tahun_ajaran = tahun_ajaran;
+  form.dataset.jenis_sidang = jenis_sidang;
+  form.dataset.id_matkul = id_matkul;
+
+  updateModalUI("edit");
+
+  document.getElementById("nomor_kelompok").value = nomor_kelompok;
+  document.getElementById("tahun_ajaran").value = tahun_ajaran;
+  document.getElementById("jenis_sidang").value = jenis_sidang;
+
+  if (kelompokData.length > 0 && kelompokData[0].prodi) {
+    const prodiMap = {
+      TRPL: "Rekayasa Perangkat Lunak",
+      RPL: "Rekayasa Perangkat Lunak",
+    };
+    document.getElementById("kelompok_prodi").value =
+      prodiMap[kelompokData[0].prodi] || kelompokData[0].prodi;
+  }
+
+  await fetchMahasiswaData(); // Fetch available mahasiswa including current members
+
+  if (jenis_sidang === "Semester") {
+    showMatkulField(true);
+    await fetchMataKuliah();
+    document.getElementById("id_matkul").value = id_matkul;
+  } else {
+    showMatkulField(false);
+  }
+
+  if (jenis_sidang === "Tugas Akhir") {
+    showPembimbingField(true);
+    await populatePembimbingData(keys);
+  } else {
+    showPembimbingField(false);
+  }
+
+  populateAnggotaData(kelompokData);
+}
+
+function populateAnggotaData(anggotaData) {
+  resetAnggotaInputs();
+  anggotaData.forEach((student, index) => {
+    if (index > 0) addAnggota();
+    const i = index + 1;
+    document.getElementById(`anggota_${i}`).value = student.nim;
+    document.getElementById(`anggota_nama_${i}`).textContent = student.nama_mhs;
+    selectedMahasiswa[i] = { nim: student.nim, nama: student.nama_mhs };
+  });
+  anggotaCount = anggotaData.length > 0 ? anggotaData.length : 1;
+  updateToggleButtonsVisibility();
+}
+
+async function populatePembimbingData(keys) {
+  try {
+    const response = await fetch(
+      "../../control/dosen/kelompok/get_pembimbing.php",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(keys),
+      }
+    );
+    const result = await response.json();
+    if (result.status !== "ok") throw new Error(result.message);
+
+    resetDosenInputs();
+    if (result.data && result.data.length > 0) {
+      result.data.forEach((dosen, index) => {
+        if (index > 0) addDosen();
+        const i = index + 1;
+        document.getElementById(`dosen_pembimbing_${i}`).value =
+          dosen.nomor_dosen;
+        document.getElementById(`dosen_nama_display_${i}`).textContent =
+          dosen.nama_dosen;
+        document.getElementById(`dosen_nomor_hidden_${i}`).value =
+          dosen.nomor_dosen;
+      });
+    }
+  } catch (error) {
+    console.error("Error loading pembimbing data:", error);
+  }
+}
+
+
+--- END OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\js\kelompokModal.js ---
+
+================================================================================
+
+--- START OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\js\dPengajuan.js ---
+
+
+        // Sidebar Toggle Logic
+        let menuToggle = document.querySelector(".NavSide__toggle");
+        let sidebar = document.getElementById("main-sidebar");
+
+        menuToggle.onclick = function() {
+            menuToggle.classList.toggle("NavSide__toggle--active");
+            sidebar.classList.toggle("NavSide__sidebar--active-mobile");
+        };
+
+//Untuk filter pencarian
+        document.addEventListener("DOMContentLoaded", function() {
+            // Logika untuk pencarian real-time pada tabel
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) {
+                searchInput.addEventListener("input", function() {
+                    const query = this.value.toLowerCase().trim();
+                    const tableRows = document.querySelectorAll("tbody tr.isiTabel");
+
+                    tableRows.forEach(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        // Tampilkan baris jika cocok dengan query, sebaliknya sembunyikan
+                        row.style.display = rowText.includes(query) ? "" : "none";
+                    });
+                });
+            }
+        });
+            
+        // Inject nomor dosen login ke JS agar filter autocomplete pembimbing berjalan
+        window.nomorDosenLogin = "<?= isset($_SESSION['user_data']['nomor_dosen']) ? htmlspecialchars($_SESSION['user_data']['nomor_dosen']) : '' ?>";
+
+
+--- END OF FILE: C:\xampp\htdocs\PRG\Pro-PengajuanSidang\assets\js\dPengajuan.js ---
