@@ -147,9 +147,7 @@ if ($stmtDataSidang && ($rowData = sqlsrv_fetch_array($stmtDataSidang, SQLSRV_FE
         </div>
            <main class="NavSide__main-content">
             <?php 
-            // Include the function file
             require_once '../../control/function.php'; 
-            // Generate breadcrumb
             echo generateBreadcrumb(getPageTitle('mNilaiakhir'), 'mahasiswa', [
                 ['url' => 'mSidang.php', 'text' => 'Sidang']
             ]); 

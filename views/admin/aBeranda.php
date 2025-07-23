@@ -126,6 +126,7 @@ $unread_count = count($unread_notifications);
 
         <!-- Main Content -->
         <main class="NavSide__main-content">
+            <!-- No breadcrumb for Beranda (first layer) -->
             <div class="dashboard-header">
                 <h2 class="text-heading">Beranda Admin</h2>
                 <div class="header-icons d-none d-md-flex">

@@ -8,23 +8,28 @@
  */
 function generateBreadcrumb($current_page, $role, $additional_items = []) {
     $breadcrumb_items = [];
-    
-    // Add home link based on role
-    switch ($role) {
-        case 'admin':
-            $breadcrumb_items[] = '<a href="aBeranda.php"><i class="bi bi-house"></i>Beranda</a>';
-            break;
-        case 'dosen':
-            $breadcrumb_items[] = '<a href="dBeranda.php"><i class="bi bi-house"></i>Beranda</a>';
-            break;
-        case 'mahasiswa':
-            $breadcrumb_items[] = '<a href="mBeranda.php"><i class="bi bi-house"></i>Beranda</a>';
-            break;
-        case 'aEvaluasi':
-            $breadcrumb_items[] = '<a href="aDaftarSidang.php"><i class="fa-solid fa-file-signature"></i>Daftar Sidang</a>';
-            break;
+    $first_layer_pages = [
+        // Admin
+        'aBeranda', 'aDaftarSidang', 'aPenjadwalan', 'aNotifikasi', 'aProfil',
+        // Dosen
+        'dBeranda', 'dDaftarSidang', 'dNotifikasi', 'dProfil',
+        // Mahasiswa
+        'mBeranda', 'mSidang', 'mNotifikasi', 'mProfil',
+    ];
+    // Only add home if not first layer
+    if (!in_array($current_page, $first_layer_pages)) {
+        switch ($role) {
+            case 'admin':
+                $breadcrumb_items[] = '<a href="aBeranda.php">Beranda</a>';
+                break;
+            case 'dosen':
+                $breadcrumb_items[] = '<a href="dBeranda.php">Beranda</a>';
+                break;
+            case 'mahasiswa':
+                $breadcrumb_items[] = '<a href="mBeranda.php">Beranda</a>';
+                break;
+        }
     }
-    
     // Add additional items
     foreach ($additional_items as $item) {
         if (is_array($item)) {
@@ -33,31 +38,10 @@ function generateBreadcrumb($current_page, $role, $additional_items = []) {
             $breadcrumb_items[] = $item;
         }
     }
-    
-    // Add current page
+    // Add current page (plain text, no link)
     $breadcrumb_items[] = $current_page;
-    
-    // Generate HTML
-    $html = '<div class="breadcrumb-container breadcrumb-' . $role . '">';
-    $html .= '<nav aria-label="breadcrumb">';
-    $html .= '<ol class="breadcrumb">';
-    
-    foreach ($breadcrumb_items as $index => $item) {
-        $is_last = $index === count($breadcrumb_items) - 1;
-        $class = $is_last ? 'breadcrumb-item active' : 'breadcrumb-item';
-        
-        if ($is_last) {
-            $html .= '<li class="' . $class . '" aria-current="page">' . $item . '</li>';
-        } else {
-            $html .= '<li class="' . $class . '">' . $item . '</li>';
-        }
-    }
-    
-    $html .= '</ol>';
-    $html .= '</nav>';
-    $html .= '</div>';
-    
-    return $html;
+    // Output: text > text > text
+    return '<div class="breadcrumb-simple">' . implode(' &gt; ', $breadcrumb_items) . '</div>';
 }
 
 /**

@@ -426,7 +426,13 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
-            <main class="NavSide__main-content">
+            <main class="NavSide__main-content" id="dDokumenRevisi">
+            <?php 
+            require_once '../../control/function.php'; 
+            echo generateBreadcrumb(getPageTitle('dDokumenRevisi'), 'dosen', [
+                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
+            ]); 
+            ?>
                 <h2 class="text-heading text-black" style="font-weight: 700;">Dokumen Revisi - <?= htmlspecialchars($judul) ?></h2>
                 <form id="dokumenRevisiForm" method="POST" action="dDokumenRevisi.php">
                     <input type="hidden" name="nim" value="<?= htmlspecialchars($current_nim) ?>">
