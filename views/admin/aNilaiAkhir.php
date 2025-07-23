@@ -126,7 +126,7 @@ require_once '../../control/admin/aNilaiAkhir_queries.php';
         </div>
       </div>
       <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px;">
-        Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
+        Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
       </h2><br>
       <div class="container-fluid">
         <div class="row mb-3">

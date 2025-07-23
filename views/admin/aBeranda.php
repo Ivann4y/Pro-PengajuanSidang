@@ -128,7 +128,7 @@ $unread_count = count($unread_notifications);
         <main class="NavSide__main-content">
             <!-- No breadcrumb for Beranda (first layer) -->
             <div class="dashboard-header">
-                <h2 class="text-heading">Beranda Admin</h2>
+                <h2 class="page-title">Beranda Admin</h2>
                 <div class="header-icons d-none d-md-flex">
                     <a href="aNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-bell-fill position-relative">
@@ -143,7 +143,7 @@ $unread_count = count($unread_notifications);
                 </div>
             </div>
 
-            <h2 class="welcomeText">Selamat Datang, Admin!</h2>
+            <h2 class="welcome-text">Selamat Datang, Admin!</h2>
 
             <div class="row">
                 <!-- Statistik Penjadwalan & Pengajuan -->
