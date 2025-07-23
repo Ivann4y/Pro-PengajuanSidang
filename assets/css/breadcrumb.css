@@ -76,9 +76,14 @@
 }
 
 /* Breadcrumb for different user roles */
+.breadcrumb-aEvaluasi {
+  border-left: 4px solid #dc3545;
+}
+
 .breadcrumb-admin {
   border-left: 4px solid #dc3545;
 }
+
 
 .breadcrumb-dosen {
   border-left: 4px solid #198754;

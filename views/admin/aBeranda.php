@@ -59,27 +59,6 @@ $unread_count = count($unread_notifications);
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../../assets/css/style.css" />
     <link rel="stylesheet" href="../../assets/css/aBeranda.css" />
-    
-    <style>
-      .notif-badge {
-        position: absolute;
-        top: -2px;
-        right: -8px;
-        background: #4b68fb;
-        color: white;
-        border-radius: 50%;
-        font-size: 0.55em;
-        padding: 0 3px;
-        z-index: 10;
-        border: 2px solid white;
-        font-weight: bold;
-        min-width: 10px;
-        text-align: center;
-        line-height: 1.2;
-        box-shadow: 0 0 2px #0002;
-      }
-      .position-relative { position: relative; }
-    </style>
 </head>
 
 <body>

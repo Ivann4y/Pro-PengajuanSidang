@@ -15,6 +15,7 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
     <link rel="stylesheet" href="../../assets/css/msidang.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <style>
         .notif-badge {
             position: absolute;
@@ -77,10 +78,17 @@ require_once '../../control/mahasiswa/mSidang_logic.php';
         </div>
 
         <main class="NavSide__main-content" id="mSidang">
+        <?php 
+                // Include the function file
+                require_once '../../control/function.php'; 
+                // Generate breadcrumb
+                echo generateBreadcrumb(getPageTitle('mSidang'), 'mahasiswa', [
+                ]); 
+                ?>
             <div class="container-fluid"> 
                 <div class="row">
                     <div class="dashboard-header">
-                        <h2 class="text-heading"><?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
+                        <h2 class="text-heading">Daftar Sidang - <?php echo isset($_SESSION['user_data']['nama_mhs']) ? htmlspecialchars($_SESSION['user_data']['nama_mhs']) : 'Mahasiswa'; ?> (Mahasiswa)</h2>
                         <div class="header-icons d-none d-md-flex">
                             <a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>
                             <div class="profile-icon">
