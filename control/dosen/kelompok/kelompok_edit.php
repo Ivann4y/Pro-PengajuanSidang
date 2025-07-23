@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL); ini_set('display_errors', 1);
 session_start();
-include '../../../koneksi/koneksiAndrew.php';
+include '../../../koneksi/koneksiJoin.php';
 error_log('EDIT POST: ' . json_encode($_POST));
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

@@ -17,7 +17,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
     exit(); 
 }
 
-require $path_to_root . "koneksi/koneksiAndrew.php";
+require $path_to_root . "koneksi/koneksiJoin.php";
 
 $user = $_SESSION['user_data'];
 $nim = $user['nim'];

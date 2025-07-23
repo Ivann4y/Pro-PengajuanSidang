@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../../koneksi/koneksiAndrew.php'; // Pastikan path ini benar
+include '../../koneksi/koneksiJoin.php';
 header('Content-Type: application/json');
 
 $action = $_GET['action'] ?? '';

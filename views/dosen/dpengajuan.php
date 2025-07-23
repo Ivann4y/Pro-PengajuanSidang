@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_data']['nomor_dosen'])) {
 }
 $nomorDosen = $_SESSION['user_data']['nomor_dosen'];
 
-include '../../koneksi/koneksiAndrew.php';
+include '../../koneksi/koneksiJoin.php';
 if ($conn === false) {
     die("Koneksi gagal: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }

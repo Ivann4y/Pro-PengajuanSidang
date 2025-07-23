@@ -85,7 +85,7 @@
     thead th:nth-child(2) { width: 20%; }
     thead th:nth-child(3) { width: 35%; }
     thead th:nth-child(4) { width: 20%; }
-    thead th:nth-child(5) { width: 35%; }
+    thead th:nth-child(5) { width: 25%; }
     thead th:nth-child(6) { width: 10%; }
 
     /* Atur perataan untuk kolom No dan Aksi */

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "../../koneksi/koneksiAndrew.php"; // Pastikan path koneksi ini benar
+require "../../koneksi/koneksiJoin.php"; // Pastikan path koneksi ini benar
 
 // Ambil ID Sidang dari URL
 if (isset($_GET['id_sidang']) && !empty($_GET['id_sidang'])) {
