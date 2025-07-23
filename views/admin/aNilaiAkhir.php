@@ -64,6 +64,12 @@ require_once '../../control/admin/aNilaiAkhir_queries.php';
     </div>
 
     <main class="NavSide__main-content">
+    <?php 
+                require_once '../../control/function.php'; 
+                echo generateBreadcrumb(getPageTitle('aNilaiAkhir'), 'admin', [
+                    ['url' => 'aDaftarSidang.php', 'text' => 'Daftar Sidang']
+                ]); 
+                ?>
       <div class="dashboard-header p-3">
         <div class="col-12">
           <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= htmlspecialchars($judul ?? 'Sistem Evaluasi Sidang') ?></h2>

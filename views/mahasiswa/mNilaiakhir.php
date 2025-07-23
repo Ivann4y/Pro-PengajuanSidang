@@ -61,9 +61,7 @@ require_once '../../control/mahasiswa/mNilaiAkhir_queries.php';
         </div>
            <main class="NavSide__main-content">
             <?php 
-            // Include the function file
             require_once '../../control/function.php'; 
-            // Generate breadcrumb
             echo generateBreadcrumb(getPageTitle('mNilaiakhir'), 'mahasiswa', [
                 ['url' => 'mSidang.php', 'text' => 'Sidang']
             ]); 

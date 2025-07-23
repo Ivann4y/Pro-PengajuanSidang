@@ -220,11 +220,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
         </div>
         <main class="NavSide__main-content" id="dPengajuan">
             <?php 
-            // Include the function file
             require_once '../../control/function.php'; 
-            // Generate breadcrumb
             echo generateBreadcrumb(getPageTitle('dDetailPengajuan'), 'dosen', [
-                ['url' => 'dPengajuan.php', 'text' => 'Daftar Sidang']
+                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
             ]); 
             ?>
             <h2 class="text-heading text-black" style="font-weight: 700;">Detail Pengajuan - <?= htmlspecialchars($judul) ?></h2>

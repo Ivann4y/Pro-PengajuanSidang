@@ -62,7 +62,13 @@
             <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
             <div id="page-content-wrapper">
                 <div class="NavSide__topbar"></div>
-            <main class="NavSide__main-content">
+            <main class="NavSide__main-content" id="dEvaluasiSidang">
+            <?php 
+            require_once '../../control/function.php'; 
+            echo generateBreadcrumb(getPageTitle('dEvaluasiSidang'), 'dosen', [
+                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
+            ]); 
+            ?>
         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= htmlspecialchars($judul) ?></h2>
         <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px; color: #464869;">
             Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>

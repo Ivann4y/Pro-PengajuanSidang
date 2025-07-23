@@ -80,9 +80,7 @@ $no_telepon = $user['no_telepon'];
 
         <main class="NavSide__main-content" id="mSidang">
             <?php 
-            // Include the function file
             require_once '../../control/function.php'; 
-            // Generate breadcrumb
             echo generateBreadcrumb(getPageTitle('aProfil'), 'admin'); 
             ?>
             <div class="container">
