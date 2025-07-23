@@ -371,7 +371,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dokumen Revisi - Responsive</title>
+    <title>Dokumen Revisi</title>
 
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -382,6 +382,7 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDokumenRevisi.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for pop-up notifications -->
+        <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 
 </head>
 
@@ -427,6 +428,14 @@ if (isset($_GET['download']) && $_GET['download'] === 'revisi') {
         <div id="page-content-wrapper">
             <div class="NavSide__topbar"></div>
             <main class="NavSide__main-content">
+                <?php 
+            // Include the function file
+            require_once '../../control/function.php'; 
+            // Generate breadcrumb
+            echo generateBreadcrumb(getPageTitle('Dokumen Sidang'), 'dosen', [
+                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
+            ]); 
+            ?>
                 <h2 class="text-heading text-black" style="font-weight: 700;">Dokumen Revisi - <?= htmlspecialchars($judul) ?></h2>
                 <form id="dokumenRevisiForm" method="POST" action="dDokumenRevisi.php">
                     <input type="hidden" name="nim" value="<?= htmlspecialchars($current_nim) ?>">
