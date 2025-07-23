@@ -25,7 +25,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                 <li class="NavSide__sidebar-item NavSide__sidebar-item--active">
                     <b></b><b></b>
                     <a href="mdetailSidang.php">
-                        <span class="NavSide__sidebar-title fw-semibold">Detail Pengajuan</span>
+                        <span class="NavSide__sidebar-title fw-semibold">Detail Sidang</span>
                     </a>
                 </li>
                 <li class="NavSide__sidebar-item">
@@ -87,8 +87,17 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                         <?php if ($data_sidang['jenis_sidang'] === 'Semester'): ?>
                             <div class="info-group">
                                 <div class="label-row">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                    <span class="fw-bold">Judul Sidang</span>
+                                </div>
+                                <div class="value-row">
+                                    <?= htmlspecialchars($data_sidang['judul']) ?>
+                                </div>
+                            </div>
+                            <div class="info-group">
+                                <div class="label-row">
                                     <i class="fa-solid fa-book"></i>
-                                    <span class="fw-bold">Judul Mata Kuliah</span>
+                                    <span class="fw-bold">Mata Kuliah</span>
                                 </div>
                                 <div class="value-row">
                                     <?= htmlspecialchars($data_matkul['nama_matkul'] ?? 'N/A') ?>
@@ -172,7 +181,7 @@ include '../../control/mahasiswa/mdetailSidang_logic.php';
                     <?php if (!empty($dok_laporan)): ?>
                         <a href="download_document.php?id_sidang=<?= htmlspecialchars($id_sidang) ?>" class="file-button">
                             <i class="fa-solid fa-file-zipper"></i>
-                            Dokumen_Laporan_Kelompok_<?= htmlspecialchars($nomor_kelompok) ?>.zip </a>
+                            Projek_SO<?= htmlspecialchars($nomor_kelompok) ?>.pdf </a>
                     <?php else: ?>
                         <p>Dokumen tidak tersedia.</p>
                     <?php endif; ?>

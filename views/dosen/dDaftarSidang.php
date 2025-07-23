@@ -16,6 +16,7 @@ require_once '../../control/dosen/dDaftarSidang_queries.php';
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dDaftarSidang.css">
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
     <style>
         .notif-badge {
             position: absolute;
@@ -63,8 +64,14 @@ require_once '../../control/dosen/dDaftarSidang_queries.php';
             </div>
         </div>
         <main class="NavSide__main-content">
+            <!-- No breadcrumb for Daftar Sidang (first layer) -->
             <div class="dashboard-header">
+                <div class="header-title-group">
                 <h2 class="bodyHeading">Daftar Sidang</h2>
+                    <h2 class="text-heading mt-3" style="font-size:1.5rem; font-weight:500;">
+                        <?php echo isset($_SESSION['user_data']['nama_dosen']) ? htmlspecialchars($_SESSION['user_data']['nama_dosen']) : 'Dosen'; ?> (Dosen)
+                    </h2>
+                </div>
                 <div class="header-icons d-none d-md-flex">
                     <a href="dNotifikasi.php" title="Notifikasi" style="text-decoration: none; color: inherit;">
                         <i class="bi bi-bell-fill position-relative">

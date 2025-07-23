@@ -15,27 +15,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <link rel="stylesheet" href="../../assets/css/aDaftarSidang.css">
-    <style>
-      .notif-badge {
-        position: absolute;
-        top: -2px;
-        right: -8px;
-        background: #4b68fb;
-        color: white;
-        border-radius: 50%;
-        font-size: 0.55em;
-        padding: 0 3px;
-        z-index: 10;
-        border: 2px solid white;
-        font-weight: bold;
-        min-width: 10px;
-        text-align: center;
-        line-height: 1.2;
-        box-shadow: 0 0 2px #0002;
-      }
-      .position-relative { position: relative; }
-    </style>
-
+    <link rel="stylesheet" href="../../assets/css/breadcrumb.css">
 </head>
 
 <body>
@@ -61,6 +41,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
         </div>
 
         <main class="NavSide__main-content" id="adminDaftarSidangContent">
+            <!-- No breadcrumb for Daftar Sidang (first layer) -->
             <div class="main-header">
                 <div class="header-left-panel">
                     <h1 class="main-title">Daftar Sidang</h1>
@@ -69,11 +50,11 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" id="ddAdminSidangTypeButton" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <?= $filter === 'ta' ? 'Sidang TA' : ($filter === 'semester' ? 'Sidang Semester' : 'Jenis Sidang') ?>
+                                <?= $filter === 'ta' ? 'Sidang TA' : ($filter === 'semester' ? 'Sidang Semester' : 'Semua Sidang') ?>
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item"
-                                        href="?filter=all&prodi=<?= urlencode($prodiFilter) ?>&page=1">Semua Jenis</a>
+                                        href="?filter=all&prodi=<?= urlencode($prodiFilter) ?>&page=1">Semua Sidang</a>
                                 </li>
                                 <li><a class="dropdown-item"
                                         href="?filter=ta&prodi=<?= urlencode($prodiFilter) ?>&page=1">Sidang TA</a></li>
@@ -86,7 +67,7 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                         <div class="dropdown ms-2">
                             <button class="btn btn-primary dropdown-toggle" id="ddAdminSidangTypeButton" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <?= $prodiFilter === 'all' ? 'Pilih Prodi' : htmlspecialchars($prodiFilter) ?>
+                                <?= $prodiFilter === 'all' ? 'Semua Prodi' : htmlspecialchars($prodiFilter) ?>
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="?filter=<?= $filter ?>&prodi=all&page=1">Semua
@@ -152,44 +133,44 @@ require_once '../../control/admin/aDaftarSidang_queries.php';
                         </tr>
                     </thead>
                     <tbody>
-    <?php if (sqlsrv_has_rows($result)): ?>
-        <?php
-        $counter = ($currentPage - 1) * $rowsPerPage + 1;
-        while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
-        ?>
-            <tr class="isiTabel">
-                <td data-label="Nomor"><?= $counter ?></td>
-                <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
-                <td data-label="Judul">
-                    <?= htmlspecialchars($row['judul']) ?>
-                </td>
-                <td data-label="Mata Kuliah">
-                    <?= htmlspecialchars($row['nama_matkul'] ?? 'Tidak ada mata kuliah') ?>
-                </td>
-                <td data-label="Pembimbing/Pengampu">
-                    <?php 
-                    echo nl2br(htmlspecialchars($row['nama_dosen_terkait'] ?? 'Belum ditentukan')); 
-                    ?>
-                </td>
-                <td data-label="Aksi">
-                       <div class="action-wrapper">  
-                         <button type="button" class="btn detail-btn"  onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>&judul=<?= urlencode($row['judul']) ?>'">
-                             
-                          <i class="fa-solid fa-file-signature"></i>
-                         </button>
-                      </div>
-                </td>
-            </tr>
-            <?php
-            $counter++;
-        endwhile;
-        ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="5" class="text-center">Tidak ada data untuk ditampilkan.</td>
-        </tr>
-    <?php endif; ?>
-</tbody>
+                        <?php if (sqlsrv_has_rows($result)): ?>
+                            <?php
+                            $counter = ($currentPage - 1) * $rowsPerPage + 1;
+                            while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
+                            ?>
+                                <tr class="isiTabel">
+                                    <td data-label="Nomor"><?= $counter ?></td>
+                                    <td data-label="Kelompok"><?= htmlspecialchars($row['id_kelompok']) ?></td>
+                                    <td data-label="Judul">
+                                        <?= htmlspecialchars($row['judul']) ?>
+                                    </td>
+                                    <td data-label="Mata Kuliah">
+                                        <?= htmlspecialchars($row['nama_matkul'] ?? 'Tidak ada mata kuliah') ?>
+                                    </td>
+                                    <td data-label="Pembimbing/Pengampu">
+                                        <?php 
+                                        echo nl2br(htmlspecialchars($row['nama_dosen_terkait'] ?? 'Belum ditentukan')); 
+                                        ?>
+                                    </td>
+                                    <td data-label="Aksi">
+                                        <div class="action-wrapper">  
+                                            <button type="button" class="btn detail-btn"  onclick="window.location.href='aDetailSidang.php?id=<?= $row['id_sidang'] ?>&judul=<?= urlencode($row['judul']) ?>'">
+                                                
+                                            <i class="fa-solid fa-file-signature"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php
+                                $counter++;
+                            endwhile;
+                            ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center">Tidak ada data untuk ditampilkan.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
                 </table>
             </div>
 

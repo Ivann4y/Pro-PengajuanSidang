@@ -95,6 +95,7 @@ if (isset($conn) && $conn) {
         </div>
 
         <main class="NavSide__main-content" id="mBeranda">
+            <!-- No breadcrumb for Beranda (first layer) -->
             <div class="dashboard-header">
                 <h2 class="page-title" style="color:#1F2937">Beranda - Mahasiswa</h2>
                 <div class="header-icons d-none d-md-flex"><a href="mNotifikasi.php" title="Notifikasi"><i class="bi bi-bell-fill position-relative"><?php if ($unread_count > 0): ?><span class="notif-badge"> <?= $unread_count ?> </span><?php endif; ?></i></a>

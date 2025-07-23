@@ -17,7 +17,7 @@ if ($conn === false) {
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id_sidang'])) {
-    
+
     $id_sidang = (int)$_POST['id_sidang'];
     $action = $_POST['action'];
     $newStatus = $action === 'accept' ? 'Approved' : ($action === 'reject' ? 'Rejected' : null);
@@ -169,7 +169,7 @@ $result = sqlsrv_query($conn, $mainSql, $mainParams);
 if ($result === false) {
     die("Error saat mengambil data: <pre>" . print_r(sqlsrv_errors(), true) . "</pre>");
 }
-$nomor = max(1, $offset + 1); 
+$nomor = max(1, $offset + 1);
 
 // Ambil jumlah notifikasi belum dibaca untuk dosen
 $unread_notifications = [];
@@ -202,26 +202,6 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../extra/style.css">
     <link rel="stylesheet" href="../../assets/css/dPengajuan.css">
-    <style>
-        .notif-badge {
-            position: absolute;
-            top: -2px;
-            right: -8px;
-            background: #4b68fb;
-            color: white;
-            border-radius: 50%;
-            font-size: 0.55em;
-            padding: 0 3px;
-            z-index: 10;
-            border: 2px solid white;
-            font-weight: bold;
-            min-width: 10px;
-            text-align: center;
-            line-height: 1.2;
-            box-shadow: 0 0 2px #0002;
-        }
-        .position-relative { position: relative; }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Dosen - Pengajuan</title>
 </head>
@@ -356,12 +336,11 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                                         <td><?= htmlspecialchars($row['nomor_kelompok']); ?></td>
                                         <td><?= htmlspecialchars($row['judul'] ?? 'N/A'); ?></td>
                                         <td><?= htmlspecialchars($row['nama_matkul'] ?? 'N/A'); ?></td>
-                                       <td>
+                                        <td>
                                             <?php
                                             if ($row['tipe_sidang_text'] === 'Tugas Akhir') {
                                                 echo htmlspecialchars($row['nama_dosen']);
-                                            } 
-                                            else { 
+                                            } else {
                                                 echo htmlspecialchars($_SESSION['user_data']['nama_dosen']);
                                             }
                                             ?>
@@ -384,7 +363,7 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                                             <form action="dDetailPengajuan.php" method="POST" style="display: inline;">
                                                 <input type="hidden" name="id_sidang" value="<?= $row['id_sidang']; ?>">
                                                 <input type="hidden" name="tipe" value="<?= ($row['tipe_sidang_text'] === 'Tugas Akhir') ? 'TA' : 'Semester'; ?>">
-                                                
+
                                                 <input type="hidden" name="from_status" value="<?= htmlspecialchars($statusFilter) ?>">
                                                 <input type="hidden" name="from_filter" value="<?= htmlspecialchars($filter) ?>">
                                                 <input type="hidden" name="from_page" value="<?= htmlspecialchars($currentPage) ?>">
@@ -411,26 +390,26 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                     </div>
                 </div>
             </div>
-             <?php if ($totalPages > 0): ?>
-                            <nav aria-label="Page navigation" class="mt-4">
-                                <ul class="pagination justify-content-center">
-                                    <?php
-                                    $queryParams = "status=" . urlencode($statusFilter) . "&filter=" . urlencode($filter) . "&search=" . urlencode($search);
-                                    ?>
-                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-                                        <a class="page-link" href="?page=<?= $currentPage - 1 ?>&<?= $queryParams ?>">«</a>
-                                    </li>
-                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                        <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
-                                            <a class="page-link" href="?page=<?= $i ?>&<?= $queryParams ?>"><?= $i ?></a>
-                                        </li>
-                                    <?php endfor; ?>
-                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-                                        <a class="page-link" href="?page=<?= $currentPage + 1 ?>&<?= $queryParams ?>">»</a>
-                                    </li>
-                                </ul>
-                            </nav>
-                            <?php endif; ?>
+            <?php if ($totalPages > 0): ?>
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <?php
+                        $queryParams = "status=" . urlencode($statusFilter) . "&filter=" . urlencode($filter) . "&search=" . urlencode($search);
+                        ?>
+                        <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?page=<?= $currentPage - 1 ?>&<?= $queryParams ?>">«</a>
+                        </li>
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                                <a class="page-link" href="?page=<?= $i ?>&<?= $queryParams ?>"><?= $i ?></a>
+                            </li>
+                        <?php endfor; ?>
+                        <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?page=<?= $currentPage + 1 ?>&<?= $queryParams ?>">»</a>
+                        </li>
+                    </ul>
+                </nav>
+            <?php endif; ?>
 
             <div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -468,7 +447,14 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                                     <form id="kelompokForm" autocomplete="off">
                                         <div class="kelompok-form-group">
                                             <label for="nomor_kelompok">Nomor Kelompok:</label>
-                                            <input type="text" id="nomor_kelompok" name="nomor_kelompok" readonly />
+                                            <input type="text" id="nomor_kelompok" name="nomor_kelompok" required placeholder="Contoh: 1, 2, 3..." />
+                                            <div class="form-text" style="font-size: 0.8rem; margin-top: 5px; margin-left: 135px;">
+                                                Nomor harus unik untuk Tahun Ajaran & Mata Kuliah yang sama.
+                                                <!-- Suggestion will be injected here -->
+                                                <div id="nomor-kelompok-suggestion" class="mt-2" style="display: none; font-weight: 500;">
+                                                    Saran: <a href="#" id="apply-suggestion-link" class="badge bg-primary text-decoration-none"></a>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="kelompok-form-group">
@@ -565,7 +551,7 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                 </div>
             </div>
         </main>
-    </div> 
+    </div>
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/kelompokModal.js"></script>
     <script src="../../assets/js/dPengajuan.js"></script>
@@ -574,5 +560,6 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
         window.nomorDosenLogin = "<?php echo $_SESSION['user_data']['nomor_dosen']; ?>";
     </script>
 </body>
+
 </html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

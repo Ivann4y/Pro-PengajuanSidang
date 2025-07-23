@@ -62,7 +62,13 @@
             <div class="NavSide__toggle"><i class="bi bi-list open"></i><i class="bi bi-x-lg close"></i></div>
             <div id="page-content-wrapper">
                 <div class="NavSide__topbar"></div>
-            <main class="NavSide__main-content">
+            <main class="NavSide__main-content" id="dEvaluasiSidang">
+            <?php 
+            require_once '../../control/function.php'; 
+            echo generateBreadcrumb(getPageTitle('dEvaluasiSidang'), 'dosen', [
+                ['url' => 'dDaftarSidang.php', 'text' => 'Daftar Sidang']
+            ]); 
+            ?>
         <h2 class="text-heading text-black" style="font-weight: 700;">Detail Evaluasi - <?= htmlspecialchars($judul) ?></h2>
         <h2 class="fs-5 fw-semibold mb-0" style="margin-left: 15px; margin-top: 20px; color: #464869;">
             Catatan Perbaikan - Kelompok <?php echo htmlspecialchars($nomor_kelompok ?? ''); ?>
@@ -230,7 +236,8 @@
                     </div>
                     <div class="modal-body custom-modal-body">
                         <p class="mb-5 fw-semibold" style="font-size: 16px;">Apakah Anda yakin hendak mengirimkan evaluasi untuk mahasiswa <br><strong><?= htmlspecialchars($current_nama_mhs) ?></strong>?</p>
-                        <div class="d-flex justify-content-between px-5"><button type="button" class="btn btn-tolak fw-semibold" data-bs-dismiss="modal">Batalkan</button><button type="button" class="btn btn-setujui fw-semibold" id="btnKonfirmasiKirim">Kirimkan</button></div>
+                        <div class="d-flex justify-content-between px-5"><button type="button" class="btn btn-tolak fw-semibold" data-bs-dismiss="modal">Batalkan</button>
+                        <button type="button" class="btn btn-setujui fw-semibold" id="btnKonfirmasiKirim">Kirimkan</button></div>
                     </div>
                 </div>
             </div>

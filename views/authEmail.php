@@ -21,6 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    // Validasi domain email harus @polytechnic.astra.ac.id
+    if (!preg_match('/@polytechnic\.astra\.ac\.id$/', $email)) {
+        header("Location: lupaPassword.php?error=domain&role=$role");
+        exit();
+    }
+
     // Validasi email & role di database
     $stmt = sqlsrv_query($conn, "SELECT * FROM [dbo].[$tableNama] WHERE [$emailKolom]=? AND role=?", [$email, $role]);
     $user = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);

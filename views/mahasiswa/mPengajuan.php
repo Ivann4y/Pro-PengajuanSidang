@@ -177,6 +177,7 @@ if (isset($conn) && $conn) {
         </div>
 
         <main class="NavSide__main-content" id="mPengajuan">
+            <!-- No breadcrumb for Pengajuan (first layer) -->
             <div class="container-fluid">
                 <div class="dashboard-header">
                     <h2 class="text-heading" style="color:black;">Pengajuan Sidang Anda</h2>

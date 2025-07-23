@@ -94,6 +94,9 @@ switch ($role) {
                     <?php elseif ($error === 'invalid'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Format email tidak valid!</div>
+                    <?php elseif ($error === 'domain'): ?>
+                        <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
+                        <div class="text-danger">Hanya email @polytechnic.astra.ac.id yang diperbolehkan!</div>
                     <?php elseif ($error === 'notfound'): ?>
                         <input type="text" class="form-control form-control-lg border border-danger" id="emailAstra" name="emailAstra">
                         <div class="text-danger">Email tidak ditemukan!</div>
