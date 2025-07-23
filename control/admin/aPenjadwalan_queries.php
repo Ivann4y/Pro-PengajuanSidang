@@ -30,7 +30,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // FUNGSI 2: KONEKSI DATABASE
 // ==============================
 
-require "../../koneksi/koneksiAndrew.php";
+include "../../koneksi/koneksiJoin.php";
+if ($conn === false) {
+    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
+}
 
 
 

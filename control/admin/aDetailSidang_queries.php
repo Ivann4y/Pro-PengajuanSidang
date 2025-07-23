@@ -79,7 +79,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // ==============================
 
 // Sertakan file koneksi ke database SQL Server
-require "../../koneksi/koneksiAndrew.php";
+include "../../koneksi/koneksiJoin.php";
+if ($conn === false) {
+    die("Koneksi gagal: " . print_r(sqlsrv_errors(), true));
+}
 
 // ==============================
 // FUNGSI 3: AMBIL ID SIDANG DARI URL/SESSION
