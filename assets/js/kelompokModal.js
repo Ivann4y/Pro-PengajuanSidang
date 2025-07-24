@@ -678,11 +678,8 @@ function selectDosen(dosen, index) {
 }
 
 function updateToggleButtonsVisibility() {
-  document
-    .querySelectorAll("#anggota-wrapper .form-toggle-buttons")
-    .forEach((btnGroup, index, arr) => {
-      btnGroup.style.display =
-        index === arr.length - 1 ? "inline-flex" : "none";
+  document.querySelectorAll("#anggota-wrapper .form-toggle-buttons").forEach((btnGroup, index, arr) => {
+      btnGroup.style.display =index === arr.length - 1 ? "inline-flex" : "none";
       const removeBtn = btnGroup.querySelector(
         'button[onclick="removeAnggota()"]'
       );
@@ -690,11 +687,8 @@ function updateToggleButtonsVisibility() {
         removeBtn.style.display = anggotaCount > 1 ? "block" : "none";
     });
 
-  document
-    .querySelectorAll("#dosen-wrapper .form-toggle-buttons")
-    .forEach((btnGroup, index, arr) => {
-      btnGroup.style.display =
-        index === arr.length - 1 ? "inline-flex" : "none";
+  document.querySelectorAll("#dosen-wrapper .form-toggle-buttons").forEach((btnGroup, index, arr) => {
+      btnGroup.style.display = index === arr.length - 1 ? "inline-flex" : "none";
       const removeBtn = btnGroup.querySelector(
         'button[onclick="removeDosen()"]'
       );
@@ -775,8 +769,7 @@ async function loadKelompokList() {
 function renderKelompokList(kelompokData) {
   const container = document.getElementById("kelompok-list-container");
   const filterSemester = document.getElementById("filter-semester")?.checked;
-  const filterTugasAkhir =
-    document.getElementById("filter-tugas-akhir")?.checked;
+  const filterTugasAkhir = document.getElementById("filter-tugas-akhir")?.checked;
 
   let filteredData = kelompokData;
   if (filterSemester !== filterTugasAkhir) {
@@ -790,9 +783,7 @@ function renderKelompokList(kelompokData) {
 
   if (filteredData.length === 0) {
     container.innerHTML = `<p class="text-center text-muted">${
-      kelompokData.length === 0
-        ? "Belum ada kelompok yang dibuat."
-        : "Tidak ada kelompok yang sesuai filter."
+      kelompokData.length === 0 ? "Belum ada kelompok yang dibuat." : "Tidak ada kelompok yang sesuai filter."
     }</p>`;
     return;
   }

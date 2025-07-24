@@ -364,7 +364,7 @@ $is_editable = (is_null($status_ajuan) || in_array($status_ajuan, ['Draft', 'Rej
                                                 <?php if ($is_editable): ?>
                                                     <div class="btn-group" role="group">
                                                         <button type="submit" name="save_draft" class="btn btn-info"><i class="fas fa-save me-2"></i>Simpan Draft</button>
-                                                        <button type="button" name="submit_final" class="btn btn-success" id="btn-submit-final"><i class="fas fa-paper-plane me-2"></i>Submit Final</button>
+                                                        <button type="submit" name="submit_final" class="btn btn-success" id="btn-submit-final"><i class="fas fa-paper-plane me-2"></i>Submit Final</button>
                                                     </div>
                                                 <?php elseif (in_array($status_ajuan, ['Pending', 'Approved'])): ?>
                                                     <div class="alert alert-warning mb-0 p-2">
