@@ -130,7 +130,7 @@ $query = "
                 )
             
             WHEN k.jenis_sidang = 'Semester' THEN
-                -- [PERBAIKAN FINAL] Untuk Semester: Mengikuti alur yang benar
+                
                 (
                     SELECT STRING_AGG(d.nama_dosen, CHAR(13)+CHAR(10))
                     FROM Kelas_Mahasiswa km
