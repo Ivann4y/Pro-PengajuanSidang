@@ -161,8 +161,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $data_sidang['status_ajuan'] === 'P
             $_SESSION['error'] = "Silakan isi alasan penolakan.";
         } else {
             // BARU: Tambahkan kolom alasan_tolak ke query UPDATE
-            $sql_update = "UPDATE Sidang SET judul = ?, status_ajuan = ?, dok_laporan = ?, dok_final = ? WHERE id_sidang = ?";
-            $params = [$judul, $status_ajuan, $dok_laporan_path, $nama_file_asli, $id_sidang_existing];
+           $status_ajuan = 'Rejected';
+            $dok_laporan_path = $doc_data['dok_laporan'] ?? null;
+            $nama_file_asli = $doc_data['dok_final'] ?? basename($dok_laporan_path);
+            $sql_update = "UPDATE Sidang SET status_ajuan = ?, alasan_tolak = ?, dok_laporan = ?, dok_final = ? WHERE id_sidang = ?";
+            $params = [$status_ajuan, $catatan, $dok_laporan_path, $nama_file_asli, $id_sidang];
+
             $stmt_update = sqlsrv_query($conn, $sql_update, $params);
 
             if ($stmt_update) {
