@@ -448,7 +448,14 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                                     <form id="kelompokForm" autocomplete="off">
                                         <div class="kelompok-form-group">
                                             <label for="nomor_kelompok">Nomor Kelompok:</label>
-                                            <input type="text" id="nomor_kelompok" name="nomor_kelompok" readonly />
+                                            <input type="text" id="nomor_kelompok" name="nomor_kelompok" required placeholder="Contoh: 1, 2, 3..." />
+                                            <div class="form-text" style="font-size: 0.8rem; margin-top: 5px; margin-left: 135px;">
+                                                Nomor harus unik untuk Tahun Ajaran & Mata Kuliah yang sama.
+                                                <!-- Suggestion will be injected here by JavaScript -->
+                                                <div id="nomor-kelompok-suggestion" class="mt-2" style="display: none; font-weight: 500;">
+                                                    Saran: <a href="#" id="apply-suggestion-link" class="badge bg-primary text-decoration-none"></a>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="kelompok-form-group">
