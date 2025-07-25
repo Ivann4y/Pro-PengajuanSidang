@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../../koneksi/koneksiAndrew.php';
+include '../../koneksi/koneksi.php';
 header('Content-Type: application/json');
 
 // Ambil parameter action 
