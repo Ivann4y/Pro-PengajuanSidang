@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../../koneksi/koneksiAndrew.php';
+include '../../koneksi/koneksiJoin.php';
 header('Content-Type: application/json');
 
 // Ambil parameter action 
@@ -16,7 +16,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 switch($action) {
     // Card Penjadwalan
     case 'penjadwalan':
-        
+
         // Query untuk mengambil data sidang yang belum terjadwal
         $query = "SELECT judul FROM View_aPerluPenjadwalan ORDER BY id_sidang ASC";
         $stmt = sqlsrv_query($conn, $query);
