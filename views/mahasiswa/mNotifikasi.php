@@ -24,7 +24,14 @@ include '../../koneksi/koneksiJoin.php';
 $nim_mahasiswa = $_SESSION['user_data']['username'];
 
 // Ambil notifikasi yang belum dibaca
-$query_unread = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND (status_baca = 0 OR status_baca IS NULL) ORDER BY waktu DESC";
+$query_unread = "SELECT n.id_notifikasi, n.pesan, n.waktu, n.pengirim,
+    COALESCE(m.nama_mhs, d.nama_dosen, a.nama, n.pengirim) AS nama_pengirim
+    FROM notifikasi n
+    LEFT JOIN Mahasiswa m ON n.pengirim = CAST(m.nim AS VARCHAR(50))
+    LEFT JOIN Dosen d ON n.pengirim = CAST(d.nomor_dosen AS VARCHAR(50))
+    LEFT JOIN Admin a ON n.pengirim = a.username
+    WHERE n.penerima = ? AND (n.status_baca = 0 OR n.status_baca IS NULL)
+    ORDER BY n.waktu DESC";
 $stmt_unread = sqlsrv_query($conn, $query_unread, array($nim_mahasiswa));
 if (!$stmt_unread) {
     die(print_r(sqlsrv_errors(), true));
@@ -35,7 +42,14 @@ while ($row = sqlsrv_fetch_array($stmt_unread, SQLSRV_FETCH_ASSOC)) {
 }
 
 // Ambil notifikasi yang sudah dibaca
-$query_read = "SELECT id_notifikasi, pesan, waktu, pengirim FROM notifikasi WHERE penerima = ? AND status_baca = 1 ORDER BY waktu DESC";
+$query_read = "SELECT n.id_notifikasi, n.pesan, n.waktu, n.pengirim,
+    COALESCE(m.nama_mhs, d.nama_dosen, a.nama, n.pengirim) AS nama_pengirim
+    FROM notifikasi n
+    LEFT JOIN Mahasiswa m ON n.pengirim = CAST(m.nim AS VARCHAR(50))
+    LEFT JOIN Dosen d ON n.pengirim = CAST(d.nomor_dosen AS VARCHAR(50))
+    LEFT JOIN Admin a ON n.pengirim = a.username
+    WHERE n.penerima = ? AND n.status_baca = 1
+    ORDER BY n.waktu DESC";
 $stmt_read = sqlsrv_query($conn, $query_read, array($nim_mahasiswa));
 if (!$stmt_read) {
     die(print_r(sqlsrv_errors(), true));
@@ -154,7 +168,7 @@ $unread_count = count($unread_notifications);
                 <?php else: ?>
                     <?php foreach ($unread_notifications as $notif): ?>
                         <tr class="isiTabel jadiBiru" data-id="<?php echo $notif['id_notifikasi']; ?>">
-                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
+                            <td><?php echo htmlspecialchars($notif['nama_pengirim'] ?? 'Sistem'); ?></td>
                             <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
                             <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
                             <td>Belum Dibaca</td>
@@ -171,7 +185,7 @@ $unread_count = count($unread_notifications);
                 <?php else: ?>
                     <?php foreach ($read_notifications as $notif): ?>
                         <tr class="isiTabel" data-id="<?php echo $notif['id_notifikasi']; ?>">
-                            <td><?php echo htmlspecialchars($notif['pengirim'] ?? 'Sistem'); ?></td>
+                            <td><?php echo htmlspecialchars($notif['nama_pengirim'] ?? 'Sistem'); ?></td>
                             <td><?php echo htmlspecialchars($notif['pesan']); ?></td>
                             <td><?php echo $notif['waktu'] ? $notif['waktu']->format('d M Y, H:i') : 'N/A'; ?></td>
                             <td>Sudah Dibaca</td>
