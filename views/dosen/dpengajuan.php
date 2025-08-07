@@ -538,6 +538,15 @@ echo "<!-- DEBUG unread_count: $unread_count, nomor_dosen: $nomor_dosen -->";
                                                 Tugas Akhir
                                             </label>
                                         </div>
+                                        <div class="filter-status d-flex align-items-center">
+                                            <label for="filter-status" class="me-2">Status:</label>
+                                            <select id="filter-status" class="form-select form-select-sm">
+                                                <option value="all">Semua</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="completed">Approved</option>
+                                                <option value="rejected">Ditolak</option>
+                                                <option value="none">Belum ada pengajuan</option>
+                                            </select>
                                     </div>
                                 </div>
                                 <div class="kelompok-list-container" id="kelompok-list-container">

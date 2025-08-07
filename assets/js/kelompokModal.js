@@ -770,6 +770,7 @@ function renderKelompokList(kelompokData) {
   const container = document.getElementById("kelompok-list-container");
   const filterSemester = document.getElementById("filter-semester")?.checked;
   const filterTugasAkhir = document.getElementById("filter-tugas-akhir")?.checked;
+  const status = document.getElementById("filter-status")?.value;
 
   let filteredData = kelompokData;
   if (filterSemester !== filterTugasAkhir) {
@@ -788,6 +789,19 @@ function renderKelompokList(kelompokData) {
     return;
   }
 
+      if (filteredData.status_ajuan) {
+    filteredData = kelompokData.filter(
+      (k) =>
+        status === "all" ||
+        (status === "pending" && k.pengajuan_status?.status_ajuan === "Pending") ||
+        (status === "draft" && k.pengajuan_status?.status_ajuan === "Draft") ||
+        (status === "approved" && k.pengajuan_status?.status_ajuan === "Approved") ||
+        (status === "rejected" && k.pengajuan_status?.status_ajuan === "Rejected") ||
+        (status === "none" && !k.pengajuan_status)
+);
+}
+    
+  
   container.innerHTML = filteredData
     .map((kelompok) => {
       const anggotaList = kelompok.anggota
@@ -797,9 +811,7 @@ function renderKelompokList(kelompokData) {
         "<span class='badge bg-secondary'>Belum Ada Pengajuan</span>";
       let locked = false;
 
-      if (kelompok.pengajuan_status) {
-        const { status_ajuan, nama_pengaju, nim_pengaju } =
-          kelompok.pengajuan_status;
+      if (kelompok.pengajuan_status) { const { status_ajuan, nama_pengaju, nim_pengaju } = kelompok.pengajuan_status;
         if (status_ajuan === "Pending") {
           pengajuanInfo = `<span class='badge bg-warning text-dark'>Status: ${status_ajuan}</span> <br><small>Oleh: ${nama_pengaju} (${nim_pengaju})</small>`;
           locked = true;
@@ -862,6 +874,7 @@ function setupKelompokFilters() {
       el.removeEventListener("change", applyKelompokFilters); // prevent multiple listeners
       el.addEventListener("change", applyKelompokFilters);
     });
+    document.getElementById("filter-status")?.addEventListener("change", applyKelompokFilters);
 }
 
 function enforceAtLeastOneFilter(e) {
