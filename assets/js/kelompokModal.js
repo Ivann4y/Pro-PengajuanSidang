@@ -758,8 +758,11 @@ async function loadKelompokList() {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
     if (!Array.isArray(data)) throw new Error("Expected array response");
+
     window.allKelompokData = data;
+
     renderKelompokList(data);
+    
   } catch (error) {
     console.error("Error fetching kelompok data:", error);
     container.innerHTML = `<p class="text-center text-danger">Gagal memuat daftar kelompok: ${error.message}</p>`;
@@ -788,8 +791,7 @@ function renderKelompokList(kelompokData) {
     return;
   }
 
-  container.innerHTML = filteredData
-    .map((kelompok) => {
+  container.innerHTML = filteredData.map((kelompok) => {
       const anggotaList = kelompok.anggota
         .map((a) => `${a.nim} - ${a.nama_mhs}`)
         .join("<br>");

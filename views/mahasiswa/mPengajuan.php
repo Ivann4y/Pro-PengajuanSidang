@@ -29,6 +29,7 @@ $jenisFilter = isset($_GET['jenis']) ? $_GET['jenis'] : 'Semua';
 $querySource = "
 (
     SELECT
+    
         sg.nomor_kelompok, sg.tahun_ajaran, sg.jenis_sidang, sg.id_matkul,
         m.nama_matkul,
         s.id_sidang, s.judul,
@@ -261,7 +262,8 @@ if (isset($conn) && $conn) {
                                             </h6>
                                             <p class="card-text small">
                                                 Tahun Ajaran: <?= htmlspecialchars($p['tahun_ajaran']) ?><br>
-                                                Jenis Sidang: <?= htmlspecialchars($p['jenis_sidang']) ?>
+                                                Jenis Sidang: <?= htmlspecialchars($p['jenis_sidang']) ?><br>
+                                                Dosen Pengampu:<?php htmlspecialchars($p['dosen_pengampu'] ?? 'Tidak Diketahui') ?><br>
                                             </p>
                                             
                                             <?php
